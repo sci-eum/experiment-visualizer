@@ -184,6 +184,12 @@ const uid = p => p + (++SEQ).toString(36);
 const r2 = v => Math.round(v * 100) / 100;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const A = s => (ANIM ? s : '');
+// 데이터로 들어오는 SVG 조각에서 스크립트·이벤트 속성·외부 문서 삽입을 걷어 낸다.
+const safeMarkup = s => String(s || '')
+  .replace(/<\s*(script|style|foreignObject|iframe|object|embed)\b[\s\S]*?<\s*\/\s*\1\s*>/gi, '')
+  .replace(/<\s*\/?\s*(script|style|foreignObject|iframe|object|embed)\b[^>]*>/gi, '')
+  .replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+  .replace(/(href|src)\s*=\s*("|')\s*(javascript|data):[^"']*\2/gi, '');
 function col(c, d) { const k = c ?? d; if (k == null || k === '') return null; const t = String(k).trim(); return PAL[t] || PAL[t.toLowerCase()] || t; }
 function shade(c, a) {
   const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(c || '').trim()); if (!m) return INK;
@@ -816,7 +822,7 @@ T.view = {
       case 'solid': case 'liquid': case 'gas': inner = particles(el.show, c, r, g.x + g.y); break;
       case 'crystals': { for (let i = 0; i < 9; i++) { const x = r2(-r * .6 + R() * r * 1.2), y = r2(-r * .6 + R() * r * 1.2), z = r2(9 + R() * 9); inner += `<rect x="${x}" y="${y}" width="${z}" height="${z}" fill="${col(el.color, '#f6f6f2')}" stroke="${INK2}" stroke-width="1.2" transform="rotate(${r2(R() * 50)} ${x} ${y})"/>`; } break; }
       case 'bubbles': { for (let i = 0; i < 12; i++) inner += `<circle cx="${r2(-r * .7 + R() * r * 1.4)}" cy="${r2(-r * .7 + R() * r * 1.4)}" r="${r2(3 + R() * 6)}" fill="#fff" fill-opacity=".7" stroke="#7aaed0" stroke-width="1.2"/>`; break; }
-      default: inner = el.markup || (el.text ? `<text y="5" font-size="13" font-weight="700" text-anchor="middle" fill="#2b3040">${esc(el.text)}</text>` : '');
+      default: inner = safeMarkup(el.markup) || (el.text ? `<text y="5" font-size="13" font-weight="700" text-anchor="middle" fill="#2b3040">${esc(el.text)}</text>` : '');
     }
     let o = '';
     const fr = el.from != null ? pt(el.from, cx.R) : null;
@@ -829,7 +835,7 @@ T.view = {
 T.zoom = T.view;
 T.svg = {
   geo(el, R) { const g = bplace(el, R, 150); g.w = (el.w ?? 60) * g.s; g.h = (el.h ?? 60) * g.s; g.top = g.y - g.h; g.anchor = { x: g.x + g.w / 2, y: g.y - g.h / 2 }; return g; },
-  draw(el, g) { return `<g transform="${tfm(g)}">${el.markup || ''}</g>`; }
+  draw(el, g) { return `<g transform="${tfm(g)}">${safeMarkup(el.markup)}</g>`; }
 };
 T.generic = {
   geo(el, R) { const g = bplace(el, R, 150); g.w = 56; g.h = 56; g.top = g.y - 28; return g; },

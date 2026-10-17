@@ -4,6 +4,10 @@
 .vercel/
 .claude/settings.local.json
 
+# 도름스체크 로컬 점검 기록
+.dorms-check/
+dorms-check.config.json
+
 # 빌드 결과·임시 파일
 dist/
 __pycache__/

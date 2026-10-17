@@ -10,7 +10,8 @@
 
 | 예시 | 설명 |
 |---|---|
-| [붉은 양배추 지시약 실험](https://sci-eum.github.io/experiment-visualizer/examples/red-cabbage/red-cabbage.html) | 예시 실험지 [worksheet.pdf](examples/red-cabbage/worksheet.pdf)를 이 스킬로 바꾼 결과 |
+| [붉은 양배추 지시약 실험](https://sci-eum.github.io/experiment-visualizer/examples/red-cabbage/red-cabbage.html) | 예시 실험지 [worksheet.pdf](examples/red-cabbage/worksheet.pdf)를 이 스킬로 바꾼 결과 (한 파일 버전) |
+| [같은 결과, 가벼운 버전](https://sci-eum.github.io/experiment-visualizer/examples/red-cabbage/red-cabbage-light.html) | 그림 엔진을 인터넷에서 불러오는 11 KB짜리 HTML |
 | [장면 예시 모음](https://sci-eum.github.io/experiment-visualizer/examples/recipes.html) | 붓기·눈금 읽기·가열·거르기·현미경·회로·기체 모으기 장면 |
 | [부품 카탈로그](https://sci-eum.github.io/experiment-visualizer/examples/gallery.html) | 그릴 수 있는 실험 기구와 표시 부품 전체 |
 
