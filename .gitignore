@@ -1,0 +1,14 @@
+# 비밀값·로컬 설정
+.env
+.env.*
+.vercel/
+.claude/settings.local.json
+
+# 빌드 결과·임시 파일
+dist/
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+Thumbs.db
+desktop.ini

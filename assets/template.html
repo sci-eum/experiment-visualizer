@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>실험 과정 그림 안내</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>body{margin:0;background:#F8FAFC;font-family:"Pretendard Variable",Pretendard,sans-serif}.lk-wait{max-width:1080px;margin:36px auto;padding:0 20px}.lk-sk{height:220px;border-radius:24px;margin-bottom:16px;background:linear-gradient(90deg,#eceff5 25%,#f6f7fa 37%,#eceff5 63%);background-size:400% 100%;animation:lksk 1.4s ease infinite}@keyframes lksk{0%{background-position:100% 50%}100%{background-position:0 50%}}</style>
+</head>
+<body>
+<div id="app" aria-busy="true"><div class="lk-wait"><div class="lk-sk"></div><div class="lk-sk"></div></div></div>
+<noscript><p style="padding:24px">이 자료는 자바스크립트가 켜져 있어야 그림이 보여요.</p></noscript>
+<script>
+/* ===== EXPERIMENT DATA START — 이 블록만 바꾸세요 ===== */
+window.EXPERIMENT = {
+  _demo: true,
+  title: '물의 끓는점 측정하기',
+  subject: '중학교 과학',
+  unit: '물질의 상태 변화',
+  duration: '45분',
+  group: '4인 1모둠',
+  goal: '물을 가열하면서 온도 변화를 측정하여 **끓는점**을 알아본다.',
+  materials: [
+    { name: '비커 (250 mL)', qty: '1개', icon: 'beaker' },
+    { name: '온도계', qty: '1개', icon: 'thermometer' },
+    { name: '알코올램프', qty: '1개', icon: 'lamp' },
+    { name: '삼발이와 쇠그물', qty: '1세트', icon: 'tripod' },
+    { name: '스탠드', qty: '1개', icon: 'stand' },
+    { name: '초시계', qty: '1개', icon: 'stopwatch' },
+    { name: '보안경', qty: '모둠원 수', icon: 'goggles' }
+  ],
+  safety: ['가열 중인 비커와 삼발이는 매우 뜨거우니 맨손으로 만지지 않는다.', '알코올램프는 뚜껑을 덮어서 끈다. 입으로 불지 않는다.'],
+  steps: [
+    { title: '비커에 물 담기', text: '250 mL 비커에 물을 **100 mL** 넣는다.', tip: '눈금은 눈높이를 맞춰 읽어요.',
+      scene: [ { t: 'beaker', id: 'b', x: 250, fill: .45, label: '물 100 mL' },
+               { t: 'pour', into: 'b', from: 'cylinder', color: 'water' } ] },
+    { title: '가열 장치 꾸미기', text: '삼발이 위에 쇠그물을 놓고 그 위에 비커를 올린다. 온도계는 스탠드에 고정하여 물속에 넣는다.',
+      warn: '온도계 끝이 비커 바닥에 닿지 않게 해요.',
+      scene: [ { t: 'stand', hold: 'th' }, { t: 'tripod', id: 'tr', x: 280 }, { t: 'lamp', x: 280, lit: false, label: '알코올램프' },
+               { t: 'beaker', id: 'b', on: 'tr', fill: .45 }, { t: 'thermometer', id: 'th', in: 'b', reading: '20 ℃' } ] },
+    { title: '가열하며 온도 재기', text: '알코올램프에 불을 붙이고 **1분마다** 온도를 기록한다.', time: '약 15분', observe: '온도가 어떻게 변하는지 기록해요.',
+      scene: [ { t: 'stand', hold: 'th' }, { t: 'tripod', id: 'tr', x: 280 }, { t: 'lamp', x: 280 },
+               { t: 'beaker', id: 'b', on: 'tr', fill: .45, bubbles: 6, steam: true }, { t: 'thermometer', id: 'th', in: 'b', reading: '100 ℃' },
+               { t: 'stopwatch', x: 420, y: 70, time: '1분마다' } ] }
+  ],
+  results: {
+    expect: '물이 끓기 시작하면 온도가 더 이상 올라가지 않고 일정하게 유지된다.',
+    table: { head: ['시간(분)', '0', '1', '2', '3', '4', '5'], rows: [['온도(℃)', '', '', '', '', '', '']] },
+    questions: ['물이 끓는 동안 온도가 일정하게 유지되는 까닭은 무엇일까?']
+  },
+  source: '예시 데이터'
+};
+/* ===== EXPERIMENT DATA END ===== */
+</script>
+<script>
+/*! experiment-visualizer LabKit v1.0.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
+(function () {
+'use strict';
+const CSS = `:root{--primary:#d070fb;--primary-600:#b955e8;--primary-ink:#7d2ba6;--primary-50:#fbf4ff;--primary-100:#f3e2fd;
+--bg:#F8FAFC;--card:#fff;--ink:#1d2130;--ink-2:#4b5265;--ink-3:#7f8698;
+--tip:#178a5c;--tip-bg:#e8f6ef;--warn:#b5650f;--warn-bg:#fff3e3;--danger:#c7323f;--danger-bg:#ffedef;--obs:#2c5fb3;--obs-bg:#edf3ff;
+--sh-sm:0 1px 2px rgba(29,33,48,.04),0 2px 8px rgba(29,33,48,.05);
+--sh-md:0 8px 18px -6px rgba(29,33,48,.12),0 2px 6px -2px rgba(29,33,48,.06);
+--sh-lg:0 20px 40px -14px rgba(29,33,48,.22),0 4px 10px -4px rgba(29,33,48,.08)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere}
+svg text{font-family:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.hero{padding:36px 0 8px}
+.hero-card{background:linear-gradient(135deg,#fff 0%,var(--primary-50) 55%,#f1e0fe 100%);border-radius:28px;box-shadow:var(--sh-md);padding:32px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:center}
+.hero-art{background:rgba(255,255,255,.7);border-radius:20px;overflow:hidden;box-shadow:var(--sh-sm)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:#fff;box-shadow:var(--sh-sm);font-size:13px;font-weight:600;color:var(--ink-2)}
+.chip svg{width:15px;height:15px}
+.chip.primary{background:var(--primary);color:#fff}
+h1{font-size:clamp(28px,4.4vw,42px);line-height:1.22;letter-spacing:-.02em;margin:0 0 12px;font-weight:800}
+.goal{font-size:17px;color:var(--ink-2);margin:0 0 22px}
+.goal b{color:var(--primary-ink)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px}
+.btn{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:700;font-size:15px;padding:12px 18px;border-radius:14px;display:inline-flex;align-items:center;gap:8px;transition:all .2s ease;background:#fff;color:var(--ink);box-shadow:var(--sh-sm)}
+.btn svg{width:18px;height:18px}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.btn:active{transform:scale(.95)}
+.btn.primary{background:var(--primary);color:#fff;box-shadow:0 10px 20px -10px rgba(208,112,251,.9)}
+.btn.primary:hover{background:var(--primary-600)}
+.btn.icon{padding:10px;border-radius:12px}
+.btn:focus-visible,.step:focus-visible,.dot:focus-visible{outline:3px solid #e6b8fd;outline-offset:2px}
+.demo{margin:16px 0 0;padding:12px 16px;border-radius:14px;background:#fff7d6;color:#6b5200;font-weight:600;font-size:14px}
+section{margin:40px 0}
+.sec-head{display:flex;align-items:center;gap:12px;margin:0 0 16px}
+.sec-head h2{font-size:24px;margin:0;letter-spacing:-.01em}
+.eyebrow{font-size:13px;font-weight:700;color:var(--primary-ink);background:var(--primary-100);padding:4px 12px;border-radius:999px}
+.card{background:var(--card);border-radius:20px;box-shadow:var(--sh-sm);padding:24px}
+.mat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.mat{background:#fff;border-radius:18px;box-shadow:var(--sh-sm);padding:24px 14px 20px;text-align:center;transition:all .2s ease}
+.mat:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
+.mat .ico{width:100%;height:84px;display:block;margin:0 auto 12px}
+.mat .nm{font-weight:700;font-size:15px;line-height:1.35}
+.mat .qty{font-size:13px;color:var(--ink-3);margin-top:3px}
+.safety{display:grid;gap:10px}
+.safe{display:flex;gap:12px;align-items:flex-start;background:var(--danger-bg);color:#5b1d25;border-radius:16px;padding:16px 20px;font-weight:500}
+.safe .ic{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;color:var(--danger);display:grid;place-items:center}
+.safe .ic svg{width:16px;height:16px}
+.steps{display:grid;gap:20px}
+.step{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:center;background:#fff;border-radius:24px;box-shadow:var(--sh-sm);padding:24px;transition:all .2s ease;cursor:pointer;position:relative}
+.step:hover{transform:translateY(-3px);box-shadow:var(--sh-lg)}
+.scene-box{background:#fbf8ff;border-radius:18px;overflow:hidden}
+.scene{display:block;width:100%;height:auto}
+.meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.num{width:42px;height:42px;border-radius:14px;background:var(--primary);color:#fff;font-weight:800;font-size:20px;display:grid;place-items:center;box-shadow:0 8px 16px -8px rgba(208,112,251,.95)}
+.time{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--ink-2);background:var(--bg);padding:5px 10px;border-radius:999px}
+.time svg{width:14px;height:14px}
+.step h3{font-size:21px;line-height:1.35;margin:14px 0 8px;letter-spacing:-.01em}
+.txt{font-size:16.5px;color:var(--ink-2);margin:0}
+.txt b{color:var(--ink)}
+.box{display:flex;gap:10px;align-items:flex-start;border-radius:14px;padding:12px 14px;margin-top:12px;font-size:15px;line-height:1.55}
+.box .bi{flex:none;font-weight:800;font-size:12.5px;padding:2px 9px;border-radius:999px;background:#fff;margin-top:1px}
+.box.tip{background:var(--tip-bg);color:#0e4d33}.box.tip .bi{color:var(--tip)}
+.box.warn{background:var(--warn-bg);color:#683806}.box.warn .bi{color:var(--warn)}
+.box.obs{background:var(--obs-bg);color:#1c3d75}.box.obs .bi{color:var(--obs)}
+.zoom-hint{position:absolute;top:16px;right:16px;display:inline-flex;gap:6px;align-items:center;font-size:12.5px;font-weight:700;color:var(--primary-ink);background:var(--primary-50);padding:6px 11px;border-radius:999px;opacity:0;transition:all .2s ease;pointer-events:none}
+.zoom-hint svg{width:14px;height:14px}
+.step:hover .zoom-hint,.step:focus-visible .zoom-hint{opacity:1}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.res-grid .wide{grid-column:1/-1}
+.card h3{font-size:18px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.card h3 svg{width:20px;height:20px;color:var(--primary)}
+.card p{margin:0;color:var(--ink-2);font-size:16px}
+.tbl-wrap{overflow-x:auto;border-radius:14px}
+.tbl{width:100%;border-collapse:collapse;font-size:15px;min-width:420px}
+.tbl th{background:var(--primary-100);color:var(--primary-ink);font-weight:700;padding:11px 10px;text-align:center;white-space:nowrap}
+.tbl td{padding:13px 10px;text-align:center;background:#fff}
+.tbl tr:nth-child(even) td{background:#faf7fd}
+.tbl td:first-child{font-weight:700;color:var(--ink-2)}
+.qs{margin:0;padding:0;list-style:none;counter-reset:q}
+.qs li{counter-increment:q;display:flex;gap:12px;padding:8px 0;font-size:16px;color:var(--ink-2)}
+.qs li::before{content:"Q" counter(q);flex:none;font-weight:800;color:var(--primary-ink);background:var(--primary-50);border-radius:10px;padding:1px 8px;height:fit-content}
+.empty{text-align:center;padding:40px 24px}
+.empty .ill{width:200px;max-width:70%;margin:0 auto 8px;display:block}
+.empty b{display:block;font-size:18px;margin-bottom:4px}
+.empty span{color:var(--ink-3)}
+.foot{color:var(--ink-3);font-size:13.5px;padding:8px 0 56px;line-height:1.7}
+.foot a{color:var(--primary-ink)}
+.sk{background:linear-gradient(90deg,#eceff5 25%,#f6f7fa 37%,#eceff5 63%);background-size:400% 100%;animation:sk 1.4s ease infinite;border-radius:24px}
+.sk-hero{height:240px;margin:36px 0 28px}.sk-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.sk-card{height:200px}
+@keyframes sk{0%{background-position:100% 50%}100%{background-position:0 50%}}
+.deck{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column}
+.deck[hidden]{display:none}
+.deck-top{display:flex;align-items:center;gap:12px;padding:14px 20px}
+.deck-title{font-weight:800;font-size:16px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deck-count{font-weight:700;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.deck-stage{flex:1;min-height:0;padding:0 24px;display:flex;overflow:auto}
+.slide{flex:1;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:32px;align-items:center;max-width:1440px;margin:0 auto;width:100%;animation:sin .25s ease}
+@keyframes sin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.slide .scene-box{background:#fff;box-shadow:var(--sh-md);border-radius:24px}
+.slide .scene{max-height:calc(100vh - 170px)}
+.slide h2{font-size:clamp(26px,3vw,42px);line-height:1.25;margin:14px 0 12px;letter-spacing:-.02em}
+.slide .txt{font-size:clamp(18px,1.7vw,26px);line-height:1.6}
+.slide .box{font-size:clamp(15px,1.25vw,19px)}
+.slide .num{width:52px;height:52px;font-size:24px;border-radius:16px}
+.slide.one{grid-template-columns:1fr;align-content:center;max-width:1100px}
+.slide .mat-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.deck-nav{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 20px 20px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:60vw}
+.dot{width:10px;height:10px;border-radius:999px;background:#ddd2ea;border:0;padding:0;cursor:pointer;transition:all .2s ease}
+.dot:hover{background:#c9a6e6}
+.dot.on{background:var(--primary);width:26px}
+@media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.sk-row{grid-template-columns:1fr}}
+@media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+@media print{body{background:#fff}.toolbar,.zoom-hint,.deck,.demo{display:none!important}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
+if (!document.getElementById('lk-css')) { const st = document.createElement('style'); st.id = 'lk-css'; st.textContent = CSS; document.head.appendChild(st); }
+if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
+const LabKit = (() => {
+'use strict';
+const W = 480, H = 300, BENCH = 268;
+const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
+const PAL = { water:'#a9d8f5', clear:'#d9edf9', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
+ '물':'#a9d8f5','투명':'#d9edf9','파랑':'#4a7fe0','파란색':'#4a7fe0','남색':'#2f4a8a','하늘색':'#7cc4f0','빨강':'#e5484d','빨간색':'#e5484d','붉은색':'#e5484d','분홍':'#ef72b0','분홍색':'#ef72b0','보라':'#8f5bd9','보라색':'#8f5bd9','노랑':'#f5cd4f','노란색':'#f5cd4f','주황':'#f29b45','주황색':'#f29b45','초록':'#44b27e','초록색':'#44b27e','녹색':'#44b27e','연두':'#a6d64b','연두색':'#a6d64b','갈색':'#9b6a3f','검정':'#34343c','검은색':'#34343c','흰색':'#f6f6f2','하얀색':'#f6f6f2','우윳빛':'#efeee8','뿌연색':'#efeee8','회색':'#a3a8b2','기름':'#f2d26a','청람색':'#2e2f6d','적갈색':'#b44a30','황적색':'#c9542f','금색':'#d9a82a','구리색':'#c0703a','은색':'#c9ced6' };
+let ANIM = true, SEQ = 0;
+const uid = p => p + (++SEQ).toString(36);
+const r2 = v => Math.round(v * 100) / 100;
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const A = s => (ANIM ? s : '');
+function col(c, d) { const k = c ?? d; if (k == null || k === '') return null; const t = String(k).trim(); return PAL[t] || PAL[t.toLowerCase()] || t; }
+function shade(c, a) {
+  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(c || '').trim()); if (!m) return INK;
+  let h = m[1]; if (h.length === 3) h = h.replace(/./g, '$&$&');
+  return '#' + [0, 2, 4].map(i => { const v = parseInt(h.substr(i, 2), 16); const r = a < 0 ? v * (1 + a) : v + (255 - v) * a; return Math.round(Math.max(0, Math.min(255, r))).toString(16).padStart(2, '0'); }).join('');
+}
+function rot(px, py, deg, cx = 0, cy = 0) { const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), dx = px - cx, dy = py - cy; return [cx + dx * c - dy * s, cy + dx * s + dy * c]; }
+function rng(seed) { let s = Math.abs(Math.floor(seed)) % 2147483646 + 1; return () => (s = s * 16807 % 2147483647) / 2147483647; }
+function tw(str, fs = 12.5) { let w = 0; for (const ch of String(str ?? '')) { const c = ch.codePointAt(0); w += c > 0x2E80 ? 1 : ch === ' ' ? 0.3 : /[A-Z0-9%℃°]/.test(ch) ? 0.64 : 0.54; } return w * fs; }
+function wrap(str, maxW, fs) {
+  const out = [];
+  String(str ?? '').split('\n').forEach(par => {
+    let cur = '';
+    (par.match(/\S+\s*/g) || []).forEach(word => {
+      if (tw(cur + word, fs) > maxW && cur.trim()) { out.push(cur.trim()); cur = ''; }
+      cur += word;
+      while (tw(cur.trim(), fs) > maxW && cur.trim().length > 1) { let k = cur.length; while (k > 1 && tw(cur.slice(0, k), fs) > maxW) k--; out.push(cur.slice(0, k)); cur = cur.slice(k); }
+    });
+    if (cur.trim()) out.push(cur.trim());
+  });
+  return out;
+}
+const tfm = g => `translate(${r2(g.x)},${r2(g.y)})${g.tilt ? ` rotate(${r2(g.tilt)})` : ''}${g.s !== 1 ? ` scale(${g.s})` : ''}`;
+function pillSvg(cx, cy, text, o = {}) {
+  const fs = o.fs || 12.5, w = tw(text, fs) + 18, h = fs + 11;
+  return { w, h, svg: `<rect x="${r2(cx - w / 2)}" y="${r2(cy - h / 2)}" width="${r2(w)}" height="${r2(h)}" rx="${h / 2}" fill="${o.bg || '#fff'}"${o.sh ? ` filter="url(#${o.sh})"` : ''}/><text x="${r2(cx)}" y="${r2(cy + fs * 0.36)}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="${o.fg || '#2b3040'}">${esc(text)}</text>` };
+}
+
+/* ---------- containers ---------- */
+const SHAPES = {
+  beaker: { w: 78, h: 90, half: 34, side: 36, hold: [0, -64], hl: 'M-27,-74 L-27,-16',
+    outline: 'M-41,-91 Q-37,-90 -36,-84 L-36,-5 Q-36,0 -31,0 L31,0 Q36,0 36,-5 L36,-87 L38.5,-90',
+    clip: 'M-34,-86 L-34,-5 Q-34,-2 -30,-2 L30,-2 Q34,-2 34,-5 L34,-86 Z', inner: { top: -82, bottom: -2, half: 34 },
+    extra: '<path d="M21,-22 H31 M24,-40 H31 M21,-58 H31 M24,-76 H31" stroke="#8c95a8" stroke-width="1.3" stroke-linecap="round" opacity=".8"/>' },
+  flask: { w: 84, h: 106, half: 9, side: 38, hold: [0, -90], hl: 'M-15,-60 L-29,-24',
+    outline: 'M-13,-106 Q-11,-105 -11,-101 L-11,-72 L-39,-8 Q-42,0 -34,0 L34,0 Q42,0 39,-8 L11,-72 L11,-101 Q11,-105 13,-106',
+    clip: 'M-9,-102 L-9,-71.5 L-37,-8.5 Q-39.5,-2 -33,-2 L33,-2 Q39.5,-2 37,-8.5 L9,-71.5 L9,-102 Z', inner: { top: -92, bottom: -2, half: 9, bhalf: 37 },
+    extra: '<path d="M14,-30 H23 M17,-44 H21" stroke="#8c95a8" stroke-width="1.3" stroke-linecap="round" opacity=".8"/>' },
+  roundflask: { w: 72, h: 120, half: 7, side: 36, hold: [0, -102], hl: 'M-24,-66 Q-29,-52 -25,-36',
+    outline: 'M-11,-120 Q-9,-119 -9,-116 L-9,-78.9 A36,36 0 1,0 9,-78.9 L9,-116 Q9,-119 11,-120',
+    clip: 'M-7,-117 L-7,-77.3 A34,34 0 1,0 7,-77.3 L7,-117 Z', inner: { top: -84, bottom: -10, half: 7, bhalf: 30 },
+    under: '<path d="M-19,-11 L19,-11 L24,0 L-24,0 Z" fill="#cfa77c" stroke="#9b7a55" stroke-width="1.4" stroke-linejoin="round"/>' },
+  tube: { w: 28, h: 114, half: 10, side: 13, hold: [0, -84], hl: 'M-6,-100 L-6,-22',
+    outline: 'M-14,-114 Q-12,-113 -12,-110 L-12,-12 A12,12 0 0,0 12,-12 L12,-110 Q12,-113 14,-114',
+    clip: 'M-10,-111 L-10,-12 A10,10 0 0,0 10,-12 L10,-111 Z', inner: { top: -104, bottom: -2, half: 10 } },
+  cylinder: { w: 52, h: 155, half: 12, side: 15, hold: [0, -112], hl: 'M6,-138 L6,-24', meniscus: true,
+    outline: 'M-17,-154 Q-14,-153 -14,-149 L-14,-10 L14,-10 L14,-149 Q14,-152 18,-155',
+    clip: 'M-12,-150 L-12,-12 L12,-12 L12,-150 Z', inner: { top: -142, bottom: -12, half: 12 },
+    foot: '<path d="M-26,-10 L26,-10 L23,0 L-23,0 Z" fill="#e7eef6" stroke="#56617a" stroke-width="1.8" stroke-linejoin="round"/>',
+    extra: (() => { let d = ''; for (let i = 0; i < 11; i++) { const y = -22 - i * 12; d += `M-14,${y} H${i % 5 === 0 ? -4 : -8} `; } return `<path d="${d}" stroke="#8c95a8" stroke-width="1.2" stroke-linecap="round"/>`; })() },
+  bottle: { w: 52, h: 106, half: 8, side: 27, hold: [0, -50], hl: 'M-18,-56 L-18,-12',
+    outline: 'M-10,-96 L-10,-82 Q-10,-77 -16,-74 Q-26,-70 -26,-60 L-26,-6 Q-26,0 -20,0 L20,0 Q26,0 26,-6 L26,-60 Q26,-70 16,-74 Q10,-77 10,-82 L10,-96',
+    clip: 'M-8,-94 L-8,-81 Q-8,-75 -15,-72 Q-24,-68 -24,-59 L-24,-6 Q-24,-2 -19,-2 L19,-2 Q24,-2 24,-6 L24,-59 Q24,-68 15,-72 Q8,-75 8,-81 L8,-94 Z', inner: { top: -70, bottom: -2, half: 8, bhalf: 24 },
+    cap: '<rect x="-12" y="-106" width="24" height="12" rx="3" fill="#444b5d"/>' },
+  cup: { w: 66, h: 86, half: 31, side: 30, hold: [0, -60], hl: 'M-23,-74 L-17,-14',
+    outline: 'M-33,-86 L-24,-3 Q-23.5,0 -20,0 L20,0 Q23.5,0 24,-3 L33,-86',
+    clip: 'M-31,-84 L-22.5,-3 L22.5,-3 L31,-84 Z', inner: { top: -80, bottom: -3, half: 31, bhalf: 22 } },
+  trough: { w: 220, h: 80, half: 108, side: 110, hold: [0, -60], hl: 'M-100,-68 L-100,-12',
+    outline: 'M-110,-80 L-110,-4 Q-110,0 -106,0 L106,0 Q110,0 110,-4 L110,-80',
+    clip: 'M-108,-78 L-108,-4 Q-108,-2 -105,-2 L105,-2 Q108,-2 108,-4 L108,-78 Z', inner: { top: -74, bottom: -2, half: 108 } }
+};
+function fillOf(el) { if (Array.isArray(el.layers) && el.layers.length) return el.layers.reduce((a, l) => a + (+l.h || +l.fill || 0.2), 0); if (el.fill != null) return Math.max(0, Math.min(1, +el.fill || 0)); return el.color ? 0.5 : (el.t === 'trough' ? 0.6 : 0); }
+function cgeo(S, el, x, y, s, tilt) {
+  const c = -S.h / 2, I = S.inner, bh = I.bhalf ?? I.half;
+  const F = (lx, ly) => rot(lx, ly, tilt, 0, c);
+  const wpt = (lx, ly) => { const q = F(lx, ly); return { x: x + s * q[0], y: y + s * q[1] }; };
+  const cs = [[-I.half, I.top], [I.half, I.top], [-bh, I.bottom], [bh, I.bottom]].map(p => F(p[0], p[1]));
+  const ys = cs.map(p => p[1]), xs = cs.map(p => p[0]);
+  const bb = [[-S.w / 2, 0], [S.w / 2, 0], [-S.w / 2, -S.h], [S.w / 2, -S.h]].map(p => F(p[0], p[1]));
+  const ymin = Math.min(...ys), ymax = Math.max(...ys), fill = fillOf(el);
+  let L = el._level != null ? el._level : ymax - Math.min(fill, 1) * (ymax - ymin);
+  const g = { kind: 'c', S, x, y, s, tilt, wpt, L, ymin, ymax, xmin: Math.min(...xs), xmax: Math.max(...xs), fill,
+    fx0: Math.min(...bb.map(p => p[0])) - 3, fx1: Math.max(...bb.map(p => p[0])) + 3, fy1: Math.max(...bb.map(p => p[1])) + 3,
+    mouth: wpt(0, -S.h), lipL: wpt(-S.half - 2, -S.h), lipR: wpt(S.half + 2, -S.h), half: S.half * s,
+    bottomY: wpt(0, I.bottom).y, top: Math.min(wpt(-S.half, -S.h).y, wpt(S.half, -S.h).y), w: S.w * s, h: S.h * s,
+    hold: wpt(S.hold[0], S.hold[1]), holdHalf: (S.half + 2) * s };
+  g.surfaceY = fill > 0 ? y + s * L : g.bottomY;
+  g.mouthTop = el.stopper ? wpt(0, -S.h - (el.stopper === 'hole' || el.stopper === 'tube' ? 30 : 7)) : g.mouth;
+  g.anchor = fill > 0 && !tilt ? { x: x + s * S.side, y: y + s * ((L + I.bottom) / 2) } : wpt(S.side, -S.h * 0.45);
+  if (S === SHAPES.tube || S === SHAPES.cylinder) g.hold = wpt(0, -S.h * (Math.abs(tilt) > 90 ? 0.3 : 0.72));
+  return g;
+}
+function cplace(S, el, R) {
+  const s = el.s ?? 1; let tilt = el.tilt ?? (el.flip ? 180 : 0), x = el.x, y = el.y;
+  if (el._parent) { const pg = R(el._parent); if (pg) { x = pg.slots[el._slot]; y = pg.slotY; } }
+  if (el.on) { const t = R(el.on); if (t) { if (t.surf) { const p = t.surf(el.at ?? 0.5); x ??= p.x; y ??= p.y; if (el.tilt == null) tilt = p.a; } else { x ??= t.x; y ??= t.top; } } }
+  return cgeo(S, el, x ?? 240, y ?? BENCH, s, tilt);
+}
+function bubbles(g, n, c) {
+  const R = rng(g.x * 7 + g.y * 13 + n * 3); let o = '';
+  const bh = (g.S.inner.bhalf ?? g.S.inner.half) * 0.75, y0 = g.ymax - 4, y1 = g.L + 3;
+  for (let i = 0; i < n; i++) {
+    const bx = r2(-bh + R() * 2 * bh), r = r2(1.6 + R() * 2.2), dur = r2(1.3 + R() * 1.7), b = r2(-R() * dur);
+    o += ANIM ? `<circle cx="${bx}" cy="${y0}" r="${r}" fill="#fff" fill-opacity=".75" stroke="${shade(c, -.3)}" stroke-width=".7"><animate attributeName="cy" values="${r2(y0)};${r2(y1)}" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/></circle>`
+      : `<circle cx="${bx}" cy="${r2(y1 + (y0 - y1) * R())}" r="${r}" fill="#fff" fill-opacity=".75" stroke="${shade(c, -.3)}" stroke-width=".7"/>`;
+  }
+  return o;
+}
+function liquid(el, g) {
+  const S = g.S; let o = '';
+  const X0 = r2(g.fx0), WD = r2(g.fx1 - g.fx0), Y1 = r2(g.fy1);
+  if (Array.isArray(el.layers) && el.layers.length) {
+    const span = g.ymax - g.ymin; let acc = 0;
+    el.layers.forEach((ly, i) => {
+      const h = +ly.h || +ly.fill || 0.2, top = g.ymax - (acc + h) * span, bot = i === 0 ? Y1 : g.ymax - acc * span, c = col(ly.color, 'water');
+      o += `<rect x="${X0}" y="${r2(top)}" width="${WD}" height="${r2(bot - top)}" fill="${c}" opacity="${ly.opacity ?? .86}"/><rect x="${X0}" y="${r2(top)}" width="${WD}" height="1.6" fill="${shade(c, -.28)}" opacity=".85"/>`;
+      acc += h;
+    });
+    return o;
+  }
+  if (g.fill <= 0) return '';
+  const c = col(el.color, 'water'), L = g.L;
+  if (S.meniscus && !g.tilt && el.meniscus !== false) {
+    const hf = S.inner.half;
+    o += `<path d="M${X0},${r2(Y1)} L${X0},${r2(L - 2)} L${-hf},${r2(L - 2)} Q0,${r2(L + 5)} ${hf},${r2(L - 2)} L${r2(X0 + WD)},${r2(L - 2)} L${r2(X0 + WD)},${r2(Y1)} Z" fill="${c}" opacity="${el.opacity ?? .82}"/><path d="M${-hf},${r2(L - 2)} Q0,${r2(L + 5)} ${hf},${r2(L - 2)}" fill="none" stroke="${shade(c, -.35)}" stroke-width="1.6"/>`;
+  } else {
+    o += `<rect x="${X0}" y="${r2(L)}" width="${WD}" height="${r2(Y1 - L)}" fill="${c}" opacity="${el.opacity ?? .82}"/><rect x="${X0}" y="${r2(L)}" width="${WD}" height="1.8" fill="${shade(c, -.28)}" opacity=".85"/>`;
+  }
+  if (el.cloudy) { const R = rng(g.x + g.y); o += `<rect x="${X0}" y="${r2(L)}" width="${WD}" height="${r2(Y1 - L)}" fill="#f4f2ec" opacity=".72"/>`; for (let i = 0; i < 22; i++) o += `<circle cx="${r2(g.xmin + R() * (g.xmax - g.xmin))}" cy="${r2(L + 4 + R() * (g.ymax - L - 6))}" r="${r2(.7 + R() * .9)}" fill="#cfcabd" opacity=".9"/>`; }
+  if (el.solid === 'ice' || el.ice) { const n = +el.ice || 2; for (let i = 0; i < n; i++) { const ix = r2((i - (n - 1) / 2) * 20), iy = r2(L - 6 + (i % 2) * 3); o += `<rect x="${ix - 8}" y="${iy}" width="16" height="15" rx="3.5" fill="#eef9ff" stroke="#8dbbd8" stroke-width="1.2" transform="rotate(${i % 2 ? 12 : -10} ${ix} ${r2(iy + 7)})"/><path d="M${ix - 4},${r2(iy + 4)} l4,0" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`; } }
+  if (el.bubbles) o += bubbles(g, el.bubbles === true ? 7 : +el.bubbles, c);
+  return o;
+}
+function solids(el, S) {
+  const k = el.solid; if (!k || k === 'ice') return '';
+  const B = S.inner.bottom, hb = Math.min(S.inner.bhalf ?? S.inner.half, 34);
+  const c = col(el.solidColor, { chips: 'gray', nail: '#8e96a3', block: '#c9ced6', leaf: 'green', egg: '#f3e3c8', zinc: '#b9bfc9', magnesium: '#d5d9df' }[k] || 'white');
+  const st = shade(c, -.32), R = rng(hb * 11 + B);
+  switch (k) {
+    case 'powder': return `<path d="M${r2(-hb * .6)},${B} Q${r2(-hb * .2)},${B - 14} 0,${B - 15} Q${r2(hb * .2)},${B - 14} ${r2(hb * .6)},${B} Z" fill="${c}" stroke="${st}" stroke-width="1"/>`;
+    case 'precipitate': { let d = `M${-hb - 4},${B + 3} L${-hb - 4},${B - 6}`; for (let i = 1; i <= 8; i++) { const x = -hb + i * (2 * hb / 8); d += ` Q${r2(x - hb / 8)},${r2(B - 11 + R() * 3)} ${r2(x)},${r2(B - 7 + R() * 2)}`; } d += ` L${hb + 4},${B + 3} Z`; let dots = ''; for (let i = 0; i < 16; i++) dots += `<circle cx="${r2(-hb + R() * 2 * hb)}" cy="${r2(B - 6 - R() * 26)}" r="${r2(.8 + R() * 1.3)}" fill="${c}" stroke="${st}" stroke-width=".4"/>`; return `<path d="${d}" fill="${c}" stroke="${st}" stroke-width=".8"/>${dots}`; }
+    case 'crystals': { let o = ''; for (let i = 0; i < 7; i++) { const x = r2(-hb * .7 + R() * hb * 1.4), sz = r2(4 + R() * 4); o += `<rect x="${x}" y="${r2(B - sz - 1 - R() * 3)}" width="${sz}" height="${sz}" fill="${c}" stroke="${st}" stroke-width=".9" transform="rotate(${r2(R() * 40 - 20)} ${x} ${B - 4})"/>`; } return o; }
+    case 'chips': case 'zinc': case 'magnesium': { let o = ''; for (let i = 0; i < 4; i++) { const x = -hb * .6 + i * hb * .4 + R() * 4, w = 9 + R() * 6; o += `<path d="M${r2(x)},${B} L${r2(x + 2)},${r2(B - 7 - R() * 4)} L${r2(x + w * .6)},${r2(B - 9 - R() * 4)} L${r2(x + w)},${r2(B - 3)} Z" fill="${c}" stroke="${st}" stroke-width="1"/>`; } return o; }
+    case 'nail': return `<g transform="translate(0,${B - 7}) rotate(-18)"><rect x="${r2(-hb * .55)}" y="-2" width="${r2(hb * 1.1)}" height="4" rx="1" fill="${c}" stroke="${st}" stroke-width="1"/><rect x="${r2(-hb * .55 - 3)}" y="-4.5" width="4" height="9" rx="1" fill="${c}" stroke="${st}" stroke-width="1"/></g>`;
+    case 'block': return `<rect x="-12" y="${B - 16}" width="24" height="16" rx="2" fill="${c}" stroke="${st}" stroke-width="1.2"/>`;
+    case 'leaf': return `<g transform="translate(0,${B - 14}) rotate(-60) scale(.55)">${leafPath(c)}</g>`;
+    case 'egg': return `<ellipse cx="0" cy="${B - 14}" rx="12" ry="15" fill="${c}" stroke="${st}" stroke-width="1.2"/>`;
+    default: return `<path d="M${r2(-hb * .5)},${B} Q0,${B - 12} ${r2(hb * .5)},${B} Z" fill="${c}" stroke="${st}"/>`;
+  }
+}
+function steam(x, y, s = 1) {
+  let o = '';
+  [-10, 1, 11].forEach((dx, i) => {
+    const d = `M${r2(x + dx * s)},${r2(y - 4)} c${r2(-6 * s)},${r2(-8 * s)} ${r2(6 * s)},${r2(-14 * s)} 0,${r2(-22 * s)} c${r2(-6 * s)},${r2(-8 * s)} ${r2(6 * s)},${r2(-14 * s)} 0,${r2(-22 * s)}`;
+    o += `<path d="${d}" fill="none" stroke="#b9c3d3" stroke-width="2.6" stroke-linecap="round" opacity="${ANIM ? 0 : .7}">${A(`<animate attributeName="opacity" values="0;.85;0" dur="2.4s" begin="${-i * .8}s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 6;0 -10" dur="2.4s" begin="${-i * .8}s" repeatCount="indefinite"/>`)}</path>`;
+  });
+  return o;
+}
+function stopperSvg(S, kind) {
+  const t = -S.h, hw = S.half;
+  let o = `<path d="M${-hw - 4},${t - 7} L${hw + 4},${t - 7} L${hw + .5},${t + 10} L${-hw - .5},${t + 10} Z" fill="#9a5b4b" stroke="#6e3d31" stroke-width="1.4" stroke-linejoin="round"/>`;
+  if (kind === 'hole' || kind === 'tube') o = `<rect x="-2.3" y="${t - 30}" width="4.6" height="40" fill="#eaf5fc" stroke="${INK}" stroke-width="1.2"/>` + o + `<rect x="-2.3" y="${t - 8}" width="4.6" height="19" fill="#eaf5fc" opacity=".7"/>`;
+  return o;
+}
+function holderSvg(S) { const y = r2(-S.h * 0.8); return `<path d="M-16,${y} L-98,${y - 9}" stroke="#c98d55" stroke-width="7" stroke-linecap="round"/><path d="M-30,${y - 1.5} L-96,${y - 9}" stroke="#a8713f" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><rect x="-16" y="${y - 6}" width="32" height="12" rx="4" fill="none" stroke="#7a5230" stroke-width="3"/>`; }
+function drawC(el, g, cx) {
+  const S = g.S, s = g.s, k = uid('k'), paper = el.t === 'cup' && el.paper;
+  let o = `<g transform="translate(${r2(g.x)},${r2(g.y)}) rotate(${r2(g.tilt)},0,${r2(-S.h * s / 2)}) scale(${s})">`;
+  if (S.under && !g.tilt && el.ring !== false) o += S.under;
+  o += `<defs><clipPath id="${k}"><path d="${S.clip}"/></clipPath></defs>`;
+  o += `<path d="${S.clip}" fill="${el.brown ? '#d6a066' : GLASS}" opacity="${el.brown ? .62 : .62}"/>`;
+  o += `<g clip-path="url(#${k})"><g transform="rotate(${r2(-g.tilt)},0,${r2(-S.h / 2)})">${liquid(el, g)}</g>${solids(el, S)}</g>`;
+  if (paper) o += `<path d="${S.clip}" fill="#fdfcf9"/><path d="M-29.4,-70 L29.4,-70 L28,-56 L-28,-56 Z" fill="${col(el.band, '#f1c6e9')}"/>${g.fill > 0 && !g.tilt ? `<ellipse cx="0" cy="-84" rx="29" ry="3.5" fill="${col(el.color, 'water')}"/>` : ''}`;
+  o += `<path d="${S.outline}" fill="none" stroke="${INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  if (S.foot) o += S.foot;
+  if (!paper) o += `<path d="${S.hl}" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".75"/>` + (S.extra || '');
+  if (S.cap && el.cap !== false && !el.stopper) o += S.cap;
+  if (el.t === 'bottle' && el.text) o += `<rect x="-19" y="-52" width="38" height="24" rx="3" fill="#fff" opacity=".95" stroke="#d5d9e1" stroke-width=".8"/><text x="0" y="-36.5" text-anchor="middle" font-size="${Math.min(10, 34 / Math.max(1, String(el.text).length) * 1.6)}" font-weight="700" fill="#3b4253">${esc(String(el.text).slice(0, 8))}</text>`;
+  if (el.stopper) o += stopperSvg(S, el.stopper);
+  if (el.holder) o += holderSvg(S);
+  o += '</g>';
+  if (el.steam) o += steam(g.mouthTop.x, g.mouthTop.y, s);
+  if (el.shake) {
+    const hp = g.hold, hw = g.w / 2 + 9, ty = g.top + g.h * 0.18;
+    if (ANIM) o = `<g><animateTransform attributeName="transform" type="rotate" values="-7 ${r2(hp.x)} ${r2(hp.y)};7 ${r2(hp.x)} ${r2(hp.y)};-7 ${r2(hp.x)} ${r2(hp.y)}" dur=".75s" repeatCount="indefinite"/>${o}</g>`;
+    if (cx) cx.front.push(`<path d="M${r2(g.x - hw)},${r2(ty)} q-7,9 0,18 M${r2(g.x - hw - 8)},${r2(ty - 4)} q-8,13 0,26 M${r2(g.x + hw)},${r2(ty)} q7,9 0,18 M${r2(g.x + hw + 8)},${r2(ty - 4)} q8,13 0,26" fill="none" stroke="#b14de0" stroke-width="2.2" stroke-linecap="round" opacity=".85"/>`);
+  }
+  return o;
+}
+
+/* ---------- helpers for other parts ---------- */
+function bplace(el, R, floatY) {
+  const s = el.s ?? 1; let x = el.x, y = el.y, tilt = el.tilt ?? 0;
+  if (el.on) { const t = R(el.on); if (t) { if (t.surf) { const p = t.surf(el.at ?? 0.5); x ??= p.x; y ??= p.y; if (el.tilt == null) tilt = p.a; } else { x ??= t.x; y ??= t.top; } } }
+  return { x: x ?? 240, y: y ?? (floatY ?? BENCH), s, tilt };
+}
+function tipPlace(el, R) {
+  const s = el.s ?? 1;
+  if (el.over) { const t = R(el.over); if (t) { const m = t.mouthTop || t.mouth || { x: t.x, y: t.top ?? t.y }; return { x: m.x + (el.dx || 0), y: m.y - 12 - (el.dy || 0), s, tilt: el.tilt ?? 0, to: t.surfaceY ?? t.y }; } }
+  if (el.in) { const t = R(el.in); if (t) { const m = t.mouth || { x: t.x }; return { x: m.x + (el.dx || 0), y: (t.surfaceY ?? t.y) + 7, s, tilt: el.tilt ?? 0 }; } }
+  return { x: el.x ?? 240, y: el.y ?? 150, s, tilt: el.tilt ?? 0, to: el.to ?? null };
+}
+function flame(x, y, k = 1) {
+  return `<g transform="translate(${r2(x)},${r2(y)}) scale(${k})"><circle cy="-16" r="20" fill="#ffb347" opacity=".16"/><g>${A('<animateTransform attributeName="transform" type="scale" values="1 1;.92 1.08;1.05 .95;1 1" dur=".9s" repeatCount="indefinite"/>')}<path d="M0,-38 C9,-25 12,-10 0,0 C-12,-10 -9,-25 0,-38Z" fill="#ffad2e"/><path d="M0,-28 C6,-19 8,-8 0,0 C-8,-8 -6,-19 0,-28Z" fill="#ffd84d"/><path d="M0,-14 C3,-9 4,-3 0,0 C-4,-3 -3,-9 0,-14Z" fill="#6ea9ff" opacity=".85"/></g></g>`;
+}
+function dropAnim(x, y0, y1, c, n = 2, dur = 1) {
+  if (y1 == null || y1 <= y0) return '';
+  const st = shade(c, -.3); let o = '';
+  for (let i = 0; i < n; i++) {
+    const dp = `<path d="M0,-4.5 C2.6,-1.2 3.3,1.6 0,3.4 C-3.3,1.6 -2.6,-1.2 0,-4.5Z" fill="${c}" stroke="${st}" stroke-width=".8"/>`;
+    o += ANIM ? `<g opacity="0">${dp}<animateTransform attributeName="transform" type="translate" values="${r2(x)} ${r2(y0 + 4)};${r2(x)} ${r2(y1 - 3)}" dur="${dur}s" begin="${r2(-i * dur / n)}s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0" keyTimes="0;.85;1" dur="${dur}s" begin="${r2(-i * dur / n)}s" repeatCount="indefinite"/></g>`
+      : `<g transform="translate(${r2(x)},${r2(y0 + 6 + (y1 - y0 - 10) * (i + .5) / n)})">${dp}</g>`;
+  }
+  return o;
+}
+function catmull(pts) {
+  if (pts.length < 3) return 'M' + pts.map(p => `${r2(p[0])},${r2(p[1])}`).join(' L');
+  let d = `M${r2(pts[0][0])},${r2(pts[0][1])}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    d += ` C${r2(p1[0] + (p2[0] - p0[0]) / 6)},${r2(p1[1] + (p2[1] - p0[1]) / 6)} ${r2(p2[0] - (p3[0] - p1[0]) / 6)},${r2(p2[1] - (p3[1] - p1[1]) / 6)} ${r2(p2[0])},${r2(p2[1])}`;
+  }
+  return d;
+}
+function marker(cx, color) { const id = uid('m'); cx.defs.push(`<marker id="${id}" viewBox="0 0 10 10" refX="6.5" refY="5" markerWidth="5.2" markerHeight="5.2" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="${color}"/></marker>`); return id; }
+function pt(v, R) { if (Array.isArray(v)) return { x: +v[0], y: +v[1] }; if (typeof v === 'string') { const g = R(v); if (g) return g.anchor || { x: g.x, y: g.top ?? g.y }; } if (v && typeof v === 'object' && v.x != null) return v; return null; }
+function leafPath(c) { const st = shade(c, -.3); return `<path d="M0,-34 C22,-24 24,14 0,34 C-24,14 -22,-24 0,-34Z" fill="${c}" stroke="${st}" stroke-width="1.6"/><path d="M0,-30 L0,40 M0,-12 L12,-20 M0,-12 L-12,-20 M0,4 L13,-4 M0,4 L-13,-4 M0,18 L10,12 M0,18 L-10,12" stroke="${st}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`; }
+function particles(state, c, r, seed) {
+  const R = rng(seed), st = shade(c, -.3); let o = '';
+  if (state === 'solid') { for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) { const x = i * 14, y = j * 14; if (x * x + y * y < (r - 6) * (r - 6)) o += `<circle cx="${x}" cy="${y}" r="6" fill="${c}" stroke="${st}" stroke-width="1"/>`; } }
+  else if (state === 'gas') { const cells = [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1], [-1.6, 0], [1.6, 0], [0, -1.7], [0, 1.7]]; for (let i = 0; i < cells.length; i++) { const sp = (r - 14) * 0.55, x = r2(cells[i][0] * sp + (R() - .5) * 10), y = r2(cells[i][1] * sp + (R() - .5) * 10), b = R() * 6.28; o += `<path d="M${x},${y} l${r2(-Math.cos(b) * 12)},${r2(-Math.sin(b) * 12)}" stroke="${st}" stroke-width="1.4" stroke-dasharray="2 3" opacity=".7"/><circle cx="${x}" cy="${y}" r="5.5" fill="${c}" stroke="${st}" stroke-width="1"/>`; } }
+  else { for (let i = 0; i < 26; i++) { const a = R() * 6.28, d = Math.sqrt(R()) * (r - 9), x = r2(Math.cos(a) * d), y = r2(Math.sin(a) * d + 6); o += `<circle cx="${x}" cy="${y}" r="5.8" fill="${c}" stroke="${st}" stroke-width="1"/>`; } }
+  return o;
+}
+
+/* ---------- circuit parts (horizontal, centred) ---------- */
+function partBody(name, on, o = {}) {
+  const lead = (a, b) => `<path d="M${-a},0 H${-b} M${b},0 H${a}" stroke="#3b4253" stroke-width="3.2"/>`;
+  switch (name) {
+    case 'battery': return `${o.mask ? lead(27, 20) : ''}<rect x="-20" y="-9" width="38" height="18" rx="3.5" fill="#323846"/><rect x="-20" y="-9" width="13" height="18" rx="3.5" fill="#e9b949"/><rect x="-10" y="-9" width="3" height="18" fill="#e9b949"/><rect x="18" y="-4" width="5" height="8" rx="1" fill="${METAL}" stroke="${INK}" stroke-width=".8"/><text x="12" y="-13" font-size="10" font-weight="800" fill="#c7323f" text-anchor="middle">+</text><text x="-14" y="-12" font-size="10" font-weight="800" fill="#3b4253" text-anchor="middle">−</text>`;
+    case 'bulb': return `${o.mask ? lead(27, 9) : ''}${on ? `<circle cy="-19" r="26" fill="#ffe27a" opacity=".42"/><path d="M0,-50 V-56 M-22,-40 L-27,-44 M22,-40 L27,-44 M-29,-20 H-35 M29,-20 H35" stroke="#f5b83d" stroke-width="2.4" stroke-linecap="round"/>` : ''}<path d="M-8,-8 C-8,-12 -13,-16 -13,-22 A13,13 0 1,1 13,-22 C13,-16 8,-12 8,-8 Z" fill="${on ? '#fff6bf' : '#f2f7fb'}" stroke="${INK}" stroke-width="1.6"/><path d="M-4,-8 L-4,-18 Q0,-25 4,-18 L4,-8" fill="none" stroke="${on ? '#f08a24' : INK2}" stroke-width="1.6"/><rect x="-9" y="-8" width="18" height="10" rx="2" fill="${METAL}" stroke="${INK}" stroke-width="1.2"/><path d="M-9,-4.5 H9 M-9,-1 H9" stroke="${INK}" stroke-width=".8"/>`;
+    case 'switch': return `${o.mask ? lead(27, 14) : ''}<rect x="-23" y="-6" width="46" height="15" rx="4" fill="#e6caa0" stroke="#9b7a55" stroke-width="1.2"/><circle cx="-14" cy="0" r="3.4" fill="${DARK}"/><circle cx="14" cy="0" r="3.4" fill="${DARK}"/>${on ? `<path d="M-14,0 L16,0 M11,0 L11,-12" stroke="${DARK}" stroke-width="3.6" stroke-linecap="round"/><circle cx="11" cy="-13" r="4" fill="#e5484d"/>` : `<path d="M-14,0 L10,-17 M8,-15.5 L2.5,-23.5" stroke="${DARK}" stroke-width="3.6" stroke-linecap="round"/><circle cx="2" cy="-24" r="4" fill="#e5484d"/>`}`;
+    case 'ammeter': case 'voltmeter': { const L = name === 'ammeter' ? 'A' : 'V', ac = name === 'ammeter' ? '#c7323f' : '#2c5fb3', ang = on ? 22 : -48; const [nx, ny] = rot(0, -13, ang); return `${o.mask ? lead(27, 18) : ''}<rect x="-18" y="-17" width="36" height="32" rx="7" fill="#fff" stroke="${DARK}" stroke-width="2"/><path d="M-11,3 A12,12 0 0,1 11,3" fill="none" stroke="${INK2}" stroke-width="1.4"/><path d="M0,5 L${r2(nx)},${r2(5 + ny)}" stroke="#e5484d" stroke-width="1.8" stroke-linecap="round"/><circle cx="0" cy="5" r="1.8" fill="${DARK}"/><text x="0" y="13.5" font-size="9.5" font-weight="800" text-anchor="middle" fill="${ac}">${L}</text>`; }
+    case 'resistor': return `${o.mask ? lead(27, 15) : ''}<rect x="-15" y="-6.5" width="30" height="13" rx="5" fill="#e8d2a6" stroke="#a88a5a" stroke-width="1"/><path d="M-8,-6.5 V6.5 M-3,-6.5 V6.5" stroke="#8a5a2b" stroke-width="2.6"/><path d="M2,-6.5 V6.5" stroke="#e5484d" stroke-width="2.6"/><path d="M9,-6.5 V6.5" stroke="#d9a82a" stroke-width="2.6"/>`;
+    case 'motor': return `${o.mask ? lead(27, 14) : ''}<circle r="14" fill="${METAL}" stroke="${DARK}" stroke-width="2"/><text y="4.5" font-size="12" font-weight="800" text-anchor="middle" fill="${DARK}">M</text><path d="M0,-14 V-22" stroke="${DARK}" stroke-width="3"/>${on ? `<path d="M-9,-26 A10,6 0 0,1 9,-26" fill="none" stroke="${INK2}" stroke-width="1.4"/>` : ''}`;
+    case 'led': return `${o.mask ? lead(27, 6) : ''}${on ? `<circle cy="-14" r="16" fill="${col(o.color, 'red')}" opacity=".25"/>` : ''}<path d="M-6,-6 V-16 A6,6 0 0,1 6,-16 V-6 Z" fill="${col(o.color, 'red')}" opacity="${on ? 1 : .55}" stroke="${shade(col(o.color, 'red'), -.3)}"/><rect x="-7.5" y="-7" width="15" height="3" fill="${shade(col(o.color, 'red'), -.2)}"/><path d="M-3,-4 V0 M3,-4 V0" stroke="${INK}" stroke-width="1.4"/>`;
+    default: return `<rect x="-16" y="-12" width="32" height="24" rx="5" fill="#fff" stroke="${DARK}" stroke-dasharray="3 3"/><text y="4" font-size="9" text-anchor="middle" fill="${INK}">${esc(name)}</text>`;
+  }
+}
+
+/* ---------- type registry ---------- */
+const T = {};
+Object.keys(SHAPES).forEach(k => { T[k] = { geo: (el, R) => cplace(SHAPES[k], el, R), draw: drawC }; });
+const anchorOf = (g, w, h) => ({ x: g.x + w * g.s / 2, y: g.y - h * g.s / 2 });
+
+T.rack = {
+  geo(el, R) { const g = bplace(el, R), n = Math.max(1, (el.tubes || []).length || +el.n || 4), sp = 36 * g.s; g.n = n; g.slots = Array.from({ length: n }, (_, i) => g.x + (i - (n - 1) / 2) * sp); g.slotY = g.y - 6 * g.s; g.w = n * sp + 22 * g.s; g.h = 74 * g.s; g.top = g.y - 64 * g.s; g.anchor = { x: g.x + g.w / 2, y: g.y - 40 * g.s }; return g; },
+  draw(el, g, cx) {
+    const s = g.s, hw = g.w / 2, wd = col(el.color, '#e6cfa9'), ws = shade(wd, -.3);
+    let o = `<rect x="${r2(g.x - hw)}" y="${r2(g.y - 6 * s)}" width="${r2(g.w)}" height="${r2(6 * s)}" rx="2" fill="${wd}" stroke="${ws}" stroke-width="1.4"/>`;
+    [g.x - hw, g.x + hw - 8 * s].forEach(px => { o += `<rect x="${r2(px)}" y="${r2(g.y - 70 * s)}" width="${r2(8 * s)}" height="${r2(64 * s)}" fill="${wd}" stroke="${ws}" stroke-width="1.4"/>`; });
+    (el.tubes || []).forEach(tb => { o += cx.emit(tb); });
+    o += `<rect x="${r2(g.x - hw)}" y="${r2(g.y - 30 * s)}" width="${r2(g.w)}" height="${r2(5 * s)}" fill="${wd}" stroke="${ws}" stroke-width="1.2" opacity=".92"/><rect x="${r2(g.x - hw)}" y="${r2(g.y - 66 * s)}" width="${r2(g.w)}" height="${r2(11 * s)}" rx="2" fill="${wd}" stroke="${ws}" stroke-width="1.4"/>`;
+    (el.tubes || []).forEach((tb, i) => { if (tb.tag) o += `<circle cx="${r2(g.slots[i])}" cy="${r2(g.y - 60.5 * s)}" r="${r2(8.5 * s)}" fill="#fff" stroke="${ws}" stroke-width="1"/><text x="${r2(g.slots[i])}" y="${r2(g.y - 56.6 * s)}" font-size="${r2(11 * s)}" font-weight="800" text-anchor="middle" fill="#5a3d1c">${esc(tb.tag)}</text>`; });
+    return o;
+  }
+};
+T.lamp = {
+  geo(el, R) { const g = bplace(el, R); const lit = el.lit !== false; g.w = 62 * g.s; g.h = (lit ? 92 : 66) * g.s; g.top = g.y - g.h; g.anchor = { x: g.x + 31 * g.s, y: g.y - 20 * g.s }; return g; },
+  draw(el, g) {
+    const lit = el.lit !== false, k = uid('k'), body = 'M-30,-4 Q-31,-28 -15,-35 L15,-35 Q31,-28 30,-4 Q30,0 26,0 L-26,0 Q-30,0 -30,-4 Z';
+    return `<g transform="${tfm(g)}"><defs><clipPath id="${k}"><path d="${body}"/></clipPath></defs><path d="${body}" fill="${GLASS}" opacity=".75"/><g clip-path="url(#${k})"><rect x="-40" y="-17" width="80" height="22" fill="${col(el.color, '#f3e4a2')}" opacity=".85"/></g><path d="${body}" fill="none" stroke="${INK}" stroke-width="2"/><path d="M-21,-25 Q-23,-15 -20,-8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/><rect x="-9" y="-44" width="18" height="10" rx="2" fill="${METAL}" stroke="${INK}" stroke-width="1.5"/><rect x="-3" y="-52" width="6" height="9" fill="#f4efe2" stroke="${INK}" stroke-width="1"/>${lit ? '' : `<path d="M-12,-40 L-12,-58 Q-12,-66 0,-66 Q12,-66 12,-58 L12,-40 Z" fill="${GLASS}" opacity=".85" stroke="${INK}" stroke-width="1.8"/>`}</g>${lit ? flame(g.x, g.y - 52 * g.s, g.s) : ''}`;
+  }
+};
+T.burner = T.lamp;
+T.tripod = {
+  geo(el, R) { const g = bplace(el, R); g.w = 108 * g.s; g.h = 103 * g.s; g.top = g.y - (el.gauze === false ? 98 : 103) * g.s; g.anchor = { x: g.x + 44 * g.s, y: g.y - 50 * g.s }; return g; },
+  draw(el, g) { return `<g transform="${tfm(g)}"><path d="M6,-94 L12,-2" stroke="${INK2}" stroke-width="3.5" stroke-linecap="round"/><path d="M-36,-94 L-47,0 M36,-94 L47,0" stroke="${DARK}" stroke-width="4.2" stroke-linecap="round"/><rect x="-44" y="-98" width="88" height="6" rx="2" fill="${DARK}"/>${el.gauze === false ? '' : `<rect x="-54" y="-103" width="108" height="5" rx="1.5" fill="#cfd4dd" stroke="${INK}" stroke-width="1.2"/><rect x="-22" y="-103" width="44" height="5" fill="#f3f1ea" stroke="${INK}" stroke-width="1"/>`}</g>`; }
+};
+T.hotplate = {
+  geo(el, R) { const g = bplace(el, R); g.w = 112 * g.s; g.h = 32 * g.s; g.top = g.y - 32 * g.s; g.anchor = { x: g.x + 56 * g.s, y: g.y - 14 * g.s }; return g; },
+  draw(el, g) { const on = el.on !== false; return `<g transform="${tfm(g)}"><rect x="-56" y="-28" width="112" height="28" rx="6" fill="#eceff4" stroke="${INK}" stroke-width="2"/><rect x="-47" y="-32" width="94" height="5" rx="2" fill="${on ? '#f06a4a' : '#9aa1ad'}" stroke="${INK}" stroke-width="1.2"/><circle cx="36" cy="-14" r="6.5" fill="#fff" stroke="${INK}" stroke-width="1.6"/><path d="M36,-14 L39,-18" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/><circle cx="-40" cy="-14" r="3" fill="${on ? '#ff5a3c' : '#c9ced6'}"/>${on ? `<path d="M-30,-40 q4,-5 0,-10 q-4,-5 0,-10 M0,-40 q4,-5 0,-10 q-4,-5 0,-10 M30,-40 q4,-5 0,-10 q-4,-5 0,-10" stroke="#f3a07d" stroke-width="2" fill="none" stroke-linecap="round" opacity="${el.heat === false ? 0 : .7}"/>` : ''}</g>`; }
+};
+T.stand = {
+  geo(el, R) {
+    const s = el.s ?? 1, pts = [];
+    [].concat(el.hold ?? []).forEach(id => { const g = R(id); if (g && g.hold) pts.push({ x: g.hold.x, y: g.hold.y, half: g.holdHalf ?? 8, ring: !!g.isFunnel }); });
+    const cys = el.clampY != null ? [].concat(el.clampY) : (pts.length ? [] : [(el.y ?? BENCH) - 150]);
+    cys.forEach(cy => pts.push({ x: (el.x ?? 160) + (el.arm ?? 66), y: cy, half: 9, open: true }));
+    const minX = Math.min(...pts.map(p => p.x));
+    const x = el.x ?? Math.max(30, minX - (el.reach ?? 100)), y = el.y ?? BENCH;
+    const top = Math.min(y - 170, ...pts.map(p => p.y - 34));
+    return { x, y, s, top, pts, w: 126, h: y - top, anchor: { x: x + 4, y: (y + top) / 2 } };
+  },
+  draw(el, g, cx) {
+    let o = `<rect x="${r2(g.x - 46)}" y="${r2(g.y - 10)}" width="104" height="10" rx="3" fill="${DARK}"/><rect x="${r2(g.x - 3.5)}" y="${r2(g.top)}" width="7" height="${r2(g.y - 10 - g.top)}" rx="2" fill="${METAL}" stroke="${INK}" stroke-width="1.2"/>`;
+    g.pts.forEach(p => {
+      const right = p.x >= g.x, a1 = right ? g.x + 5 : p.x + p.half + 3, a2 = right ? p.x - p.half - 3 : g.x - 5;
+      o += `<rect x="${r2(a1)}" y="${r2(p.y - 2.5)}" width="${r2(Math.max(0, a2 - a1))}" height="5" fill="${METAL}" stroke="${INK}" stroke-width="1"/><rect x="${r2(g.x - 7)}" y="${r2(p.y - 7)}" width="14" height="14" rx="2.5" fill="${DARK}"/><circle cx="${r2(g.x + (right ? -11 : 11))}" cy="${r2(p.y)}" r="3" fill="${DARK}"/>`;
+      const jaw = p.ring ? `<rect x="${r2(p.x - p.half - 4)}" y="${r2(p.y - 2.5)}" width="${r2(2 * p.half + 8)}" height="5" rx="2.5" fill="${METAL}" stroke="${DARK}" stroke-width="1.4"/>`
+        : `<rect x="${r2(p.x - p.half - 4)}" y="${r2(p.y - 6)}" width="${r2(2 * p.half + 8)}" height="12" rx="5" fill="none" stroke="${DARK}" stroke-width="3"/>`;
+      if (p.open) o += jaw; else cx.front.push(jaw);
+    });
+    return o;
+  }
+};
+T.balance = {
+  geo(el, R) { const g = bplace(el, R); g.w = 116 * g.s; g.h = 32 * g.s; g.top = g.y - 32 * g.s; g.anchor = { x: g.x + 56 * g.s, y: g.y - 12 * g.s }; return g; },
+  draw(el, g) { return `<g transform="${tfm(g)}"><path d="M-58,0 L-53,-25 L53,-25 L58,0 Z" fill="#eef1f6" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><rect x="-36" y="-20" width="50" height="14" rx="3" fill="#24303d"/><text x="-11" y="-9.6" text-anchor="middle" font-size="10" font-weight="700" fill="#8dffbf" style="font-variant-numeric:tabular-nums">${esc(el.reading ?? '0.00 g')}</text><circle cx="26" cy="-13" r="3.6" fill="#e5484d"/><circle cx="38" cy="-13" r="3.6" fill="${INK2}"/><rect x="-6" y="-27" width="12" height="3" fill="${INK2}"/><rect x="-46" y="-32" width="92" height="7" rx="3" fill="#d4d9e2" stroke="${INK}" stroke-width="1.5"/></g>`; }
+};
+T.stopwatch = {
+  geo(el, R) { const g = bplace(el, R, 80); g.w = 54 * g.s; g.h = 60 * g.s; g.top = g.y - 34 * g.s; g.anchor = { x: g.x + 26 * g.s, y: g.y }; return g; },
+  draw(el, g) {
+    let ticks = ''; for (let i = 0; i < 12; i++) { const [a, b] = rot(0, -20, i * 30), [c2, d] = rot(0, -16.5, i * 30); ticks += `M${r2(a)},${r2(b)} L${r2(c2)},${r2(d)} `; }
+    const p = el.time ? pillSvg(g.x, g.y + 40 * g.s, el.time, { bg: '#fff', fg: '#3b4253', sh: g._sh }) : null;
+    return `<g transform="translate(${r2(g.x)},${r2(g.y)}) scale(${g.s})"><rect x="-5" y="-34" width="10" height="8" rx="2" fill="${DARK}"/><rect x="15" y="-29" width="8" height="5" rx="2" fill="${DARK}" transform="rotate(40 19 -26)"/><circle r="25" fill="#fff" stroke="${DARK}" stroke-width="3.2"/><path d="${ticks}" stroke="${INK2}" stroke-width="1.6" stroke-linecap="round"/><g><path d="M0,3 L0,-17" stroke="#e5484d" stroke-width="2.4" stroke-linecap="round"/>${A('<animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="6s" repeatCount="indefinite"/>')}</g><circle r="2.8" fill="${DARK}"/></g>${p ? p.svg : ''}`;
+  }
+};
+T.thermometer = {
+  geo(el, R) {
+    const s = el.s ?? 1; let x = el.x, y = el.y;
+    if (el.in) { const t = R(el.in); if (t) { const off = Math.min((t.half || 10) * 0.45, Math.max(2, (t.half || 10) - 6)); x ??= (t.mouth?.x ?? t.x) + off; y ??= (t.bottomY ?? t.y) - 8; } }
+    x ??= 240; y ??= BENCH - 10;
+    let lv = el.level; if (lv == null) { const m = /(-?\d+(\.\d+)?)/.exec(String(el.reading ?? '')); lv = m ? 0.12 + Math.max(-10, Math.min(110, +m[1])) / 110 * 0.8 : 0.25; }
+    return { x, y, s, tilt: el.tilt ?? 0, lv, top: y - 150 * s, w: 14 * s, h: 150 * s, hold: { x, y: y - 128 * s }, holdHalf: 5 * s, anchor: { x: x + 6 * s, y: y - 82 * s } };
+  },
+  draw(el, g, cx) {
+    const L = 150, lv = Math.max(0, Math.min(1, g.lv)), top = -10 - lv * (L - 26);
+    let ticks = ''; for (let i = 0; i < 12; i++) ticks += `M1.6,${-22 - i * 10} H4.4 `;
+    if (el.reading) cx.labels.push({ a: { x: g.x + 5 * g.s, y: g.y + top * g.s }, text: el.reading, tone: 'hot', side: el.labelSide });
+    return `<g transform="${tfm(g)}"><rect x="-4.5" y="${-L}" width="9" height="${L - 8}" rx="4.5" fill="#f8fbfe" stroke="${INK}" stroke-width="1.6"/><path d="${ticks}" stroke="${INK2}" stroke-width=".9"/><rect x="-1.6" y="${r2(top)}" width="3.2" height="${r2(-top - 6)}" fill="#e5484d"/><circle cy="-7" r="7" fill="#e5484d" stroke="${INK}" stroke-width="1.6"/><circle cx="-2.2" cy="-9" r="2" fill="#fff" opacity=".7"/></g>`;
+  }
+};
+T.dropper = {
+  geo(el, R) { const g = tipPlace(el, R); g.w = 16 * g.s; g.h = 88 * g.s; g.top = g.y - 88 * g.s; g.anchor = { x: g.x + 8 * g.s, y: g.y - 70 * g.s }; g.hold = { x: g.x, y: g.y - 40 * g.s }; g.holdHalf = 5 * g.s; g.mouth = { x: g.x, y: g.y }; return g; },
+  draw(el, g) {
+    const c = col(el.color, 'water'), has = el.color || el.fill, drops = el.drops ?? !!el.over;
+    return `<g transform="${tfm(g)}"><path d="M-1.8,0 L-5,-30 L-5,-58 L5,-58 L5,-30 L1.8,0 Z" fill="${GLASS}" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>${has ? `<path d="M-1.4,-1 L-4.2,-26 L4.2,-26 L1.4,-1 Z" fill="${c}" opacity=".9"/>` : ''}<path d="M-7,-56 L-7,-73 Q-7,-88 0,-88 Q7,-88 7,-73 L7,-56 Q7,-54 5,-54 L-5,-54 Q-7,-54 -7,-56 Z" fill="${col(el.bulb, '#ea6a52')}" stroke="${shade(col(el.bulb, '#ea6a52'), -.3)}" stroke-width="1.4"/><path d="M-3,-78 Q-3,-84 0,-85" stroke="#fff" opacity=".6" stroke-width="2" fill="none" stroke-linecap="round"/></g>${drops && g.to != null && !g.tilt ? dropAnim(g.x, g.y, g.to, c, 2, .9) : ''}`;
+  }
+};
+T.pipette = T.dropper;
+T.syringe = {
+  geo(el, R) { const g = tipPlace(el, R); g.w = 34 * g.s; g.h = 120 * g.s; g.top = g.y - 120 * g.s; g.anchor = { x: g.x + 12 * g.s, y: g.y - 60 * g.s }; g.hold = { x: g.x, y: g.y - 60 * g.s }; g.holdHalf = 11 * g.s; return g; },
+  draw(el, g) {
+    const lv = Math.max(0, Math.min(1, el.fill ?? .5)), hy = r2(-18 - lv * 80), c = col(el.color, 'water');
+    let ticks = ''; for (let i = 0; i < 8; i++) ticks += `M-10,${-26 - i * 10} H-5 `;
+    return `<g transform="${tfm(g)}"><rect x="-2.6" y="${hy - 70}" width="5.2" height="66" fill="#e9ecf2" stroke="${INK}" stroke-width="1"/><rect x="-12" y="${hy - 76}" width="24" height="6" rx="2" fill="#e9ecf2" stroke="${INK}" stroke-width="1.4"/><rect x="-2.6" y="-18" width="5.2" height="18" rx="1" fill="${GLASS}" stroke="${INK}" stroke-width="1.3"/><rect x="-10" y="-102" width="20" height="86" rx="3" fill="${GLASS}" opacity=".85"/>${lv > 0 ? `<rect x="-8.6" y="${hy}" width="17.2" height="${r2(-18 - hy)}" fill="${c}" opacity=".85"/>` : ''}<rect x="-8.6" y="${hy - 6}" width="17.2" height="6" fill="${DARK}"/><rect x="-10" y="-102" width="20" height="86" rx="3" fill="none" stroke="${INK}" stroke-width="1.8"/><path d="${ticks}" stroke="${INK2}" stroke-width="1"/><rect x="-17" y="-106" width="34" height="5" rx="2" fill="#e9ecf2" stroke="${INK}" stroke-width="1.4"/></g>${el.over && el.drops !== false ? dropAnim(g.x, g.y, g.to, c, 2, .9) : ''}`;
+  }
+};
+T.rod = {
+  geo(el, R) {
+    const s = el.s ?? 1, L = (el.length ?? 150) * s; let B, Tp;
+    if (el.in) { const t = R(el.in); if (t && t.mouth) { B = { x: t.mouth.x - (t.half || 10) * 0.25, y: (t.bottomY ?? t.y) - 4 }; const M = { x: t.mouth.x + (t.half || 10) * 0.35, y: t.mouth.y }; const dx = M.x - B.x, dy = M.y - B.y, d = Math.hypot(dx, dy) || 1; Tp = { x: B.x + dx / d * L, y: B.y + dy / d * L }; } }
+    if (!B) { const x = el.x ?? 240, y = el.y ?? BENCH; const [dx, dy] = rot(0, -L, el.tilt ?? 18); B = { x, y }; Tp = { x: x + dx, y: y + dy }; }
+    return { x: B.x, y: B.y, B, Tp, s, top: Math.min(B.y, Tp.y), w: Math.abs(Tp.x - B.x) + 8, anchor: { x: (B.x + Tp.x) / 2 + 6, y: Tp.y + (B.y - Tp.y) * 0.22 }, hold: { x: B.x + (Tp.x - B.x) * .7, y: B.y + (Tp.y - B.y) * .7 }, holdHalf: 4 };
+  },
+  draw(el, g, cx) {
+    const { B, Tp } = g;
+    if (el.stir && el.in) { const t = cx.R(el.in); if (t && t.fill > 0) { const rx = Math.min((t.half || 10) * .62, 20), y = t.surfaceY + 9, mid = marker(cx, '#b14de0'); cx.front.push(`<path d="M${r2(B.x - rx)},${r2(y)} A${r2(rx)},5.5 0 1,0 ${r2(B.x + rx)},${r2(y - 1)}" fill="none" stroke="#b14de0" stroke-width="2.2" marker-end="url(#${mid})" opacity=".9"/>`); } }
+    return `<g>${el.stir ? A(`<animateTransform attributeName="transform" type="rotate" values="-5 ${r2(B.x)} ${r2(B.y)};5 ${r2(B.x)} ${r2(B.y)};-5 ${r2(B.x)} ${r2(B.y)}" dur="1.2s" repeatCount="indefinite"/>`) : ''}<line x1="${r2(B.x)}" y1="${r2(B.y)}" x2="${r2(Tp.x)}" y2="${r2(Tp.y)}" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><line x1="${r2(B.x)}" y1="${r2(B.y)}" x2="${r2(Tp.x)}" y2="${r2(Tp.y)}" stroke="#eef7fd" stroke-width="4.2" stroke-linecap="round"/></g>`;
+  }
+};
+T.spatula = {
+  geo(el, R) { const g = tipPlace(el, R); if (el.over) { g.y -= 4; g.x -= 3; if (el.tilt == null) g.tilt = 36; } else if (el.tilt == null) g.tilt = 60; g.w = 30; g.h = 120 * g.s; g.top = g.y - 100 * g.s; g.anchor = { x: g.x + 8, y: g.y - 8 }; return g; },
+  draw(el, g) {
+    const pc = el.color || el.powder ? col(el.color ?? el.powder, 'white') : null;
+    let fall = ''; if (pc && el.over && g.to != null) { const R = rng(g.x + g.y); for (let i = 0; i < 6; i++) { const x = r2(g.x + 2 + R() * 6 - 3), d = r2(.8 + R() * .6), b = r2(-R() * d); fall += ANIM ? `<circle cx="${x}" cy="${r2(g.y)}" r="1.7" fill="${pc}" stroke="${shade(pc, -.3)}" stroke-width=".5"><animate attributeName="cy" values="${r2(g.y + 2)};${r2(g.to - 2)}" dur="${d}s" begin="${b}s" repeatCount="indefinite"/></circle>` : `<circle cx="${x}" cy="${r2(g.y + 6 + R() * (g.to - g.y - 10))}" r="1.7" fill="${pc}" stroke="${shade(pc, -.3)}" stroke-width=".5"/>`; } }
+    return `<g transform="${tfm(g)}"><path d="M-1.6,-6 L-2.2,-118 Q0,-122 2.2,-118 L1.6,-6 Z" fill="${METAL}" stroke="${INK}" stroke-width="1.2"/><path d="M-8,-6 Q-9,5 0,6 Q9,5 8,-6 Z" fill="#c9cfd9" stroke="${INK}" stroke-width="1.5"/>${pc ? `<path d="M-7.5,-6 Q0,-13 7.5,-6 Z" fill="${pc}" stroke="${shade(pc, -.3)}" stroke-width=".8"/>` : ''}</g>${fall}`;
+  }
+};
+T.spoon = T.spatula;
+T.funnel = {
+  geo(el, R) {
+    const s = el.s ?? 1; let x = el.x, y = el.y;
+    if (el.over) { const t = R(el.over); if (t && t.mouth) { x ??= t.mouth.x; y ??= t.mouth.y + 14 * s; } }
+    x ??= 240; y ??= 170;
+    let to = null; if (el.over) { const t = R(el.over); if (t) to = t.surfaceY; }
+    const lv = Math.max(0, Math.min(1, el.fill ?? (el.color ? .5 : 0)));
+    return { x, y, s, tilt: 0, to, lv, isFunnel: true, top: y - 90 * s, w: 76 * s, h: 90 * s, mouth: { x, y: y - 90 * s }, half: 36 * s, lipL: { x: x - 30 * s, y: y - 90 * s }, lipR: { x: x + 30 * s, y: y - 90 * s }, surfaceY: lv > 0 ? y - (51 + lv * 35) * s : y - 51 * s, hold: { x, y: y - 72 * s }, holdHalf: 25 * s, anchor: { x: x + 34 * s, y: y - 76 * s } };
+  },
+  draw(el, g) {
+    const paper = el.paper !== false, c = col(el.color, 'water'), lv = g.lv;
+    let liq = ''; if (lv > 0) { const yl = -51 - lv * 35, h = (-51 - yl) / 37 * (paper ? 33 : 36); liq = `<path d="M${r2(-h)},${r2(yl)} L0,-51 L${r2(h)},${r2(yl)} Z" fill="${c}" opacity=".85"/><path d="M${r2(-h)},${r2(yl)} H${r2(h)}" stroke="${shade(c, -.3)}" stroke-width="1.4"/>`; }
+    const dc = col(el.dripColor, paper ? 'water' : el.color || 'water');
+    return `<g transform="${tfm(g)}"><path d="M-3,-46 L-3,-5 L3,0 L3,-46 Z" fill="${GLASS}" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/><path d="M-38,-90 L-4,-47 L4,-47 L38,-90 Z" fill="${GLASS}" opacity=".7"/>${paper ? `<path d="M-33,-88 L0,-51 L33,-88 Z" fill="#fbfaf3" stroke="#c9c1aa" stroke-width="1.2" stroke-linejoin="round"/><path d="M-7,-88 L0,-51" stroke="#ddd5c0" stroke-width="1"/>` : ''}${liq}<path d="M-38,-90 L-4,-47 L-4,-44 M4,-44 L4,-47 L38,-90" fill="none" stroke="${INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M-26,-82 L-14,-66" stroke="#fff" stroke-width="2.5" opacity=".7" stroke-linecap="round"/></g>${el.drip && g.to != null ? dropAnim(g.x + 1.5, g.y, g.to, dc, 2, 1.1) : ''}`;
+  }
+};
+T.pour = {
+  geo(el, R) {
+    const t = R(el.into || el.over || el.to), S = SHAPES[el.from] || SHAPES.beaker, s = el.s ?? .78, dir = el.side === 'right' ? -1 : 1, tilt = dir * (el.tilt ?? 72);
+    const lip = t && t.lipL ? (dir > 0 ? t.lipL : t.lipR) : (t && t.mouth ? t.mouth : { x: el.x ?? 300, y: el.y ?? 170 });
+    const P = { x: lip.x + dir * (6 + (el.dx || 0)), y: lip.y - 26 - (el.dy || 0) };
+    const c = -S.h / 2, q = rot(dir * (S.half + 2), -S.h, tilt, 0, c);
+    const src = { t: el.from || 'beaker', color: el.color, fill: .5, cloudy: el.cloudy, _level: q[1] + 4 };
+    const g = cgeo(S, src, P.x - s * q[0], P.y - s * q[1], s, tilt);
+    g.src = src; g.P = P; g.dir = dir; g.endY = t ? (t.surfaceY ?? t.bottomY ?? lip.y + 60) : P.y + 80; g.anchor = g.wpt(0, -S.h * .5);
+    return g;
+  },
+  draw(el, g) {
+    const c = col(el.color, 'water'), P = g.P, ex = P.x + g.dir * 4;
+    const d = `M${r2(P.x + g.dir * 1)},${r2(P.y)} C${r2(P.x + g.dir * 6)},${r2(P.y + 3)} ${r2(ex)},${r2(P.y + 10)} ${r2(ex)},${r2(P.y + 22)} L${r2(ex)},${r2(g.endY)}`;
+    return drawC(g.src, g) + `<path d="${d}" fill="none" stroke="${shade(c, -.38)}" stroke-width="5.8" stroke-linecap="round" opacity=".55"/><path d="${d}" fill="none" stroke="${c}" stroke-width="3.8" stroke-linecap="round"/>${A(`<path d="${d}" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3 9" stroke-linecap="round" opacity=".8"><animate attributeName="stroke-dashoffset" from="24" to="0" dur=".6s" repeatCount="indefinite"/></path>`)}`;
+  }
+};
+T.dish = {
+  geo(el, R) { const g = bplace(el, R), s = g.s; const lv = el.fill ?? (el.color ? .5 : 0); Object.assign(g, { w: 96 * s, h: 30 * s, top: g.y - 20 * s, mouth: { x: g.x, y: g.y - 20 * s }, half: 40 * s, surfaceY: g.y - (lv > 0 ? 17 : 13) * s, anchor: { x: g.x + 46 * s, y: g.y - 13 * s }, lv }); return g; },
+  draw(el, g) {
+    const c = col(el.color, 'water'), R = rng(g.x * 3 + g.y); let inner = '';
+    if (g.lv > 0) inner += `<ellipse cy="-19" rx="40" ry="6.6" fill="${c}" opacity=".78"/>`;
+    const it = el.items, ic = col(el.itemColor, { seeds: '#c99a5b', colony: '#f2d26a', beans: '#c99a5b', cells: '#e9a3c0' }[it] || 'white');
+    if (it) { const n = it === 'colony' ? 9 : 7; for (let i = 0; i < n; i++) { const a = R() * 6.28, d = Math.sqrt(R()), x = r2(Math.cos(a) * d * 32), y = r2(-19 + Math.sin(a) * d * 5); inner += it === 'colony' ? `<circle cx="${x}" cy="${y}" r="${r2(1.5 + R() * 2.5)}" fill="${ic}" stroke="${shade(ic, -.3)}" stroke-width=".6"/>` : `<ellipse cx="${x}" cy="${y}" rx="4.2" ry="2.6" fill="${ic}" stroke="${shade(ic, -.3)}" stroke-width=".7" transform="rotate(${r2(R() * 60 - 30)} ${x} ${y})"/>`; } }
+    if (el.solid === 'powder') inner += `<path d="M-14,-18 Q0,-28 14,-18 Z" fill="${col(el.solidColor, 'white')}" stroke="${INK2}" stroke-width=".8"/>`;
+    return `<g transform="${tfm(g)}"><path d="M-46,-20 L-46,-8 A46,8 0 0,0 46,-8 L46,-20" fill="${GLASS}" opacity=".85" stroke="${INK}" stroke-width="1.8"/><ellipse cy="-20" rx="46" ry="9" fill="#f4f9fd" stroke="${INK}" stroke-width="1.8"/>${inner}${el.lid ? `<path d="M-49,-22 L-49,-27 A49,9 0 0,1 49,-27 L49,-22" fill="${GLASS}" opacity=".55" stroke="${INK}" stroke-width="1.5"/>` : ''}</g>`;
+  }
+};
+T.petri = T.dish;
+T.evapdish = {
+  geo(el, R) { const g = bplace(el, R), s = g.s, lv = el.fill ?? (el.color ? .5 : 0); Object.assign(g, { w: 88 * s, h: 34 * s, top: g.y - 28 * s, mouth: { x: g.x, y: g.y - 28 * s }, half: 40 * s, lv, surfaceY: g.y - (10 + lv * 14) * s, bottomY: g.y - 6 * s, anchor: { x: g.x + 42 * s, y: g.y - 16 * s } }); return g; },
+  draw(el, g) {
+    const c = col(el.color, 'water'), R = rng(g.x + 5); let inner = '';
+    if (g.lv > 0) inner += `<ellipse cy="-27" rx="${r2(30 + g.lv * 8)}" ry="5" fill="${c}" opacity=".85"/>`;
+    if (el.solid) { const sc = col(el.solidColor, 'white'); for (let i = 0; i < 9; i++) { const x = r2(-26 + R() * 52), y = r2(-29 + R() * 5), z = r2(3 + R() * 3); inner += `<rect x="${x}" y="${y}" width="${z}" height="${z}" fill="${sc}" stroke="${shade(sc, -.35)}" stroke-width=".8" transform="rotate(${r2(R() * 40)} ${x} ${y})"/>`; } }
+    return `<g transform="${tfm(g)}"><path d="M-44,-28 Q-42,-4 -14,-2 L-12,0 L12,0 L14,-2 Q42,-4 44,-28 Z" fill="#fbfbf8" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M-34,-20 Q-30,-10 -18,-7" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cy="-28" rx="44" ry="7" fill="#efeee8" stroke="${INK}" stroke-width="1.8"/>${inner}</g>${el.steam ? steam(g.x, g.y - 30 * g.s, g.s) : ''}`;
+  }
+};
+T.watchglass = {
+  geo(el, R) { const g = bplace(el, R), s = g.s; Object.assign(g, { w: 74 * s, h: 14 * s, top: g.y - 10 * s, mouth: { x: g.x, y: g.y - 10 * s }, half: 32 * s, surfaceY: g.y - 6 * s, anchor: { x: g.x + 36 * s, y: g.y - 6 * s } }); return g; },
+  draw(el, g) {
+    const R = rng(g.x); let inner = '';
+    if (el.color) inner += `<ellipse cy="-9" rx="22" ry="3" fill="${col(el.color)}" opacity=".85"/>`;
+    if (el.solid) { const sc = col(el.solidColor, 'white'); for (let i = 0; i < 6; i++) { const x = r2(-16 + R() * 32); inner += `<rect x="${x}" y="${r2(-11 + R() * 2)}" width="4" height="4" fill="${sc}" stroke="${shade(sc, -.35)}" stroke-width=".7" transform="rotate(${r2(R() * 40)} ${x} -10)"/>`; } }
+    return `<g transform="${tfm(g)}"><path d="M-37,-10 Q0,8 37,-10" fill="${GLASS}" stroke="${INK}" stroke-width="1.8"/><ellipse cy="-10" rx="37" ry="5" fill="#f4f9fd" opacity=".85" stroke="${INK}" stroke-width="1.6"/>${inner}</g>`;
+  }
+};
+T.mortar = {
+  geo(el, R) { const g = bplace(el, R), s = g.s; Object.assign(g, { w: 88 * s, h: 110 * s, top: g.y - 34 * s, mouth: { x: g.x, y: g.y - 34 * s }, half: 38 * s, surfaceY: g.y - 24 * s, anchor: { x: g.x + 42 * s, y: g.y - 18 * s } }); return g; },
+  draw(el, g) {
+    const c = el.color ? col(el.color) : null;
+    return `<g transform="${tfm(g)}"><path d="M-42,-34 Q-40,-4 -16,-2 L-14,0 L14,0 L16,-2 Q40,-4 42,-34 Z" fill="#f7f6f2" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><ellipse cy="-34" rx="42" ry="8" fill="#e9e8e1" stroke="${INK}" stroke-width="1.8"/>${c ? `<ellipse cy="-32" rx="30" ry="5" fill="${c}" stroke="${shade(c, -.3)}" stroke-width="1"/>` : ''}${el.pestle === false ? '' : `<g transform="rotate(28 0 -32)">${el.grind ? A('<animateTransform attributeName="transform" type="rotate" values="20 0 -32;36 0 -32;20 0 -32" dur="1.4s" repeatCount="indefinite" additive="sum"/>') : ''}<path d="M-6,-30 L-4,-100 Q0,-104 4,-100 L6,-30 Q0,-25 -6,-30Z" fill="#f2f1ec" stroke="${INK}" stroke-width="1.6"/></g>`}</g>`;
+  }
+};
+T.paper = {
+  geo(el, R) { const g = bplace(el, R, 150); g.w = (el.kind === 'filter' ? 70 : 14) * g.s; g.h = (el.kind === 'filter' ? 70 : 56) * g.s; g.top = g.y - g.h / 2; g.anchor = { x: g.x + g.w / 2, y: g.y }; g.hold = { x: g.x, y: g.y - 20 * g.s }; g.holdHalf = 8; return g; },
+  draw(el, g) {
+    if (el.kind === 'filter') return `<g transform="${tfm(g)}"><circle r="34" fill="#fbfaf3" stroke="#c9c1aa" stroke-width="1.4"/><path d="M-34,0 H34 M0,-34 V34" stroke="#ddd5c0" stroke-width="1.1" stroke-dasharray="3 3"/></g>`;
+    const c1 = shade(col(el.color, 'yellow'), .3), c2 = el.color2 ? shade(col(el.color2), .25) : null, dip = Math.max(0, Math.min(1, el.dip ?? .4));
+    return `<g transform="${tfm(g)}"><rect x="-7" y="-28" width="14" height="56" rx="2" fill="${c1}" stroke="${shade(c1, -.25)}" stroke-width="1.2"/>${c2 ? `<rect x="-7" y="${r2(28 - dip * 56)}" width="14" height="${r2(dip * 56)}" rx="2" fill="${c2}"/><rect x="-7" y="-28" width="14" height="56" rx="2" fill="none" stroke="${shade(c1, -.25)}" stroke-width="1.2"/>` : ''}</g>`;
+  }
+};
+T.magnifier = {
+  geo(el, R) { const g = bplace(el, R, 130); g.w = 70 * g.s; g.h = 70 * g.s; g.top = g.y - 24 * g.s; g.anchor = { x: g.x + 24 * g.s, y: g.y - 10 * g.s }; return g; },
+  draw(el, g) { return `<g transform="${tfm(g)}"><path d="M16,16 L40,40" stroke="#4a5164" stroke-width="9" stroke-linecap="round"/><circle r="23" fill="#dff0fb" fill-opacity=".45" stroke="${DARK}" stroke-width="4.5"/><path d="M-12,-8 A14,14 0 0,1 -2,-15" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></g>`; }
+};
+T.microscope = {
+  geo(el, R) { const g = bplace(el, R); g.w = 96 * g.s; g.h = 188 * g.s; g.top = g.y - 188 * g.s; g.anchor = { x: g.x + 40 * g.s, y: g.y - 150 * g.s }; g.mouth = { x: g.x + 27 * g.s, y: g.y - 188 * g.s }; return g; },
+  draw(el, g) { return `<g transform="${tfm(g)}"><path d="M-46,0 L-41,-14 L46,-14 L50,0 Z" fill="${DARK}"/><rect x="-34" y="-38" width="17" height="26" rx="3" fill="#525a6e"/><path d="M-26,-38 C-40,-80 -36,-126 -4,-150" stroke="#525a6e" stroke-width="15" fill="none" stroke-linecap="round"/><rect x="17" y="-34" width="21" height="20" rx="3" fill="#525a6e"/><circle cx="27.5" cy="-40" r="7" fill="#fff2b8" stroke="${INK}" stroke-width="1.4"/><rect x="-16" y="-74" width="66" height="7" rx="2" fill="#323846"/><rect x="11" y="-77.5" width="32" height="3.5" rx="1" fill="#cfe7f7" stroke="${INK2}" stroke-width=".8"/><rect x="-4" y="-78" width="12" height="3" rx="1" fill="${METAL}"/><rect x="-8" y="-158" width="32" height="14" rx="4" fill="#525a6e"/><rect x="20" y="-170" width="15" height="58" rx="2" fill="#e8ebf1" stroke="${INK}" stroke-width="1.6"/><rect x="21.5" y="-188" width="12" height="20" rx="2" fill="${DARK}"/><path d="M15,-112 L40,-112 L37,-104 L18,-104 Z" fill="${DARK}"/><rect x="23.5" y="-104" width="8" height="18" rx="1.5" fill="#c3c9d3" stroke="${INK}" stroke-width="1"/><circle cx="-22" cy="-96" r="10" fill="#323846"/><circle cx="-22" cy="-96" r="4" fill="${METAL}"/></g>`; }
+};
+T.slide = {
+  geo(el, R) { const g = bplace(el, R, 150); g.w = 92 * g.s; g.h = 30 * g.s; g.top = g.y - 15 * g.s; g.mouth = { x: g.x, y: g.y - 6 }; g.surfaceY = g.y; g.anchor = { x: g.x + 46 * g.s, y: g.y }; return g; },
+  draw(el, g) { const c = col(el.color, '#e9a3c0'); return `<g transform="${tfm(g)}"><rect x="-46" y="-15" width="92" height="30" rx="2" fill="#e3f1fa" fill-opacity=".8" stroke="${INK}" stroke-width="1.5"/>${el.specimen === false ? '' : `<ellipse rx="8" ry="5.5" fill="${c}" opacity=".85"/>`}${el.cover === false ? '' : `<rect x="-14" y="-13" width="28" height="26" fill="#fff" fill-opacity=".45" stroke="#9fb3c4" stroke-width="1.1"/>`}<path d="M-40,-9 L-30,-9" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>`; }
+};
+T.ruler = {
+  geo(el, R) { const g = bplace(el, R); g.w = 224 * g.s; g.h = 22 * g.s; g.top = g.y - 22 * g.s; g.anchor = { x: g.x + 110 * g.s, y: g.y - 11 * g.s }; return g; },
+  draw(el, g) { let d = '', tx = ''; for (let i = 0; i <= 20; i++) { const x = -100 + i * 10; d += `M${x},-22 V${i % 5 === 0 ? -13 : -17} `; if (i % 5 === 0) tx += `<text x="${x}" y="-4" font-size="8" text-anchor="middle" fill="#6b5a1e">${i}</text>`; } return `<g transform="${tfm(g)}"><rect x="-112" y="-22" width="224" height="22" rx="3" fill="#f7e7a1" stroke="#c4ad5c" stroke-width="1.4"/><path d="${d}" stroke="#8a7530" stroke-width="1"/>${tx}</g>`; }
+};
+T.magnet = {
+  geo(el, R) { const g = bplace(el, R); g.w = 112 * g.s; g.h = 26 * g.s; g.top = g.y - 26 * g.s; g.anchor = { x: g.x + 56 * g.s, y: g.y - 13 * g.s }; return g; },
+  draw(el, g) {
+    const f = el.flip ? -1 : 1, nx = -27 * f, sx = 27 * f;
+    let field = ''; if (el.field) { [16, 30, 46].forEach((h, i) => { field += `<path d="M${-50 * f},-14 C${-50 * f},${-14 - h * 1.4} ${50 * f},${-14 - h * 1.4} ${50 * f},-14" fill="none" stroke="${INK2}" stroke-width="1.3" stroke-dasharray="4 4" opacity="${.9 - i * .2}"/>`; }); }
+    return `<g transform="${tfm(g)}">${field}<rect x="-55" y="-26" width="55" height="26" rx="3" fill="${f > 0 ? '#e5484d' : '#4a7fe0'}"/><rect x="0" y="-26" width="55" height="26" rx="3" fill="${f > 0 ? '#4a7fe0' : '#e5484d'}"/><rect x="-55" y="-26" width="110" height="26" rx="3" fill="none" stroke="${INK}" stroke-width="1.6"/><text x="${nx}" y="-8" font-size="15" font-weight="800" text-anchor="middle" fill="#fff">N</text><text x="${sx}" y="-8" font-size="15" font-weight="800" text-anchor="middle" fill="#fff">S</text></g>`;
+  }
+};
+T.compass = {
+  geo(el, R) { const g = bplace(el, R, 120); g.w = 50 * g.s; g.h = 50 * g.s; g.top = g.y - 25 * g.s; g.anchor = { x: g.x + 24 * g.s, y: g.y }; return g; },
+  draw(el, g) { const a = el.angle ?? 0; return `<g transform="translate(${r2(g.x)},${r2(g.y)}) scale(${g.s})"><circle r="24" fill="#fff" stroke="${DARK}" stroke-width="2.6"/><text y="-13" font-size="8" font-weight="800" text-anchor="middle" fill="${INK}">N</text><g transform="rotate(${a})"><path d="M0,-18 L4.5,0 L-4.5,0 Z" fill="#e5484d"/><path d="M0,18 L4.5,0 L-4.5,0 Z" fill="#cdd2db"/></g><circle r="2.4" fill="${DARK}"/></g>`; }
+};
+T.circuit = {
+  geo(el) { const s = el.s ?? 1, x = el.x ?? 240, y = el.y ?? 135, w = el.w ?? 260, h = el.h ?? 150; return { x, y, s, w, h, top: y - h / 2, anchor: { x: x + w / 2, y } }; },
+  draw(el, g, cx) {
+    const x0 = g.x - g.w / 2, y0 = g.y - g.h / 2, x1 = g.x + g.w / 2, y1 = g.y + g.h / 2, closed = el.closed !== false;
+    const parts = (el.parts || ['battery', 'switch', 'bulb']).map(p => typeof p === 'string' ? { p } : { ...p });
+    const order = ['bottom', 'top', 'right', 'left'], by = { top: [], bottom: [], left: [], right: [] };
+    let mi = 0; parts.forEach(p => { if (p.across == null) { by[p.edge || order[mi % 4]].push(p); mi++; } });
+    Object.keys(by).forEach(e => by[e].forEach((p, j) => { const t = (j + 1) / (by[e].length + 1); if (e === 'top' || e === 'bottom') { p.x = x0 + t * g.w; p.y = e === 'top' ? y0 : y1; p.r = 0; } else { p.x = e === 'left' ? x0 : x1; p.y = y0 + t * g.h; p.r = 90; } p.e = e; }));
+    let o = `<rect x="${r2(x0)}" y="${r2(y0)}" width="${r2(g.w)}" height="${r2(g.h)}" rx="12" fill="none" stroke="#3b4253" stroke-width="3.2"/>`;
+    if (closed && el.current) o += `<rect x="${r2(x0)}" y="${r2(y0)}" width="${r2(g.w)}" height="${r2(g.h)}" rx="12" fill="none" stroke="#f7c04a" stroke-width="2" stroke-dasharray="5 15">${A('<animate attributeName="stroke-dashoffset" from="40" to="0" dur="1s" repeatCount="indefinite"/>')}</rect>`;
+    const draw = (p, x, y, r) => { const up = p.p === 'ammeter' || p.p === 'voltmeter'; const on = closed && p.on !== false; const mask = r === 90 && up ? `<rect x="-15" y="-28" width="30" height="56" fill="#fdfbff"/><path d="M0,-28 V-17 M0,17 V28" stroke="#3b4253" stroke-width="3.2"/>` : `<rect x="-28" y="-15" width="56" height="30" fill="#fdfbff" transform="rotate(${r})"/>`; return `<g transform="translate(${r2(x)},${r2(y)})">${mask}<g transform="rotate(${up ? 0 : r})">${partBody(p.p, p.p === 'switch' ? closed : on, { mask: !(r === 90 && up), color: p.color })}</g>${p.label ? (() => { const bl = p.p === 'bulb' && r !== 90, lx = bl ? -24 : r === 90 ? (p.e === 'left' ? -34 : 34) : 0, ly = bl ? -14 : r === 90 ? 4 : (p.e === 'top' ? -34 : 36), an = bl ? 'end' : r === 90 ? (p.e === 'left' ? 'end' : 'start') : 'middle'; return `<text x="${lx}" y="${ly}" font-size="11.5" font-weight="700" text-anchor="${an}" fill="#3b4253" paint-order="stroke" stroke="#fdfbff" stroke-width="3">${esc(p.label)}</text>`; })() : ''}</g>`; };
+    parts.forEach(p => { if (p.across == null) return; const h = parts[p.across]; if (!h || h.x == null) return; const horiz = h.e === 'top' || h.e === 'bottom', off = p.offset ?? (horiz ? 54 : -62);
+      o += horiz ? `<path d="M${r2(h.x - 40)},${r2(h.y)} V${r2(h.y + off)} H${r2(h.x + 40)} V${r2(h.y)}" fill="none" stroke="#3b4253" stroke-width="2.6"/>` : `<path d="M${r2(h.x)},${r2(h.y - 40)} H${r2(h.x + off)} V${r2(h.y + 40)} H${r2(h.x)}" fill="none" stroke="#3b4253" stroke-width="2.6"/>`;
+      p.px = horiz ? h.x : h.x + off; p.py = horiz ? h.y + off : h.y; p.pr = horiz ? 0 : 90; p.e = h.e; });
+    parts.forEach(p => { o += p.across == null ? draw(p, p.x, p.y, p.r) : (p.px != null ? draw(p, p.px, p.py, p.pr) : ''); });
+    return o;
+  }
+};
+['battery', 'bulb', 'switch', 'ammeter', 'voltmeter', 'resistor', 'motor', 'led'].forEach(n => { T[n] = { geo(el, R) { const g = bplace(el, R, 140); g.w = 56 * g.s; g.h = 40 * g.s; g.top = g.y - 30 * g.s; g.anchor = { x: g.x + 24 * g.s, y: g.y }; return g; }, draw(el, g) { return `<g transform="${tfm(g)}">${partBody(n, el.on ?? (n !== 'switch' ? false : el.closed !== false), { color: el.color })}</g>`; } }; });
+T.wire = {
+  geo(el, R) { const g = bplace(el, R, 140); g.w = 76 * g.s; g.h = 40 * g.s; g.top = g.y - 20 * g.s; g.anchor = { x: g.x + 34 * g.s, y: g.y }; return g; },
+  draw(el, g) { return `<g transform="${tfm(g)}"><path d="M-30,10 C-12,-24 8,32 28,-6" stroke="${col(el.color, '#d9822b')}" stroke-width="3.6" fill="none" stroke-linecap="round"/><rect x="-42" y="6" width="14" height="8" rx="2" fill="#e5484d" transform="rotate(-30 -35 10)"/><rect x="26" y="-12" width="14" height="8" rx="2" fill="#323846" transform="rotate(-40 33 -8)"/></g>`; }
+};
+T.springscale = {
+  geo(el, R) { const g = bplace(el, R, 50); const ext = Math.max(0, Math.min(1, el.stretch ?? (el.hang ? .55 : .1))); g.ext = ext; g.hookY = g.y + (120 + ext * 14) * g.s; g.w = 30 * g.s; g.h = 130 * g.s; g.top = g.y - 10 * g.s; g.anchor = { x: g.x + 14 * g.s, y: g.y + 56 * g.s }; g.hold = { x: g.x, y: g.y - 6 * g.s }; g.holdHalf = 6; return g; },
+  draw(el, g, cx) {
+    const ext = g.ext, se = 12 + 30 + ext * 34; let zz = 'M0,12'; const n = 9; for (let i = 1; i <= n; i++) zz += ` L${i % 2 ? 4 : -4},${r2(12 + (se - 12) * i / n)}`; zz += ' L0,' + r2(se);
+    let tk = ''; for (let i = 0; i < 8; i++) tk += `M7,${18 + i * 10} H10 `;
+    let o = `<g transform="translate(${r2(g.x)},${r2(g.y)}) scale(${g.s})"><circle cy="-5" r="5" fill="none" stroke="${DARK}" stroke-width="2"/><rect x="-13" y="0" width="26" height="106" rx="7" fill="#f3f5f9" stroke="${INK}" stroke-width="2"/><rect x="-7" y="8" width="14" height="92" rx="3" fill="#fff"/><path d="${tk}" stroke="${INK2}" stroke-width="1"/><path d="${zz}" fill="none" stroke="${INK2}" stroke-width="1.4"/><rect x="-8" y="${r2(se)}" width="16" height="3" rx="1" fill="#e5484d"/><path d="M0,${r2(se + 3)} V${r2(120 + ext * 14 - 6)}" stroke="${DARK}" stroke-width="2"/><path d="M0,${r2(120 + ext * 14 - 6)} q0,6 -4,6 q-4,0 -4,-4" fill="none" stroke="${DARK}" stroke-width="2" stroke-linecap="round"/></g>`;
+    if (el.hang) { const k = el.hang === 'block' ? 'block' : 'weight'; o += T[k].draw({ text: el.hangText, color: el.hangColor, w: 56, h: 34 }, { x: g.x, y: g.hookY + (k === 'block' ? 36 : 40) * g.s, s: g.s, tilt: 0 }, cx); if (k === 'block') o += `<path d="M${r2(g.x)},${r2(g.hookY)} V${r2(g.hookY + 2)}" stroke="${DARK}" stroke-width="2"/>`; }
+    if (el.reading) cx.labels.push({ a: { x: g.x + 13 * g.s, y: g.y + se * g.s }, text: el.reading, side: el.labelSide });
+    return o;
+  }
+};
+T.weight = {
+  geo(el, R) { const g = bplace(el, R); g.w = 30 * g.s; g.h = 40 * g.s; g.top = g.y - 30 * g.s; g.anchor = { x: g.x + 15 * g.s, y: g.y - 15 * g.s }; return g; },
+  draw(el, g) { return `<g transform="${tfm(g)}"><path d="M-6,-30 Q-6,-40 0,-40 Q6,-40 6,-30" stroke="${DARK}" stroke-width="2.4" fill="none"/><rect x="-15" y="-30" width="30" height="30" rx="4" fill="${col(el.color, '#a5adbb')}" stroke="${INK}" stroke-width="1.6"/><path d="M-9,-25 V-6" stroke="#fff" stroke-width="2.4" opacity=".55" stroke-linecap="round"/>${el.text ? `<text y="-11" font-size="8.5" font-weight="800" text-anchor="middle" fill="#2d3343">${esc(el.text)}</text>` : ''}</g>`; }
+};
+T.block = {
+  geo(el, R) { const g = bplace(el, R), w = el.w ?? 70, h = el.h ?? 40; g.bw = w; g.bh = h; g.w = w * g.s; g.h = h * g.s; g.top = g.y - h * g.s; g.anchor = { x: g.x + w * g.s / 2, y: g.y - h * g.s / 2 }; g.mouth = { x: g.x, y: g.top }; return g; },
+  draw(el, g) { const w = g.bw ?? el.w ?? 56, h = g.bh ?? el.h ?? 34, c = col(el.color, '#ddb07a'), wood = !el.color; return `<g transform="${tfm(g)}"><rect x="${-w / 2}" y="${-h}" width="${w}" height="${h}" rx="3" fill="${c}" stroke="${shade(c, -.3)}" stroke-width="1.6"/>${wood ? `<path d="M${-w / 2 + 6},${-h * .65} q${w * .25},-5 ${w * .5},0 t${w * .35},0 M${-w / 2 + 10},${-h * .3} q${w * .2},4 ${w * .45},0" stroke="${shade(c, -.18)}" stroke-width="1.2" fill="none"/>` : ''}${el.text ? `<text y="${-h / 2 + 4}" font-size="11" font-weight="800" text-anchor="middle" fill="#2d3343">${esc(el.text)}</text>` : ''}</g>`; }
+};
+T.ball = {
+  geo(el, R) { const g = bplace(el, R), r = el.r ?? 14; g.r = r; g.w = 2 * r * g.s; g.h = 2 * r * g.s; g.top = g.y - 2 * r * g.s; g.anchor = { x: g.x + r * g.s, y: g.y - r * g.s }; return g; },
+  draw(el, g) { const r = g.r, c = col(el.color, 'red'); return `<g transform="${tfm(g)}"><circle cy="${-r}" r="${r}" fill="${c}" stroke="${shade(c, -.3)}" stroke-width="1.6"/><circle cx="${-r * .35}" cy="${-r * 1.35}" r="${r * .28}" fill="#fff" opacity=".6"/></g>`; }
+};
+T.ramp = {
+  geo(el, R) {
+    const g = bplace(el, R), w = el.w ?? 240, h = el.h ?? 80, f = el.dir === 'left' ? -1 : 1, s = g.s;
+    g.rw = w; g.rh = h; g.f = f; g.w = w * s; g.h = h * s; g.top = g.y - h * s; g.anchor = { x: g.x + f * w * s * .1, y: g.y - h * s * .55 };
+    const ang = Math.atan2(h, w) * 180 / Math.PI * f;
+    g.surf = t => ({ x: g.x + f * s * (-w / 2 + t * w), y: g.y - s * h * (1 - t), a: ang });
+    return g;
+  },
+  draw(el, g) { const w = g.rw, h = g.rh, f = g.f, c = col(el.color, '#ece3d3'); return `<g transform="${tfm(g)}"><path d="M${-w / 2 * f},0 L${-w / 2 * f},${-h} L${w / 2 * f},0 Z" fill="${c}" stroke="${shade(c, -.32)}" stroke-width="1.8" stroke-linejoin="round"/></g>`; }
+};
+T.cart = {
+  geo(el, R) { const g = bplace(el, R); g.w = 70 * g.s; g.h = 32 * g.s; g.top = g.y - 30 * g.s; g.anchor = { x: g.x + 34 * g.s, y: g.y - 20 * g.s }; return g; },
+  draw(el, g) { const c = col(el.color, '#6e8ff0'); return `<g transform="${tfm(g)}"><rect x="-34" y="-30" width="68" height="17" rx="4" fill="${c}" stroke="${shade(c, -.3)}" stroke-width="1.6"/><rect x="-28" y="-26" width="20" height="5" rx="2" fill="#fff" opacity=".45"/><circle cx="-20" cy="-7" r="7" fill="${DARK}"/><circle cx="20" cy="-7" r="7" fill="${DARK}"/><circle cx="-20" cy="-7" r="2.4" fill="${METAL}"/><circle cx="20" cy="-7" r="2.4" fill="${METAL}"/></g>`; }
+};
+T.candle = {
+  geo(el, R) { const g = bplace(el, R), h = el.h ?? 60; g.ch = h; g.w = 20 * g.s; g.h = (h + (el.lit === false ? 6 : 40)) * g.s; g.top = g.y - g.h; g.anchor = { x: g.x + 9 * g.s, y: g.y - h * .5 * g.s }; return g; },
+  draw(el, g) { const h = g.ch; return `<g transform="${tfm(g)}"><rect x="-9" y="${-h}" width="18" height="${h}" rx="3" fill="${col(el.color, '#fff6e3')}" stroke="#d6c7a6" stroke-width="1.6"/><path d="M-9,${-h + 4} q4,6 7,0 q3,8 6,0" fill="none" stroke="#e8dcc1" stroke-width="1.4"/><path d="M0,${-h} V${-h - 6}" stroke="${DARK}" stroke-width="1.8"/></g>${el.lit === false ? '' : flame(g.x, g.y - (h + 5) * g.s, .72 * g.s)}`; }
+};
+T.match = {
+  geo(el, R) { const g = bplace(el, R, 140); if (el.tilt == null) g.tilt = 20; g.w = 20; g.h = 70 * g.s; g.top = g.y - 50 * g.s; g.anchor = { x: g.x + 8, y: g.y }; return g; },
+  draw(el, g) { const lit = el.lit !== false, [fx, fy] = rot(0, -26 * g.s, g.tilt); return `<g transform="${tfm(g)}"><rect x="-2" y="-22" width="4" height="46" rx="1" fill="#e8c48d" stroke="#b8935a" stroke-width=".8"/><ellipse cy="-24" rx="3.6" ry="5" fill="#c7323f"/></g>${lit ? flame(g.x + fx, g.y + fy, .45 * g.s) : ''}`; }
+};
+T.plant = {
+  geo(el, R) { const g = bplace(el, R); g.w = 90 * g.s; g.h = 146 * g.s; g.top = g.y - (el.bag ? 146 : 132) * g.s; g.anchor = { x: g.x + 40 * g.s, y: g.y - 84 * g.s }; return g; },
+  draw(el, g) {
+    const lc = col(el.color, '#55b86f'), st = shade(lc, -.3), lf = (y, sd, sc = 1) => `<path d="M0,${y} C${-14 * sd * sc},${y - 12 * sc} ${-34 * sd * sc},${y - 10 * sc} ${-40 * sd * sc},${y} C${-30 * sd * sc},${y + 8 * sc} ${-12 * sd * sc},${y + 8 * sc} 0,${y}Z" fill="${lc}" stroke="${st}" stroke-width="1.2"/>`;
+    let drops = ''; if (el.bag && el.droplets) { const R = rng(g.x); for (let i = 0; i < 12; i++) { const a = R() * 3.14 + 3.14, x = r2(Math.cos(a) * 40), y = r2(-95 + Math.sin(a) * 38); drops += `<ellipse cx="${x}" cy="${y}" rx="1.8" ry="2.4" fill="#cfeaff" stroke="#8dbbd8" stroke-width=".6"/>`; } }
+    return `<g transform="${tfm(g)}"><path d="M0,-46 C-2,-80 2,-104 0,-128" stroke="#3f9a59" stroke-width="3.5" fill="none" stroke-linecap="round"/>${lf(-70, 1)}${lf(-88, -1)}${lf(-106, 1, .8)}${lf(-120, -1, .65)}<path d="M-24,-40 L24,-40 L19,0 L-19,0 Z" fill="#d9875c" stroke="#a5603b" stroke-width="1.6" stroke-linejoin="round"/><rect x="-27" y="-47" width="54" height="9" rx="2" fill="#e39a6f" stroke="#a5603b" stroke-width="1.4"/>${el.bag ? `<path d="M-6,-50 C-50,-58 -52,-110 -24,-136 Q0,-150 24,-136 C52,-110 50,-58 6,-50 Z" fill="#e6f2fa" fill-opacity=".35" stroke="${INK2}" stroke-width="1.4" stroke-dasharray="5 4"/><path d="M-8,-50 H8" stroke="#e5484d" stroke-width="3" stroke-linecap="round"/>${drops}` : ''}</g>`;
+  }
+};
+T.leaf = {
+  geo(el, R) { const g = bplace(el, R, 140); if (el.tilt == null) g.tilt = 30; g.w = 60 * g.s; g.h = 70 * g.s; g.top = g.y - 34 * g.s; g.anchor = { x: g.x + 22 * g.s, y: g.y }; return g; },
+  draw(el, g) { const c = col(el.color, '#55b86f'); if (!el.color2) return `<g transform="${tfm(g)}">${leafPath(c)}</g>`; const k = uid('k'); return `<g transform="${tfm(g)}"><defs><clipPath id="${k}"><rect x="0" y="-40" width="40" height="80"/></clipPath></defs>${leafPath(c)}<g clip-path="url(#${k})">${leafPath(col(el.color2))}</g></g>`; }
+};
+T.goggles = {
+  geo(el, R) { const g = bplace(el, R, 140); g.w = 90 * g.s; g.h = 36 * g.s; g.top = g.y - 18 * g.s; g.anchor = { x: g.x + 42 * g.s, y: g.y }; return g; },
+  draw(el, g) { return `<g transform="${tfm(g)}"><path d="M-44,-2 Q-50,-14 -36,-14 M44,-2 Q50,-14 36,-14" stroke="${DARK}" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M-38,-14 Q-38,-18 -32,-18 L32,-18 Q38,-18 38,-14 L38,4 Q38,14 26,14 Q14,14 8,6 Q0,-2 -8,6 Q-14,14 -26,14 Q-38,14 -38,4 Z" fill="#cfe8fa" fill-opacity=".7" stroke="${DARK}" stroke-width="2.6" stroke-linejoin="round"/><path d="M-28,-10 L-18,-10" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></g>`; }
+};
+T.gloves = {
+  geo(el, R) { const g = bplace(el, R, 140); g.w = 50 * g.s; g.h = 70 * g.s; g.top = g.y - 36 * g.s; g.anchor = { x: g.x + 22 * g.s, y: g.y }; return g; },
+  draw(el, g) { const c = col(el.color, '#b9cdf5'); return `<g transform="${tfm(g)}"><path d="M-14,34 L-16,4 L-24,-6 Q-28,-12 -22,-14 L-14,-8 L-14,-26 Q-14,-31 -10,-31 Q-6,-31 -6,-26 L-6,-12 L-5,-34 Q-5,-38 -1,-38 Q3,-38 3,-34 L3,-12 L5,-31 Q5,-35 9,-35 Q13,-35 13,-31 L12,-10 L15,-24 Q16,-28 19,-27 Q22,-26 21,-22 L18,6 L16,34 Z" fill="${c}" stroke="${shade(c, -.35)}" stroke-width="1.6" stroke-linejoin="round"/><rect x="-16" y="26" width="34" height="8" rx="2" fill="${shade(c, -.12)}"/></g>`; }
+};
+T.ice = {
+  geo(el, R) { const g = bplace(el, R); g.w = 64 * g.s; g.h = 34 * g.s; g.top = g.y - 34 * g.s; g.anchor = { x: g.x + 30 * g.s, y: g.y - 16 * g.s }; return g; },
+  draw(el, g) { const n = Math.max(1, Math.min(5, el.n ?? 3)); let o = ''; for (let i = 0; i < n; i++) { const x = (i - (n - 1) / 2) * 22, y = i % 2 ? -36 : -20; o += `<rect x="${x - 10}" y="${y}" width="20" height="19" rx="4" fill="#eef9ff" stroke="#8dbbd8" stroke-width="1.4" transform="rotate(${i % 2 ? 10 : -8} ${x} ${y + 9})"/><path d="M${x - 5},${y + 5} h5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`; } return `<g transform="${tfm(g)}">${o}</g>`; }
+};
+T.powder = {
+  geo(el, R) { const g = bplace(el, R); g.w = 64 * g.s; g.h = 24 * g.s; g.top = g.y - 22 * g.s; g.mouth = { x: g.x, y: g.top }; g.anchor = { x: g.x + 28 * g.s, y: g.y - 9 * g.s }; return g; },
+  draw(el, g) { const c = col(el.color, 'white'), st = shade(c, -.32), R = rng(g.x); let sp = ''; for (let i = 0; i < 10; i++) sp += `<circle cx="${r2(-18 + R() * 36)}" cy="${r2(-3 - R() * 14)}" r=".9" fill="${st}" opacity=".5"/>`; return `<g transform="${tfm(g)}">${el.paper ? '<path d="M-40,0 L-28,-6 L40,-6 L28,0 Z" fill="#fff" stroke="#d6d9e0" stroke-width="1.2"/>' : ''}<path d="M-28,-2 Q-12,-21 0,-22 Q12,-21 28,-2 Z" fill="${c}" stroke="${st}" stroke-width="1.2"/>${sp}</g>`; }
+};
+T.hose = {
+  geo(el, R) { let pts = (el.points || []).map(p => [+p[0], +p[1]]); if (el.from) { const t = R(el.from); if (t) { const m = t.mouthTop || t.mouth || { x: t.x, y: t.top }; pts = [[m.x, m.y], ...pts]; } } if (el.to && typeof el.to === 'string') { const t = R(el.to); if (t) { const m = t.mouth || { x: t.x, y: t.top }; pts.push([m.x, m.y + 18]); } } const last = pts[pts.length - 1] || [240, 150]; return { x: last[0], y: last[1], s: 1, pts, anchor: pts.length > 1 ? { x: (pts[0][0] + pts[1][0]) / 2, y: (pts[0][1] + pts[1][1]) / 2 } : { x: last[0], y: last[1] } }; },
+  draw(el, g, cx) {
+    if (g.pts.length < 2) return ''; const d = catmull(g.pts), glass = el.glass;
+    let o = glass ? `<path d="${d}" fill="none" stroke="${INK}" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#eaf5fc" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>` : `<path d="${d}" fill="none" stroke="#c4834a" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#eab37c" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+    if (el.bubbles) { const [lx, ly] = g.pts[g.pts.length - 1], R = rng(lx + ly); let bo = ''; for (let i = 0; i < 5; i++) { const r = r2(2 + R() * 2.4), dur = r2(1.2 + R()), b = r2(-R() * dur), bx = r2(lx + R() * 8 - 4), top = ly - (el.rise ?? 50); bo += ANIM ? `<circle cx="${bx}" cy="${ly}" r="${r}" fill="#fff" fill-opacity=".8" stroke="#7aaed0" stroke-width=".8"><animate attributeName="cy" values="${r2(ly - 2)};${r2(top)}" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/></circle>` : `<circle cx="${bx}" cy="${r2(ly - 4 - R() * (ly - top))}" r="${r}" fill="#fff" fill-opacity=".8" stroke="#7aaed0" stroke-width=".8"/>`; } cx.front.push(bo); }
+    return o;
+  }
+};
+T.tubing = T.hose;
+T.arrow = {
+  selfLabel: true,
+  geo(el, R) { const a = pt(el.from, R) || { x: 160, y: 150 }, b = pt(el.to, R) || { x: 300, y: 150 }; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, a, b, s: 1 }; },
+  draw(el, g, cx) {
+    const c = col(el.color, '#b14de0'), { a, b } = g, mid = marker(cx, c), dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len, cv = el.curve ?? 0;
+    const qx = g.x + nx * cv, qy = g.y + ny * cv, d = cv ? `M${r2(a.x)},${r2(a.y)} Q${r2(qx)},${r2(qy)} ${r2(b.x)},${r2(b.y)}` : `M${r2(a.x)},${r2(a.y)} L${r2(b.x)},${r2(b.y)}`;
+    let o = `<path d="${d}" fill="none" stroke="${c}" stroke-width="${el.width ?? 3.2}" stroke-linecap="round"${el.dash ? ' stroke-dasharray="7 6"' : ''} marker-end="url(#${mid})"${el.both ? ` marker-start="url(#${mid})"` : ''}>${el.flow ? A('<animate attributeName="stroke-dashoffset" from="26" to="0" dur=".9s" repeatCount="indefinite"/>') : ''}</path>`;
+    if (el.flow && !el.dash) o = o.replace('stroke-linecap="round"', 'stroke-linecap="round" stroke-dasharray="9 4"');
+    if (el.label) { const lx = cv ? g.x + nx * cv * .55 : g.x, ly = cv ? g.y + ny * cv * .55 : g.y; const side = (el.labelSide === 'left' ? -1 : 1); cx.labels.push({ fixed: true, x: lx + nx * 16 * side, y: ly + ny * 16 * side - (Math.abs(nx) < .3 ? 0 : 0), text: el.label, tone: 'arrow', fg: c }); }
+    return o;
+  }
+};
+T.label = {
+  selfLabel: true,
+  geo(el, R) { return { x: el.x ?? 240, y: el.y ?? 40, s: 1 }; },
+  draw(el, g, cx) { const to = el.to != null ? pt(el.to, cx.R) : null; if (to) cx.labels.push({ a: to, text: el.text, fixedBox: { x: g.x, y: g.y }, tone: el.tone }); else cx.labels.push({ fixed: true, x: g.x, y: g.y, text: el.text, tone: el.tone }); return ''; }
+};
+T.text = {
+  selfLabel: true,
+  geo(el, R) { return { x: el.x ?? 240, y: el.y ?? 32, s: 1 }; },
+  draw(el, g) { const fs = el.size ?? 16, lines = wrap(el.text, el.w ?? 400, fs); return `<text x="${r2(g.x)}" y="${r2(g.y)}" font-size="${fs}" font-weight="${el.weight ?? 800}" text-anchor="${el.anchor ?? 'middle'}" fill="${col(el.color, '#2b3040')}">${lines.map((l, i) => `<tspan x="${r2(g.x)}" dy="${i ? fs * 1.3 : 0}">${esc(l)}</tspan>`).join('')}</text>`; }
+};
+T.note = {
+  selfLabel: true,
+  geo(el, R) { return { x: el.x ?? 380, y: el.y ?? 60, s: 1 }; },
+  draw(el, g, cx) {
+    const fs = 12.5, w0 = el.w ?? 172, lines = wrap(el.text, w0 - 24, fs), tag = el.tag ?? { eye: '관찰', time: '시간', ok: '바른 방법', no: '이렇게 하지 않아요', warn: '주의', idea: '생각해 보기', result: '결과', how: '방법', tip: '도움말' }[el.icon] ?? null;
+    const tc = { warn: '#c7323f', no: '#c7323f', ok: '#178a5c', eye: '#2c5fb3', time: '#7d2ba6', idea: '#b5650f', result: '#178a5c', how: '#7d2ba6', tip: '#178a5c' }[el.icon] || '#7d2ba6';
+    const w = Math.max(...lines.map(l => tw(l, fs)), tag ? tw(tag, 11) + 4 : 0) + 24, h = lines.length * fs * 1.45 + 18 + (tag ? 18 : 0);
+    const x0 = Math.max(4, Math.min(W - w - 4, g.x - w / 2)), y0 = Math.max(4, Math.min(H - h - 4, g.y - h / 2));
+    let o = '';
+    const to = el.to != null ? pt(el.to, cx.R) : null;
+    if (to) o += `<path d="M${r2(x0 + w / 2)},${r2(y0 + h / 2)} L${r2(to.x)},${r2(to.y)}" stroke="${INK2}" stroke-width="1.3" stroke-dasharray="3 3"/><circle cx="${r2(to.x)}" cy="${r2(to.y)}" r="2.8" fill="${INK2}"/>`;
+    o += `<rect x="${r2(x0)}" y="${r2(y0)}" width="${r2(w)}" height="${r2(h)}" rx="12" fill="${el.bg ?? '#fff'}" filter="url(#${cx.sh})"/>`;
+    if (tag) o += `<text x="${r2(x0 + 12)}" y="${r2(y0 + 21)}" font-size="11" font-weight="800" fill="${tc}">${esc(tag)}</text>`;
+    lines.forEach((l, i) => { o += `<text x="${r2(x0 + 12)}" y="${r2(y0 + (tag ? 18 : 0) + 22 + i * fs * 1.45)}" font-size="${fs}" font-weight="600" fill="#2b3040">${esc(l)}</text>`; });
+    cx.front.push(o); return '';
+  }
+};
+T.mark = {
+  geo(el, R) { return { x: el.x ?? 60, y: el.y ?? 50, s: el.s ?? 1 }; },
+  draw(el, g) { const ok = el.kind !== 'no' && el.kind !== 'x'; return `<g transform="translate(${r2(g.x)},${r2(g.y)}) scale(${g.s})"><circle r="19" fill="${ok ? '#e8f6ef' : '#ffedef'}"/>${ok ? '<circle r="10" fill="none" stroke="#178a5c" stroke-width="4"/>' : '<path d="M-8,-8 L8,8 M8,-8 L-8,8" stroke="#c7323f" stroke-width="4.2" stroke-linecap="round"/>'}</g>`; }
+};
+T.eye = {
+  geo(el, R) { return { x: el.x ?? 80, y: el.y ?? 150, s: el.s ?? 1 }; },
+  draw(el, g, cx) { const to = el.to != null ? pt(el.to, cx.R) : null; return `${to ? `<path d="M${r2(g.x + 16)},${r2(g.y)} L${r2(to.x)},${r2(to.y)}" stroke="#2c5fb3" stroke-width="1.6" stroke-dasharray="4 4"/>` : ''}<g transform="translate(${r2(g.x)},${r2(g.y)}) scale(${g.s})"><path d="M-18,0 Q0,-15 18,0 Q0,15 -18,0Z" fill="#fff" stroke="${DARK}" stroke-width="2"/><circle r="6.5" fill="#2c5fb3"/><circle r="2.8" fill="#1d2130"/><circle cx="-2" cy="-2" r="1.3" fill="#fff"/></g>`; }
+};
+T.view = {
+  selfLabel: true,
+  geo(el, R) { const r = el.r ?? 54; return { x: el.x ?? 380, y: el.y ?? 110, s: 1, r, top: (el.y ?? 110) - r, anchor: { x: (el.x ?? 380) + r, y: el.y ?? 110 } }; },
+  draw(el, g, cx) {
+    const r = g.r, k = uid('k'), c = col(el.color, el.show === 'plantcells' ? '#e9f3d9' : el.show === 'animalcells' ? '#f6d6e4' : '#a98be8'), R = rng(g.x * 5 + g.y);
+    let inner = '';
+    switch (el.show) {
+      case 'plantcells': { const st = shade(c, -.45); for (let j = -4; j <= 4; j++) for (let i = -4; i <= 4; i++) { const x = i * 28 + (j % 2 ? 14 : 0), y = j * 17; inner += `<rect x="${x - 13}" y="${y - 7.5}" width="26" height="15" rx="2" fill="${c}" stroke="${st}" stroke-width="1.4"/><circle cx="${x + (R() * 8 - 4)}" cy="${y}" r="2.6" fill="${col(el.nucleus, el.color ? shade(c, -.5) : '#9a7fc4')}"/>`; } inner = `<g transform="rotate(-8)">${inner}</g>`; break; }
+      case 'animalcells': { const st = shade(c, -.4); for (let i = 0; i < 9; i++) { const a = R() * 6.28, d = Math.sqrt(R()) * (r - 18), x = Math.cos(a) * d, y = Math.sin(a) * d, rr = 11 + R() * 5; inner += `<ellipse cx="${r2(x)}" cy="${r2(y)}" rx="${r2(rr)}" ry="${r2(rr * .82)}" fill="${c}" stroke="${st}" stroke-width="1.3" transform="rotate(${r2(R() * 90)} ${r2(x)} ${r2(y)})"/><circle cx="${r2(x + 2)}" cy="${r2(y)}" r="3.2" fill="${col(el.nucleus, '#a85c86')}"/>`; } break; }
+      case 'solid': case 'liquid': case 'gas': inner = particles(el.show, c, r, g.x + g.y); break;
+      case 'crystals': { for (let i = 0; i < 9; i++) { const x = r2(-r * .6 + R() * r * 1.2), y = r2(-r * .6 + R() * r * 1.2), z = r2(9 + R() * 9); inner += `<rect x="${x}" y="${y}" width="${z}" height="${z}" fill="${col(el.color, '#f6f6f2')}" stroke="${INK2}" stroke-width="1.2" transform="rotate(${r2(R() * 50)} ${x} ${y})"/>`; } break; }
+      case 'bubbles': { for (let i = 0; i < 12; i++) inner += `<circle cx="${r2(-r * .7 + R() * r * 1.4)}" cy="${r2(-r * .7 + R() * r * 1.4)}" r="${r2(3 + R() * 6)}" fill="#fff" fill-opacity=".7" stroke="#7aaed0" stroke-width="1.2"/>`; break; }
+      default: inner = el.markup || (el.text ? `<text y="5" font-size="13" font-weight="700" text-anchor="middle" fill="#2b3040">${esc(el.text)}</text>` : '');
+    }
+    let o = '';
+    const fr = el.from != null ? pt(el.from, cx.R) : null;
+    if (fr) { const dx = g.x - fr.x, dy = g.y - fr.y, d = Math.hypot(dx, dy) || 1, nx = -dy / d, ny = dx / d; o += `<path d="M${r2(fr.x)},${r2(fr.y)} L${r2(g.x + nx * r)},${r2(g.y + ny * r)} M${r2(fr.x)},${r2(fr.y)} L${r2(g.x - nx * r)},${r2(g.y - ny * r)}" stroke="#c99be6" stroke-width="1.4" stroke-dasharray="4 4"/><circle cx="${r2(fr.x)}" cy="${r2(fr.y)}" r="7" fill="none" stroke="#c99be6" stroke-width="2"/>`; }
+    o += `<g transform="translate(${r2(g.x)},${r2(g.y)})"><defs><clipPath id="${k}"><circle r="${r}"/></clipPath></defs><circle r="${r + 4}" fill="#fff" filter="url(#${cx.sh})"/><g clip-path="url(#${k})"><rect x="${-r}" y="${-r}" width="${2 * r}" height="${2 * r}" fill="${el.bg ?? '#fbfdff'}"/>${inner}</g><circle r="${r}" fill="none" stroke="#c58ce8" stroke-width="3"/></g>`;
+    if (el.label) cx.labels.push({ fixed: true, x: g.x, y: g.y + r + 16, text: el.label });
+    cx.front.push(o); return '';
+  }
+};
+T.zoom = T.view;
+T.svg = {
+  geo(el, R) { const g = bplace(el, R, 150); g.w = (el.w ?? 60) * g.s; g.h = (el.h ?? 60) * g.s; g.top = g.y - g.h; g.anchor = { x: g.x + g.w / 2, y: g.y - g.h / 2 }; return g; },
+  draw(el, g) { return `<g transform="${tfm(g)}">${el.markup || ''}</g>`; }
+};
+T.generic = {
+  geo(el, R) { const g = bplace(el, R, 150); g.w = 56; g.h = 56; g.top = g.y - 28; return g; },
+  draw(el, g) { const ch = String(el.text || '?').trim().charAt(0) || '?'; return `<g transform="translate(${r2(g.x)},${r2(g.y)})"><rect x="-26" y="-26" width="52" height="52" rx="16" fill="#f3e2fd"/><text y="9" font-size="26" font-weight="800" text-anchor="middle" fill="#7d2ba6">${esc(ch)}</text></g>`; }
+};
+T._unknown = {
+  geo(el, R) { const g = bplace(el, R, 150); g.w = 70; g.h = 44; g.top = g.y - 44; return g; },
+  draw(el, g) { console.warn('[LabKit] 알 수 없는 부품:', el.t); return `<g transform="translate(${r2(g.x)},${r2(g.y)})"><rect x="-35" y="-44" width="70" height="44" rx="8" fill="#fff" stroke="#c99be6" stroke-dasharray="4 3"/><text y="-18" font-size="10" text-anchor="middle" fill="#7d2ba6">${esc(el.t || '?')}</text></g>`; }
+};
+
+/* ---------- labels ---------- */
+function layoutLabels(list, sh) {
+  const boxes = [], out = [];
+  const hit = b => boxes.some(o => b.x < o.x + o.w + 3 && b.x + b.w + 3 > o.x && b.y < o.y + o.h + 2 && b.y + b.h + 2 > o.y);
+  const tone = t => t === 'hot' ? { bg: '#ffedef', fg: '#c7323f' } : t === 'arrow' ? { bg: '#fbf4ff', fg: '#7d2ba6' } : { bg: '#fff', fg: '#2b3040' };
+  list.filter(l => l.fixed).forEach(l => { const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11; const b = { x: Math.max(3, Math.min(W - w - 3, l.x - w / 2)), y: Math.max(3, Math.min(H - h - 3, l.y - h / 2)), w, h }; boxes.push(b); const tn = tone(l.tone); out.push(pillSvg(b.x + w / 2, b.y + h / 2, l.text, { bg: tn.bg, fg: l.fg || tn.fg, sh }).svg); });
+  list.filter(l => !l.fixed && l.a && l.text).forEach(l => {
+    const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11, a = l.a;
+    let side = l.side || (a.x > W - 150 ? 'left' : 'right'); let b;
+    if (l.fixedBox) b = { x: l.fixedBox.x - w / 2, y: l.fixedBox.y - h / 2, w, h };
+    else {
+      const make = (sd, dy) => ({ x: sd === 'right' ? a.x + 22 : a.x - 22 - w, y: a.y - h / 2 + dy, w, h });
+      b = make(side, 0);
+      if (b.x + w > W - 3 || b.x < 3) { side = side === 'right' ? 'left' : 'right'; b = make(side, 0); }
+      for (let i = 1; i < 12 && hit(b); i++) b = make(side, (i % 2 ? 1 : -1) * Math.ceil(i / 2) * (h + 4));
+      b.x = Math.max(3, Math.min(W - w - 3, b.x)); b.y = Math.max(3, Math.min(H - h - 3, b.y));
+    }
+    boxes.push(b);
+    const ex = b.x + w / 2 < a.x ? b.x + w : b.x, ey = b.y + h / 2, tn = tone(l.tone);
+    out.push(`<path d="M${r2(a.x)},${r2(a.y)} L${r2(ex)},${r2(ey)}" stroke="#9aa2b4" stroke-width="1.3"/><circle cx="${r2(a.x)}" cy="${r2(a.y)}" r="2.8" fill="#fff" stroke="#7f889c" stroke-width="1.4"/>` + pillSvg(b.x + w / 2, ey, l.text, { bg: tn.bg, fg: tn.fg, sh }).svg);
+  });
+  return out.join('');
+}
+function grid() { let o = '<g opacity=".55" font-size="8" fill="#7d2ba6">'; for (let x = 0; x <= W; x += 20) o += `<path d="M${x},0 V${H}" stroke="${x % 100 ? '#e8d6f7' : '#c99be6'}" stroke-width="${x % 100 ? .5 : 1}"/>${x % 100 === 0 ? `<text x="${x + 2}" y="10">${x}</text>` : ''}`; for (let y = 0; y <= H; y += 20) o += `<path d="M0,${y} H${W}" stroke="${y % 100 ? '#e8d6f7' : '#c99be6'}" stroke-width="${y % 100 ? .5 : 1}"/>${y % 100 === 0 && y ? `<text x="2" y="${y - 2}">${y}</text>` : ''}`; return o + `<path d="M0,${BENCH} H${W}" stroke="#e5484d" stroke-dasharray="4 3"/><text x="${W - 60}" y="${BENCH - 4}" fill="#e5484d">bench y=${BENCH}</text></g>`; }
+
+/* ---------- scene ---------- */
+function build(items, o = {}) {
+  const els = JSON.parse(JSON.stringify(Array.isArray(items) ? items : [])).filter(e => e && typeof e === 'object');
+  const pre = [];
+  els.forEach(el => { if (el.stand === true && el.t !== 'stand') { el.id = el.id || uid('auto'); pre.push({ t: 'stand', hold: [el.id], reach: el.reach }); } });
+  const all = [...pre, ...els], byId = {};
+  all.forEach(el => { if (el.t === 'rack') (el.tubes || []).forEach((tb, i) => { if (!tb || typeof tb !== 'object') return; tb.t = tb.t || 'tube'; tb._parent = el; tb._slot = i; if (tb.id) byId[tb.id] = tb; }); if (el.id) byId[el.id] = el; });
+  const busy = new Set();
+  const R = ref => { const el = typeof ref === 'string' ? byId[ref] : ref; if (!el || typeof el !== 'object') return null; if (el._g) return el._g; if (busy.has(el)) return null; busy.add(el); const Tp = T[el.t] || T._unknown; try { el._g = Tp.geo(el, R); } catch (e) { console.warn('[LabKit] 배치 오류', el, e); el._g = { x: el.x ?? 240, y: el.y ?? BENCH, s: 1 }; } busy.delete(el); return el._g; };
+  all.forEach(el => R(el));
+  const P = uid('s'), cx = { front: [], labels: [], defs: [], R, sh: P + 'sh' };
+  const behindOf = el => { const id = el.in || (el.t === 'funnel' ? el.over : null); return id && byId[id] ? id : null; };
+  const behind = {}; all.forEach(el => { const id = behindOf(el); if (id) (behind[id] ||= []).push(el); });
+  const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }; g._sh = cx.sh; let s = ''; try { s = Tp.draw(el, g, cx) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, text: el.label, side: el.labelSide }); el._done = true; return s; };
+  const emit = el => { let s = ''; if (el.id && behind[el.id]) behind[el.id].forEach(b => { if (!b._done) s += drawOne(b); }); return s + drawOne(el); };
+  cx.emit = emit;
+  let body = ''; all.forEach(el => { if (!behindOf(el)) body += emit(el); });
+  all.forEach(el => { if (!el._done) body += drawOne(el); });
+  return { body, cx, P };
+}
+function scene(items, o = {}) {
+  const { body, cx, P } = build(items, o);
+  const bench = o.bench !== false;
+  return `<svg class="scene" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label || '실험 장면')}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="${P}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#faf6ff"/></linearGradient><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs><rect width="${W}" height="${H}" fill="url(#${P}bg)"/>${bench ? `<rect y="${BENCH}" width="${W}" height="${H - BENCH}" fill="#f2ecf9"/><rect y="${BENCH}" width="${W}" height="2" fill="#e4d9f1"/>` : ''}${body}${cx.front.join('')}${layoutLabels(cx.labels, cx.sh)}${o.grid ? grid() : ''}</svg>`;
+}
+const GUESS = [['눈금실린더','cylinder'],['메스실린더','cylinder'],['둥근바닥','roundflask'],['플라스크','flask'],['비커','beaker'],['시험관대','rack'],['시험관 꽂이','rack'],['시험관','tube'],['스포이트','dropper'],['피펫','dropper'],['알코올램프','lamp'],['알코올 램프','lamp'],['가스버너','lamp'],['핫플레이트','hotplate'],['가열 장치','hotplate'],['가열장치','hotplate'],['온도계','thermometer'],['유리 막대','rod'],['유리막대','rod'],['약숟가락','spatula'],['약수저','spatula'],['깔때기','funnel'],['거름종이','paper:filter'],['여과지','paper:filter'],['리트머스','paper'],['시험지','paper'],['스탠드','stand'],['삼발이','tripod'],['쇠그물','tripod'],['저울','balance'],['초시계','stopwatch'],['스톱워치','stopwatch'],['타이머','stopwatch'],['페트리','dish'],['증발 접시','evapdish'],['증발접시','evapdish'],['시계 접시','watchglass'],['시계접시','watchglass'],['시약병','bottle'],['현미경','microscope'],['받침 유리','slide'],['받침유리','slide'],['덮개 유리','slide'],['슬라이드','slide'],['돋보기','magnifier'],['자석','magnet'],['나침반','compass'],['건전지','battery'],['전지','battery'],['전구','bulb'],['스위치','switch'],['전류계','ammeter'],['전압계','voltmeter'],['저항','resistor'],['전동기','motor'],['모터','motor'],['발광 다이오드','led'],['LED','led'],['전선','wire'],['용수철저울','springscale'],['용수철 저울','springscale'],['나무 도막','block'],['나무도막','block'],['수레','cart'],['양초','candle'],['성냥','match'],['보안경','goggles'],['장갑','gloves'],['얼음','ice'],['종이컵','cup:paper'],['컵','cup'],['수조','trough'],['막자사발','mortar'],['막자','mortar'],['주사기','syringe'],['고무관','hose'],['식물','plant'],['화분','plant'],['잎','leaf'],['가루','powder'],['소금','powder'],['설탕','powder'],['용액','bottle'],['증류수','bottle'],['구슬','ball'],['공','ball'],['빗면','ramp'],['자','ruler:1'],['추','weight:1'],['초','candle:1']];
+function guess(name) {
+  const n = String(name || '').replace(/\(.*?\)/g, '').trim();
+  for (const [k, v] of GUESS) { const [t, flag] = v.split(':'); if (flag === '1') { if (n === k || n.startsWith(k + ' ')) return { t }; continue; } if (n.includes(k)) return flag === 'filter' ? { t, kind: 'filter' } : flag === 'paper' ? { t, paper: true } : t === 'bottle' ? { t, text: n.slice(0, 5), fill: .55 } : { t }; }
+  return { t: 'generic', text: n };
+}
+function icon(spec, name) {
+  let el = spec ? (typeof spec === 'string' ? { t: spec } : { ...spec }) : guess(name);
+  if (!T[el.t]) el = { t: 'generic', text: name };
+  if (SHAPES[el.t] && el.fill == null && !el.color && !el.layers) el.fill = .4;
+  if (el.t === 'tube' && el.fill == null) el.fill = .4;
+  const prev = ANIM; ANIM = false;
+  let out; try { const { body, cx } = build([el]); out = `<svg class="ico" data-fit="1" viewBox="0 0 ${W} ${H}" aria-hidden="true"><defs><filter id="${cx.sh}"><feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity=".12"/></filter>${cx.defs.join('')}</defs><g class="fit">${body}${cx.front.join('')}</g></svg>`; } finally { ANIM = prev; }
+  return out;
+}
+function fit(root) { (root || document).querySelectorAll('svg[data-fit]').forEach(svg => { const g = svg.querySelector('.fit'); try { const b = g.getBBox(); if (b.width && b.height) { const p = Math.max(b.width, b.height) * .08 + 2; svg.setAttribute('viewBox', `${r2(b.x - p)} ${r2(b.y - p)} ${r2(b.width + 2 * p)} ${r2(b.height + 2 * p)}`); svg.removeAttribute('data-fit'); } } catch (e) { } }); }
+return { scene, icon, fit, esc, col, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
+})();
+window.LabKit = LabKit;
+function lkStart() {
+'use strict';
+const D = window.EXPERIMENT || {}, e = LabKit.esc, Q = new URLSearchParams(location.search), GRID = Q.has('grid');
+LabKit.setAnim(!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches));
+const IC = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
+  print: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v16H5.5A1.5 1.5 0 0 0 4 20.5zM4 20.5A1.5 1.5 0 0 0 5.5 22H20"/></svg>',
+  alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/></svg>',
+  zoom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>',
+  flask: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/></svg>',
+  table: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>',
+  q: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
+  full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
+};
+const md = s => e(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
+const steps = arr(D.steps).filter(s => s && typeof s === 'object');
+const mats = arr(D.materials).map(m => typeof m === 'string' ? { name: m } : m).filter(m => m && m.name);
+const safety = arr(D.safety);
+const res = D.results || {};
+document.title = (D.title ? D.title + ' · ' : '') + '실험 과정 그림 안내';
+const sceneOf = (st, i) => { try { return LabKit.scene(arr(st.scene), { grid: GRID, bench: st.bench, label: `${i + 1}단계: ${st.title || ''}` }); } catch (err) { console.error(err); return '<div class="empty"><b>그림을 그리지 못했어요</b><span>scene 데이터를 확인해 주세요.</span></div>'; } };
+const box = (cls, tag, v) => v ? `<div class="box ${cls}"><span class="bi">${tag}</span><div>${md(v)}</div></div>` : '';
+const coverItems = D.cover || [{ t: 'flask', x: 150, fill: .5, color: 'violet', bubbles: 5 }, { t: 'beaker', id: 'cb', x: 262, fill: .4, color: 'water' }, { t: 'rack', x: 382, tubes: [{ fill: .45, color: 'pink' }, { fill: .45, color: 'yellow' }, { fill: .45, color: 'green' }] }, { t: 'dropper', over: 'cb', dy: 18, color: 'violet' }];
+const chips = () => [D.subject && `<span class="chip primary">${e(D.subject)}</span>`, D.unit && `<span class="chip">${IC.book}${e(D.unit)}</span>`, D.duration && `<span class="chip">${IC.clock}${e(D.duration)}</span>`, D.group && `<span class="chip">${IC.users}${e(D.group)}</span>`].filter(Boolean).join('');
+const matGrid = () => `<div class="mat-grid">${mats.map(m => `<div class="mat">${LabKit.icon(m.icon, m.name)}<div class="nm">${e(m.name)}</div>${m.qty ? `<div class="qty">${e(m.qty)}</div>` : ''}</div>`).join('')}</div>`;
+const safeList = () => `<div class="safety">${safety.map(s => `<div class="safe"><span class="ic">${IC.alert}</span><div>${md(s)}</div></div>`).join('')}</div>`;
+const tableHtml = t => { if (!t || !arr(t.head).length) return ''; return `<div class="tbl-wrap"><table class="tbl"><thead><tr>${arr(t.head).map(h => `<th>${e(h)}</th>`).join('')}</tr></thead><tbody>${arr(t.rows).map(r => `<tr>${arr(r).map(c => `<td>${e(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; };
+const hasRes = res.expect || (res.table && arr(res.table.head).length) || arr(res.questions).length || res.conclusion;
+const resCards = () => [res.expect && `<div class="card"><h3>${IC.flask}예상 결과</h3><p>${md(res.expect)}</p></div>`, res.conclusion && `<div class="card"><h3>${IC.flask}정리</h3><p>${md(res.conclusion)}</p></div>`, res.table && arr(res.table.head).length && `<div class="card wide"><h3>${IC.table}${e(res.table.title || '결과 기록표')}</h3>${tableHtml(res.table)}</div>`, arr(res.questions).length && `<div class="card${res.table ? '' : ''}"><h3>${IC.q}생각해 보기</h3><ol class="qs">${arr(res.questions).map(q => `<li>${md(q)}</li>`).join('')}</ol></div>`].filter(Boolean).join('');
+const emptyState = `<div class="card empty">${LabKit.scene([{ t: 'beaker', x: 200, fill: 0 }, { t: 'dropper', x: 200, y: 110, drops: false }, { t: 'note', x: 340, y: 120, text: '실험 단계를 기다리는 중이에요', icon: 'idea' }], { label: '빈 상태' }).replace('class="scene"', 'class="scene ill"')}<b>아직 실험 단계가 없어요</b><span>실험지 내용을 넣으면 이곳에 단계별 그림이 나타나요!</span></div>`;
+
+function page() {
+  const h = [];
+  h.push(`<header class="hero wrap"><div class="hero-card"><div><div class="chips">${chips()}</div><h1>${e(D.title || '실험 과정 안내')}</h1>${D.goal ? `<p class="goal">${md(D.goal)}</p>` : ''}<div class="toolbar"><button class="btn primary" data-open="0">${IC.play}수업 모드로 보기</button><button class="btn" data-print>${IC.print}인쇄하기</button></div>${D._demo ? '<div class="demo">지금 보이는 내용은 템플릿의 예시 데이터예요. 실험지 내용으로 바꿔 주세요.</div>' : ''}</div><div class="hero-art">${LabKit.scene(coverItems, { label: '표지 그림' })}</div></div></header><main class="wrap">`);
+  if (mats.length) h.push(`<section><div class="sec-head"><span class="eyebrow">준비</span><h2>준비물</h2></div>${matGrid()}</section>`);
+  if (safety.length) h.push(`<section><div class="sec-head"><span class="eyebrow">안전</span><h2>안전 수칙</h2></div>${safeList()}</section>`);
+  h.push(`<section><div class="sec-head"><span class="eyebrow">과정</span><h2>실험 과정</h2></div>`);
+  h.push(steps.length ? `<div class="steps">${steps.map((st, i) => `<article class="step" tabindex="0" data-step="${i}" aria-label="${i + 1}단계 크게 보기"><div class="scene-box">${sceneOf(st, i)}</div><div><div class="meta"><span class="num">${i + 1}</span>${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h3>${e(st.title || `${i + 1}단계`)}</h3>${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('obs', '관찰', st.observe)}${box('tip', '도움말', st.tip)}${box('warn', '주의', st.warn)}</div><span class="zoom-hint">${IC.zoom}크게 보기</span></article>`).join('')}</div>` : emptyState);
+  h.push('</section>');
+  if (hasRes) h.push(`<section><div class="sec-head"><span class="eyebrow">정리</span><h2>결과 정리</h2></div><div class="res-grid">${resCards()}</div></section>`);
+  h.push(`<footer class="foot">${D.source ? `원문: ${e(D.source)}<br>` : ''}${D.notes ? md(D.notes) + '<br>' : ''}그림은 이해를 돕기 위한 모식도로, 실제 기구의 모양·크기와 다를 수 있어요. 실험은 반드시 선생님의 안내에 따라 진행하세요.<br>만든 도구: <a href="https://github.com/sci-eum/experiment-visualizer" target="_blank" rel="noopener">experiment-visualizer</a></footer></main>`);
+  return h.join('');
+}
+
+/* ----- 수업 모드 ----- */
+const slides = [];
+slides.push({ name: '표지', html: () => `<div class="slide"><div class="scene-box">${LabKit.scene(coverItems, { label: '표지 그림' })}</div><div><div class="chips">${chips()}</div><h2>${e(D.title || '실험 과정 안내')}</h2>${D.goal ? `<p class="txt">${md(D.goal)}</p>` : ''}</div></div>` });
+if (mats.length) slides.push({ name: '준비물', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">준비</span><h2 style="margin:0">준비물</h2></div>${matGrid()}</div></div>` });
+if (safety.length) slides.push({ name: '안전 수칙', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">안전</span><h2 style="margin:0">안전 수칙</h2></div>${safeList()}</div></div>` });
+const stepStart = slides.length;
+steps.forEach((st, i) => slides.push({ name: `${i + 1}단계`, html: () => `<div class="slide"><div class="scene-box">${sceneOf(st, i)}</div><div><div class="meta"><span class="num">${i + 1}</span>${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h2>${e(st.title || `${i + 1}단계`)}</h2>${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('obs', '관찰', st.observe)}${box('tip', '도움말', st.tip)}${box('warn', '주의', st.warn)}</div></div>` }));
+if (hasRes) slides.push({ name: '결과 정리', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">정리</span><h2 style="margin:0">결과 정리</h2></div><div class="res-grid">${resCards()}</div></div></div>` });
+
+const mk = (id, cls) => { let n = document.getElementById(id); if (!n) { n = document.createElement('div'); n.id = id; if (cls) n.className = cls; document.body.appendChild(n); } return n; };
+const deck = mk('deck', 'deck'); deck.hidden = true; deck.setAttribute('role', 'dialog'); deck.setAttribute('aria-modal', 'true'); deck.setAttribute('aria-label', '수업 모드');
+let cur = 0, lastFocus = null;
+function showSlide(i) {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  deck.querySelector('.deck-stage').innerHTML = slides[cur].html();
+  deck.querySelector('.deck-count').textContent = `${cur + 1} / ${slides.length}`;
+  deck.querySelectorAll('.dot').forEach((d, k) => { d.classList.toggle('on', k === cur); d.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
+  deck.querySelector('[data-prev]').disabled = cur === 0; deck.querySelector('[data-next]').disabled = cur === slides.length - 1;
+  LabKit.fit(deck);
+}
+function openDeck(i) {
+  lastFocus = document.activeElement;
+  deck.innerHTML = `<div class="deck-top"><div class="deck-title">${e(D.title || '실험 과정')}</div><span class="deck-count"></span><button class="btn icon" data-full aria-label="전체 화면">${IC.full}</button><button class="btn icon" data-close aria-label="닫기">${IC.x}</button></div><div class="deck-stage"></div><div class="deck-nav"><button class="btn" data-prev>${IC.left}이전</button><div class="dots">${slides.map((s, k) => `<button class="dot" data-go="${k}" aria-label="${e(s.name)}"></button>`).join('')}</div><button class="btn primary" data-next>다음${IC.right}</button></div>`;
+  deck.hidden = false; document.body.style.overflow = 'hidden'; showSlide(i); deck.querySelector('[data-next]').focus();
+}
+function closeDeck() { deck.hidden = true; document.body.style.overflow = ''; if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
+deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
+document.addEventListener('keydown', ev => { if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
+let tx = null; deck.addEventListener('touchstart', ev => { tx = ev.touches[0].clientX; }, { passive: true }); deck.addEventListener('touchend', ev => { if (tx == null) return; const dx = ev.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) showSlide(cur + (dx < 0 ? 1 : -1)); tx = null; });
+
+const app = mk('app');
+app.innerHTML = page(); app.removeAttribute('aria-busy'); LabKit.fit(app);
+app.addEventListener('click', ev => { const o = ev.target.closest('[data-open]'); if (o) return openDeck(+o.dataset.open); if (ev.target.closest('[data-print]')) return window.print(); const st = ev.target.closest('.step'); if (st) openDeck(stepStart + +st.dataset.step); });
+if (Q.has('slide')) openDeck((+Q.get('slide') || 1) - 1);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', lkStart); else lkStart();
+})();
+</script>
+</body>
+</html>

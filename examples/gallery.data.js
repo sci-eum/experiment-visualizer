@@ -1,0 +1,108 @@
+window.EXPERIMENT = {
+  title: '그림 부품 모음 (부품 카탈로그)',
+  subject: 'experiment-visualizer',
+  unit: '모든 부품 한눈에 보기',
+  goal: 'SKILL이 쓸 수 있는 실험 기구·표시 부품을 장면별로 모아 보여 준다. 각 그림 아래 글자는 부품 이름(t 값)이다.',
+  materials: [
+    { name: '비커', icon: 'beaker' }, { name: '삼각 플라스크', icon: 'flask' }, { name: '시험관', icon: 'tube' },
+    { name: '눈금실린더', icon: 'cylinder' }, { name: '스포이트', icon: 'dropper' }, { name: '알코올램프', icon: 'lamp' },
+    { name: '거름종이' }, { name: '묽은 염산' }, { name: '전자저울' }, { name: '건전지' }, { name: '현미경' }, { name: '이름 모를 기구' }
+  ],
+  steps: [
+    { title: '유리 기구 (그릇)', text: 'beaker · flask · roundflask · tube · cylinder · bottle',
+      scene: [
+        { t: 'beaker', x: 52, fill: .5, color: 'water' }, { t: 'flask', x: 140, fill: .45, color: 'pink' },
+        { t: 'roundflask', x: 224, fill: .5, color: 'yellow' }, { t: 'tube', x: 290, fill: .5, color: 'green' },
+        { t: 'cylinder', x: 345, fill: .6, color: 'water' }, { t: 'bottle', x: 420, fill: .6, color: 'clear', text: '염산' },
+        { t: 'text', x: 52, y: 288, text: 'beaker', size: 11, weight: 700 }, { t: 'text', x: 140, y: 288, text: 'flask', size: 11, weight: 700 },
+        { t: 'text', x: 224, y: 288, text: 'roundflask', size: 11, weight: 700 }, { t: 'text', x: 290, y: 288, text: 'tube', size: 11, weight: 700 },
+        { t: 'text', x: 345, y: 288, text: 'cylinder', size: 11, weight: 700 }, { t: 'text', x: 420, y: 288, text: 'bottle', size: 11, weight: 700 } ] },
+    { title: '접시와 컵', text: 'cup · cup(paper) · dish · evapdish · watchglass · mortar',
+      scene: [
+        { t: 'cup', x: 45, fill: .5, color: 'orange' }, { t: 'cup', x: 120, paper: true, fill: .5, color: 'brown' },
+        { t: 'dish', x: 205, items: 'seeds', lid: true }, { t: 'evapdish', x: 295, solid: 'crystals' },
+        { t: 'watchglass', x: 375, color: 'blue' }, { t: 'mortar', x: 440, s: .8, color: 'green' },
+        { t: 'text', x: 45, y: 288, text: 'cup', size: 11, weight: 700 }, { t: 'text', x: 120, y: 288, text: 'cup paper', size: 11, weight: 700 },
+        { t: 'text', x: 205, y: 288, text: 'dish', size: 11, weight: 700 }, { t: 'text', x: 295, y: 288, text: 'evapdish', size: 11, weight: 700 },
+        { t: 'text', x: 375, y: 288, text: 'watchglass', size: 11, weight: 700 }, { t: 'text', x: 440, y: 288, text: 'mortar', size: 11, weight: 700 } ] },
+    { title: '가열 기구', text: 'lamp · tripod · hotplate · candle · match · tube(holder)',
+      scene: [
+        { t: 'tripod', id: 'tr', x: 70 }, { t: 'lamp', x: 70 }, { t: 'beaker', on: 'tr', fill: .4, bubbles: 5, steam: true },
+        { t: 'hotplate', id: 'hp', x: 205 }, { t: 'flask', on: 'hp', fill: .4, color: 'purple' },
+        { t: 'candle', x: 300 }, { t: 'match', x: 340, y: 200 },
+        { t: 'lamp', x: 420 }, { t: 'tube', x: 430, y: 190, tilt: -30, fill: .3, color: 'blue', holder: true },
+        { t: 'text', x: 70, y: 288, text: 'lamp + tripod', size: 11, weight: 700 }, { t: 'text', x: 205, y: 288, text: 'hotplate', size: 11, weight: 700 },
+        { t: 'text', x: 320, y: 288, text: 'candle · match', size: 11, weight: 700 }, { t: 'text', x: 420, y: 288, text: 'holder', size: 11, weight: 700 } ] },
+    { title: '액체 다루기 1', text: 'dropper(over) · pour(into) · rod(in, stir)',
+      scene: [
+        { t: 'tube', id: 'a', x: 70, fill: .3, color: 'pink' }, { t: 'dropper', over: 'a', color: 'pink' },
+        { t: 'beaker', id: 'b', x: 250, fill: .3 }, { t: 'pour', into: 'b', color: 'blue' },
+        { t: 'beaker', id: 'c', x: 390, fill: .5, color: 'yellow' }, { t: 'rod', in: 'c', stir: true },
+        { t: 'text', x: 70, y: 288, text: 'dropper', size: 11, weight: 700 }, { t: 'text', x: 250, y: 288, text: 'pour', size: 11, weight: 700 },
+        { t: 'text', x: 390, y: 288, text: 'rod stir', size: 11, weight: 700 } ] },
+    { title: '액체 다루기 2', text: 'spatula(over) · funnel(over, stand, drip) · syringe(over)',
+      scene: [
+        { t: 'beaker', id: 'd', x: 80 }, { t: 'spatula', over: 'd', color: 'white' },
+        { t: 'flask', id: 'f', x: 300, fill: .2 }, { t: 'funnel', over: 'f', color: 'brown', fill: .5, drip: true, stand: true },
+        { t: 'tube', id: 'g', x: 430, fill: .2 }, { t: 'syringe', over: 'g', fill: .5, color: 'red', s: .8 },
+        { t: 'text', x: 80, y: 288, text: 'spatula', size: 11, weight: 700 }, { t: 'text', x: 300, y: 288, text: 'funnel + stand', size: 11, weight: 700 },
+        { t: 'text', x: 430, y: 288, text: 'syringe', size: 11, weight: 700 } ] },
+    { title: '측정 기구', text: 'thermometer · balance · stopwatch · ruler · springscale · syringe',
+      scene: [
+        { t: 'beaker', id: 'b', x: 55, fill: .5 }, { t: 'thermometer', in: 'b', reading: '25 ℃' },
+        { t: 'balance', id: 'bal', x: 170, reading: '52.40 g' }, { t: 'beaker', on: 'bal', s: .7, fill: .3 },
+        { t: 'stopwatch', x: 170, y: 60, time: '3분' },
+        { t: 'stand', x: 330, clampY: 40, arm: 70 }, { t: 'springscale', x: 400, y: 52, hang: 'weight', hangText: '100g', reading: '1 N' },
+        { t: 'syringe', x: 285, y: 220, fill: .4, color: 'water' },
+        { t: 'text', x: 55, y: 288, text: 'thermometer', size: 11, weight: 700 }, { t: 'text', x: 170, y: 288, text: 'balance', size: 11, weight: 700 },
+        { t: 'text', x: 300, y: 288, text: 'syringe', size: 11, weight: 700 }, { t: 'text', x: 410, y: 288, text: 'springscale', size: 11, weight: 700 } ] },
+    { title: '전기 회로', text: 'circuit (battery · switch · bulb · ammeter · voltmeter 병렬)',
+      scene: [
+        { t: 'circuit', x: 200, y: 140, w: 250, h: 150, closed: true, current: true,
+          parts: [ { p: 'battery', label: '건전지' }, { p: 'bulb', label: '전구' }, { p: 'switch', label: '스위치' }, { p: 'ammeter', label: '전류계' }, { p: 'voltmeter', across: 1 } ] },
+        { t: 'resistor', x: 410, y: 70 }, { t: 'motor', x: 410, y: 130 }, { t: 'led', x: 410, y: 190, on: true }, { t: 'wire', x: 410, y: 240 } ],
+      bench: false },
+    { title: '생물·관찰', text: 'microscope · slide · magnifier · plant(bag) · leaf(color2) · view',
+      scene: [
+        { t: 'microscope', x: 60 }, { t: 'slide', x: 175, y: 240 }, { t: 'magnifier', x: 175, y: 150 },
+        { t: 'plant', x: 270, bag: true, droplets: true }, { t: 'leaf', x: 345, y: 210, color: 'iodine', color2: '#c9b37a' },
+        { t: 'view', x: 410, y: 85, r: 58, show: 'plantcells', from: [175, 240], label: '양파 표피 세포' } ] },
+    { title: '힘과 운동', text: 'ramp · cart(on ramp) · ball · block · magnet(field) · compass · weight',
+      scene: [
+        { t: 'ramp', id: 'r', x: 120, w: 220, h: 90 }, { t: 'cart', on: 'r', at: .35 },
+        { t: 'ball', x: 260, r: 14, color: 'orange' }, { t: 'block', x: 325, text: '나무 도막' },
+        { t: 'magnet', x: 410, y: 268, s: .8, field: true }, { t: 'compass', x: 410, y: 140 }, { t: 'weight', x: 270, y: 200, text: '50g' } ] },
+    { title: '안전·재료', text: 'goggles · gloves · ice · powder · paper(strip/filter) · rack(tag)',
+      scene: [
+        { t: 'goggles', x: 60, y: 80 }, { t: 'gloves', x: 60, y: 190 },
+        { t: 'ice', x: 150 }, { t: 'powder', x: 150, y: 210, paper: true, color: 'white' },
+        { t: 'paper', x: 225, y: 120, color: 'blue', color2: 'red', dip: .45 }, { t: 'paper', x: 255, y: 120, color: 'red' }, { t: 'paper', x: 240, y: 205, kind: 'filter' }, { t: 'ruler', x: 240, s: .55 },
+        { t: 'rack', x: 380, tubes: [ { tag: 'A', fill: .4, color: 'red' }, { tag: 'B', fill: .4, color: 'purple' }, { tag: 'C', fill: .4, color: 'green' }, { tag: 'D', fill: .4, color: 'blue' } ] } ] },
+    { title: '표시 부품', text: 'arrow · note · mark · eye · label · view(입자)',
+      scene: [
+        { t: 'cylinder', id: 'cy', x: 90, fill: .5 }, { t: 'eye', x: 30, y: 180, to: [85, 186] },
+        { t: 'arrow', from: [150, 200], to: [230, 140], curve: -30, label: '가열' },
+        { t: 'mark', x: 160, y: 50, kind: 'ok' }, { t: 'mark', x: 205, y: 50, kind: 'no' },
+        { t: 'note', x: 300, y: 230, text: '눈금은 액체 표면의 가장 낮은 곳을 읽어요', icon: 'eye', to: 'cy' },
+        { t: 'view', x: 280, y: 90, r: 44, show: 'solid', color: 'violet', label: '고체' },
+        { t: 'view', x: 390, y: 90, r: 44, show: 'gas', color: 'violet', label: '기체' },
+        { t: 'label', x: 420, y: 190, text: '라벨', to: [380, 230] } ] },
+    { title: '기체 모으기 (수상 치환)', text: 'flask(stopper: hole) · hose(bubbles) · trough · tube(flip)',
+      scene: [
+        { t: 'flask', id: 'f', x: 90, fill: .35, color: 'clear', solid: 'chips', bubbles: 6, stopper: 'hole' },
+        { t: 'stand', hold: 'gt', x: 430 },
+        { t: 'hose', from: 'f', points: [[90, 118], [170, 108], [250, 200], [282, 262], [306, 258]], bubbles: true, rise: 46 },
+        { t: 'trough', x: 320, fill: .62 }, { t: 'tube', id: 'gt', x: 310, y: 256, flip: true, fill: .55 },
+        { t: 'note', x: 225, y: 60, text: '시험관 안의 물이 밀려나며 기체가 모여요', icon: 'eye' } ] },
+    { title: '용액 상태 표현', text: 'layers · precipitate · cloudy · crystals · ice · nail',
+      scene: [
+        { t: 'beaker', x: 50, layers: [ { h: .35, color: 'water' }, { h: .25, color: 'oil' } ], label: '기름' },
+        { t: 'tube', x: 125, fill: .6, color: 'clear', solid: 'precipitate', solidColor: 'white' },
+        { t: 'tube', x: 165, fill: .6, color: 'clear', cloudy: true },
+        { t: 'beaker', x: 240, fill: .3, color: 'clear', solid: 'crystals' },
+        { t: 'beaker', x: 330, fill: .55, color: 'water', ice: 3 },
+        { t: 'tube', x: 410, fill: .7, color: 'water', solid: 'nail', solidColor: 'brown' } ] }
+  ],
+  results: { expect: '부품 이름(t)과 속성은 SKILL.md의 부품 목록을 보세요.', questions: ['그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요.'] },
+  source: 'experiment-visualizer 부품 카탈로그'
+};

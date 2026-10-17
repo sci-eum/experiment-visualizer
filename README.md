@@ -1,0 +1,105 @@
+# 실험 과정 그림 HTML 만들기 (experiment-visualizer)
+
+실험지(hwp, hwpx, pdf, 사진 …)를 AI에게 첨부하고 이 저장소의 **SKILL 링크**를 함께 주면,
+실험 과정을 **단계별 그림**으로 보여 주는 학생용 HTML 자료를 만들어 줍니다.
+
+> 글로 된 실험 과정은 학생에게 잘 와닿지 않습니다. "비커에 물 100 mL를 넣고 알코올램프로 가열한다"를
+> 비커·삼발이·알코올램프 그림으로 바로 보여 주면 실험 전에 머릿속으로 미리 해 볼 수 있습니다.
+
+## 결과물 미리 보기
+
+| 예시 | 설명 |
+|---|---|
+| [붉은 양배추 지시약 실험](https://sci-eum.github.io/experiment-visualizer/examples/red-cabbage/red-cabbage.html) | 예시 실험지 [worksheet.pdf](examples/red-cabbage/worksheet.pdf)를 이 스킬로 바꾼 결과 |
+| [장면 예시 모음](https://sci-eum.github.io/experiment-visualizer/examples/recipes.html) | 붓기·눈금 읽기·가열·거르기·현미경·회로·기체 모으기 장면 |
+| [부품 카탈로그](https://sci-eum.github.io/experiment-visualizer/examples/gallery.html) | 그릴 수 있는 실험 기구와 표시 부품 전체 |
+
+만들어진 HTML에서는
+
+- 단계 카드를 누르거나 **수업 모드로 보기**를 누르면 한 단계씩 크게 보입니다. ← → 키(또는 화면 밀기)로 넘기고 전체 화면으로 띄울 수 있습니다.
+- 거품, 김, 불꽃, 떨어지는 방울, 젓는 유리 막대가 살짝 움직여 동작을 보여 줍니다.
+- **인쇄하기**로 학습지처럼 출력할 수 있고, 휴대폰에서도 보입니다.
+
+## 사용법 1 — 링크로 쓰기 (설치 없음)
+
+1. AI 채팅(Claude 권장, ChatGPT·Gemini도 가능)에 실험지 파일을 첨부합니다.
+2. 아래 프롬프트를 붙여 넣습니다.
+
+```text
+첨부한 실험지를 읽고, 아래 스킬 지시서를 그대로 따라서 실험 과정을 그림으로 보여 주는 HTML을 만들어 줘.
+스킬: https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/SKILL.md
+```
+
+필요하면 한 줄을 덧붙이세요.
+
+- `2번 실험만 만들어 줘.`
+- `초등학교 3학년이 읽을 수 있게 문장을 더 쉽게 써 줘.`
+- `과정 그림에 예상 결과(색 변화)도 보여 줘.` ← 기본은 탐구의 재미를 위해 결과를 미리 보여 주지 않습니다.
+- `3단계 그림에서 비커를 더 크게 그려 줘.` (만든 뒤 고칠 때)
+
+**Claude(claude.ai)에서 쓸 때 확인할 것**
+
+- 설정 → 기능에서 **웹 검색**(링크 읽기)과 **코드 실행 및 파일 생성**이 켜져 있어야 합니다.
+- hwp 파일을 올릴 수 없거나 내용을 못 읽으면, 한글에서 **파일 → PDF로 저장**한 뒤 PDF를 첨부하세요. 배포용(보호) 문서도 PDF로 저장해야 합니다.
+- 채팅 화면 미리보기에 그림이 안 보이면, HTML 파일을 **내려받아** 크롬·엣지로 여세요.
+
+## 사용법 2 — Claude 스킬로 설치하기 (자주 쓸 때)
+
+1. [Releases](https://github.com/sci-eum/experiment-visualizer/releases/latest)에서 `experiment-visualizer.zip`을 내려받습니다.
+2. claude.ai → 설정 → 기능 → 스킬에서 zip 파일을 업로드합니다.
+3. 이제 링크 없이 "첨부한 실험지를 실험 과정 그림 HTML로 만들어 줘"라고만 해도 됩니다.
+
+Claude Code에서는 이 저장소를 스킬 폴더에 복제하면 됩니다.
+
+```bash
+git clone https://github.com/sci-eum/experiment-visualizer ~/.claude/skills/experiment-visualizer
+```
+
+## 어떻게 동작하나요
+
+AI는 그림 코드를 직접 짜지 않습니다. 실험지를 읽어 **데이터(JSON)** 만 쓰고, 그림은 미리 만들어 둔 그림 엔진(LabKit)이 그립니다.
+그래서 결과물의 그림 모양과 화면 구성이 늘 일정합니다.
+
+```text
+실험지 ──(AI가 읽기)──▶ EXPERIMENT 데이터 ──(템플릿에 끼우기)──▶ HTML
+                         · 단계 제목·설명                      · 단계별 실험 장면 그림
+                         · 장면 = 부품 배치                    · 수업 모드, 인쇄
+                           {t:'beaker', x:240, fill:.5}
+```
+
+- 원문의 양·시간·순서를 그대로 지키고, 원문에 없는 단계는 지어내지 않도록 지시되어 있습니다.
+- 학생 이름 같은 개인정보는 결과물에 넣지 않습니다.
+
+## 한계
+
+- 그림은 이해를 돕는 **모식도**입니다. 실제 기구의 모양·크기와 다를 수 있습니다.
+- 부품에 없는 기구는 가장 비슷한 부품으로 그리거나 간단한 도형으로 대신합니다. [부품 카탈로그](https://sci-eum.github.io/experiment-visualizer/examples/gallery.html)를 참고하세요.
+- AI가 원문을 잘못 읽을 수 있습니다. 수업에 쓰기 전에 **양·농도·순서를 꼭 확인**하세요.
+- 코드 실행이 안 되는 AI는 "가벼운 HTML"을 만드는데, 이 파일은 열 때 인터넷이 필요합니다 (그림 엔진을 jsDelivr에서 불러옴). 코드 실행이 되면 인터넷 없이 열리는 한 파일로 만듭니다.
+
+## 파일 구조
+
+```text
+SKILL.md                AI가 읽는 작업 지시서 (링크 대상)
+assets/labkit.js        그림 엔진 + 화면 (원본)
+assets/template.html    엔진을 품은 한 파일짜리 틀 (labkit.js로 자동 생성)
+assets/light.html       엔진을 CDN에서 불러오는 가벼운 틀
+scripts/build_html.py   데이터(JSON) + 틀 → 완성 HTML
+scripts/extract_text.py hwp·hwpx·docx·pptx·pdf에서 글자 꺼내기 (표준 라이브러리만 사용)
+examples/               예시 실험지와 결과물, 장면 예시, 부품 카탈로그
+```
+
+### 고치는 사람을 위한 메모
+
+```bash
+python scripts/make_template.py                                  # labkit.js → template.html
+python scripts/build_html.py examples/gallery.data.js examples/gallery.html
+python scripts/make_skill_zip.py                                 # dist/experiment-visualizer.zip
+```
+
+가벼운 HTML은 `https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/labkit.min.js`를 불러옵니다.
+엔진을 고친 뒤에는 `v1.x.y` 태그를 붙여 push해야 jsDelivr에 반영됩니다. 그림 데이터 형식을 바꾸는 큰 변경은 `v2`로 올립니다.
+
+## 라이선스
+
+MIT. 학교 수업과 연수에 자유롭게 쓰고 고쳐 쓰세요.
