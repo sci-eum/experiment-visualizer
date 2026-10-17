@@ -4,8 +4,8 @@ window.EXPERIMENT = {
   goal: 'SKILL.md 부록의 장면 예시를 실제로 그린 결과다. 새 장면을 만들 때 출발점으로 쓴다.',
   steps: [
     { title: '눈금실린더로 재서 비커에 붓기',
-      scene: [{ t: 'beaker', id: 'b', x: 260, s: 1.3, fill: 0.35, label: '물 100 mL' },
-              { t: 'pour', into: 'b', from: 'cylinder', color: 'water' }] },
+      scene: [{ t: 'beaker', id: 'b', x: 260, vol: '250 mL', amount: '100 mL', label: '물 100 mL' },
+              { t: 'pour', into: 'b', from: 'cylinder', fromVol: '100 mL', color: 'water' }] },
     { title: '눈금 읽기 (눈높이)',
       scene: [{ t: 'cylinder', id: 'c', x: 240, s: 1.4, fill: 0.55 },
               { t: 'eye', x: 110, y: 151, to: [218, 151] },

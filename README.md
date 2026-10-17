@@ -31,6 +31,16 @@
 스킬: https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/SKILL.md
 ```
 
+3. AI가 먼저 **만들 계획**(단계 구성, 그림에 넣을 기구 용량)을 보여 주고, **단계에 넣을 팁**을 물어봐요. 아래처럼 "과정 번호 - 종류: 내용"으로 답하면 그걸 넣어서 만들어요.
+
+```text
+3번 - 팁: 표시선은 눈높이를 맞춰서 확인해요
+5번 - 주의: 압력 센서에 물이 들어가지 않게 해요
+전체 - 강조: 세 용액의 실험 조건을 똑같이 맞춰요
+```
+
+종류는 **팁 / 주의 / 강조** 중 하나이고, 넣을 게 없으면 `없음`이라고 답하면 돼요. 묻지 않고 바로 만들게 하려면 처음 프롬프트에 `팁 없이 바로 만들어 줘`를 덧붙이세요.
+
 필요하면 한 줄을 덧붙이세요.
 
 - `2번 실험만 만들어 줘.`
@@ -69,6 +79,8 @@ AI는 그림 코드를 직접 짜지 않습니다. 실험지를 읽어 **데이�
 ```
 
 - 원문의 양·시간·순서를 그대로 지키고, 원문에 없는 단계는 지어내지 않도록 지시되어 있습니다.
+- 실험지에 **용량이 적힌 기구**(100 mL 비커, 10 mL 눈금실린더 …)는 그림에 용량과 눈금 숫자가 새겨지고, **실제 부피 비율대로** 크기가 정해집니다 (500 mL 비커는 100 mL 비커보다 크게). 넣는 양을 주면 액체 높이도 눈금에 맞춰집니다.
+- 원문에 없는 팁·주의는 AI가 마음대로 넣지 않고, 선생님께 먼저 물어본 뒤 답한 내용만 넣습니다.
 - 학생 이름 같은 개인정보는 결과물에 넣지 않습니다.
 
 ## 한계
@@ -95,6 +107,7 @@ examples/               예시 실험지와 결과물, 장면 예시, 부품 카
 ```bash
 python scripts/make_template.py                                  # labkit.js → template.html
 python scripts/build_html.py examples/gallery.data.js examples/gallery.html
+python scripts/check_render.py examples/gallery.html             # 헤드리스 Edge/Chrome으로 열어 오류 확인
 python scripts/make_skill_zip.py                                 # dist/experiment-visualizer.zip
 ```
 

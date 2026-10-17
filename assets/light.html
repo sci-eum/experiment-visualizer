@@ -21,7 +21,7 @@ window.EXPERIMENT = {
   group: '4인 1모둠',
   goal: '물을 가열하면서 온도 변화를 측정하여 **끓는점**을 알아본다.',
   materials: [
-    { name: '비커 (250 mL)', qty: '1개', icon: 'beaker' },
+    { name: '비커 (250 mL)', qty: '1개', icon: { t: 'beaker', vol: '250 mL' } },
     { name: '온도계', qty: '1개', icon: 'thermometer' },
     { name: '알코올램프', qty: '1개', icon: 'lamp' },
     { name: '삼발이와 쇠그물', qty: '1세트', icon: 'tripod' },
@@ -30,17 +30,18 @@ window.EXPERIMENT = {
     { name: '보안경', qty: '모둠원 수', icon: 'goggles' }
   ],
   safety: ['가열 중인 비커와 삼발이는 매우 뜨거우니 맨손으로 만지지 않는다.', '알코올램프는 뚜껑을 덮어서 끈다. 입으로 불지 않는다.'],
+  tips: ['모둠원끼리 역할(가열, 온도 읽기, 기록)을 미리 나눠요.'],
   steps: [
     { title: '비커에 물 담기', text: '250 mL 비커에 물을 **100 mL** 넣는다.', tip: '눈금은 눈높이를 맞춰 읽어요.',
-      scene: [ { t: 'beaker', id: 'b', x: 250, fill: .45, label: '물 100 mL' },
-               { t: 'pour', into: 'b', from: 'cylinder', color: 'water' } ] },
+      scene: [ { t: 'beaker', id: 'b', x: 250, vol: '250 mL', amount: '100 mL', label: '물 100 mL' },
+               { t: 'pour', into: 'b', from: 'cylinder', fromVol: '100 mL', color: 'water' } ] },
     { title: '가열 장치 꾸미기', text: '삼발이 위에 쇠그물을 놓고 그 위에 비커를 올린다. 온도계는 스탠드에 고정하여 물속에 넣는다.',
       warn: '온도계 끝이 비커 바닥에 닿지 않게 해요.',
       scene: [ { t: 'stand', hold: 'th' }, { t: 'tripod', id: 'tr', x: 280 }, { t: 'lamp', x: 280, lit: false, label: '알코올램프' },
-               { t: 'beaker', id: 'b', on: 'tr', fill: .45 }, { t: 'thermometer', id: 'th', in: 'b', reading: '20 ℃' } ] },
-    { title: '가열하며 온도 재기', text: '알코올램프에 불을 붙이고 **1분마다** 온도를 기록한다.', time: '약 15분', observe: '온도가 어떻게 변하는지 기록해요.',
+               { t: 'beaker', id: 'b', on: 'tr', vol: '250 mL', amount: '100 mL' }, { t: 'thermometer', id: 'th', in: 'b', reading: '20 ℃' } ] },
+    { title: '가열하며 온도 재기', text: '알코올램프에 불을 붙이고 **1분마다** 온도를 기록한다.', time: '약 15분', point: '물이 끓기 시작한 뒤에도 측정을 멈추지 않아요.', observe: '온도가 어떻게 변하는지 기록해요.',
       scene: [ { t: 'stand', hold: 'th' }, { t: 'tripod', id: 'tr', x: 280 }, { t: 'lamp', x: 280 },
-               { t: 'beaker', id: 'b', on: 'tr', fill: .45, bubbles: 6, steam: true }, { t: 'thermometer', id: 'th', in: 'b', reading: '100 ℃' },
+               { t: 'beaker', id: 'b', on: 'tr', vol: '250 mL', amount: '100 mL', bubbles: 6, steam: true }, { t: 'thermometer', id: 'th', in: 'b', reading: '100 ℃' },
                { t: 'stopwatch', x: 420, y: 70, time: '1분마다' } ] }
   ],
   results: {

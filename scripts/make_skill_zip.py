@@ -9,7 +9,7 @@ from pathlib import Path
 
 root = Path(__file__).resolve().parent.parent
 files = ["SKILL.md", "LICENSE", "assets/template.html", "assets/light.html", "assets/labkit.js",
-         "scripts/build_html.py", "scripts/extract_text.py"]
+         "scripts/build_html.py", "scripts/extract_text.py", "scripts/check_render.py"]
 out = root / "dist" / "experiment-visualizer.zip"
 out.parent.mkdir(exist_ok=True)
 with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:

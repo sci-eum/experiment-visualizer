@@ -94,6 +94,16 @@ window.EXPERIMENT = {
         { t: 'hose', from: 'f', points: [[90, 118], [170, 108], [250, 200], [282, 262], [306, 258]], bubbles: true, rise: 46 },
         { t: 'trough', x: 320, fill: .62 }, { t: 'tube', id: 'gt', x: 310, y: 256, flip: true, fill: .55 },
         { t: 'note', x: 225, y: 60, text: '시험관 안의 물이 밀려나며 기체가 모여요', icon: 'eye' } ] },
+    { title: '용량 표시와 실제 크기 비율 (vol · amount)', text: '비커 50 · 100 · 250 · 500 mL, 눈금실린더 10 · 100 mL — amount의 반만큼 채움',
+      scene: [
+        { t: 'beaker', x: 38, vol: '50 mL', amount: '25 mL' }, { t: 'beaker', x: 98, vol: '100 mL', amount: '50 mL' },
+        { t: 'beaker', x: 178, vol: '250 mL', amount: '125 mL' }, { t: 'beaker', x: 285, vol: '500 mL', amount: '250 mL' },
+        { t: 'cylinder', x: 380, vol: '10 mL', amount: '5 mL' }, { t: 'cylinder', x: 435, vol: '100 mL', amount: '50 mL' } ] },
+    { title: '용량 표시 (그 밖의 그릇)', text: 'flask 250 mL · volumetric 100 mL · roundflask 500 mL · tube 20 mL · bottle 500 mL · pour fromVol',
+      scene: [
+        { t: 'flask', x: 55, vol: '250 mL', amount: '100 mL' }, { t: 'volumetric', x: 150, vol: '100 mL', amount: '100 mL' },
+        { t: 'roundflask', x: 245, vol: '500 mL', amount: '200 mL', color: 'yellow' }, { t: 'tube', x: 320, vol: '20 mL', amount: '10 mL', color: 'pink' },
+        { t: 'bottle', id: 'bt', x: 410, vol: '500 mL', text: '증류수', fill: .6 } ] },
     { title: '센서 실험 부품', text: 'sensor(temp · pressure · ph) · device(graph) · stirrer + stirbar · volumetric · bag · tweezers · cabletie',
       scene: [
         { t: 'sensor', x: 40, y: 200, s: 0.8, kind: 'temp' }, { t: 'sensor', x: 90, y: 120, s: 0.8, kind: 'pressure' }, { t: 'sensor', x: 140, y: 200, s: 0.8, kind: 'ph' },

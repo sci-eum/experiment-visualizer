@@ -21,7 +21,7 @@ window.EXPERIMENT = {
   group: '4인 1모둠',
   goal: '물을 가열하면서 온도 변화를 측정하여 **끓는점**을 알아본다.',
   materials: [
-    { name: '비커 (250 mL)', qty: '1개', icon: 'beaker' },
+    { name: '비커 (250 mL)', qty: '1개', icon: { t: 'beaker', vol: '250 mL' } },
     { name: '온도계', qty: '1개', icon: 'thermometer' },
     { name: '알코올램프', qty: '1개', icon: 'lamp' },
     { name: '삼발이와 쇠그물', qty: '1세트', icon: 'tripod' },
@@ -30,17 +30,18 @@ window.EXPERIMENT = {
     { name: '보안경', qty: '모둠원 수', icon: 'goggles' }
   ],
   safety: ['가열 중인 비커와 삼발이는 매우 뜨거우니 맨손으로 만지지 않는다.', '알코올램프는 뚜껑을 덮어서 끈다. 입으로 불지 않는다.'],
+  tips: ['모둠원끼리 역할(가열, 온도 읽기, 기록)을 미리 나눠요.'],
   steps: [
     { title: '비커에 물 담기', text: '250 mL 비커에 물을 **100 mL** 넣는다.', tip: '눈금은 눈높이를 맞춰 읽어요.',
-      scene: [ { t: 'beaker', id: 'b', x: 250, fill: .45, label: '물 100 mL' },
-               { t: 'pour', into: 'b', from: 'cylinder', color: 'water' } ] },
+      scene: [ { t: 'beaker', id: 'b', x: 250, vol: '250 mL', amount: '100 mL', label: '물 100 mL' },
+               { t: 'pour', into: 'b', from: 'cylinder', fromVol: '100 mL', color: 'water' } ] },
     { title: '가열 장치 꾸미기', text: '삼발이 위에 쇠그물을 놓고 그 위에 비커를 올린다. 온도계는 스탠드에 고정하여 물속에 넣는다.',
       warn: '온도계 끝이 비커 바닥에 닿지 않게 해요.',
       scene: [ { t: 'stand', hold: 'th' }, { t: 'tripod', id: 'tr', x: 280 }, { t: 'lamp', x: 280, lit: false, label: '알코올램프' },
-               { t: 'beaker', id: 'b', on: 'tr', fill: .45 }, { t: 'thermometer', id: 'th', in: 'b', reading: '20 ℃' } ] },
-    { title: '가열하며 온도 재기', text: '알코올램프에 불을 붙이고 **1분마다** 온도를 기록한다.', time: '약 15분', observe: '온도가 어떻게 변하는지 기록해요.',
+               { t: 'beaker', id: 'b', on: 'tr', vol: '250 mL', amount: '100 mL' }, { t: 'thermometer', id: 'th', in: 'b', reading: '20 ℃' } ] },
+    { title: '가열하며 온도 재기', text: '알코올램프에 불을 붙이고 **1분마다** 온도를 기록한다.', time: '약 15분', point: '물이 끓기 시작한 뒤에도 측정을 멈추지 않아요.', observe: '온도가 어떻게 변하는지 기록해요.',
       scene: [ { t: 'stand', hold: 'th' }, { t: 'tripod', id: 'tr', x: 280 }, { t: 'lamp', x: 280 },
-               { t: 'beaker', id: 'b', on: 'tr', fill: .45, bubbles: 6, steam: true }, { t: 'thermometer', id: 'th', in: 'b', reading: '100 ℃' },
+               { t: 'beaker', id: 'b', on: 'tr', vol: '250 mL', amount: '100 mL', bubbles: 6, steam: true }, { t: 'thermometer', id: 'th', in: 'b', reading: '100 ℃' },
                { t: 'stopwatch', x: 420, y: 70, time: '1분마다' } ] }
   ],
   results: {
@@ -121,6 +122,8 @@ section{margin:40px 0}
 .box.tip{background:var(--tip-bg);color:#0e4d33}.box.tip .bi{color:var(--tip)}
 .box.warn{background:var(--warn-bg);color:#683806}.box.warn .bi{color:var(--warn)}
 .box.obs{background:var(--obs-bg);color:#1c3d75}.box.obs .bi{color:var(--obs)}
+.box.pt{background:#f5e8fe;color:#4a1d66}.box.pt .bi{color:var(--primary-ink)}
+.safe.tipl{background:#f5e8fe;color:#4a1d66}.safe.tipl .ic{color:var(--primary)}
 .zoom-hint{position:absolute;top:16px;right:16px;display:inline-flex;gap:6px;align-items:center;font-size:12.5px;font-weight:700;color:var(--primary-ink);background:var(--primary-50);padding:6px 11px;border-radius:999px;opacity:0;transition:all .2s ease;pointer-events:none}
 .zoom-hint svg{width:14px;height:14px}
 .step:hover .zoom-hint,.step:focus-visible .zoom-hint{opacity:1}
@@ -260,7 +263,46 @@ const SHAPES = {
     clip: 'M-11,-122 C-13,-80 -13,-30 -10,-15 Q-7,-5 0,-4 Q7,-5 10,-15 C13,-30 13,-80 11,-122 Z', inner: { top: -116, bottom: -4, half: 11 },
     extra: '<path d="M-4,-2 L4,-2 L7,7 L0,3 L-7,7 Z" fill="#e9e1cc" stroke="#9c9178" stroke-width="1.2" stroke-linejoin="round"/><path d="M4,-90 C5,-60 5,-40 4,-20" stroke="#d9cfb6" stroke-width="1.2" fill="none"/>' }
 };
-function fillOf(el) { if (Array.isArray(el.layers) && el.layers.length) return el.layers.reduce((a, l) => a + (+l.h || +l.fill || 0.2), 0); if (el.fill != null) return Math.max(0, Math.min(1, +el.fill || 0)); return el.color ? 0.5 : (el.t === 'trough' ? 0.6 : 0); }
+/* ---------- 용량(vol)·넣은 양(amount): 용량을 그림에 새기고, 실제 크기 비율로 그린다 ---------- */
+// ref: s=1일 때의 용량, full: 표시 용량까지 찬 높이(안쪽 높이 대비), print: [x, y, 회전, 글자 크기]
+const VOLSPEC = {
+  beaker: { ref: 250, full: .85, print: [0, -52, 0, 8], grad: 'beaker' },
+  flask: { ref: 250, full: .78, print: [0, -22, 0, 8.5] },
+  roundflask: { ref: 250, full: .8, print: [0, -40, 0, 8.5] },
+  volumetric: { ref: 100, full: .919, print: [0, -34, 0, 8.5] },
+  cylinder: { ref: 100, full: 1, print: [6, -114, -90, 7.5], grad: 'cylinder' },
+  tube: { ref: 20, full: .8, print: [1, -62, -90, 6.5] },
+  bottle: { ref: 250, full: .8, print: [0, -16, 0, 7] },
+  cup: { ref: 200, full: .85, print: [0, -42, 0, 8] }
+};
+function parseVol(v) {
+  if (v == null || v === '') return null;
+  if (typeof v === 'number') return v;
+  const s = String(v), rg = /([\d.]+)\s*[~∼]\s*([\d.]+)/.exec(s), m = /([\d.]+)\s*(mL|ml|cc|L|l)?/.exec(s);
+  if (!m) return null;
+  const n = rg ? (+rg[1] + +rg[2]) / 2 : +m[1];
+  return m[2] === 'L' || m[2] === 'l' ? n * 1000 : n;
+}
+const fmtN = n => (Math.round(n * 10) / 10).toString();
+function volText(el) { if (el.volText) return String(el.volText); const v = parseVol(el.vol); if (v == null) return ''; return v >= 1000 && v % 1000 === 0 ? `${v / 1000} L` : `${fmtN(v)} mL`; }
+function volScale(t, vol) { const sp = VOLSPEC[t], v = parseVol(vol); if (!sp || !v) return 1; return Math.max(.45, Math.min(1.9, Math.cbrt(v / sp.ref))); }
+function volMarks(el, s = 1) {
+  const sp = VOLSPEC[el.t], v = parseVol(el.vol);
+  if (!sp || !v || el.print === false) return null;
+  const nf = r2(Math.max(6.2, 6 / s)), num = (x, y, t, a = 'end') => `<text x="${x}" y="${r2(y + nf * .35)}" font-size="${nf}" font-weight="700" text-anchor="${a}" fill="#5f6880" paint-order="stroke" stroke="#ffffff" stroke-width="2" stroke-linejoin="round">${t}</text>`;
+  let o = '';
+  if (sp.grad === 'beaker') { const B = -2, top = -2 - 80 * sp.full; for (let k = 1; k <= 4; k++) { const y = B + (top - B) * k / 4; o += `<path d="M${k % 2 ? 24 : 21},${r2(y)} H31" stroke="#8c95a8" stroke-width="1.3" stroke-linecap="round"/>` + (k % 2 ? '' : num(19, y, fmtN(v * k / 4))); } }
+  if (sp.grad === 'cylinder') { for (let k = 1; k <= 10; k++) { const y = -12 - 13 * k, long = k % 5 === 0; o += `<path d="M-14,${y} H${long ? -4 : -8}" stroke="#8c95a8" stroke-width="1.2" stroke-linecap="round"/>` + (long ? num(-2, y, fmtN(v * k / 10), 'start') : ''); } }
+  const [px, py, rot, fs] = sp.print;
+  o += `<text transform="translate(${px},${py})${rot ? ` rotate(${rot})` : ''}" font-size="${r2(Math.max(fs, 7.5 / s))}" dominant-baseline="middle" font-weight="800" text-anchor="middle" fill="#3f475b" paint-order="stroke" stroke="#ffffff" stroke-width="2.6" stroke-linejoin="round">${esc(volText(el))}</text>`;
+  return { svg: o, grad: !!sp.grad };
+}
+function fillOf(el) {
+  if (Array.isArray(el.layers) && el.layers.length) return el.layers.reduce((a, l) => a + (+l.h || +l.fill || 0.2), 0);
+  if (el.amount != null && el.vol != null) { const a = parseVol(el.amount), v = parseVol(el.vol), sp = VOLSPEC[el.t]; if (a != null && v) return Math.max(0, Math.min(1, a / v * (sp ? sp.full : .85))); }
+  if (el.fill != null) return Math.max(0, Math.min(1, +el.fill || 0));
+  return el.color ? 0.5 : (el.t === 'trough' ? 0.6 : 0);
+}
 function cgeo(S, el, x, y, s, tilt) {
   const c = -S.h / 2, I = S.inner, bh = I.bhalf ?? I.half;
   const F = (lx, ly) => rot(lx, ly, tilt, 0, c);
@@ -283,7 +325,7 @@ function cgeo(S, el, x, y, s, tilt) {
   return g;
 }
 function cplace(S, el, R) {
-  const s = el.s ?? 1; let tilt = el.tilt ?? (el.flip ? 180 : 0), x = el.x, y = el.y;
+  const s = (el.s ?? 1) * (el.vol != null ? volScale(el.t, el.vol) : 1); let tilt = el.tilt ?? (el.flip ? 180 : 0), x = el.x, y = el.y;
   if (el._parent) { const pg = R(el._parent); if (pg) { x = pg.slots[el._slot]; y = pg.slotY; } }
   if (el.on) { const t = R(el.on); if (t) { if (t.surf) { const p = t.surf(el.at ?? 0.5); x ??= p.x; y ??= p.y; if (el.tilt == null) tilt = p.a; } else { x ??= t.x; y ??= t.top; } } }
   if (el.in) { const t = R(el.in); if (t) { x ??= (t.mouth?.x ?? t.x) + (el.dx || 0); y ??= (t.bottomY ?? t.y) - 1 - (el.dy || 0); } }
@@ -377,7 +419,9 @@ function drawC(el, g, cx) {
   if (S.membrane) o += `<path d="${S.clip}" fill="#efe7d2" opacity=".28"/>`;
   o += `<path d="${S.outline}" fill="none" stroke="${S.membrane ? '#9c9178' : INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
   if (S.foot) o += S.foot;
-  if (!paper) o += `<path d="${S.hl}" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".75"/>` + (S.extra || '');
+  const vm = el.vol != null ? volMarks(el, s) : null;
+  if (!paper) o += `<path d="${S.hl}" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".75"/>` + (vm && vm.grad ? '' : (S.extra || ''));
+  if (vm) o += vm.svg;
   if (S.membrane && el.adapter !== false) o += `<rect x="-5.5" y="${-S.h - 16}" width="11" height="30" rx="2" fill="#f6f6f4" stroke="${INK}" stroke-width="1.3"/><rect x="-16" y="${-S.h + 5}" width="32" height="5.5" rx="2.5" fill="#3b4253"/><rect x="13" y="${-S.h + 3}" width="7" height="9" rx="1.5" fill="#3b4253"/>`;
   if (S.cap && el.cap !== false && !el.stopper) o += S.cap;
   if (el.t === 'bottle' && el.text) o += `<rect x="-19" y="-52" width="38" height="24" rx="3" fill="#fff" opacity=".95" stroke="#d5d9e1" stroke-width=".8"/><text x="0" y="-36.5" text-anchor="middle" font-size="${Math.min(10, 34 / Math.max(1, String(el.text).length) * 1.6)}" font-weight="700" fill="#3b4253">${esc(String(el.text).slice(0, 8))}</text>`;
@@ -395,11 +439,11 @@ function drawC(el, g, cx) {
 
 function veil(el, g) {
   if (!g || !g.S) return '';
-  const S = g.S, k = uid('k'), ice = el.solid === 'icebath';
-  if (!(g.fill > 0) && !ice) return '';
+  const S = g.S, k = uid('k'), ice = el.solid === 'icebath', vm = el.vol != null ? volMarks(el, g.s) : null;
+  if (!(g.fill > 0) && !ice && !vm) return '';
   const c = col(el.color, 'water');
   const wet = g.fill > 0 ? `<g transform="rotate(${r2(-g.tilt)},0,${r2(-S.h / 2)})"><rect x="${r2(g.fx0)}" y="${r2(g.L)}" width="${r2(g.fx1 - g.fx0)}" height="${r2(g.fy1 - g.L)}" fill="${c}" opacity=".36"/><rect x="${r2(g.fx0)}" y="${r2(g.L)}" width="${r2(g.fx1 - g.fx0)}" height="2" fill="${shade(c, -.38)}" opacity=".85"/></g>` : '';
-  return `<g transform="translate(${r2(g.x)},${r2(g.y)}) rotate(${r2(g.tilt)},0,${r2(-S.h * g.s / 2)}) scale(${g.s})"><defs><clipPath id="${k}"><path d="${S.clip}"/></clipPath></defs><g clip-path="url(#${k})">${wet}${ice ? solids(el, S, g, true) : ''}</g></g>`;
+  return `<g transform="translate(${r2(g.x)},${r2(g.y)}) rotate(${r2(g.tilt)},0,${r2(-S.h * g.s / 2)}) scale(${g.s})"><defs><clipPath id="${k}"><path d="${S.clip}"/></clipPath></defs><g clip-path="url(#${k})">${wet}${ice ? solids(el, S, g, true) : ''}</g>${vm ? vm.svg : ''}</g>`;
 }
 
 /* ---------- helpers for other parts ---------- */
@@ -601,11 +645,11 @@ T.funnel = {
 };
 T.pour = {
   geo(el, R) {
-    const t = R(el.into || el.over || el.to), S = SHAPES[el.from] || SHAPES.beaker, s = el.s ?? .78, dir = el.side === 'right' ? -1 : 1, tilt = dir * (el.tilt ?? 72);
+    const t = R(el.into || el.over || el.to), S = SHAPES[el.from] || SHAPES.beaker, s = (el.s ?? (el.fromVol != null ? 1 : .78)) * (el.fromVol != null ? volScale(el.from || 'beaker', el.fromVol) : 1), dir = el.side === 'right' ? -1 : 1, tilt = dir * (el.tilt ?? 72);
     const lip = t && t.lipL ? (dir > 0 ? t.lipL : t.lipR) : (t && t.mouth ? t.mouth : { x: el.x ?? 300, y: el.y ?? 170 });
     const P = { x: lip.x + dir * (6 + (el.dx || 0)), y: lip.y - 26 - (el.dy || 0) };
     const c = -S.h / 2, q = rot(dir * (S.half + 2), -S.h, tilt, 0, c);
-    const src = { t: el.from || 'beaker', color: el.color, fill: .5, cloudy: el.cloudy, cap: false, _level: q[1] + 4 };
+    const src = { t: el.from || 'beaker', color: el.color, fill: .5, cloudy: el.cloudy, cap: false, vol: el.fromVol, _level: q[1] + 4 };
     const g = cgeo(S, src, P.x - s * q[0], P.y - s * q[1], s, tilt);
     g.src = src; g.P = P; g.dir = dir; g.endY = t ? (t.surfaceY ?? t.bottomY ?? lip.y + 60) : P.y + 80; g.anchor = g.wpt(0, -S.h * .5);
     return g;
@@ -1043,20 +1087,22 @@ const IC = {
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
   right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>',
   full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
 };
 const md = s => e(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
 const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
 const steps = arr(D.steps).filter(s => s && typeof s === 'object');
 const mats = arr(D.materials).map(m => typeof m === 'string' ? { name: m } : m).filter(m => m && m.name);
-const safety = arr(D.safety);
+const safety = arr(D.safety), tips = arr(D.tips);
 const res = D.results || {};
 document.title = (D.title ? D.title + ' · ' : '') + '실험 과정 그림 안내';
 const sceneOf = (st, i) => { try { return LabKit.scene(arr(st.scene), { grid: GRID, bench: st.bench, label: `${i + 1}단계: ${st.title || ''}` }); } catch (err) { console.error(err); return '<div class="empty"><b>그림을 그리지 못했어요</b><span>scene 데이터를 확인해 주세요.</span></div>'; } };
-const box = (cls, tag, v) => v ? `<div class="box ${cls}"><span class="bi">${tag}</span><div>${md(v)}</div></div>` : '';
+const box = (cls, tag, v) => arr(v).filter(Boolean).map(x => `<div class="box ${cls}"><span class="bi">${tag}</span><div>${md(x)}</div></div>`).join('');
 const coverItems = D.cover || [{ t: 'flask', x: 150, fill: .5, color: 'violet', bubbles: 5 }, { t: 'beaker', id: 'cb', x: 262, fill: .4, color: 'water' }, { t: 'rack', x: 382, tubes: [{ fill: .45, color: 'pink' }, { fill: .45, color: 'yellow' }, { fill: .45, color: 'green' }] }, { t: 'dropper', over: 'cb', dy: 18, color: 'violet' }];
 const chips = () => [D.subject && `<span class="chip primary">${e(D.subject)}</span>`, D.unit && `<span class="chip">${IC.book}${e(D.unit)}</span>`, D.duration && `<span class="chip">${IC.clock}${e(D.duration)}</span>`, D.group && `<span class="chip">${IC.users}${e(D.group)}</span>`].filter(Boolean).join('');
 const matGrid = () => `<div class="mat-grid">${mats.map(m => `<div class="mat">${LabKit.icon(m.icon, m.name)}<div class="nm">${e(m.name)}</div>${m.qty ? `<div class="qty">${e(m.qty)}</div>` : ''}</div>`).join('')}</div>`;
+const tipList = () => `<div class="safety">${tips.map(s => `<div class="safe tipl"><span class="ic">${IC.star}</span><div>${md(s)}</div></div>`).join('')}</div>`;
 const safeList = () => `<div class="safety">${safety.map(s => `<div class="safe"><span class="ic">${IC.alert}</span><div>${md(s)}</div></div>`).join('')}</div>`;
 const tableHtml = t => { if (!t || !arr(t.head).length) return ''; return `<div class="tbl-wrap"><table class="tbl"><thead><tr>${arr(t.head).map(h => `<th>${e(h)}</th>`).join('')}</tr></thead><tbody>${arr(t.rows).map(r => `<tr>${arr(r).map(c => `<td>${e(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; };
 const hasRes = res.expect || arr(res.tables || res.table).some(tb => tb && arr(tb.head).length) || arr(res.questions).length || res.conclusion;
@@ -1068,8 +1114,9 @@ function page() {
   h.push(`<header class="hero wrap"><div class="hero-card"><div><div class="chips">${chips()}</div><h1>${e(D.title || '실험 과정 안내')}</h1>${D.goal ? `<p class="goal">${md(D.goal)}</p>` : ''}<div class="toolbar"><button class="btn primary" data-open="0">${IC.play}수업 모드로 보기</button><button class="btn" data-print>${IC.print}인쇄하기</button></div>${D._demo ? '<div class="demo">지금 보이는 내용은 템플릿의 예시 데이터예요. 실험지 내용으로 바꿔 주세요.</div>' : ''}</div><div class="hero-art">${LabKit.scene(coverItems, { label: '표지 그림' })}</div></div></header><main class="wrap">`);
   if (mats.length) h.push(`<section><div class="sec-head"><span class="eyebrow">준비</span><h2>준비물</h2></div>${matGrid()}</section>`);
   if (safety.length) h.push(`<section><div class="sec-head"><span class="eyebrow">안전</span><h2>안전 수칙</h2></div>${safeList()}</section>`);
+  if (tips.length) h.push(`<section><div class="sec-head"><span class="eyebrow">팁</span><h2>실험 전에 알아 두기</h2></div>${tipList()}</section>`);
   h.push(`<section><div class="sec-head"><span class="eyebrow">과정</span><h2>실험 과정</h2></div>`);
-  h.push(steps.length ? `<div class="steps">${steps.map((st, i) => `${st.section && st.section !== (steps[i - 1] || {}).section ? `<div class="step-sec">${e(st.section)}</div>` : ''}<article class="step" tabindex="0" data-step="${i}" aria-label="${i + 1}단계 크게 보기"><div class="scene-box">${sceneOf(st, i)}</div><div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h3>${e(st.title || `${i + 1}단계`)}</h3>${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('obs', '관찰', st.observe)}${box('tip', '도움말', st.tip)}${box('warn', '주의', st.warn)}</div><span class="zoom-hint">${IC.zoom}크게 보기</span></article>`).join('')}</div>` : emptyState);
+  h.push(steps.length ? `<div class="steps">${steps.map((st, i) => `${st.section && st.section !== (steps[i - 1] || {}).section ? `<div class="step-sec">${e(st.section)}</div>` : ''}<article class="step" tabindex="0" data-step="${i}" aria-label="${i + 1}단계 크게 보기"><div class="scene-box">${sceneOf(st, i)}</div><div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h3>${e(st.title || `${i + 1}단계`)}</h3>${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}</div><span class="zoom-hint">${IC.zoom}크게 보기</span></article>`).join('')}</div>` : emptyState);
   h.push('</section>');
   if (hasRes) h.push(`<section><div class="sec-head"><span class="eyebrow">정리</span><h2>결과 정리</h2></div><div class="res-grid">${resCards()}</div></section>`);
   h.push(`<footer class="foot">${D.source ? `원문: ${e(D.source)}<br>` : ''}${D.notes ? md(D.notes) + '<br>' : ''}그림은 이해를 돕기 위한 모식도로, 실제 기구의 모양·크기와 다를 수 있어요. 실험은 반드시 선생님의 안내에 따라 진행하세요.<br>만든 도구: <a href="https://github.com/sci-eum/experiment-visualizer" target="_blank" rel="noopener">experiment-visualizer</a></footer></main>`);
@@ -1081,8 +1128,9 @@ const slides = [];
 slides.push({ name: '표지', html: () => `<div class="slide"><div class="scene-box">${LabKit.scene(coverItems, { label: '표지 그림' })}</div><div><div class="chips">${chips()}</div><h2>${e(D.title || '실험 과정 안내')}</h2>${D.goal ? `<p class="txt">${md(D.goal)}</p>` : ''}</div></div>` });
 if (mats.length) slides.push({ name: '준비물', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">준비</span><h2 style="margin:0">준비물</h2></div>${matGrid()}</div></div>` });
 if (safety.length) slides.push({ name: '안전 수칙', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">안전</span><h2 style="margin:0">안전 수칙</h2></div>${safeList()}</div></div>` });
+if (tips.length) slides.push({ name: '실험 팁', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">팁</span><h2 style="margin:0">실험 전에 알아 두기</h2></div>${tipList()}</div></div>` });
 const stepStart = slides.length;
-steps.forEach((st, i) => slides.push({ name: `${i + 1}단계`, html: () => `<div class="slide"><div class="scene-box">${sceneOf(st, i)}</div><div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.section ? `<span class="sec-chip">${e(st.section)}</span>` : ''}${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h2>${e(st.title || `${i + 1}단계`)}</h2>${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('obs', '관찰', st.observe)}${box('tip', '도움말', st.tip)}${box('warn', '주의', st.warn)}</div></div>` }));
+steps.forEach((st, i) => slides.push({ name: `${i + 1}단계`, html: () => `<div class="slide"><div class="scene-box">${sceneOf(st, i)}</div><div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.section ? `<span class="sec-chip">${e(st.section)}</span>` : ''}${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h2>${e(st.title || `${i + 1}단계`)}</h2>${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}</div></div>` }));
 if (hasRes) slides.push({ name: '결과 정리', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">정리</span><h2 style="margin:0">결과 정리</h2></div><div class="res-grid">${resCards()}</div></div></div>` });
 
 const mk = (id, cls) => { let n = document.getElementById(id); if (!n) { n = document.createElement('div'); n.id = id; if (cls) n.className = cls; document.body.appendChild(n); } return n; };
