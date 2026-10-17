@@ -16,3 +16,6 @@ node_modules/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# 사용자 실험지로 만든 결과물 (공개 저장소에 올리지 않음)
+my-results/

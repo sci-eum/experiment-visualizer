@@ -37,6 +37,38 @@ def tidy(lines):
     return '\n'.join(out).strip() + '\n'
 
 
+# ---------------------------------------------------------------- 한글 수식 → 읽을 수 있는 글자
+
+EQ_WORDS = {
+    'TRIANGLE': 'Δ', 'DELTA': 'Δ', 'delta': 'δ', 'alpha': 'α', 'beta': 'β', 'gamma': 'γ', 'theta': 'θ',
+    'lambda': 'λ', 'mu': 'μ', 'pi': 'π', 'rho': 'ρ', 'sigma': 'σ', 'SIGMA': 'Σ', 'omega': 'ω', 'OMEGA': 'Ω',
+    'times': '×', 'TIMES': '×', 'div': '÷', 'DIV': '÷', 'cdot': '·', 'CDOT': '·', 'deg': '°', 'DEG': '°',
+    'sqrt': '√', 'SQRT': '√', 'rarrow': '→', 'RARROW': '→', '->': '→', 'larrow': '←', 'LARROW': '←',
+    'lrarrow': '⇄', 'LRARROW': '⇄', 'leq': '≤', 'LEQ': '≤', 'geq': '≥', 'GEQ': '≥', 'neq': '≠', 'NEQ': '≠',
+    'approx': '≈', 'APPROX': '≈', 'inf': '∞', 'INF': '∞', 'pm': '±', 'PLUSMINUS': '±', 'over': '/', 'OVER': '/',
+    'prime': '′', 'CELSIUS': '℃', 'ANGSTROM': 'Å', 'DIVIDE': '÷',
+}
+EQ_DROP = {'rm', 'it', 'bold', 'RM', 'IT', 'BOLD', 'LEFT', 'RIGHT', 'left', 'right', 'LONGDIV'}
+SUB = str.maketrans('0123456789+-=()', '₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎')
+SUP = str.maketrans('0123456789+-=()n', '⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ')
+SMALL = set('₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ')
+
+
+def eq_to_text(script):
+    """한글 수식 스크립트(예: 'rm CaCl _{2}', 'TRIANGLE  T')를 'CaCl₂', 'ΔT'처럼 바꾼다."""
+    s = (script or '').replace('`', '\x01').replace('~', '\x01')
+    s = re.sub(r'\s*([_^])\s*', r'\1', s)
+    s = ''.join('' if t.isspace() else ('' if t in EQ_DROP else EQ_WORDS.get(t, t)) for t in re.split(r'(\s+|\x01)', s))
+
+    def subsup(m):
+        mark, body = m.group(1), (m.group(2) if m.group(2) is not None else m.group(3)).strip()
+        conv = body.translate(SUB if mark == '_' else SUP)
+        return conv if conv and all(ch in SMALL for ch in conv) else mark + body
+    s = re.sub(r'([_^])(?:\{([^{}]*)\}|(\S))', subsup, s)
+    s = s.replace('{', '').replace('}', '').replace('\x01', ' ')
+    return re.sub(r' {2,}', ' ', s).strip()
+
+
 # ---------------------------------------------------------------- HWPX / DOCX / PPTX (XML 묶음)
 
 def xml_text(path_in_zip, data, text_tag, para_tag, table_tag, row_tag, cell_tag, pic_tags=()):
@@ -64,9 +96,13 @@ def xml_text(path_in_zip, data, text_tag, para_tag, table_tag, row_tag, cell_tag
                     continue
                 cell_lines = []
                 walk(tc, cell_lines)
-                cells.append(' '.join(x.strip() for x in cell_lines if x.strip()))
-            if cells:
-                dst.append('| ' + ' | '.join(cells) + ' |')
+                cells.append([x for x in cell_lines if x.strip()])
+            if len(cells) == 1:
+                # 한 칸짜리 행은 대개 문서 틀(레이아웃)용 표다 → 문단을 줄마다 그대로 둔다
+                dst.extend(cells[0])
+                dst.append('')
+            elif cells:
+                dst.append('| ' + ' | '.join(' '.join(x.strip() for x in c) for c in cells) + ' |')
         dst.append('')
 
     def para(p, dst):
@@ -86,6 +122,9 @@ def xml_text(path_in_zip, data, text_tag, para_tag, table_tag, row_tag, cell_tag
                 elif lt == table_tag:
                     flush()
                     table(c, dst)
+                elif lt == 'equation':
+                    scr = next((x for x in c.iter() if local(x.tag) == 'script'), None)
+                    buf.append(eq_to_text(scr.text if scr is not None else ''))
                 elif lt in pic_tags:
                     buf.append(' [그림] ')
                 elif lt == 'tab':
@@ -251,6 +290,7 @@ class CFB:
 
 
 EXT_CTRL = {1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23}
+EQ_MARK = '￼'
 
 
 def hwp_para_text(b):
@@ -262,6 +302,10 @@ def hwp_para_text(b):
             if c in EXT_CTRL:
                 if c == 9:
                     s.append('\t')
+                elif c == 11 and i + 2 < n:
+                    cid = struct.pack('<HH', w[i + 1], w[i + 2])[::-1]
+                    if cid == b'eqed':  # 수식: 뒤따르는 EQEDIT 레코드의 글자로 채운다
+                        s.append(EQ_MARK)
                 i += 8
                 continue
             if c == 10:
@@ -316,10 +360,18 @@ def read_hwp(path, img_dir):
             if tag == 67:  # HWPTAG_PARA_TEXT
                 txt = hwp_para_text(raw[pos:pos + size]).strip()
                 lines.append(txt)
-            elif tag == 66:  # HWPTAG_PARA_HEADER: 글자 없는 빈 문단 자리
-                pass
+            elif tag == 88 and size >= 6:  # HWPTAG_EQEDIT: 수식 스크립트
+                n = struct.unpack_from('<H', raw, pos + 4)[0]
+                script = raw[pos + 6:pos + 6 + 2 * n].decode('utf-16-le', 'replace')
+                for k in range(len(lines) - 1, -1, -1):
+                    if EQ_MARK in lines[k]:
+                        lines[k] = lines[k].replace(EQ_MARK, eq_to_text(script), 1)
+                        break
+                else:
+                    lines.append(eq_to_text(script))
             pos += size
         lines.append('')
+    lines = [ln.replace(EQ_MARK, '') for ln in lines]
     if img_dir:
         img_dir.mkdir(parents=True, exist_ok=True)
         for p in f.paths:

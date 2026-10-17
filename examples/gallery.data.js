@@ -94,6 +94,16 @@ window.EXPERIMENT = {
         { t: 'hose', from: 'f', points: [[90, 118], [170, 108], [250, 200], [282, 262], [306, 258]], bubbles: true, rise: 46 },
         { t: 'trough', x: 320, fill: .62 }, { t: 'tube', id: 'gt', x: 310, y: 256, flip: true, fill: .55 },
         { t: 'note', x: 225, y: 60, text: '시험관 안의 물이 밀려나며 기체가 모여요', icon: 'eye' } ] },
+    { title: '센서 실험 부품', text: 'sensor(temp · pressure · ph) · device(graph) · stirrer + stirbar · volumetric · bag · tweezers · cabletie',
+      scene: [
+        { t: 'sensor', x: 40, y: 200, s: 0.8, kind: 'temp' }, { t: 'sensor', x: 90, y: 120, s: 0.8, kind: 'pressure' }, { t: 'sensor', x: 140, y: 200, s: 0.8, kind: 'ph' },
+        { t: 'device', x: 395, y: 60, s: 0.75, title: '온도 (℃)', graph: 'exo', xlabel: '시간' },
+        { t: 'stirrer', id: 'st', x: 245, s: 0.9 }, { t: 'beaker', on: 'st', s: 0.8, fill: 0.5, stirbar: true },
+        { t: 'volumetric', x: 340, s: 0.75, fill: 0.88, color: 'clear' },
+        { t: 'bag', x: 420, y: 262, s: 0.8, fill: 0.6, color: 'clear' },
+        { t: 'tweezers', x: 200, y: 70, s: 0.8 }, { t: 'cabletie', x: 270, y: 60, s: 0.7 },
+        { t: 'text', x: 90, y: 288, text: 'sensor', size: 11, weight: 700 }, { t: 'text', x: 245, y: 288, text: 'stirrer', size: 11, weight: 700 },
+        { t: 'text', x: 340, y: 288, text: 'volumetric', size: 11, weight: 700 }, { t: 'text', x: 420, y: 288, text: 'bag', size: 11, weight: 700 } ] },
     { title: '용액 상태 표현', text: 'layers · precipitate · cloudy · crystals · ice · nail',
       scene: [
         { t: 'beaker', x: 50, layers: [ { h: .35, color: 'water' }, { h: .25, color: 'oil' } ], label: '기름' },
