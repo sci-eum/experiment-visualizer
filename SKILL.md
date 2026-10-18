@@ -147,7 +147,7 @@ python extract_text.py 실험지.hwpx
 
 모든 부품에 쓸 수 있는 공통 속성: `id`, `x`, `y`, `s`(크기 배율, 기본 1), `tilt`(기울기 각도, 시계 방향 +), `label`(이름표 글자), `labelSide`(`'left'`/`'right'`).
 
-대략적인 크기 (s=1, 가로×세로): 비커 78×90, 삼각 플라스크 84×106, 둥근바닥 플라스크 72×120, 시험관 28×114, 눈금실린더 52×155, 시약병 52×106, 부피 플라스크 72×152, 반투막 튜브 34×124(+어댑터 16), 컵 66×86, 수조 220×80, 알코올램프 62×92(불꽃 포함), 삼발이 108×103, 가열판 112×32, 교반기 116×36, 전자저울 116×32, 현미경 96×188, 스마트기기 132×90, 무선 센서 몸통 38×56 + 탐침 길이 112(`length`로 바꿈), 온도계 길이 150, 유리 막대 길이 150, 스포이트 길이 88. 장면 위쪽(y < 0)으로 넘치면 잘리므로 큰 장치는 `s`를 줄인다. **기구끼리 겹치지 않게** x 간격을 (두 폭의 합 ÷ 2) 이상으로 둔다.
+대략적인 크기 (s=1, 가로×세로): 비커 78×90, 삼각 플라스크 84×106, 둥근바닥 플라스크 72×120, 시험관 28×114, 눈금실린더 52×155, 시약병 52×106, 부피 플라스크 72×152, 반투막 튜브 34×124(+어댑터 16), 컵 66×86, 수조 220×80, 알코올램프 62×92(불꽃 포함), 삼발이 108×103, 가열판 112×32, 교반기 116×36, 전자저울 116×32, 현미경 96×188, 스마트기기 132×90, 무선 센서 몸통 38×56 + 탐침 길이 112(`length`로 바꿈), 온도계 길이 150, 유리 막대 길이 150, 스포이트 길이 88, 집기병 64×112, 가스버너 60×100(불꽃 포함), 뷰렛 길이 162, 분별 깔때기 길이 152, 렌즈·거울 받침 포함 높이 120, 프리즘 84×70, 광원 장치 76×50, 스크린 40×150, 전원 장치 110×62, 암석 78×46, 지층 모형 170×110, 지구본 받침 포함 100×122. 장면 위쪽(y < 0)으로 넘치면 잘리므로 큰 장치는 `s`를 줄인다. **기구끼리 겹치지 않게** x 간격을 (두 폭의 합 ÷ 2) 이상으로 둔다.
 
 ## 5. `EXPERIMENT` 데이터 쓰기
 
@@ -238,7 +238,7 @@ JSON(또는 자바스크립트 객체)으로 쓴다. `title`과 `steps`만 필�
 
 ### 그릇 (액체를 담는 부품) ★
 
-`beaker`(비커) · `flask`(삼각 플라스크) · `roundflask`(둥근바닥 플라스크) · `volumetric`(부피 플라스크, 빨간 표시선) · `tube`(시험관) · `cylinder`(눈금실린더) · `bottle`(시약병) · `cup`(컵) · `trough`(수조) · `bag`(반투막 튜브: 아래가 묶여 있고 위에 어댑터·케이블 타이. `adapter:false`면 입구가 열린 상태)
+`beaker`(비커) · `flask`(삼각 플라스크) · `roundflask`(둥근바닥 플라스크) · `volumetric`(부피 플라스크, 빨간 표시선) · `tube`(시험관) · `cylinder`(눈금실린더) · `bottle`(시약병) · `cup`(컵) · `trough`(수조) · `gasjar`(집기병) · `bag`(반투막 튜브: 아래가 묶여 있고 위에 어댑터·케이블 타이. `adapter:false`면 입구가 열린 상태)
 
 그릇 공통 속성:
 
@@ -263,6 +263,9 @@ JSON(또는 자바스크립트 객체)으로 쓴다. `title`과 `steps`만 필�
 | `vol` | **용량** (예 `"100 mL"`, `"1 L"`). 그릇에 용량을 새기고, 비커·눈금실린더에 눈금 숫자를 넣고, 실제 부피 비율대로 크기를 정한다 (beaker·flask·roundflask·volumetric·cylinder·tube·bottle·cup) |
 | `amount` | 넣은 양 (예 `"40 mL"`, `"30~40 mL"`는 가운데 값). `vol`과 함께 주면 액체 높이를 눈금에 맞춘다 |
 | `volText`, `print:false` | 새길 글자를 직접 정하기, 용량 글자 숨기기 |
+| `arm` | 가지 달린 플라스크 (`true`면 오른쪽, `'left'`면 왼쪽으로 가지). 냉각기 `from`에 이 그릇 id를 주면 가지 끝에 이어진다 |
+| `lid` | 유리판 덮개 (집기병에 기체를 모아 덮을 때) |
+| `gas` | 그릇 안 기체 색 (예 `"#c9d96a"` 황록색 염소, `"brown"` 이산화 질소) |
 
 `rack`(시험관대) ★: `tubes: [{id, tag:'A', fill, color, …시험관 속성}]` — 꽂힌 시험관마다 `id`를 주면 `over`/`in`으로 가리킬 수 있다. `tag`는 시험관대 앞에 쓰는 글자.
 
@@ -271,6 +274,7 @@ JSON(또는 자바스크립트 객체)으로 쓴다. `title`과 `steps`만 필�
 | t | 이름 | 주요 속성 |
 |---|---|---|
 | `lamp` | 알코올램프 (`burner`도 같음) | `lit:false`면 뚜껑 덮음(불 끔) |
+| `gasburner` | 가스버너 (`bunsen`도 같음) | 기본 파란 불꽃(완전 연소), `flame:'yellow'`면 노란 불꽃(공기 부족), `lit:false`면 불 끔. x 없이 삼발이와 함께 쓰면 삼발이 아래로 |
 | `tripod` | 삼발이 + 쇠그물 | `gauze:false`면 쇠그물 없음. 그릇은 `on`으로 올린다 |
 | `hotplate` | 가열판(핫플레이트) | `on:false`면 꺼짐 |
 | `stirrer` | 자석 교반기 | `on:false`면 꺼짐. 그릇은 `on`으로 올리고 그릇에 `stirbar:true` |
@@ -288,6 +292,9 @@ JSON(또는 자바스크립트 객체)으로 쓴다. `title`과 `steps`만 필�
 | `rod` | 유리 막대 | `in:'id'`, `stir:true`(젓기 + 회전 화살표) |
 | `spatula` | 약숟가락 (`spoon`) | `over:'id'`(가루 넣기, `tilt` 음수면 손잡이가 왼쪽으로) 또는 `in:'id'`(섞기), `color`(가루 색) |
 | `funnel` | 깔때기 + 거름종이 | `over:'id'`(그릇 입구에 꽂힘), `paper:false`, `fill`, `color`, `drip:true`, `dripColor`, `stand:true` |
+| `burette` | 뷰렛 | `over:'플라스크id'`(꼭지를 입구에 넣음), `vol`(기본 `'50 mL'`, 위가 0인 눈금), `fill` 0~1, `reading:'12.5 mL'`(눈금 이름표), `open` 또는 `drip:true`(콕을 열어 방울이 떨어짐). 스탠드 `hold`로 고정 |
+| `sepfunnel` | 분별 깔때기 | `over:'비커id'`, `layers:[{h,color},…]`(아래층부터) 또는 `fill`·`color`, `drip:true`, `stopper:false`(마개 열기). 스탠드 `hold`면 고리로 받친다 |
+| `condenser` | 리비히 냉각기 | `from:'id'`(가지 달린 플라스크의 가지 끝, 또는 `[x,y]`) → `to:'id'`(받는 그릇 입구, 또는 `[x,y]`). 둘 다 없으면 `x, y` 중심에 `length`(기본 170)·`tilt`(기본 22). `drip:true`(받는 그릇에 방울), `water:false`(냉각수 없음), `flow:false`(냉각수 화살표 끄기) |
 | `hose` | 고무관 (`tubing`) | `from:'id'`(마개·압력 센서에서 시작), `to:'id'`(반투막 튜브 어댑터 등으로), `points:[[x,y],…]`, `bubbles:true`(끝에서 기포), `glass:true`(유리관) |
 
 ### 측정
@@ -312,6 +319,30 @@ JSON(또는 자바스크립트 객체)으로 쓴다. `title`과 `steps`만 필�
 | `cabletie` ● | 케이블 타이 | |
 
 `graph` 모양: `'live'`(측정 시작, 기본 — 결과를 드러내지 않음) · `'flat'`(안정화) · `'rise'` · `'fall'` · `'boil'`(올라가다 일정) · `'cool'`(내려가다 일정) · `'freeze'`(과냉각 후 기울기 변화) · `'exo'`(빠르게 올랐다 천천히 내림) · `'endo'` · 숫자 배열(0~1 값을 차례로).
+
+### 빛·소리·전기 장치
+
+| t | 이름 | 놓는 법 / 속성 |
+|---|---|---|
+| `lens` | 렌즈 | `kind:'convex'`(볼록, 기본)/`'concave'`(오목). `y`를 생략하면 실험대 위 받침에 선다(렌즈 중심 y = 184). `axis:true`(광축 점선), `f:70`(양쪽 초점 F를 그 거리에) |
+| `mirror` | 거울 | `kind:'plane'`(평면, 기본)/`'concave'`(오목)/`'convex'`(볼록). 반사면이 오른쪽을 본다(왼쪽은 `tilt:180`). 받침은 렌즈와 같다 |
+| `prism` ★ | 프리즘 | `light:true`(왼쪽에서 들어온 빛이 무지개색으로 나뉨), `from:'광원id'`(빛이 오는 곳), `length`(무지개 길이, 기본 96) |
+| `lightbox` ★ | 광원 장치 | 오른쪽 창에서 빛이 나온다. `dir:'left'`, `on:false` |
+| `screen` ★ | 스크린 | `image:'inverted'`(거꾸로 선 상)/`'upright'`(바로 선 상), `imageY`(상의 높이, 장면 y) |
+| `ray` ● | 광선 | `points:[[x,y],…]` 또는 `from`·`to`(id면 광원 창·렌즈 중심), `color`(기본 노란빛, 레이저는 `'red'`), `dash`, `arrow:false` |
+| `power` ★ | 전원 장치(직류) | `reading:'6 V'` |
+| `tuningfork` ★ | 소리굽쇠 | `box:false`(공명 상자 없음), `ring:true`(떨림 표시), `mallet:true`(고무망치) |
+
+- 렌즈로 상을 맺는 장면은 렌즈 중심(받침이면 y = 184)을 광축으로 삼아 물체·렌즈·스크린의 x를 정하고, 광선 `ray`는 `points`로 꺾이는 점을 직접 준다. `?grid`로 좌표를 확인한다.
+
+### 지구과학
+
+| t | 이름 | 속성 |
+|---|---|---|
+| `rock` ★ | 암석·광물 표본 | `kind`: `'granite'`(화강암) `'basalt'`(현무암) `'sandstone'`(사암) `'limestone'`(석회암) `'shale'`(셰일) `'conglomerate'`(역암) `'gneiss'`(편마암) `'marble'`(대리암) `'quartz'`(석영) `'calcite'`(방해석). `fizz:true`(묽은 염산과 반응한 거품), `color`. 스포이트를 `over`로 올릴 수 있다 |
+| `streak` ★ | 조흔판 | `color`(조흔색 줄) |
+| `strata` ★ | 지층 모형(단면) | `layers:[{h, kind, color, text, fossil}]`(아래층부터. `kind`: `'gravel'` `'sand'` `'mud'` `'clay'` `'limestone'` `'coal'` `'shale'` `'volcanic'`, `text`는 층 이름, `fossil:true`는 화석), `w`·`h`(기본 170×110), `fold`(위로 휘어진 정도), `fault`(단층에서 오른쪽이 내려간 정도) |
+| `globe` | 지구본 | `axis`(자전축 기울기, 기본 23.5), `night:'left'`/`'right'`(밤인 쪽). `y`를 생략하면 받침대에 서서 실험대 위에 놓인다 |
 
 ### 생물·관찰
 
@@ -569,6 +600,50 @@ python scripts/check_render.py 결과.html --shots 그림점검
 { "from": "prev", "remove": ["dropper", "btb"], "change": { "b": { "label": null }, "hcl": { "cap": false } },
   "add": [{ "t": "dropper", "over": "b", "color": "clear" },
           { "t": "note", "x": 390, "y": 60, "text": "색이 어떻게 변하는지 관찰해요", "icon": "eye" }] }
+```
+
+**중화 적정 (뷰렛)**
+
+```json
+[{ "t": "stand", "hold": "bu" },
+ { "t": "flask", "id": "f", "x": 240, "vol": "100 mL", "amount": "20 mL", "color": "clear" },
+ { "t": "burette", "id": "bu", "over": "f", "fill": 0.7, "drip": true, "reading": "12.5 mL" }]
+```
+
+**증류 (가지 달린 플라스크 + 냉각기)**
+
+```json
+[{ "t": "hotplate", "id": "hp", "x": 100 },
+ { "t": "roundflask", "id": "rf", "on": "hp", "arm": true, "fill": 0.45, "color": "#e9d3a6", "bubbles": 4 },
+ { "t": "thermometer", "in": "rf", "dy": 73, "s": 0.7, "reading": "78 ℃", "labelSide": "left" },
+ { "t": "stand", "hold": "cd", "reach": 60 },
+ { "t": "condenser", "id": "cd", "from": "rf", "to": "rc", "drip": true },
+ { "t": "beaker", "id": "rc", "x": 410, "s": 0.8, "fill": 0.15, "color": "clear" }]
+```
+
+**볼록 렌즈로 상 맺기** (렌즈 중심 y = 184가 광축)
+
+```json
+[{ "t": "candle", "x": 60 },
+ { "t": "lens", "id": "ln", "x": 230, "axis": true, "f": 70 },
+ { "t": "screen", "x": 350, "image": "inverted", "imageY": 180 },
+ { "t": "ray", "points": [[60, 168], [230, 168], [350, 195]] },
+ { "t": "ray", "points": [[60, 168], [230, 184], [350, 195]], "dash": true }]
+```
+
+**프리즘으로 빛 나누기**
+
+```json
+[{ "t": "lightbox", "id": "lb", "x": 70 },
+ { "t": "prism", "x": 230, "light": true, "from": "lb", "length": 115 }]
+```
+
+**석회암에 묽은 염산 떨어뜨리기**
+
+```json
+[{ "t": "rock", "id": "ls", "kind": "limestone", "x": 170, "fizz": true, "label": "석회암" },
+ { "t": "dropper", "over": "ls", "color": "clear" },
+ { "t": "rock", "kind": "granite", "x": 330, "label": "화강암", "labelSide": "right" }]
 ```
 
 이 예시들을 실제로 그린 결과는 `examples/recipes.html`, 모든 부품을 한 번에 보려면 `examples/gallery.html`을 연다.

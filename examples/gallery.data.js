@@ -121,7 +121,49 @@ window.EXPERIMENT = {
         { t: 'tube', x: 165, fill: .6, color: 'clear', cloudy: true },
         { t: 'beaker', x: 240, fill: .3, color: 'clear', solid: 'crystals' },
         { t: 'beaker', x: 330, fill: .55, color: 'water', ice: 3 },
-        { t: 'tube', x: 410, fill: .7, color: 'water', solid: 'nail', solidColor: 'brown' } ] }
+        { t: 'tube', x: 410, fill: .7, color: 'water', solid: 'nail', solidColor: 'brown' } ] },
+    { title: '적정·분리 기구', text: 'burette(over, drip, reading) · sepfunnel(over, layers, drip) · stand(hold)',
+      scene: [
+        { t: 'stand', hold: 'bu', x: 36 }, { t: 'flask', id: 'f', x: 125, fill: .3, color: 'pink' }, { t: 'burette', id: 'bu', over: 'f', fill: .7, drip: true },
+        { t: 'stand', hold: 'sf', x: 255 }, { t: 'beaker', id: 'bk', x: 360, fill: .2, color: 'water' },
+        { t: 'sepfunnel', id: 'sf', over: 'bk', layers: [ { h: .35, color: 'water' }, { h: .25, color: 'oil' } ], drip: true },
+        { t: 'text', x: 125, y: 288, text: 'burette', size: 11, weight: 700 }, { t: 'text', x: 360, y: 288, text: 'sepfunnel', size: 11, weight: 700 } ] },
+    { title: '기체·가열 기구 2', text: "gasjar(lid, gas) · gasburner(flame: 'yellow') · roundflask(arm)",
+      scene: [
+        { t: 'gasjar', x: 45, lid: true }, { t: 'gasjar', x: 115, lid: true, gas: '#c9d96a' },
+        { t: 'gasburner', x: 200 }, { t: 'gasburner', x: 270, flame: 'yellow' },
+        { t: 'tripod', id: 'tr', x: 395 }, { t: 'gasburner', x: 395 }, { t: 'roundflask', on: 'tr', arm: true, fill: .4, color: 'water' },
+        { t: 'text', x: 80, y: 288, text: 'gasjar · lid · gas', size: 11, weight: 700 }, { t: 'text', x: 235, y: 288, text: 'gasburner', size: 11, weight: 700 },
+        { t: 'text', x: 395, y: 288, text: 'roundflask(arm)', size: 11, weight: 700 } ] },
+    { title: '빛 (광학 부품)', text: "lightbox · lens(axis, f) · lens(concave) · screen(image) · mirror · mirror(concave)",
+      scene: [
+        { t: 'lightbox', x: 48 }, { t: 'lens', x: 140 }, { t: 'lens', x: 205, kind: 'concave' }, { t: 'screen', x: 280, image: 'inverted' },
+        { t: 'mirror', x: 355 }, { t: 'mirror', x: 430, kind: 'concave', tilt: 180 },
+        { t: 'text', x: 48, y: 288, text: 'lightbox', size: 10, weight: 700 }, { t: 'text', x: 140, y: 288, text: 'lens', size: 10, weight: 700 },
+        { t: 'text', x: 205, y: 288, text: 'concave', size: 10, weight: 700 }, { t: 'text', x: 280, y: 288, text: 'screen', size: 10, weight: 700 },
+        { t: 'text', x: 355, y: 288, text: 'mirror', size: 10, weight: 700 }, { t: 'text', x: 430, y: 288, text: 'concave', size: 10, weight: 700 } ] },
+    { title: '빛의 분산·소리·전기', text: 'prism(light) · ray · tuningfork(ring, mallet) · power(reading)',
+      scene: [
+        { t: 'prism', x: 105, light: true }, { t: 'ray', points: [[30, 60], [120, 60], [200, 110]], color: 'red' },
+        { t: 'tuningfork', x: 290, ring: true, mallet: true }, { t: 'power', x: 415, reading: '6 V' },
+        { t: 'text', x: 105, y: 288, text: 'prism · ray', size: 11, weight: 700 }, { t: 'text', x: 290, y: 288, text: 'tuningfork', size: 11, weight: 700 },
+        { t: 'text', x: 415, y: 288, text: 'power', size: 11, weight: 700 } ] },
+    { title: '암석·광물·조흔판', text: 'rock(kind: shale · gneiss · marble · quartz · calcite · granite · basalt · sandstone · limestone · conglomerate) · streak',
+      scene: [
+        { t: 'rock', kind: 'shale', x: 45, y: 140, s: .82 }, { t: 'rock', kind: 'gneiss', x: 122, y: 140, s: .82 }, { t: 'rock', kind: 'marble', x: 199, y: 140, s: .82 },
+        { t: 'rock', kind: 'quartz', x: 276, y: 140, s: .82 }, { t: 'rock', kind: 'calcite', x: 353, y: 140, s: .82 }, { t: 'streak', x: 432, y: 140, s: .82, color: '#7a2e1d' },
+        { t: 'rock', kind: 'granite', x: 45, s: .82 }, { t: 'rock', kind: 'basalt', x: 122, s: .82 }, { t: 'rock', kind: 'sandstone', x: 199, s: .82 },
+        { t: 'rock', kind: 'limestone', x: 276, s: .82, fizz: true }, { t: 'rock', kind: 'conglomerate', x: 353, s: .82 },
+        { t: 'text', x: 45, y: 158, text: 'shale', size: 10, weight: 700 }, { t: 'text', x: 122, y: 158, text: 'gneiss', size: 10, weight: 700 }, { t: 'text', x: 199, y: 158, text: 'marble', size: 10, weight: 700 },
+        { t: 'text', x: 276, y: 158, text: 'quartz', size: 10, weight: 700 }, { t: 'text', x: 353, y: 158, text: 'calcite', size: 10, weight: 700 }, { t: 'text', x: 432, y: 158, text: 'streak', size: 10, weight: 700 },
+        { t: 'text', x: 45, y: 288, text: 'granite', size: 10, weight: 700 }, { t: 'text', x: 122, y: 288, text: 'basalt', size: 10, weight: 700 }, { t: 'text', x: 199, y: 288, text: 'sandstone', size: 10, weight: 700 },
+        { t: 'text', x: 276, y: 288, text: 'limestone(fizz)', size: 10, weight: 700 }, { t: 'text', x: 353, y: 288, text: 'conglomerate', size: 10, weight: 700 } ] },
+    { title: '지층 모형·지구본', text: 'strata(layers: kind · text · fossil, fold, fault) · globe(night)',
+      scene: [
+        { t: 'strata', x: 100, w: 165, fold: 12, layers: [ { kind: 'gravel', h: .2, text: '역암' }, { kind: 'sand', h: .25, text: '사암' }, { kind: 'mud', h: .2, text: '이암', fossil: true }, { kind: 'limestone', h: .2, text: '석회암' }, { kind: 'sand', h: .15 } ] },
+        { t: 'strata', x: 268, w: 110, h: 84, fault: 12 }, { t: 'globe', x: 410, night: 'right' },
+        { t: 'text', x: 100, y: 288, text: 'strata(fold)', size: 11, weight: 700 }, { t: 'text', x: 268, y: 288, text: 'strata(fault)', size: 11, weight: 700 },
+        { t: 'text', x: 410, y: 288, text: 'globe', size: 11, weight: 700 } ] }
   ],
   results: { expect: '부품 이름(t)과 속성은 SKILL.md의 부품 목록을 보세요.', questions: ['그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요.'] },
   source: 'experiment-visualizer 부품 카탈로그'
