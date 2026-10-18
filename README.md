@@ -113,6 +113,7 @@ python scripts/make_skill_zip.py                                 # dist/experime
 
 가벼운 HTML은 `https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/labkit.min.js`를 불러옵니다.
 엔진을 고친 뒤에는 `v1.x.y` 태그를 붙여 push해야 jsDelivr에 반영됩니다. 그림 데이터 형식을 바꾸는 큰 변경은 `v2`로 올립니다.
+버전을 올릴 때는 `labkit.js` 첫 줄 머리말과 `const VERSION`도 같은 번호로 고칩니다 (다르면 `make_template.py`가 멈춥니다).
 
 ## 라이선스
 

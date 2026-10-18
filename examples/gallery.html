@@ -143,7 +143,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.0.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.2.1 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -268,6 +268,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
+const VERSION = '1.2.1'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -1106,6 +1107,28 @@ function layoutLabels(list, sh) {
 }
 function grid() { let o = '<g opacity=".55" font-size="8" fill="#7d2ba6">'; for (let x = 0; x <= W; x += 20) o += `<path d="M${x},0 V${H}" stroke="${x % 100 ? '#e8d6f7' : '#c99be6'}" stroke-width="${x % 100 ? .5 : 1}"/>${x % 100 === 0 ? `<text x="${x + 2}" y="10">${x}</text>` : ''}`; for (let y = 0; y <= H; y += 20) o += `<path d="M0,${y} H${W}" stroke="${y % 100 ? '#e8d6f7' : '#c99be6'}" stroke-width="${y % 100 ? .5 : 1}"/>${y % 100 === 0 && y ? `<text x="2" y="${y - 2}">${y}</text>` : ''}`; return o + `<path d="M0,${BENCH} H${W}" stroke="#e5484d" stroke-dasharray="4 3"/><text x="${W - 60}" y="${BENCH - 4}" fill="#e5484d">bench y=${BENCH}</text></g>`; }
 
+/* ---------- 데이터 점검 (콘솔 [LabKit] 경고, 같은 경고는 한 번만) ---------- */
+const WARNED = new Set();
+function warn(msg) { if (WARNED.has(msg)) return; WARNED.add(msg); console.warn('[LabKit] ' + msg); }
+const REFS = ['on', 'in', 'over', 'into', 'hold', 'link', 'to', 'from'];
+function lint(all, byId, where) {
+  const at = where ? where + ' — ' : '', name = el => el.id ? `${el.t}#${el.id}` : String(el.t);
+  const off = (v, max) => typeof v === 'number' && (v < 0 || v > max);
+  const scales = new Set();
+  all.forEach(el => {
+    REFS.forEach(k => {
+      if (k === 'from' && el.t === 'pour') return; // pour의 from은 id가 아니라 그릇 종류
+      [].concat(el[k] ?? []).forEach(ref => { if (typeof ref === 'string' && !byId[ref]) warn(`${at}${name(el)}의 ${k}: '${ref}' → 이 장면에 그런 id가 없어요`); });
+    });
+    if (off(el.x, W) || off(el.y, H)) warn(`${at}${name(el)}의 좌표 (${el.x ?? '-'}, ${el.y ?? '-'})가 장면(x 0~${W}, y 0~${H}) 밖이에요`);
+    // 스탠드는 막대 끝이 잘려도 자연스러우므로 집게 위치만 본다
+    const g = el._g || {}, top = el.t === 'stand' ? Math.min(...(g.pts || []).map(p => p.y - 6)) : g.top;
+    if (typeof top === 'number' && top < -6) warn(`${at}${name(el)}의 위쪽이 장면 밖으로 잘려요 (top ${Math.round(top)}). y를 내리거나 s를 줄이세요`);
+    if ((SHAPES[el.t] && el.vol != null) || (el.t === 'pour' && el.fromVol != null)) scales.add(el.s ?? 1);
+  });
+  if (scales.size > 1) warn(`${at}용량(vol)을 준 그릇들의 s가 서로 달라요 (${[...scales].join(', ')}). 같은 s를 주어야 부피 비율이 맞아요`);
+}
+
 /* ---------- scene ---------- */
 function build(items, o = {}) {
   const els = JSON.parse(JSON.stringify(Array.isArray(items) ? items : [])).filter(e => e && typeof e === 'object');
@@ -1116,6 +1139,7 @@ function build(items, o = {}) {
   const busy = new Set();
   const R = ref => { const el = typeof ref === 'string' ? byId[ref] : ref; if (!el || typeof el !== 'object') return null; if (el._g) return el._g; if (busy.has(el)) return null; busy.add(el); const Tp = T[el.t] || T._unknown; try { el._g = Tp.geo(el, R); } catch (e) { console.warn('[LabKit] 배치 오류', el, e); el._g = { x: el.x ?? 240, y: el.y ?? BENCH, s: 1 }; } busy.delete(el); return el._g; };
   all.forEach(el => R(el));
+  if (o.lint) lint(all, byId, o.label);
   const P = uid('s'), cx = { front: [], labels: [], defs: [], R, sh: P + 'sh' };
   const behindOf = el => { const id = el.in || (el.t === 'funnel' ? el.over : null); return id && byId[id] ? id : null; };
   const behind = {}; all.forEach(el => { const id = behindOf(el); if (id) (behind[id] ||= []).push(el); });
@@ -1135,7 +1159,7 @@ function build(items, o = {}) {
   return { body, cx, P };
 }
 function scene(items, o = {}) {
-  const { body, cx, P } = build(items, o);
+  const { body, cx, P } = build(items, { ...o, lint: true });
   const bench = o.bench !== false;
   return `<svg class="scene" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label || '실험 장면')}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="${P}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#faf6ff"/></linearGradient><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs><rect width="${W}" height="${H}" fill="url(#${P}bg)"/>${bench ? `<rect y="${BENCH}" width="${W}" height="${H - BENCH}" fill="#f2ecf9"/><rect y="${BENCH}" width="${W}" height="2" fill="#e4d9f1"/>` : ''}${body}${cx.front.join('')}${layoutLabels(cx.labels, cx.sh)}${o.grid ? grid() : ''}</svg>`;
 }
@@ -1155,7 +1179,7 @@ function icon(spec, name) {
   return out;
 }
 function fit(root) { (root || document).querySelectorAll('svg[data-fit]').forEach(svg => { const g = svg.querySelector('.fit'); try { const b = g.getBBox(); if (b.width && b.height) { const p = Math.max(b.width, b.height) * .08 + 2; svg.setAttribute('viewBox', `${r2(b.x - p)} ${r2(b.y - p)} ${r2(b.width + 2 * p)} ${r2(b.height + 2 * p)}`); svg.removeAttribute('data-fit'); } } catch (e) { } }); }
-return { scene, icon, fit, esc, col, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
+return { version: VERSION, scene, icon, fit, esc, col, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
 })();
 window.LabKit = LabKit;
 function lkStart() {
@@ -1186,6 +1210,7 @@ const mats = arr(D.materials).map(m => typeof m === 'string' ? { name: m } : m).
 const safety = arr(D.safety), tips = arr(D.tips);
 const res = D.results || {};
 document.title = (D.title ? D.title + ' · ' : '') + '실험 과정 그림 안내';
+if (D._demo) LabKit.warn('템플릿 예시 데이터(_demo: true)가 남아 있어요. 실제 실험 데이터로 바꾸세요.');
 const sceneOf = (st, i) => { try { return LabKit.scene(arr(st.scene), { grid: GRID, bench: st.bench, label: `${i + 1}단계: ${st.title || ''}` }); } catch (err) { console.error(err); return '<div class="empty"><b>그림을 그리지 못했어요</b><span>scene 데이터를 확인해 주세요.</span></div>'; } };
 const box = (cls, tag, v) => arr(v).filter(Boolean).map(x => `<div class="box ${cls}"><span class="bi">${tag}</span><div>${md(x)}</div></div>`).join('');
 const coverItems = D.cover || [{ t: 'flask', x: 150, fill: .5, color: 'violet', bubbles: 5 }, { t: 'beaker', id: 'cb', x: 262, fill: .4, color: 'water' }, { t: 'rack', x: 382, tubes: [{ fill: .45, color: 'pink' }, { fill: .45, color: 'yellow' }, { fill: .45, color: 'green' }] }, { t: 'dropper', over: 'cb', dy: 18, color: 'violet' }];
@@ -1208,7 +1233,7 @@ function page() {
   h.push(steps.length ? `<div class="steps">${steps.map((st, i) => `${st.section && st.section !== (steps[i - 1] || {}).section ? `<div class="step-sec">${e(st.section)}</div>` : ''}<article class="step" tabindex="0" data-step="${i}" aria-label="${i + 1}단계 크게 보기"><div class="scene-box">${sceneOf(st, i)}</div><div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h3>${e(st.title || `${i + 1}단계`)}</h3>${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}</div><span class="zoom-hint">${IC.zoom}크게 보기</span></article>`).join('')}</div>` : emptyState);
   h.push('</section>');
   if (hasRes) h.push(`<section><div class="sec-head"><span class="eyebrow">정리</span><h2>결과 정리</h2></div><div class="res-grid">${resCards()}</div></section>`);
-  h.push(`<footer class="foot">${D.source ? `원문: ${e(D.source)}<br>` : ''}${D.notes ? md(D.notes) + '<br>' : ''}그림은 이해를 돕기 위한 모식도로, 실제 기구의 모양·크기와 다를 수 있어요. 실험은 반드시 선생님의 안내에 따라 진행하세요.<br>만든 도구: <a href="https://github.com/sci-eum/experiment-visualizer" target="_blank" rel="noopener">experiment-visualizer</a></footer></main>`);
+  h.push(`<footer class="foot">${D.source ? `원문: ${e(D.source)}<br>` : ''}${D.notes ? md(D.notes) + '<br>' : ''}그림은 이해를 돕기 위한 모식도로, 실제 기구의 모양·크기와 다를 수 있어요. 실험은 반드시 선생님의 안내에 따라 진행하세요.<br>만든 도구: <a href="https://github.com/sci-eum/experiment-visualizer" target="_blank" rel="noopener">experiment-visualizer</a> v${LabKit.version}</footer></main>`);
   return h.join('');
 }
 

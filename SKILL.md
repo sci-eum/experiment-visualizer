@@ -141,6 +141,7 @@ python extract_text.py 실험지.hwpx
 | `into: 'id'` | `pour` 전용: 그 그릇에 **붓기** | `{t:'pour', into:'b', from:'cylinder'}` |
 | `hold: 'id'` | `stand` 전용: 그 기구를 **집게로 고정** (배열 가능) | `{t:'stand', hold:['th','t1']}` |
 | `stand: true` | 어떤 기구든 스탠드로 고정 (스탠드를 자동으로 그림) | `{t:'tube', x:260, y:200, stand:true}` |
+| `dx`, `dy` | `in`·`over`·`pour`로 놓은 부품을 **조금 옮기기**. `dx`는 오른쪽이 +, `dy`는 위쪽이 + (`pour`의 `dx`는 받는 그릇 안쪽이 +) | `{t:'spatula', over:'b', dx:-18}` |
 
 모든 부품에 쓸 수 있는 공통 속성: `id`, `x`, `y`, `s`(크기 배율, 기본 1), `tilt`(기울기 각도, 시계 방향 +), `label`(이름표 글자), `labelSide`(`'left'`/`'right'`).
 
@@ -202,6 +203,7 @@ JSON(또는 자바스크립트 객체)으로 쓴다. `title`과 `steps`만 필�
 - 단계의 `section`(소제목)이 바뀌는 곳마다 페이지에 소제목이 나오고, `no`를 주면 번호 자리에 `1, 2, 3` 대신 그 글자(예 `"➊"`, `"➌~➎"`)가 나온다.
 - 표지 그림은 최상위 `"cover": [ 부품 … ]`으로 정한다. 대표 장치 장면을 넣는다 (없으면 일반 실험 기구 그림).
 - 결과 표가 여러 개면 `"results": { "tables": [ {title, head, rows}, … ] }`로 쓴다.
+- 원문에 결론·정리 글이 있으면 `results.conclusion`에 쓴다 ("정리" 칸으로 나온다). 원문에 없으면 지어내지 않는다.
 - `"_demo": true` 같은 템플릿 예시 값은 남기지 않는다.
 
 ## 6. 부품 목록
@@ -246,7 +248,7 @@ JSON(또는 자바스크립트 객체)으로 쓴다. `title`과 `steps`만 필�
 | `tripod` | 삼발이 + 쇠그물 | `gauze:false`면 쇠그물 없음. 그릇은 `on`으로 올린다 |
 | `hotplate` | 가열판(핫플레이트) | `on:false`면 꺼짐 |
 | `stirrer` | 자석 교반기 | `on:false`면 꺼짐. 그릇은 `on`으로 올리고 그릇에 `stirbar:true` |
-| `stand` | 스탠드 | `hold:'id'`(또는 배열), 직접 지정은 `x`, `clampY`, `arm`(팔 길이, 음수면 왼쪽) |
+| `stand` | 스탠드 | `hold:'id'`(또는 배열), `reach`(스탠드 막대와 잡은 기구 사이 거리, 기본 100), 직접 지정은 `x`, `clampY`, `arm`(팔 길이, 음수면 왼쪽) |
 | `balance` | 전자저울 | `reading:'25.0 g'`, 물체는 `on`으로 올린다 |
 | `candle` | 양초 | `lit:false`, `h` |
 
@@ -341,8 +343,9 @@ python scripts/build_html.py experiment.json 실험제목.html
 
 ```python
 import json, pathlib, urllib.request
-URLS = ["https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/assets/template.html",
-        "https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/template.html"]
+# 공개된 v1 최신판(@1)을 먼저 받고, 막히면 저장소 원본을 받는다
+URLS = ["https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/template.html",
+        "https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/assets/template.html"]
 tpl = None
 for u in URLS:
     try:
@@ -399,7 +402,7 @@ HTML을 내기 전에 확인한다.
 - [ ] 이름표는 장면마다 1~3개다.
 - [ ] JSON 문법이 맞다 (따옴표, 쉼표, 괄호). `_demo` 같은 예시 값이 남아 있지 않다.
 - [ ] 개인정보가 없다.
-- 브라우저로 열어 볼 수 있으면 직접 확인한다. 주소 끝에 `?grid`를 붙이면 좌표 격자가 보인다. 콘솔에 `[LabKit]` 경고가 있으면 그 부품을 고친다. Edge나 Chrome이 설치된 환경(Claude Code 등)에서는 `python scripts/check_render.py 결과.html`로 빈 화면·스크립트 오류를 확인할 수 있다.
+- 브라우저로 열어 볼 수 있으면 직접 확인한다. 주소 끝에 `?grid`를 붙이면 좌표 격자가 보인다. 콘솔에 `[LabKit]` 경고가 있으면 그 부품을 고친다. 경고는 단계 번호와 함께 **없는 id를 가리킴, 좌표가 장면 밖, 위쪽이 잘림, `vol` 그릇들의 `s`가 제각각, `_demo`가 남음, 알 수 없는 부품**을 알려 준다. Edge나 Chrome이 설치된 환경(Claude Code 등)에서는 `python scripts/check_render.py 결과.html`로 빈 화면·스크립트 오류를 확인할 수 있다.
 
 ## 9. 전달
 

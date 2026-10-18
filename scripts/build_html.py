@@ -47,6 +47,11 @@ def build(template: str, data_js: str) -> str:
 
 
 def main() -> int:
+    for s in (sys.stdout, sys.stderr):
+        try:
+            s.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
     here = Path(__file__).resolve().parent
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("data", help="EXPERIMENT 데이터 파일 (.json 또는 .js)")

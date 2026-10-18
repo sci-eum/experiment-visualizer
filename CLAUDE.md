@@ -12,5 +12,6 @@
 - 예시는 `python scripts/build_html.py <데이터> <결과.html>`로 다시 만든다 (gallery, recipes, red-cabbage). 다시 만든 뒤 `python scripts/check_render.py <html…>`로 화면이 비거나 스크립트 오류가 없는지 확인한다.
 - `my-results/`는 사용자 실험지로 만든 결과물이라 Git에 넣지 않는다 (.gitignore).
 - 엔진을 바꿔 공개하면 새 태그(v1.x.y)를 push해 jsDelivr `@1`에 반영한다. 데이터 형식을 깨는 변경은 v2.
+- 버전을 올릴 때는 `labkit.js` 첫 줄 머리말과 `const VERSION`을 태그와 같은 번호로 고친다 (둘이 다르면 `make_template.py`가 멈춘다). 결과 HTML 바닥글에 이 버전이 나온다.
 - SKILL.md의 부품 목록·예시는 엔진과 같이 고친다. 예시는 `examples/recipes.data.js`에서 실제로 그려 확인한다.
 - `dist/`(스킬 zip)는 Git에 넣지 않고 Release 첨부로만 올린다.

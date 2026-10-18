@@ -9,14 +9,23 @@ import re
 import sys
 from pathlib import Path
 
+for s in (sys.stdout, sys.stderr):
+    try:
+        s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 root = Path(__file__).resolve().parent.parent
 light = (root / "assets" / "light.html").read_text(encoding="utf-8")
 engine = (root / "assets" / "labkit.js").read_text(encoding="utf-8")
 if re.search(r"</script", engine, re.I):
     sys.exit("labkit.js 안에 </script 문자열이 있어 인라인할 수 없습니다.")
+head = re.search(r"LabKit v(\d+\.\d+\.\d+)", engine)
+ver = re.search(r"const VERSION = '(\d+\.\d+\.\d+)'", engine)
+if not head or not ver or head.group(1) != ver.group(1):
+    sys.exit("labkit.js 첫 줄 머리말의 버전과 VERSION 값이 다릅니다. 둘을 같게 고치세요.")
 pat = re.compile(r'<script src="[^"]*labkit(?:\.min)?\.js"[^\n]*</script>')
 if not pat.search(light):
     sys.exit("light.html 에서 labkit 스크립트 태그를 찾지 못했습니다.")
 out = pat.sub(lambda m: "<script>\n" + engine.rstrip() + "\n</script>", light, count=1)
 (root / "assets" / "template.html").write_text(out, encoding="utf-8")
-print(f"assets/template.html 갱신 ({len(out):,} chars)")
+print(f"assets/template.html 갱신 (LabKit v{ver.group(1)}, {len(out):,} chars)")
