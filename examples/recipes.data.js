@@ -58,7 +58,18 @@ window.EXPERIMENT = {
       scene: [{ t: 'stand', hold: 'th' }, { t: 'tripod', id: 'tr', x: 280 }, { t: 'lamp', x: 280 },
               { t: 'beaker', id: 'b', on: 'tr', fill: 0.45, bubbles: 6, steam: true },
               { t: 'thermometer', id: 'th', in: 'b', reading: '100 ℃' },
-              { t: 'stopwatch', x: 420, y: 70, time: '1분마다' }] }
+              { t: 'stopwatch', x: 420, y: 70, time: '1분마다' }] },
+    { title: '자동 배치 (x 생략)', section: '자동 배치·장면 이어받기',
+      scene: [{ t: 'beaker', id: 'b', vol: '100 mL', amount: '50 mL', label: '물 50 mL' },
+              { t: 'bottle', id: 'btb', text: 'BTB', fill: 0.6 },
+              { t: 'bottle', id: 'hcl', text: '묽은 염산', fill: 0.6 }] },
+    { title: '이어받기 ① 지시약 넣기', section: '자동 배치·장면 이어받기',
+      scene: { from: 'prev', change: { b: { color: 'green', label: 'BTB 용액' } },
+               add: [{ t: 'dropper', over: 'b', color: 'green' }] } },
+    { title: '이어받기 ② 염산 떨어뜨리기', section: '자동 배치·장면 이어받기',
+      scene: { from: 'prev', remove: ['dropper', 'btb'], change: { b: { label: null }, hcl: { cap: false } },
+               add: [{ t: 'dropper', over: 'b', color: 'clear' },
+                     { t: 'note', x: 390, y: 60, text: '색이 어떻게 변하는지 관찰해요', icon: 'eye' }] } }
   ],
   source: 'SKILL.md 부록'
 };

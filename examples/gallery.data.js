@@ -116,7 +116,7 @@ window.EXPERIMENT = {
         { t: 'text', x: 340, y: 288, text: 'volumetric', size: 11, weight: 700 }, { t: 'text', x: 420, y: 288, text: 'bag', size: 11, weight: 700 } ] },
     { title: '용액 상태 표현', text: 'layers · precipitate · cloudy · crystals · ice · nail',
       scene: [
-        { t: 'beaker', x: 50, layers: [ { h: .35, color: 'water' }, { h: .25, color: 'oil' } ], label: '기름' },
+        { t: 'beaker', x: 50, layers: [ { h: .35, color: 'water' }, { h: .25, color: 'oil' } ] }, { t: 'label', text: '기름', x: 50, y: 172, to: [50, 251] },
         { t: 'tube', x: 125, fill: .6, color: 'clear', solid: 'precipitate', solidColor: 'white' },
         { t: 'tube', x: 165, fill: .6, color: 'clear', cloudy: true },
         { t: 'beaker', x: 240, fill: .3, color: 'clear', solid: 'crystals' },

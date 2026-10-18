@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit v1.3.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.4.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -123,7 +123,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.3.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.4.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -530,7 +530,7 @@ T.thermometer = {
   draw(el, g, cx) {
     const L = 150, lv = Math.max(0, Math.min(1, g.lv)), top = -10 - lv * (L - 26);
     let ticks = ''; for (let i = 0; i < 12; i++) ticks += `M1.6,${-22 - i * 10} H4.4 `;
-    if (el.reading) cx.labels.push({ a: { x: g.x + 5 * g.s, y: g.y + top * g.s }, text: el.reading, tone: 'hot', side: el.labelSide });
+    if (el.reading) cx.labels.push({ a: { x: g.x + 5 * g.s, y: g.y + top * g.s }, left: g.x - 6 * g.s, text: el.reading, tone: 'hot', side: el.labelSide });
     return `<g transform="${tfm(g)}"><rect x="-4.5" y="${-L}" width="9" height="${L - 8}" rx="4.5" fill="#f8fbfe" stroke="${INK}" stroke-width="1.6"/><path d="${ticks}" stroke="${INK2}" stroke-width=".9"/><rect x="-1.6" y="${r2(top)}" width="3.2" height="${r2(-top - 6)}" fill="#e5484d"/><circle cy="-7" r="7" fill="#e5484d" stroke="${INK}" stroke-width="1.6"/><circle cx="-2.2" cy="-9" r="2" fill="#fff" opacity=".7"/></g>`;
   }
 };
@@ -708,7 +708,7 @@ T.springscale = {
     let tk = ''; for (let i = 0; i < 8; i++) tk += `M7,${18 + i * 10} H10 `;
     let o = `<g transform="translate(${r2(g.x)},${r2(g.y)}) scale(${g.s})"><circle cy="-5" r="5" fill="none" stroke="${DARK}" stroke-width="2"/><rect x="-13" y="0" width="26" height="106" rx="7" fill="#f3f5f9" stroke="${INK}" stroke-width="2"/><rect x="-7" y="8" width="14" height="92" rx="3" fill="#fff"/><path d="${tk}" stroke="${INK2}" stroke-width="1"/><path d="${zz}" fill="none" stroke="${INK2}" stroke-width="1.4"/><rect x="-8" y="${r2(se)}" width="16" height="3" rx="1" fill="#e5484d"/><path d="M0,${r2(se + 3)} V${r2(120 + ext * 14 - 6)}" stroke="${DARK}" stroke-width="2"/><path d="M0,${r2(120 + ext * 14 - 6)} q0,6 -4,6 q-4,0 -4,-4" fill="none" stroke="${DARK}" stroke-width="2" stroke-linecap="round"/></g>`;
     if (el.hang) { const k = el.hang === 'block' ? 'block' : 'weight'; o += T[k].draw({ text: el.hangText, color: el.hangColor, w: 56, h: 34 }, { x: g.x, y: g.hookY + (k === 'block' ? 36 : 40) * g.s, s: g.s, tilt: 0 }, cx); if (k === 'block') o += `<path d="M${r2(g.x)},${r2(g.hookY)} V${r2(g.hookY + 2)}" stroke="${DARK}" stroke-width="2"/>`; }
-    if (el.reading) cx.labels.push({ a: { x: g.x + 13 * g.s, y: g.y + se * g.s }, text: el.reading, side: el.labelSide });
+    if (el.reading) cx.labels.push({ a: { x: g.x + 13 * g.s, y: g.y + se * g.s }, left: g.x - 15 * g.s, text: el.reading, side: el.labelSide });
     return o;
   }
 };
@@ -873,7 +873,7 @@ T.sensor = {
     else if (g.kind === 'ph') probe = `<rect x="-5" y="${-L}" width="10" height="${L - 10}" rx="3" fill="${GLASS}" stroke="${INK}" stroke-width="1.4"/><circle cy="-7" r="7" fill="${GLASS}" stroke="${INK}" stroke-width="1.4"/><rect x="-1.5" y="${-L + 6}" width="3" height="${L - 16}" fill="${INK2}" opacity=".6"/>`;
     else probe = `<rect x="-2.6" y="${-L}" width="5.2" height="${L - 4}" fill="#d3d8e0" stroke="${INK}" stroke-width="1.1"/><path d="M-2.6,-4.5 Q0,1.5 2.6,-4.5" fill="#d3d8e0" stroke="${INK}" stroke-width="1.1"/><rect x="-5" y="${-L}" width="10" height="16" rx="2" fill="#5a6274"/>`;
     const T0 = -L - 56;
-    if (el.reading) cx.labels.push({ a: { x: g.x + 19 * g.s, y: g.y + (T0 + 28) * g.s }, text: el.reading, tone: 'hot', side: el.labelSide });
+    if (el.reading) cx.labels.push({ a: { x: g.x + 19 * g.s, y: g.y + (T0 + 28) * g.s }, left: g.x - 19 * g.s, text: el.reading, tone: 'hot', side: el.labelSide });
     return `<g transform="${tfm(g)}">${probe}<rect x="-19" y="${T0}" width="38" height="56" rx="10" fill="#fff" stroke="${DARK}" stroke-width="2"/><path d="M-19,${T0 + 12} V${T0 + 10} Q-19,${T0} -9,${T0} H9 Q19,${T0} 19,${T0 + 10} V${T0 + 12} Z" fill="${c}"/><circle cx="-10" cy="${T0 + 6}" r="2" fill="#7CFFB2"/><text y="${T0 + 34}" font-size="10" font-weight="800" text-anchor="middle" fill="#2b3040">${esc(el.text ?? nm)}</text><path d="M-9,${T0 + 44} H9" stroke="#d5d9e2" stroke-width="2" stroke-linecap="round"/></g>`;
   }
 };
@@ -943,13 +943,15 @@ function layoutLabels(list, sh) {
   const boxes = [], out = [];
   const hit = b => boxes.some(o => b.x < o.x + o.w + 3 && b.x + b.w + 3 > o.x && b.y < o.y + o.h + 2 && b.y + b.h + 2 > o.y);
   const tone = t => t === 'hot' ? { bg: '#ffedef', fg: '#c7323f' } : t === 'arrow' ? { bg: '#fbf4ff', fg: '#7d2ba6' } : { bg: '#fff', fg: '#2b3040' };
-  list.filter(l => l.fixed).forEach(l => { const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11; const b = { x: Math.max(3, Math.min(W - w - 3, l.x - w / 2)), y: Math.max(3, Math.min(H - h - 3, l.y - h / 2)), w, h }; boxes.push(b); const tn = tone(l.tone); out.push(pillSvg(b.x + w / 2, b.y + h / 2, l.text, { bg: tn.bg, fg: l.fg || tn.fg, sh }).svg); });
+  // 이름표도 겹침 점검에 넣는다 (말풍선처럼 어떤 기구도 가리면 안 된다)
+  const tagL = (b, text, svg) => `<g data-lk="o" data-lk-c="0" data-lk-t="label" data-lk-n="${esc(`label("${String(text).slice(0, 10)}")`)}" data-lk-box="${[b.x, b.y, b.w, b.h].map(r2).join(',')}">${svg}</g>`;
+  list.filter(l => l.fixed).forEach(l => { const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11; const b = { x: Math.max(3, Math.min(W - w - 3, l.x - w / 2)), y: Math.max(3, Math.min(H - h - 3, l.y - h / 2)), w, h }; boxes.push(b); const tn = tone(l.tone); out.push(tagL(b, l.text, pillSvg(b.x + w / 2, b.y + h / 2, l.text, { bg: tn.bg, fg: l.fg || tn.fg, sh }).svg)); });
   list.filter(l => !l.fixed && l.a && l.text).forEach(l => {
     const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11, a = l.a;
     let side = l.side || (a.x > W - 150 ? 'left' : 'right'); let b;
     if (l.fixedBox) b = { x: l.fixedBox.x - w / 2, y: l.fixedBox.y - h / 2, w, h };
     else {
-      const make = (sd, dy) => ({ x: sd === 'right' ? a.x + 22 : a.x - 22 - w, y: a.y - h / 2 + dy, w, h });
+      const make = (sd, dy) => ({ x: sd === 'right' ? a.x + 22 : Math.min(a.x, l.left ?? a.x) - 22 - w, y: a.y - h / 2 + dy, w, h }); // 왼쪽이면 부품 왼쪽 끝 바깥에
       b = make(side, 0);
       if (b.x + w > W - 3 || b.x < 3) { side = side === 'right' ? 'left' : 'right'; b = make(side, 0); }
       for (let i = 1; i < 12 && hit(b); i++) b = make(side, (i % 2 ? 1 : -1) * Math.ceil(i / 2) * (h + 4));
@@ -957,7 +959,7 @@ function layoutLabels(list, sh) {
     }
     boxes.push(b);
     const ex = b.x + w / 2 < a.x ? b.x + w : b.x, ey = b.y + h / 2, tn = tone(l.tone);
-    out.push(`<path d="M${r2(a.x)},${r2(a.y)} L${r2(ex)},${r2(ey)}" stroke="#9aa2b4" stroke-width="1.3"/><circle cx="${r2(a.x)}" cy="${r2(a.y)}" r="2.8" fill="#fff" stroke="#7f889c" stroke-width="1.4"/>` + pillSvg(b.x + w / 2, ey, l.text, { bg: tn.bg, fg: tn.fg, sh }).svg);
+    out.push(`<path d="M${r2(a.x)},${r2(a.y)} L${r2(ex)},${r2(ey)}" stroke="#9aa2b4" stroke-width="1.3"/><circle cx="${r2(a.x)}" cy="${r2(a.y)}" r="2.8" fill="#fff" stroke="#7f889c" stroke-width="1.4"/>` + tagL(b, l.text, pillSvg(b.x + w / 2, ey, l.text, { bg: tn.bg, fg: tn.fg, sh }).svg));
   });
   return out.join('');
 }
@@ -1059,12 +1061,52 @@ function overlaps(root, o = {}) {
   return found;
 }
 
+/* ---------- x 자동 배치: 실험대에 서는 부품 여러 개가 x를 생략하면 쓴 순서대로 빈자리에 왼쪽부터 놓는다 ---------- */
+const BENCHY = new Set([...Object.keys(SHAPES), 'rack', 'lamp', 'burner', 'tripod', 'hotplate', 'stirrer', 'balance', 'candle', 'ruler', 'weight', 'microscope', 'dish', 'petri', 'evapdish', 'watchglass', 'mortar', 'plant', 'ramp', 'cart', 'block', 'ball', 'magnet', 'ice', 'powder']);
+function autoX(all) {
+  const M = 16, PAD = 10, placed = el => ['on', 'in', 'over', 'into'].some(k => typeof el[k] === 'string');
+  const width = el => { try { return Math.max(12, (T[el.t] || T._unknown).geo({ ...el, x: 240 }, () => null).w || 60); } catch (e) { return 60; } };
+  const tripods = all.filter(el => el.t === 'tripod' && !placed(el)), follow = [], auto = [], busy = [];
+  all.forEach(el => {
+    if (el._parent || placed(el)) return;
+    if (el.t === 'stand') { if (typeof el.x === 'number') busy.push([el.x - 46, el.x + 58]); return; }
+    if (!BENCHY.has(el.t)) return;
+    if (el.x != null) { const w = width(el); busy.push([el.x - w / 2, el.x + w / 2]); return; }
+    if (HEATERS.has(el.t) && follow.length < tripods.length) { follow.push([el, tripods[follow.length]]); return; } // 삼발이 아래로
+    auto.push(el);
+  });
+  let over = false;
+  if (auto.length > 1) { // 하나만 생략하면 예전처럼 가운데(240)
+    // 이름표(label)가 있으면 그 너비만큼 옆자리를 비워 두고, 그쪽에 이름표가 붙게 한다
+    const lab = auto.map(el => el.label ? tw(el.label) + 44 : 0), ws = auto.map((el, i) => width(el) + lab[i]), need = ws.reduce((a, b) => a + b, 0), gaps = [];
+    let cur = M;
+    busy.sort((a, b) => a[0] - b[0]).forEach(([a, b]) => { if (a - PAD > cur) gaps.push([cur, a - PAD]); cur = Math.max(cur, b + PAD); });
+    if (W - M > cur) gaps.push([cur, W - M]);
+    if (!gaps.length) gaps.push([M, W - M]);
+    const room = gaps.reduce((s, [a, b]) => s + b - a, 0), gap = Math.max(6, (room - need) / (auto.length + 1));
+    over = need + gap * (auto.length + 1) > room + 1;
+    let gi = 0, pos = gaps[0][0];
+    auto.forEach((el, i) => {
+      pos += gap;
+      while (pos + ws[i] > gaps[gi][1] && gi + 1 < gaps.length) { gi++; pos = gaps[gi][0] + gap; } // 이 빈자리에 안 들어가면 다음 빈자리로
+      const left = lab[i] && el.labelSide === 'left' ? lab[i] : 0, body = ws[i] - lab[i];
+      if (lab[i]) el.labelSide = left ? 'left' : 'right';
+      el.x = Math.round(Math.min(W - M - ws[i] + left + body / 2, pos + left + body / 2)); pos += ws[i]; // 넘치면 오른쪽 끝에 붙인다
+    });
+  }
+  follow.forEach(([h, t]) => { if (t.x != null) h.x = t.x; });
+  return over;
+}
+// 장면 데이터에 자동 배치한 x를 채워 돌려준다 (이어받은 장면의 위치를 고정할 때 쓴다)
+function layout(items) { const els = JSON.parse(JSON.stringify(Array.isArray(items) ? items : [])).filter(e => e && typeof e === 'object'); autoX(els); return els; }
+
 /* ---------- scene ---------- */
 function build(items, o = {}) {
   const els = JSON.parse(JSON.stringify(Array.isArray(items) ? items : [])).filter(e => e && typeof e === 'object');
   const pre = [];
   els.forEach(el => { if (el.stand === true && el.t !== 'stand') { el.id = el.id || uid('auto'); pre.push({ t: 'stand', hold: [el.id], reach: el.reach }); } });
   const all = [...pre, ...els], byId = {};
+  if (autoX(all) && o.lint) warn(`${o.label ? o.label + ' — ' : ''}x를 생략한 기구들이 장면에 다 들어가지 않아요. s를 줄이거나 몇 개는 x를 정하세요`);
   all.forEach(el => { if (el.t === 'rack') (el.tubes || []).forEach((tb, i) => { if (!tb || typeof tb !== 'object') return; tb.t = tb.t || 'tube'; tb._parent = el; tb._slot = i; if (tb.id) byId[tb.id] = tb; }); if (el.id) byId[el.id] = el; });
   const busy = new Set();
   const R = ref => { const el = typeof ref === 'string' ? byId[ref] : ref; if (!el || typeof el !== 'object') return null; if (el._g) return el._g; if (busy.has(el)) return null; busy.add(el); const Tp = T[el.t] || T._unknown; try { el._g = Tp.geo(el, R); } catch (e) { console.warn('[LabKit] 배치 오류', el, e); el._g = { x: el.x ?? 240, y: el.y ?? BENCH, s: 1 }; } busy.delete(el); return el._g; };
@@ -1079,7 +1121,7 @@ function build(items, o = {}) {
   const P = uid('s'), cx = { front: [], labels: [], defs: [], R, sh: P + 'sh' };
   const behindOf = el => { const id = el.in || (el.t === 'funnel' ? el.over : null); return id && byId[id] ? id : null; };
   const behind = {}; all.forEach(el => { const id = behindOf(el); if (id) (behind[id] ||= []).push(el); });
-  const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }; g._sh = cx.sh; let s = ''; try { s = Tp.draw(el, g, cx) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, text: el.label, side: el.labelSide }); el._done = true; return tag(el, g, s); };
+  const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }; g._sh = cx.sh; let s = ''; try { s = Tp.draw(el, g, cx) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true; return tag(el, g, s); };
   // 그릇 안의 그릇(수조 속 시험관 등)은 바깥 그릇 앞에 그리고, 잠긴 부분에 물빛을 다시 덮는다.
   const emit = el => {
     let s = '';
@@ -1115,7 +1157,7 @@ function icon(spec, name) {
   return out;
 }
 function fit(root) { (root || document).querySelectorAll('svg[data-fit]').forEach(svg => { const g = svg.querySelector('.fit'); try { const b = g.getBBox(); if (b.width && b.height) { const p = Math.max(b.width, b.height) * .08 + 2; svg.setAttribute('viewBox', `${r2(b.x - p)} ${r2(b.y - p)} ${r2(b.width + 2 * p)} ${r2(b.height + 2 * p)}`); svg.removeAttribute('data-fit'); } } catch (e) { } }); }
-return { version: VERSION, scene, icon, fit, overlaps, esc, col, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
+return { version: VERSION, scene, icon, fit, overlaps, layout, esc, col, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
 })();
 window.LabKit = LabKit;
 function lkStart() {
@@ -1147,9 +1189,42 @@ const safety = arr(D.safety), tips = arr(D.tips);
 const res = D.results || {};
 document.title = (D.title ? D.title + ' · ' : '') + '실험 과정 그림 안내';
 if (D._demo) LabKit.warn('템플릿 예시 데이터(_demo: true)가 남아 있어요. 실제 실험 데이터로 바꾸세요.');
-const sceneOf = (st, i) => { try { return LabKit.scene(arr(st.scene), { grid: GRID, bench: st.bench, label: `${i + 1}단계: ${st.title || ''}` }); } catch (err) { console.error(err); return '<div class="empty"><b>그림을 그리지 못했어요</b><span>scene 데이터를 확인해 주세요.</span></div>'; } };
+// 장면 이어받기: "scene": { "from": 2 또는 "prev", "remove": [id 또는 부품 이름], "change": { id: { 바꿀 속성 } }, "add": [ 새 부품 ] }
+// 앞 장면의 기구를 (자동 배치한 위치까지) 그대로 가져온다. 설명·동작 부품은 단계마다 새로 쓰므로 가져오지 않는다.
+const FRESH = new Set(['note', 'text', 'arrow', 'mark', 'eye', 'label', 'view', 'zoom', 'pour']);
+const resolved = new Map();
+function sceneItems(i, chain = []) {
+  if (resolved.has(i)) return resolved.get(i);
+  const st = steps[i] || {}, out = resolveScene(st.scene, i, `${i + 1}단계: ${st.title || ''}`, chain.concat(i));
+  resolved.set(i, out);
+  return out;
+}
+function resolveScene(sc, i, where, chain) {
+  if (!sc || Array.isArray(sc) || typeof sc !== 'object') return arr(sc);
+  let base = [];
+  if (sc.from != null) {
+    const k = sc.from === 'prev' ? i - 1 : +sc.from - 1;
+    if (!steps[k] || k === i) LabKit.warn(`${where} — scene.from: ${JSON.stringify(sc.from)} → 이어받을 단계가 없어요 (1~${steps.length}단계 중에서, 자기 자신은 안 돼요)`);
+    else if (chain.includes(k)) LabKit.warn(`${where} — scene.from이 돌고 돌아 다시 ${k + 1}단계를 가리켜요`);
+    else base = LabKit.layout(sceneItems(k, chain)).filter(el => !FRESH.has(el.t));
+  }
+  arr(sc.remove).forEach(r => {
+    const n = base.length;
+    base = base.filter(el => el.id !== r);
+    if (base.length === n) base = base.filter(el => el.t !== r);
+    if (base.length === n) LabKit.warn(`${where} — remove: '${r}' → 이어받은 장면에 그런 id나 부품이 없어요`);
+  });
+  const find = id => { for (const el of base) { if (el.id === id) return el; if (el.t === 'rack') for (const tb of arr(el.tubes)) if (tb && tb.id === id) return tb; } return null; };
+  Object.entries(sc.change && typeof sc.change === 'object' ? sc.change : {}).forEach(([id, ch]) => {
+    const el = find(id);
+    if (!el) return LabKit.warn(`${where} — change: '${id}' → 이어받은 장면에 그런 id가 없어요`);
+    Object.entries(ch || {}).forEach(([k, v]) => { if (v === null) delete el[k]; else el[k] = v; }); // null이면 그 속성을 지운다
+  });
+  return base.concat(arr(sc.add));
+}
+const sceneOf = (st, i) => { try { return LabKit.scene(sceneItems(i), { grid: GRID, bench: st.bench, label: `${i + 1}단계: ${st.title || ''}` }); } catch (err) { console.error(err); return '<div class="empty"><b>그림을 그리지 못했어요</b><span>scene 데이터를 확인해 주세요.</span></div>'; } };
 const box = (cls, tag, v) => arr(v).filter(Boolean).map(x => `<div class="box ${cls}"><span class="bi">${tag}</span><div>${md(x)}</div></div>`).join('');
-const coverItems = D.cover || [{ t: 'flask', x: 150, fill: .5, color: 'violet', bubbles: 5 }, { t: 'beaker', id: 'cb', x: 262, fill: .4, color: 'water' }, { t: 'rack', x: 382, tubes: [{ fill: .45, color: 'pink' }, { fill: .45, color: 'yellow' }, { fill: .45, color: 'green' }] }, { t: 'dropper', over: 'cb', dy: 18, color: 'violet' }];
+const coverItems = D.cover ? resolveScene(D.cover, -1, '표지', []) : [{ t: 'flask', x: 150, fill: .5, color: 'violet', bubbles: 5 }, { t: 'beaker', id: 'cb', x: 262, fill: .4, color: 'water' }, { t: 'rack', x: 382, tubes: [{ fill: .45, color: 'pink' }, { fill: .45, color: 'yellow' }, { fill: .45, color: 'green' }] }, { t: 'dropper', over: 'cb', dy: 18, color: 'violet' }];
 const chips = () => [D.subject && `<span class="chip primary">${e(D.subject)}</span>`, D.unit && `<span class="chip">${IC.book}${e(D.unit)}</span>`, D.duration && `<span class="chip">${IC.clock}${e(D.duration)}</span>`, D.group && `<span class="chip">${IC.users}${e(D.group)}</span>`].filter(Boolean).join('');
 const matGrid = () => `<div class="mat-grid">${mats.map(m => `<div class="mat">${LabKit.icon(m.icon, m.name)}<div class="nm">${e(m.name)}</div>${m.qty ? `<div class="qty">${e(m.qty)}</div>` : ''}</div>`).join('')}</div>`;
 const tipList = () => `<div class="safety">${tips.map(s => `<div class="safe tipl"><span class="ic">${IC.star}</span><div>${md(s)}</div></div>`).join('')}</div>`;

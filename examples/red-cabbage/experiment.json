@@ -43,7 +43,8 @@
         { "t": "rack", "x": 270, "s": 1.1, "tubes": [
           { "id": "A", "tag": "㉠", "fill": 0.3, "color": "clear" }, { "id": "B", "tag": "㉡" }, { "id": "C", "tag": "㉢" },
           { "id": "D", "tag": "㉣" }, { "id": "E", "tag": "㉤" }, { "id": "F", "tag": "㉥" } ] },
-        { "t": "pour", "into": "A", "from": "cylinder", "color": "clear", "label": "식초 5 mL" },
+        { "t": "pour", "into": "A", "from": "cylinder", "color": "clear" },
+        { "t": "label", "text": "식초 5 mL", "x": 105, "y": 96 },
         { "t": "note", "x": 385, "y": 58, "text": "㉡~㉥에도 정해진 용액을 차례로 5 mL씩 넣어요", "icon": "how" }
       ]
     },
