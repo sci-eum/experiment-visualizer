@@ -77,7 +77,7 @@ window.EXPERIMENT = {
         { t: 'goggles', x: 60, y: 80 }, { t: 'gloves', x: 60, y: 190 },
         { t: 'ice', x: 150 }, { t: 'powder', x: 150, y: 210, paper: true, color: 'white' },
         { t: 'paper', x: 225, y: 120, color: 'blue', color2: 'red', dip: .45 }, { t: 'paper', x: 255, y: 120, color: 'red' }, { t: 'paper', x: 240, y: 205, kind: 'filter' }, { t: 'ruler', x: 240, s: .55 },
-        { t: 'rack', x: 380, tubes: [ { tag: 'A', fill: .4, color: 'red' }, { tag: 'B', fill: .4, color: 'purple' }, { tag: 'C', fill: .4, color: 'green' }, { tag: 'D', fill: .4, color: 'blue' } ] } ] },
+        { t: 'rack', x: 392, tubes: [ { tag: 'A', fill: .4, color: 'red' }, { tag: 'B', fill: .4, color: 'purple' }, { tag: 'C', fill: .4, color: 'green' }, { tag: 'D', fill: .4, color: 'blue' } ] } ] },
     { title: '표시 부품', text: 'arrow · note · mark · eye · label · view(입자)',
       scene: [
         { t: 'cylinder', id: 'cy', x: 90, fill: .5 }, { t: 'eye', x: 30, y: 180, to: [85, 186] },
@@ -92,7 +92,7 @@ window.EXPERIMENT = {
         { t: 'flask', id: 'f', x: 90, fill: .35, color: 'clear', solid: 'chips', bubbles: 6, stopper: 'hole' },
         { t: 'stand', hold: 'gt', x: 430 },
         { t: 'hose', from: 'f', points: [[90, 118], [170, 108], [250, 200], [282, 262], [306, 258]], bubbles: true, rise: 46 },
-        { t: 'trough', x: 320, fill: .62 }, { t: 'tube', id: 'gt', x: 310, y: 256, flip: true, fill: .55 },
+        { t: 'trough', id: 'tr', x: 320, fill: .62 }, { t: 'tube', id: 'gt', in: 'tr', x: 310, y: 256, flip: true, fill: .55 },
         { t: 'note', x: 225, y: 60, text: '시험관 안의 물이 밀려나며 기체가 모여요', icon: 'eye' } ] },
     { title: '용량 표시와 실제 크기 비율 (vol · amount)', text: '비커 50 · 100 · 250 · 500 mL, 눈금실린더 10 · 100 mL — amount의 반만큼 채움',
       scene: [

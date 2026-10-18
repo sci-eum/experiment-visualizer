@@ -81,6 +81,7 @@ AI는 그림 코드를 직접 짜지 않습니다. 실험지를 읽어 **데이�
 - 원문의 양·시간·순서를 그대로 지키고, 원문에 없는 단계는 지어내지 않도록 지시되어 있습니다.
 - 실험지에 **용량이 적힌 기구**(100 mL 비커, 10 mL 눈금실린더 …)는 그림에 용량과 눈금 숫자가 새겨지고, **실제 부피 비율대로** 크기가 정해집니다 (500 mL 비커는 100 mL 비커보다 크게). 넣는 양을 주면 액체 높이도 눈금에 맞춰집니다.
 - 원문에 없는 팁·주의는 AI가 마음대로 넣지 않고, 선생님께 먼저 물어본 뒤 답한 내용만 넣습니다.
+- Claude Code처럼 브라우저가 있는 환경에서는 만든 장면을 그림(PNG)으로 찍어 AI가 직접 보고, 기구가 겹치거나 잘린 곳을 고친 뒤 건넵니다.
 - 학생 이름 같은 개인정보는 결과물에 넣지 않습니다.
 
 ## 한계
@@ -107,7 +108,7 @@ examples/               예시 실험지와 결과물, 장면 예시, 부품 카
 ```bash
 python scripts/make_template.py                                  # labkit.js → template.html
 python scripts/build_html.py examples/gallery.data.js examples/gallery.html
-python scripts/check_render.py examples/gallery.html             # 헤드리스 Edge/Chrome으로 열어 오류 확인
+python scripts/check_render.py examples/gallery.html --shots shots  # 헤드리스 Edge/Chrome으로 열어 오류·겹침 확인, 장면 PNG를 shots/에
 python scripts/make_skill_zip.py                                 # dist/experiment-visualizer.zip
 ```
 
