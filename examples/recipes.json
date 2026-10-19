@@ -15,7 +15,7 @@
       {"t":"eye","x":110,"y":151,"to":[218,151]},
       {"t":"note","x":385,"y":80,"text":"액체 표면의 가장 낮은 곳을 눈높이에서 읽어요","icon":"eye","to":[252,153]}
     ] },
-  { "title": "시험관 여러 개에 지시약 떨어뜨리기", 
+  { "title": "시험관 여러 개에 지시약 떨어뜨리기", "predict": "세 시험관의 색은 같을까요, 다를까요?", "reveal": {"text":"지시약을 넣은 용액마다 색이 달라져요.","remove":["dropper"],"change":{"A":{"color":"red"},"B":{"color":"purple"},"C":{"color":"green"}}}, "text": "predict는 관찰 전에 예상을 적는 칸, reveal은 '결과 보기'를 눌러야 보이는 결과다 (원문이 결과를 알려 줄 때만 쓴다).", 
     "scene": [
       {"t":"rack","x":220,"s":1.2,"tubes":[{"id":"A","tag":"A","fill":0.4,"color":"clear"},{"id":"B","tag":"B","fill":0.4,"color":"clear"},{"id":"C","tag":"C","fill":0.4,"color":"clear"}]},
       {"t":"dropper","over":"A","color":"purple"},
@@ -27,7 +27,7 @@
       {"t":"tube","x":272,"y":196,"tilt":35,"fill":0.3,"color":"blue","holder":true},
       {"t":"note","x":390,"y":70,"text":"시험관 입구는 사람이 없는 쪽으로!","icon":"warn"}
     ] },
-  { "title": "거름 장치로 거르기", 
+  { "title": "거름 장치로 거르기", "time": "약 5분", 
     "scene": [
       {"t":"flask","id":"f","x":280,"fill":0.15,"color":"clear"},
       {"t":"funnel","id":"fn","over":"f","fill":0.5,"color":"brown","drip":true,"stand":true},
@@ -80,7 +80,7 @@
     "scene": [
       {"t":"device","x":240,"y":140,"s":2.4,"title":"온도 (℃)","graph":"freeze","markAt":0.54,"markText":"기울기가 바뀌는 지점","xlabel":"시간"}
     ] },
-  { "title": "가열하며 온도 재기", "section": "가열", 
+  { "title": "가열하며 온도 재기", "section": "가열", "time": "1분마다", "text": "time에 '약 5분'·'1분마다'처럼 시간이 있으면 수업 모드에 타이머가 생긴다.", 
     "scene": [
       {"t":"stand","hold":"th"},
       {"t":"tripod","id":"tr","x":280},

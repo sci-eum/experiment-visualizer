@@ -25,10 +25,18 @@
 
 ### 3. 시험관 여러 개에 지시약 떨어뜨리기
 
+predict는 관찰 전에 예상을 적는 칸, reveal은 '결과 보기'를 눌러야 보이는 결과다 (원문이 결과를 알려 줄 때만 쓴다).
+
 ```json
 [{"t": "rack", "x": 220, "s": 1.2, "tubes": [{"id": "A", "tag": "A", "fill": 0.4, "color": "clear"}, {"id": "B", "tag": "B", "fill": 0.4, "color": "clear"}, {"id": "C", "tag": "C", "fill": 0.4, "color": "clear"}]},
  {"t": "dropper", "over": "A", "color": "purple"},
  {"t": "note", "x": 395, "y": 70, "text": "색이 어떻게 변하는지 관찰해요", "icon": "eye"}]
+```
+
+단계에 함께 쓴 속성:
+
+```json
+{"predict": "세 시험관의 색은 같을까요, 다를까요?", "reveal": {"text": "지시약을 넣은 용액마다 색이 달라져요.", "remove": ["dropper"], "change": {"A": {"color": "red"}, "B": {"color": "purple"}, "C": {"color": "green"}}}}
 ```
 
 ### 4. 시험관을 집게로 잡고 가열하기
@@ -45,6 +53,12 @@
 [{"t": "flask", "id": "f", "x": 280, "fill": 0.15, "color": "clear"},
  {"t": "funnel", "id": "fn", "over": "f", "fill": 0.5, "color": "brown", "drip": true, "stand": true},
  {"t": "pour", "into": "fn", "from": "beaker", "color": "brown"}]
+```
+
+단계에 함께 쓴 속성:
+
+```json
+{"time": "약 5분"}
 ```
 
 ### 6. 현미경으로 관찰하기
@@ -120,6 +134,8 @@
 
 ### 13. 가열하며 온도 재기
 
+time에 '약 5분'·'1분마다'처럼 시간이 있으면 수업 모드에 타이머가 생긴다.
+
 ```json
 [{"t": "stand", "hold": "th"},
  {"t": "tripod", "id": "tr", "x": 280},
@@ -127,6 +143,12 @@
  {"t": "beaker", "id": "b", "on": "tr", "fill": 0.45, "bubbles": 6, "steam": true},
  {"t": "thermometer", "id": "th", "in": "b", "reading": "100 ℃"},
  {"t": "stopwatch", "x": 420, "y": 70, "time": "1분마다"}]
+```
+
+단계에 함께 쓴 속성:
+
+```json
+{"time": "1분마다"}
 ```
 
 ## 자동 배치·장면 이어받기

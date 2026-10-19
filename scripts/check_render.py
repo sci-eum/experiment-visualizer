@@ -2,7 +2,8 @@
 """만든 HTML을 헤드리스 브라우저(Edge/Chrome)로 열어 자바스크립트 오류와 [LabKit] 경고를 찾고, 장면 그림을 PNG로 찍는다.
 
 사용법:  python scripts/check_render.py 결과1.html [결과2.html ...] [--shots 폴더] [--grid]
-  --shots 폴더  장면 그림(PNG)을 만든다: 폴더/<파일 이름>/overview.png(모든 장면 한 장), step-01.png …(단계마다 크게)
+  --shots 폴더  장면 그림(PNG)을 만든다: 폴더/<파일 이름>/overview.png(모든 장면 한 장), step-01.png …(단계마다 크게),
+                결과 보기(reveal)가 있는 단계는 step-03-result.png 처럼 결과 장면도 따로
                 겹쳐 보이는 부품은 빨간 점선 상자로 표시된다. AI가 이 그림을 직접 열어 보고 고친다.
   --grid        PNG에 좌표 격자(20 간격)를 함께 그린다. 좌표를 고칠 때 쓴다.
 결과: OK / WARN(겹침 의심만 있음, 종료 코드 0 — PNG로 실제로 가리는지 확인) / FAIL(오류·빈 화면, 종료 코드 1)
@@ -54,19 +55,21 @@ def check(path, exe):
     errs = [m for m in logs if m not in overlaps]
     dom = r.stdout.split('<script')[0]  # 화면 부분만 (스크립트 본문 제외)
     steps = len(re.findall(r'<article class="step"', dom))
+    reveals = sorted({int(n) for n in re.findall(r'data-rvi="(\d+)"', dom)})  # 결과 장면이 있는 단계 (0부터)
     blank = 'aria-busy="true"' in dom or steps == 0
-    return errs, overlaps, steps, blank
+    return errs, overlaps, steps, reveals, blank
 
 
-def shots(path, exe, steps, out_dir, grid):
+def shots(path, exe, steps, reveals, out_dir, grid):
     out = pathlib.Path(out_dir).resolve() / pathlib.Path(path).stem  # 브라우저는 상대 경로를 못 알아듣는다
     out.mkdir(parents=True, exist_ok=True)
-    for old in list(out.glob('step-*.png')) + list(out.glob('overview.png')):
+    for old in list(out.glob('step-*.png')) + list(out.glob('overview.png')):  # step-NN-result.png 포함
         old.unlink()  # 지난번 결과(단계 수가 달랐을 수 있음)를 지운다
     base = pathlib.Path(path).resolve().as_uri() + '?' + ('grid&' if grid else '') + 'shot='
-    rows = math.ceil((steps + 1) / 2)  # 표지가 있을 수 있어 한 칸 더
+    rows = math.ceil((steps + len(reveals) + 1) / 2)  # 표지가 있을 수 있어 한 칸 더
     jobs = [(out / 'overview.png', base + 'all', (1008, 32 + rows * 330 + (rows - 1) * 16))]
     jobs += [(out / f'step-{i:02d}.png', base + str(i), ONE) for i in range(1, steps + 1)]
+    jobs += [(out / f'step-{i + 1:02d}-result.png', base + f'{i + 1}r', ONE) for i in reveals]
 
     def run(job):
         png, url, (w, h) = job
@@ -90,7 +93,7 @@ def main():
     a = ap.parse_args()
     exe, bad = browser(), 0
     for f in a.html:
-        errs, overlaps, steps, blank = check(f, exe)
+        errs, overlaps, steps, reveals, blank = check(f, exe)
         status = 'FAIL' if errs or blank else 'WARN' if overlaps else 'OK'
         bad += status == 'FAIL'
         print(f'{status}  {f}  (단계 {steps}개)')
@@ -99,8 +102,9 @@ def main():
         if blank:
             print('    화면이 비어 있습니다 (렌더링 실패).')
         if a.shots and not blank:
-            out, made, total = shots(f, exe, steps, a.shots, a.grid)
-            print(f'    그림: {out} (overview.png + step-01~{steps:02d}.png, {made}/{total}장)')
+            out, made, total = shots(f, exe, steps, reveals, a.shots, a.grid)
+            extra = f' + 결과 {len(reveals)}장' if reveals else ''
+            print(f'    그림: {out} (overview.png + step-01~{steps:02d}.png{extra}, {made}/{total}장)')
             if made < total:
                 print('    일부 그림을 만들지 못했습니다. 브라우저가 실행되는지 확인하세요.')
     return 1 if bad else 0

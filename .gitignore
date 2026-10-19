@@ -23,3 +23,4 @@ my-results/
 # 그림 점검 PNG (check_render.py --shots)
 shots/
 그림점검/
+.claude/launch.json

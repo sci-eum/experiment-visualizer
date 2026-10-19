@@ -54,7 +54,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.5.3 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.6.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -171,15 +171,46 @@ section{margin:40px 0}
 .dot{width:10px;height:10px;border-radius:999px;background:#ddd2ea;border:0;padding:0;cursor:pointer;transition:all .2s ease}
 .dot:hover{background:#c9a6e6}
 .dot.on{background:var(--primary);width:26px}
+.box.pred{background:#fff7e3;color:#5c4300}.box.pred .bi{color:#a87400}
+.box.res{background:var(--tip-bg);color:#0e4d33}.box.res .bi{color:var(--tip)}
+.box>div{flex:1;min-width:0}
+.write{margin-top:8px;min-height:46px;padding:8px 12px;border-radius:12px;background:#fff;border:1.5px dashed #e2c46f;font-size:15px;line-height:1.6;color:var(--ink);outline:none;cursor:text;white-space:pre-wrap;overflow-wrap:anywhere}
+.write:focus{border-style:solid;border-color:var(--primary)}
+.write:empty::before{content:attr(data-ph);color:var(--ink-3)}
+.qs li>div{flex:1;min-width:0}.qs .ans{border-color:#d9c6ec}
+.tbl td.in{background:#fffdf4;cursor:text;outline:none;min-width:60px}
+.tbl td.in:focus{box-shadow:inset 0 0 0 2px var(--primary)}
+.save-note{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;color:var(--ink-3);font-size:13.5px}
+.btn.sm{padding:7px 12px;font-size:13.5px;border-radius:10px;gap:6px}.btn.sm svg{width:15px;height:15px}
+.rv-btn{margin-top:14px}
+.scene-box{position:relative}
+.sc-rv,.rv-text{display:none}
+.rv-on .sc-main{display:none}.rv-on .sc-rv,.rv-on .rv-text{display:block}
+.rv-on .scene-box::after{content:'결과';position:absolute;top:10px;left:10px;font-size:12.5px;font-weight:800;color:#fff;background:var(--tip);padding:3px 10px;border-radius:999px}
+.lk-check .sc-rv{display:block}
+.tm{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;padding:12px 14px;border-radius:16px;background:#fff;box-shadow:var(--sh-sm)}
+.tm-v{font-size:clamp(26px,2.6vw,40px);font-weight:800;font-variant-numeric:tabular-nums;min-width:4.4ch}
+.tm-s{color:var(--ink-3);font-size:14px;font-weight:600;flex:1;min-width:120px}
+.tm.done .tm-v{color:var(--danger);animation:tmf .8s ease 4}
+@keyframes tmf{50%{opacity:.2}}
+.tm-mini{font-weight:800;font-size:14px;color:var(--primary-ink);background:var(--primary-50);padding:5px 11px;border-radius:999px;font-variant-numeric:tabular-nums}
+.tm-mini[hidden]{display:none}
+.pwrap{position:relative;display:inline-flex}
+.pmenu{position:absolute;top:calc(100% + 8px);left:0;z-index:20;background:#fff;border-radius:16px;box-shadow:var(--sh-lg);padding:8px;display:grid;gap:4px;width:min(300px,80vw)}
+.pmenu[hidden]{display:none}
+.pmenu button{appearance:none;border:0;background:none;text-align:left;padding:10px 12px;border-radius:12px;cursor:pointer;font:inherit;display:grid;gap:2px;color:var(--ink)}
+.pmenu button:hover,.pmenu button:focus-visible{background:var(--primary-50);outline:none}
+.pmenu b{font-size:15px}.pmenu span{font-size:13px;color:var(--ink-3);line-height:1.45}
+.pname{display:none}
 @media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.sk-row{grid-template-columns:1fr}}
 @media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
-@media print{body{background:#fff}.toolbar,.zoom-hint,.deck,.demo{display:none!important}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
+@media print{body{background:#fff}.toolbar,.zoom-hint,.deck,.demo,.rv-btn,.save-note,.tm{display:none!important}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.tbl td.in{height:40px;background:#fff!important}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
 if (!document.getElementById('lk-css')) { const st = document.createElement('style'); st.id = 'lk-css'; st.textContent = CSS; document.head.appendChild(st); }
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.5.3'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.6.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -1493,6 +1524,7 @@ const IC = {
   left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
   right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
   star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>',
+  eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
   full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
 };
 const md = s => e(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
@@ -1517,8 +1549,8 @@ function resolveScene(sc, i, where, chain) {
   if (!sc || Array.isArray(sc) || typeof sc !== 'object') return arr(sc);
   let base = [];
   if (sc.from != null) {
-    const k = sc.from === 'prev' ? i - 1 : +sc.from - 1;
-    if (!steps[k] || k === i) LabKit.warn(`${where} — scene.from: ${JSON.stringify(sc.from)} → 이어받을 단계가 없어요 (1~${steps.length}단계 중에서, 자기 자신은 안 돼요)`);
+    const k = sc.from === 'prev' ? i - 1 : sc.from === 'self' ? i : +sc.from - 1;
+    if (!steps[k] || (k === i && sc.from !== 'self')) LabKit.warn(`${where} — scene.from: ${JSON.stringify(sc.from)} → 이어받을 단계가 없어요 (1~${steps.length}단계 중에서, 자기 자신은 안 돼요)`);
     else if (chain.includes(k)) LabKit.warn(`${where} — scene.from이 돌고 돌아 다시 ${k + 1}단계를 가리켜요`);
     else base = LabKit.layout(sceneItems(k, chain)).filter(el => !FRESH.has(el.t));
   }
@@ -1538,27 +1570,88 @@ function resolveScene(sc, i, where, chain) {
 }
 const sceneOf = (st, i) => { try { return LabKit.scene(sceneItems(i), { grid: GRID, bench: st.bench, label: `${i + 1}단계: ${st.title || ''}` }); } catch (err) { console.error(err); return '<div class="empty"><b>그림을 그리지 못했어요</b><span>scene 데이터를 확인해 주세요.</span></div>'; } };
 const box = (cls, tag, v) => arr(v).filter(Boolean).map(x => `<div class="box ${cls}"><span class="bi">${tag}</span><div>${md(x)}</div></div>`).join('');
+/* ----- 수업 기능 (v1.6): 예상하기·적는 칸·결과 보기·타이머 ----- */
+// 학생이 적은 내용은 이 기기의 브라우저에만 저장한다 (어디로도 보내지 않는다). 저장이 막힌 환경에서도 화면은 그대로 쓴다
+const hashStr = s => { let h = 5381; for (const ch of s) h = (h * 33 + ch.codePointAt(0)) >>> 0; return h.toString(36); };
+const KEY = 'lk:' + hashStr(JSON.stringify([D.title || '', steps.map(s => s.title || '')]));
+let saved = {}; try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (err) { saved = {}; }
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (err) { } };
+const wtext = id => e(saved[id] || '').replace(/\n/g, '<br>');
+const writeBox = (id, ph, cls) => `<div class="write${cls ? ' ' + cls : ''}" contenteditable="true" role="textbox" aria-multiline="true" aria-label="${e(ph)}" data-w="${id}" data-ph="${e(ph)}">${wtext(id)}</div>`;
+const predictBox = (st, i) => arr(st.predict).filter(Boolean).map((q, k) => `<div class="box pred"><span class="bi">예상</span><div>${md(q)}${writeBox(`p${i}.${k}`, '내 예상을 적어요')}</div></div>`).join('');
+// 결과 보기: reveal은 글자 하나, 또는 { text, scene } / { text, change, add, remove } (그 단계 장면을 이어받아 바꾼다)
+const revealOf = st => !st.reveal ? null : typeof st.reveal === 'string' ? { text: st.reveal } : st.reveal;
+function revealScene(st, i) {
+  const r = revealOf(st); if (!r || !(r.scene || r.change || r.add || r.remove)) return '';
+  const where = `${i + 1}단계 결과: ${st.title || ''}`;
+  try { return LabKit.scene(r.scene ? resolveScene(r.scene, i, where, [i]) : resolveScene({ from: 'self', remove: r.remove, change: r.change, add: r.add }, i, where, []), { grid: GRID, bench: st.bench, label: where }); } catch (err) { console.error(err); return ''; }
+}
+const rvOn = new Set();
+const revealUi = (st, i) => { const r = revealOf(st); return r ? `<button class="btn sm rv-btn" type="button" data-rv="${i}" aria-pressed="${rvOn.has(i)}">${IC.eye}<span class="rv-l">${rvOn.has(i) ? '과정 보기' : '결과 보기'}</span></button>${r.text ? `<div class="rv-text">${box('res', '결과', r.text)}</div>` : ''}` : ''; };
+const sceneBlock = (st, i) => { const rs = revealScene(st, i); return `<div class="scene-box"><div class="sc-main">${sceneOf(st, i)}</div>${rs ? `<div class="sc-rv" data-rvi="${i}">${rs}</div>` : ''}</div>`; };
+const stepBoxes = (st, i) => `${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${predictBox(st, i)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}${revealUi(st, i)}`;
+function toggleReveal(i) {
+  if (rvOn.has(i)) rvOn.delete(i); else rvOn.add(i);
+  document.querySelectorAll(`[data-rvs="${i}"]`).forEach(n => { n.classList.toggle('rv-on', rvOn.has(i)); const b = n.querySelector('.rv-btn'); if (b) { b.setAttribute('aria-pressed', rvOn.has(i)); b.querySelector('.rv-l').textContent = rvOn.has(i) ? '과정 보기' : '결과 보기'; } });
+}
+// 타이머 (수업 모드): time의 '15분', '30초', '1분마다'를 읽는다. timer: 초(숫자)로 직접 정하거나 false로 끈다
+const timerOf = st => { if (!st || st.timer === false) return null; if (+st.timer > 0) return { sec: Math.round(+st.timer), every: false }; const s = String(st.time || ''); let sec = 0; s.replace(/(\d+(?:\.\d+)?)\s*(시간|분|초)/g, (m, n, u) => { sec += +n * (u === '시간' ? 3600 : u === '분' ? 60 : 1); return m; }); return sec > 0 ? { sec: Math.round(sec), every: /마다/.test(s) } : null; };
+const fmtT = t => { t = Math.max(0, Math.floor(t)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60; return (h ? `${h}:${String(m).padStart(2, '0')}` : `${m}`) + ':' + String(s).padStart(2, '0'); };
+let tm = null, tmTick = null, audio = null;
+function beep(n) {
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)(); if (audio.state === 'suspended') audio.resume();
+    for (let k = 0; k < n; k++) { const o = audio.createOscillator(), gn = audio.createGain(), t0 = audio.currentTime + k * .28; o.frequency.value = 880; gn.gain.setValueAtTime(.0001, t0); gn.gain.exponentialRampToValueAtTime(.25, t0 + .02); gn.gain.exponentialRampToValueAtTime(.0001, t0 + .22); o.connect(gn).connect(audio.destination); o.start(t0); o.stop(t0 + .25); }
+  } catch (err) { }
+}
+const tmElapsed = () => tm ? tm.acc + (tm.run ? (Date.now() - tm.t0) / 1000 : 0) : 0;
+function tmView(i) {
+  const T = timerOf(steps[i]); if (!T) return { v: '', s: '' };
+  if (!tm || tm.i !== i) return { v: fmtT(T.every ? 0 : T.sec), s: T.every ? `${fmtT(T.sec)}마다 소리로 알려 줘요` : '' };
+  const el = tmElapsed();
+  if (tm.every) { const n = Math.floor(el / tm.sec); return { v: fmtT(el), s: `다음 알림까지 ${fmtT(tm.sec - el % tm.sec)}${n ? ` · ${n}번 울림` : ''}` }; }
+  return { v: fmtT(Math.ceil(tm.sec - el)), s: el >= tm.sec ? '시간이 다 됐어요' : '' };
+}
+const timerUi = (st, i) => timerOf(st) ? `<div class="tm" data-tmi="${i}"><button class="btn sm primary" type="button" data-tm="go" data-i="${i}">${IC.clock}<span class="tm-go">시작</span></button><span class="tm-v">${tmView(i).v}</span><span class="tm-s">${tmView(i).s}</span><button class="btn sm" type="button" data-tm="reset" data-i="${i}">처음으로</button></div>` : '';
+function tmRender() {
+  if (tm && tm.run) { const el = tmElapsed(); if (tm.every) { const n = Math.floor(el / tm.sec); if (n > tm.beeps) { tm.beeps = n; beep(2); } } else if (el >= tm.sec) { tm.acc = tm.sec; tm.run = false; beep(3); } }
+  deck.querySelectorAll('[data-tmi]').forEach(n => { const i = +n.dataset.tmi, w = tmView(i), mine = tm && tm.i === i; n.querySelector('.tm-v').textContent = w.v; n.querySelector('.tm-s').textContent = w.s; n.querySelector('.tm-go').textContent = mine && tm.run ? '멈춤' : mine && tmElapsed() > 0 && !(tm.acc >= tm.sec && !tm.every) ? '계속' : '시작'; n.classList.toggle('done', !!(mine && !tm.every && tmElapsed() >= tm.sec)); });
+  const mini = deck.querySelector('.tm-mini');
+  if (mini) { const show = !!(tm && tm.run && (slides[cur] || {}).step !== tm.i); mini.hidden = !show; if (show) mini.textContent = `${tm.i + 1}단계 ${tmView(tm.i).v}`; }
+}
+function tmAction(act, i) {
+  const T = timerOf(steps[i]); if (!T) return;
+  const fresh = () => ({ i, sec: T.sec, every: T.every, acc: 0, t0: Date.now(), run: true, beeps: 0 });
+  if (act === 'reset') { if (tm && tm.i === i) tm = null; }
+  else if (!tm || tm.i !== i || (!tm.every && tm.acc >= tm.sec && !tm.run)) { tm = fresh(); beep(0); }
+  else if (tm.run) { tm.acc = tmElapsed(); tm.run = false; }
+  else { tm.t0 = Date.now(); tm.run = true; }
+  if (!tmTick) tmTick = setInterval(tmRender, 250);
+  tmRender();
+}
 const coverItems = D.cover ? resolveScene(D.cover, -1, '표지', []) : [{ t: 'flask', x: 150, fill: .5, color: 'violet', bubbles: 5 }, { t: 'beaker', id: 'cb', x: 262, fill: .4, color: 'water' }, { t: 'rack', x: 382, tubes: [{ fill: .45, color: 'pink' }, { fill: .45, color: 'yellow' }, { fill: .45, color: 'green' }] }, { t: 'dropper', over: 'cb', dy: 18, color: 'violet' }];
 const chips = () => [D.subject && `<span class="chip primary">${e(D.subject)}</span>`, D.unit && `<span class="chip">${IC.book}${e(D.unit)}</span>`, D.duration && `<span class="chip">${IC.clock}${e(D.duration)}</span>`, D.group && `<span class="chip">${IC.users}${e(D.group)}</span>`].filter(Boolean).join('');
 const matGrid = () => `<div class="mat-grid">${mats.map(m => `<div class="mat">${LabKit.icon(m.icon, m.name)}<div class="nm">${e(m.name)}</div>${m.qty ? `<div class="qty">${e(m.qty)}</div>` : ''}</div>`).join('')}</div>`;
 const tipList = () => `<div class="safety">${tips.map(s => `<div class="safe tipl"><span class="ic">${IC.star}</span><div>${md(s)}</div></div>`).join('')}</div>`;
 const safeList = () => `<div class="safety">${safety.map(s => `<div class="safe"><span class="ic">${IC.alert}</span><div>${md(s)}</div></div>`).join('')}</div>`;
-const tableHtml = t => { if (!t || !arr(t.head).length) return ''; return `<div class="tbl-wrap"><table class="tbl"><thead><tr>${arr(t.head).map(h => `<th>${e(h)}</th>`).join('')}</tr></thead><tbody>${arr(t.rows).map(r => `<tr>${arr(r).map(c => `<td>${e(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; };
+const tableHtml = (t, ti) => { if (!t || !arr(t.head).length) return ''; return `<div class="tbl-wrap"><table class="tbl"><thead><tr>${arr(t.head).map(h => `<th>${e(h)}</th>`).join('')}</tr></thead><tbody>${arr(t.rows).map((r, ri) => `<tr>${arr(r).map((c, ci) => c === '' || c == null ? `<td class="in" contenteditable="true" aria-label="${e(arr(t.head)[ci] || '')} 칸에 적기" data-w="t${ti}.${ri}.${ci}">${wtext(`t${ti}.${ri}.${ci}`)}</td>` : `<td>${e(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; };
+const hasWrite = steps.some(st => arr(st.predict).length) || arr(res.questions).length > 0 || arr(res.tables || res.table).some(tb => tb && arr(tb.rows).some(r => arr(r).some(c => c === '' || c == null)));
+const saveNote = () => hasWrite ? `<div class="save-note"><span>적은 내용은 이 기기의 브라우저에만 저장돼요.</span><button class="btn sm" type="button" data-clear>적은 내용 지우기</button></div>` : '';
 const hasRes = res.expect || arr(res.tables || res.table).some(tb => tb && arr(tb.head).length) || arr(res.questions).length || res.conclusion;
-const resCards = () => [res.expect && `<div class="card"><h3>${IC.flask}예상 결과</h3><p>${md(res.expect)}</p></div>`, res.conclusion && `<div class="card"><h3>${IC.flask}정리</h3><p>${md(res.conclusion)}</p></div>`, arr(res.tables || res.table).filter(tb => tb && arr(tb.head).length).map(tb => `<div class="card wide"><h3>${IC.table}${e(tb.title || '결과 기록표')}</h3>${tableHtml(tb)}</div>`).join(''), arr(res.questions).length && `<div class="card${res.table ? '' : ''}"><h3>${IC.q}생각해 보기</h3><ol class="qs">${arr(res.questions).map(q => `<li>${md(q)}</li>`).join('')}</ol></div>`].filter(Boolean).join('');
+const resCards = () => [res.expect && `<div class="card res-expect"><h3>${IC.flask}예상 결과</h3><p>${md(res.expect)}</p></div>`, res.conclusion && `<div class="card res-conc"><h3>${IC.flask}정리</h3><p>${md(res.conclusion)}</p></div>`, arr(res.tables || res.table).map((tb, ti) => tb && arr(tb.head).length ? `<div class="card wide"><h3>${IC.table}${e(tb.title || '결과 기록표')}</h3>${tableHtml(tb, ti)}</div>` : '').join(''), arr(res.questions).length && `<div class="card${res.table ? '' : ''}"><h3>${IC.q}생각해 보기</h3><ol class="qs">${arr(res.questions).map((q, k) => `<li><div>${md(q)}${writeBox(`q${k}`, '내 생각을 적어요', 'ans')}</div></li>`).join('')}</ol></div>`].filter(Boolean).join('');
 const emptyState = `<div class="card empty">${LabKit.scene([{ t: 'beaker', x: 200, fill: 0 }, { t: 'dropper', x: 200, y: 110, drops: false }, { t: 'note', x: 340, y: 120, text: '실험 단계를 기다리는 중이에요', icon: 'idea' }], { label: '빈 상태' }).replace('class="scene"', 'class="scene ill"')}<b>아직 실험 단계가 없어요</b><span>실험지 내용을 넣으면 이곳에 단계별 그림이 나타나요!</span></div>`;
 
 function page() {
   const h = [];
-  h.push(`<header class="hero wrap"><div class="hero-card"><div><div class="chips">${chips()}</div><h1>${e(D.title || '실험 과정 안내')}</h1>${D.goal ? `<p class="goal">${md(D.goal)}</p>` : ''}<div class="toolbar"><button class="btn primary" data-open="0">${IC.play}수업 모드로 보기</button><button class="btn" data-print>${IC.print}인쇄하기</button></div>${D._demo ? '<div class="demo">지금 보이는 내용은 템플릿의 예시 데이터예요. 실험지 내용으로 바꿔 주세요.</div>' : ''}</div><div class="hero-art">${LabKit.scene(coverItems, { label: '표지 그림' })}</div></div></header><main class="wrap">`);
+  h.push(`<header class="hero wrap"><div class="hero-card"><div><div class="chips">${chips()}</div><h1>${e(D.title || '실험 과정 안내')}</h1><div class="pname"><span>학년 반<i></i></span><span>번호<i></i></span><span>이름<i></i></span></div>${D.goal ? `<p class="goal">${md(D.goal)}</p>` : ''}<div class="toolbar"><button class="btn primary" data-open="0">${IC.play}수업 모드로 보기</button><div class="pwrap"><button class="btn pbtn" type="button" aria-haspopup="true" aria-expanded="false">${IC.print}인쇄하기</button><div class="pmenu" role="menu" hidden><button type="button" role="menuitem" data-pmode="student"><b>학생용 학습지</b><span>그림·과정·적는 칸 (결과 그림과 예상 결과는 빼요)</span></button><button type="button" role="menuitem" data-pmode="teacher"><b>교사용</b><span>결과 그림·예상 결과·원문 확인 메모까지</span></button></div></div></div>${D._demo ? '<div class="demo">지금 보이는 내용은 템플릿의 예시 데이터예요. 실험지 내용으로 바꿔 주세요.</div>' : ''}</div><div class="hero-art">${LabKit.scene(coverItems, { label: '표지 그림' })}</div></div></header><main class="wrap">`);
   if (mats.length) h.push(`<section><div class="sec-head"><span class="eyebrow">준비</span><h2>준비물</h2></div>${matGrid()}</section>`);
   if (safety.length) h.push(`<section><div class="sec-head"><span class="eyebrow">안전</span><h2>안전 수칙</h2></div>${safeList()}</section>`);
   if (tips.length) h.push(`<section><div class="sec-head"><span class="eyebrow">팁</span><h2>실험 전에 알아 두기</h2></div>${tipList()}</section>`);
   h.push(`<section><div class="sec-head"><span class="eyebrow">과정</span><h2>실험 과정</h2></div>`);
-  h.push(steps.length ? `<div class="steps">${steps.map((st, i) => `${st.section && st.section !== (steps[i - 1] || {}).section ? `<div class="step-sec">${e(st.section)}</div>` : ''}<article class="step" tabindex="0" data-step="${i}" aria-label="${i + 1}단계 크게 보기"><div class="scene-box">${sceneOf(st, i)}</div><div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h3>${e(st.title || `${i + 1}단계`)}</h3>${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}</div><span class="zoom-hint">${IC.zoom}크게 보기</span></article>`).join('')}</div>` : emptyState);
-  h.push('</section>');
-  if (hasRes) h.push(`<section><div class="sec-head"><span class="eyebrow">정리</span><h2>결과 정리</h2></div><div class="res-grid">${resCards()}</div></section>`);
-  h.push(`<footer class="foot">${D.source ? `원문: ${e(D.source)}<br>` : ''}${D.notes ? md(D.notes) + '<br>' : ''}그림은 이해를 돕기 위한 모식도로, 실제 기구의 모양·크기와 다를 수 있어요. 실험은 반드시 선생님의 안내에 따라 진행하세요.<br>만든 도구: <a href="https://github.com/sci-eum/experiment-visualizer" target="_blank" rel="noopener">experiment-visualizer</a> v${LabKit.version}</footer></main>`);
+  h.push(steps.length ? `<div class="steps">${steps.map((st, i) => `${st.section && st.section !== (steps[i - 1] || {}).section ? `<div class="step-sec">${e(st.section)}</div>` : ''}<article class="step" tabindex="0" data-step="${i}" data-rvs="${i}" aria-label="${i + 1}단계 크게 보기">${sceneBlock(st, i)}<div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h3>${e(st.title || `${i + 1}단계`)}</h3>${stepBoxes(st, i)}</div><span class="zoom-hint">${IC.zoom}크게 보기</span></article>`).join('')}</div>` : emptyState);
+  h.push(`${hasRes ? '' : saveNote()}</section>`);
+  if (hasRes) h.push(`<section><div class="sec-head"><span class="eyebrow">정리</span><h2>결과 정리</h2></div><div class="res-grid">${resCards()}</div>${saveNote()}</section>`);
+  h.push(`<footer class="foot">${D.source ? `원문: ${e(D.source)}<br>` : ''}${D.notes ? `<span class="notes">${md(D.notes)}<br></span>` : ''}그림은 이해를 돕기 위한 모식도로, 실제 기구의 모양·크기와 다를 수 있어요. 실험은 반드시 선생님의 안내에 따라 진행하세요.<br>만든 도구: <a href="https://github.com/sci-eum/experiment-visualizer" target="_blank" rel="noopener">experiment-visualizer</a> v${LabKit.version}</footer></main>`);
   return h.join('');
 }
 
@@ -1569,7 +1662,7 @@ if (mats.length) slides.push({ name: '준비물', html: () => `<div class="slide
 if (safety.length) slides.push({ name: '안전 수칙', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">안전</span><h2 style="margin:0">안전 수칙</h2></div>${safeList()}</div></div>` });
 if (tips.length) slides.push({ name: '실험 팁', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">팁</span><h2 style="margin:0">실험 전에 알아 두기</h2></div>${tipList()}</div></div>` });
 const stepStart = slides.length;
-steps.forEach((st, i) => slides.push({ name: `${i + 1}단계`, html: () => `<div class="slide"><div class="scene-box">${sceneOf(st, i)}</div><div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.section ? `<span class="sec-chip">${e(st.section)}</span>` : ''}${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h2>${e(st.title || `${i + 1}단계`)}</h2>${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}</div></div>` }));
+steps.forEach((st, i) => slides.push({ name: `${i + 1}단계`, step: i, html: () => `<div class="slide${rvOn.has(i) ? ' rv-on' : ''}" data-rvs="${i}">${sceneBlock(st, i)}<div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.section ? `<span class="sec-chip">${e(st.section)}</span>` : ''}${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h2>${e(st.title || `${i + 1}단계`)}</h2>${stepBoxes(st, i)}${timerUi(st, i)}</div></div>` }));
 if (hasRes) slides.push({ name: '결과 정리', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">정리</span><h2 style="margin:0">결과 정리</h2></div><div class="res-grid">${resCards()}</div></div></div>` });
 
 const mk = (id, cls) => { let n = document.getElementById(id); if (!n) { n = document.createElement('div'); n.id = id; if (cls) n.className = cls; document.body.appendChild(n); } return n; };
@@ -1582,15 +1675,16 @@ function showSlide(i) {
   deck.querySelectorAll('.dot').forEach((d, k) => { d.classList.toggle('on', k === cur); d.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
   deck.querySelector('[data-prev]').disabled = cur === 0; deck.querySelector('[data-next]').disabled = cur === slides.length - 1;
   LabKit.fit(deck); if (Q.has('check')) afterFonts(() => LabKit.overlaps(deck, { mark: true }));
+  if (tm) tmRender();
 }
 function openDeck(i) {
   lastFocus = document.activeElement;
-  deck.innerHTML = `<div class="deck-top"><div class="deck-title">${e(D.title || '실험 과정')}</div><span class="deck-count"></span><button class="btn icon" data-full aria-label="전체 화면">${IC.full}</button><button class="btn icon" data-close aria-label="닫기">${IC.x}</button></div><div class="deck-stage"></div><div class="deck-nav"><button class="btn" data-prev>${IC.left}이전</button><div class="dots">${slides.map((s, k) => `<button class="dot" data-go="${k}" aria-label="${e(s.name)}"></button>`).join('')}</div><button class="btn primary" data-next>다음${IC.right}</button></div>`;
+  deck.innerHTML = `<div class="deck-top"><div class="deck-title">${e(D.title || '실험 과정')}</div><span class="tm-mini" hidden></span><span class="deck-count"></span><button class="btn icon" data-full aria-label="전체 화면">${IC.full}</button><button class="btn icon" data-close aria-label="닫기">${IC.x}</button></div><div class="deck-stage"></div><div class="deck-nav"><button class="btn" data-prev>${IC.left}이전</button><div class="dots">${slides.map((s, k) => `<button class="dot" data-go="${k}" aria-label="${e(s.name)}"></button>`).join('')}</div><button class="btn primary" data-next>다음${IC.right}</button></div>`;
   deck.hidden = false; document.body.style.overflow = 'hidden'; showSlide(i); deck.querySelector('[data-next]').focus();
 }
-function closeDeck() { deck.hidden = true; document.body.style.overflow = ''; if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
-deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
-document.addEventListener('keydown', ev => { if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
+function closeDeck() { deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
+deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.rv != null) return toggleReveal(+b.dataset.rv); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
+document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
 let tx = null; deck.addEventListener('touchstart', ev => { tx = ev.touches[0].clientX; }, { passive: true }); deck.addEventListener('touchend', ev => { if (tx == null) return; const dx = ev.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) showSlide(cur + (dx < 0 ? 1 : -1)); tx = null; });
 
 const app = mk('app'), CHECK = Q.has('check');
@@ -1604,8 +1698,8 @@ function afterFonts(f) {
 if (Q.has('shot')) {
   const v = Q.get('shot'), all = v === 'all', cw = all ? 480 : 960;
   LabKit.setAnim(false);
-  const list = all ? [...(D.cover ? [-1] : []), ...steps.map((_, i) => i)] : [(+v || 1) - 1];
-  const cell = i => i < 0 ? `<div class="shot"><b>표지</b>${LabKit.scene(coverItems, { label: '표지 그림', grid: GRID })}</div>`
+  const list = all ? [...(D.cover ? [-1] : []), ...steps.flatMap((st, i) => revealScene(st, i) ? [i, `${i}r`] : [i])] : [/r$/.test(v) ? `${(parseInt(v) || 1) - 1}r` : (+v || 1) - 1];
+  const cell = i => typeof i === 'string' ? (steps[parseInt(i)] ? `<div class="shot"><b>${parseInt(i) + 1}. ${e(steps[parseInt(i)].title || '')} — 결과</b>${revealScene(steps[parseInt(i)], parseInt(i))}</div>` : '') : i < 0 ? `<div class="shot"><b>표지</b>${LabKit.scene(coverItems, { label: '표지 그림', grid: GRID })}</div>`
     : steps[i] ? `<div class="shot"><b>${i + 1}. ${e(steps[i].title || '')}</b>${sceneOf(steps[i], i)}</div>` : `<div class="shot"><b>${i + 1}단계가 없어요</b></div>`;
   const st = document.createElement('style');
   st.textContent = `body{background:#fff}#app{display:grid;grid-template-columns:repeat(${all ? 2 : 1},${cw}px);gap:16px;padding:16px;width:max-content}.shot b{display:block;height:30px;line-height:30px;font-size:${all ? 15 : 18}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shot .scene{display:block;width:${cw}px;height:${cw * LabKit.H / LabKit.W}px;outline:1px solid #e4d9f1}`;
@@ -1613,8 +1707,33 @@ if (Q.has('shot')) {
   app.innerHTML = list.map(cell).join(''); app.removeAttribute('aria-busy'); afterFonts(() => LabKit.overlaps(app, { mark: true }));
   return;
 }
+if (CHECK) document.documentElement.classList.add('lk-check'); // 점검 화면은 결과 장면도 함께 보인다
 app.innerHTML = page(); app.removeAttribute('aria-busy'); LabKit.fit(app); if (CHECK) afterFonts(() => LabKit.overlaps(app, { mark: true }));
-app.addEventListener('click', ev => { const o = ev.target.closest('[data-open]'); if (o) return openDeck(+o.dataset.open); if (ev.target.closest('[data-print]')) return window.print(); const st = ev.target.closest('.step'); if (st) openDeck(stepStart + +st.dataset.step); });
+function clearWrites() { if (!confirm('이 기기에 적은 내용을 모두 지울까요?')) return; saved = {}; persist(); document.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = ''; }); }
+// 인쇄: 학생용은 결과 그림·예상 결과·메모를 빼고, 교사용은 결과 그림까지 함께 인쇄한다
+function printAs(mode) {
+  const root = document.documentElement, done = () => { delete root.dataset.print; window.removeEventListener('afterprint', done); };
+  root.dataset.print = mode; window.addEventListener('afterprint', done); window.print();
+}
+const pmenu = app.querySelector('.pmenu'), pbtn = app.querySelector('.pbtn');
+const setMenu = open => { if (!pmenu) return; pmenu.hidden = !open; pbtn.setAttribute('aria-expanded', open); if (open) pmenu.querySelector('button').focus(); };
+app.addEventListener('click', ev => {
+  const t = ev.target;
+  if (t.closest('.pbtn')) return setMenu(pmenu.hidden);
+  const pm = t.closest('[data-pmode]'); if (pm) { setMenu(false); return printAs(pm.dataset.pmode); }
+  const rv = t.closest('[data-rv]'); if (rv) return toggleReveal(+rv.dataset.rv);
+  if (t.closest('[data-clear]')) return clearWrites();
+  if (t.closest('[data-w]')) return; // 적는 칸을 누르면 수업 모드를 열지 않는다
+  const o = t.closest('[data-open]'); if (o) return openDeck(+o.dataset.open);
+  const st = t.closest('.step'); if (st) openDeck(stepStart + +st.dataset.step);
+});
+document.addEventListener('click', ev => { if (pmenu && !pmenu.hidden && !ev.target.closest('.pwrap')) setMenu(false); });
+document.addEventListener('input', ev => {
+  const w = ev.target.closest && ev.target.closest('[data-w]'); if (!w) return;
+  const v = w.innerText.replace(/\n+$/, '');
+  if (v.trim()) saved[w.dataset.w] = v; else { delete saved[w.dataset.w]; if (!w.textContent.trim()) w.innerHTML = ''; }
+  persist();
+});
 if (Q.has('slide')) openDeck((+Q.get('slide') || 1) - 1);
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', lkStart); else lkStart();

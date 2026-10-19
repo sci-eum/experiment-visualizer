@@ -43,6 +43,9 @@ def build():
         if st.get("text"):
             out.append(f"\n{st['text']}\n")
         out.append("\n```json\n" + scene_text(st.get("scene", [])) + "\n```\n")
+        extra = {k: st[k] for k in ("time", "predict", "reveal") if k in st}  # 수업 기능 (단계 속성)
+        if extra:
+            out.append("\n단계에 함께 쓴 속성:\n\n```json\n" + json.dumps(extra, ensure_ascii=False) + "\n```\n")
     return "".join(out)
 
 
