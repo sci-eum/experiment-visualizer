@@ -165,6 +165,6 @@ window.EXPERIMENT = {
         { t: 'text', x: 100, y: 288, text: 'strata(fold)', size: 11, weight: 700 }, { t: 'text', x: 268, y: 288, text: 'strata(fault)', size: 11, weight: 700 },
         { t: 'text', x: 410, y: 288, text: 'globe', size: 11, weight: 700 } ] }
   ],
-  results: { expect: '부품 이름(t)과 속성은 SKILL.md의 부품 목록을 보세요.', questions: ['그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요.'] },
+  results: { expect: '부품 이름(t)과 속성은 references/parts.md(부품 목록)를 보세요.', questions: ['그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요.'] },
   source: 'experiment-visualizer 부품 카탈로그'
 };

@@ -179,13 +179,13 @@ window.EXPERIMENT = {
         { t: 'text', x: 100, y: 288, text: 'strata(fold)', size: 11, weight: 700 }, { t: 'text', x: 268, y: 288, text: 'strata(fault)', size: 11, weight: 700 },
         { t: 'text', x: 410, y: 288, text: 'globe', size: 11, weight: 700 } ] }
   ],
-  results: { expect: '부품 이름(t)과 속성은 SKILL.md의 부품 목록을 보세요.', questions: ['그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요.'] },
+  results: { expect: '부품 이름(t)과 속성은 references/parts.md(부품 목록)를 보세요.', questions: ['그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요.'] },
   source: 'experiment-visualizer 부품 카탈로그'
 };
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.5.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.5.1 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -310,7 +310,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.5.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.5.1'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',

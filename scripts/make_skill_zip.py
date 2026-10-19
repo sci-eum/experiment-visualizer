@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """(관리자용) Claude에 올릴 스킬 zip(dist/experiment-visualizer.zip)을 만든다.
 
-zip 안 구조:  experiment-visualizer/SKILL.md, assets/, scripts/
+zip 안 구조:  experiment-visualizer/SKILL.md, references/, assets/, scripts/
 claude.ai → 설정 → 기능(Capabilities) → 스킬 → 스킬 업로드 에서 이 zip을 올린다.
 """
 import sys
@@ -15,7 +15,8 @@ for s in (sys.stdout, sys.stderr):
         pass
 root = Path(__file__).resolve().parent.parent
 files = ["SKILL.md", "LICENSE", "assets/template.html", "assets/light.html", "assets/labkit.js",
-         "scripts/build_html.py", "scripts/extract_text.py", "scripts/check_render.py"]
+         "scripts/build_html.py", "scripts/extract_text.py", "scripts/check_render.py",
+         "references/parts.md", "references/scenes.md"]
 out = root / "dist" / "experiment-visualizer.zip"
 out.parent.mkdir(exist_ok=True)
 with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
