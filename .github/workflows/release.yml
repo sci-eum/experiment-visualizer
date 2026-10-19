@@ -58,7 +58,8 @@ jobs:
           TITLE=$(git tag -l --format='%(contents:subject)' "$TAG")
           git tag -l --format='%(contents:body)' "$TAG" | sed '/^-----BEGIN PGP SIGNATURE-----/,$d' > notes.md
           if grep -q '[^[:space:]]' notes.md; then
-            printf '\n설치용 스킬 파일: 아래 `experiment-visualizer.zip`\n' >> notes.md
+            # zip 안내를 맺음줄(🤖 …) 앞에, 없으면 맨 끝에 붙인다
+            awk 'BEGIN{z="설치용 스킬 파일: 아래 `experiment-visualizer.zip`"} /^🤖/ && !d {print z; print ""; d=1} {print} END{if(!d){print ""; print z}}' notes.md > notes2.md && mv notes2.md notes.md
             gh release create "$TAG" dist/experiment-visualizer.zip --title "${TITLE:-$TAG}" --notes-file notes.md --verify-tag
           else
             gh release create "$TAG" dist/experiment-visualizer.zip --title "$TAG" --generate-notes --verify-tag
