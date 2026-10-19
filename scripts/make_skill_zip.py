@@ -15,7 +15,7 @@ for s in (sys.stdout, sys.stderr):
         pass
 root = Path(__file__).resolve().parent.parent
 files = ["SKILL.md", "LICENSE", "assets/template.html", "assets/light.html", "assets/labkit.js",
-         "scripts/build_html.py", "scripts/extract_text.py", "scripts/check_render.py",
+         "scripts/build_html.py", "scripts/extract_text.py", "scripts/extract_data.py", "scripts/check_render.py",
          "references/parts.md", "references/scenes.md"]
 out = root / "dist" / "experiment-visualizer.zip"
 out.parent.mkdir(exist_ok=True)

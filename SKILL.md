@@ -1,6 +1,6 @@
 ---
 name: experiment-visualizer
-description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·스캔 이미지)를 읽고, 실험 단계마다 실험 장면 그림(SVG 모식도)을 붙인 학생용 HTML 학습 자료를 만든다. 사용자가 실험지·실험 보고서·탐구 활동지를 첨부하고 "실험 과정을 그림으로", "실험 시각화", "학생용 실험 안내 HTML"을 요청하거나 이 스킬의 링크를 주면 사용한다.
+description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·스캔 이미지)를 읽고, 실험 단계마다 실험 장면 그림(SVG 모식도)을 붙인 학생용 HTML 학습 자료를 만든다. 사용자가 실험지·실험 보고서·탐구 활동지를 첨부하고 "실험 과정을 그림으로", "실험 시각화", "학생용 실험 안내 HTML"을 요청하거나 이 스킬의 링크를 주면 사용한다. 이 스킬로 만든 HTML을 첨부하고 고쳐 달라고 할 때도 사용한다.
 ---
 
 # 실험 과정 그림 HTML 만들기 (experiment-visualizer)
@@ -26,6 +26,7 @@ description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·
 1. 문서 읽기 → 2. 실험 내용 정리 → **3. 계획을 보여 주고 팁 묻기 (여기서 멈추고 답을 기다린다)** → 4. 장면 설계 (parts.md를 연다) → 5. `EXPERIMENT` 데이터 쓰기 → 6. HTML 만들기 → 7. 점검 → 8. 전달
 
 > **첫 답변에서 HTML을 만들지 않는다.** 1~3을 한 뒤 계획과 질문을 보내고 답변을 기다린다. 사용자가 답하면 그 답을 반영해 4~8을 한다.
+> **이미 만든 HTML을 고치는 요청**이면 이 순서 대신 **9장**을 따른다.
 
 ---
 
@@ -243,6 +244,7 @@ JSON으로 쓴다. `title`과 `steps`만 필수이고 나머지는 원문에 있
 
 ```bash
 python scripts/build_html.py experiment.json 실험제목.html
+# 가벼운 버전(엔진을 인터넷에서 불러오는 작은 파일)이 필요하면 --light
 ```
 
 **방법 B — 코드 실행은 되지만 스킬 폴더가 없다** (링크로 받은 경우). 템플릿을 내려받아 데이터만 끼워 넣는다. 그림 엔진이 HTML 안에 들어가 **인터넷 없이도** 열린다.
@@ -280,7 +282,9 @@ pathlib.Path("실험제목.html").write_text(tpl[:s] + js + tpl[e:], encoding="u
 <body>
 <div id="app" aria-busy="true"><div class="lk-wait"><div class="lk-sk"></div><div class="lk-sk"></div></div></div>
 <script>
+/* ===== EXPERIMENT DATA START — 이 블록만 바꾸세요 ===== */
 window.EXPERIMENT = { /* 여기에 데이터 */ };
+/* ===== EXPERIMENT DATA END ===== */
 </script>
 <script src="https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/labkit.min.js" onerror="document.getElementById('app').innerHTML='<p style=&quot;max-width:640px;margin:48px auto;padding:24px;border-radius:16px;background:#fff;line-height:1.7;font-family:sans-serif&quot;>그림 엔진을 불러오지 못했어요. 인터넷에 연결된 상태에서 이 HTML 파일을 크롬·엣지 같은 브라우저로 열어 주세요.</p>'"></script>
 </body>
@@ -319,4 +323,21 @@ python scripts/check_render.py 결과.html --shots 그림점검
 
 - 파일 이름은 실험 제목으로 짓는다 (예: `물의_끓는점_측정.html`). claude.ai에서는 `/mnt/user-data/outputs/`에 저장해 파일로 건넨다.
 - 답변에는 짧게: 만든 단계 수, 받은 팁을 어느 단계에 넣었는지, 원문에서 확인이 필요한 곳(`notes`), 사용법 한두 줄 ("단계 카드를 누르거나 '수업 모드로 보기'를 누르면 한 단계씩 크게 보여요. ← → 키로 넘겨요." + 쓴 기능만: "'결과 보기'를 누르면 결과가 나와요.", "수업 모드에서 타이머를 쓸 수 있어요.", "인쇄하기에서 학생용 학습지와 교사용을 골라요.")
-- 사용자가 고쳐 달라고 하면 데이터만 바꿔 같은 방법으로 다시 만든다.
+- 사용자가 고쳐 달라고 하면 데이터만 바꿔 같은 방법으로 다시 만든다 (다른 대화에서 HTML을 첨부해 고쳐 달라고 하면 9장).
+
+## 9. 이미 만든 HTML을 고칠 때
+
+사용자가 이 스킬로 만든 HTML(파일 안에 `EXPERIMENT DATA START`나 바닥글 "만든 도구: experiment-visualizer"가 있다)을 첨부하고 고쳐 달라고 하면 처음부터 다시 만들지 않는다.
+
+1. 3장 질문 없이 바로 고친다. 원문 실험지가 함께 있으면 원문과 맞는지도 본다 (2장 규칙은 그대로).
+2. 데이터를 꺼낸다. `/* ===== EXPERIMENT DATA START` 다음 줄부터 `/* ===== EXPERIMENT DATA END` 앞까지의 `window.EXPERIMENT = {…};`가 데이터다.
+   ```bash
+   python scripts/extract_data.py 결과.html experiment.json
+   ```
+   스킬 폴더가 없으면 `https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/scripts/extract_data.py`를 내려받는다. 표시가 없는 HTML도 `window.EXPERIMENT = …`를 찾아 꺼낸다.
+3. **요청한 곳만** 고친다. 다른 단계·문장·좌표·색은 그대로 둔다. 장면을 고칠 때도 parts.md를 보고 쓴다.
+4. 6장 방법으로 다시 만든다. `build_html.py`로 만들면 그림 엔진도 최신으로 바뀐다. 데이터를 고치지 않고 엔진만 새로 하려면 결과 HTML을 그대로 넣는다: `python scripts/build_html.py 옛결과.html 새결과.html` (가벼운 버전은 가벼운 버전으로 만든다).
+5. 7장 점검을 다시 하고, 원래 파일 이름으로 건넨다. 답변에는 고친 곳만 짧게 알린다.
+
+- 코드 실행이 안 되면 데이터 블록 안만 고쳐 HTML 전체를 그대로 다시 낸다. 블록 밖은 한 글자도 바꾸지 않는다 (한 파일 버전은 매우 길어 출력이 끊길 수 있으니, 가능하면 코드 실행이 되는 곳에서 고친다).
+- 학생이 화면에 적은 내용은 HTML이 아니라 각 기기의 브라우저에 실험 제목별로 저장되어 있어, 다시 만들어도 이어진다. 실험 제목(`title`)을 바꾸면 예전에 적은 내용이 안 보이니 꼭 필요할 때만 바꾼다. 같은 제목의 다른 실험을 같은 기기에서 쓰면 최상위 `id`로 구분한다.

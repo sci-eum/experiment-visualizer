@@ -51,6 +51,8 @@
 - `과정 그림에 예상 결과(색 변화)도 보여 줘.` ← 기본은 탐구의 재미를 위해 결과를 미리 보여 주지 않습니다.
 - `3단계 그림에서 비커를 더 크게 그려 줘.` (만든 뒤 고칠 때)
 
+**나중에 다른 대화에서 고칠 때**는 만든 HTML 파일을 첨부하고 스킬 링크와 함께 고칠 곳을 말하면 돼요 (예: `첨부한 HTML의 3단계 비커를 더 크게 그려 줘.`). AI가 HTML 안의 데이터를 꺼내 그 부분만 고치고, 그림 엔진도 최신으로 바꿔 줍니다. 학생이 적은 내용은 각 기기 브라우저에 남아 있어요.
+
 **Claude(claude.ai)에서 쓸 때 확인할 것**
 
 - 설정 → 기능에서 **웹 검색**(링크 읽기)과 **코드 실행 및 파일 생성**이 켜져 있어야 합니다.
@@ -103,7 +105,8 @@ references/scenes.md    장면 예시 (examples/recipes.json으로 자동 생성
 assets/labkit.js        그림 엔진 + 화면 (원본)
 assets/template.html    엔진을 품은 한 파일짜리 틀 (labkit.js로 자동 생성)
 assets/light.html       엔진을 CDN에서 불러오는 가벼운 틀
-scripts/build_html.py   데이터(JSON) + 틀 → 완성 HTML
+scripts/build_html.py   데이터(JSON) + 틀 → 완성 HTML (전에 만든 HTML을 넣으면 최신 엔진으로 다시 만듦)
+scripts/extract_data.py 전에 만든 HTML에서 데이터(JSON) 꺼내기 (다시 고칠 때)
 scripts/extract_text.py hwp·hwpx·docx·pptx·pdf에서 글자 꺼내기 (표준 라이브러리만 사용)
 examples/               예시 실험지와 결과물, 장면 예시, 부품 카탈로그
 ```
