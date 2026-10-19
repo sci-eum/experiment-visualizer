@@ -6,10 +6,12 @@
                 결과 보기(reveal)가 있는 단계는 step-03-result.png 처럼 결과 장면도 따로
                 겹쳐 보이는 부품은 빨간 점선 상자로 표시된다. AI가 이 그림을 직접 열어 보고 고친다.
   --grid        PNG에 좌표 격자(20 간격)를 함께 그린다. 좌표를 고칠 때 쓴다.
+  --strict      겹침 의심(WARN)도 실패로 친다 (예시를 점검하는 CI에서 쓴다).
 결과: OK / WARN(겹침 의심만 있음, 종료 코드 0 — PNG로 실제로 가리는지 확인) / FAIL(오류·빈 화면, 종료 코드 1)
 """
 import argparse
 import math
+import os
 import pathlib
 import re
 import subprocess
@@ -21,7 +23,7 @@ CANDIDATES = [
     r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe',
     r'C:\Program Files\Microsoft\Edge\Application\msedge.exe',
     r'C:\Program Files\Google\Chrome\Application\chrome.exe',
-    '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser',
+    '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser',
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
 ]
 # 엔진의 촬영 화면(?shot=)과 같은 크기: 여백 16, 제목 30, 장면 480×300(한 장에 2열) 또는 960×600(단계마다)
@@ -35,15 +37,20 @@ def browser():
     sys.exit('Edge/Chrome을 찾지 못했습니다.')
 
 
+# GitHub Actions 같은 CI의 Linux에서는 Chrome 샌드박스를 쓸 수 없어 끈다 (CI 환경 변수가 있을 때만)
+CI_ARGS = ['--no-sandbox', '--disable-dev-shm-usage'] if os.environ.get('CI') else []
+
+
 def headless(exe, *args, **kw):
     with tempfile.TemporaryDirectory() as prof:
-        return subprocess.run([exe, '--headless=new', '--disable-gpu', '--hide-scrollbars', f'--user-data-dir={prof}',
+        return subprocess.run([exe, '--headless=new', '--disable-gpu', '--hide-scrollbars', *CI_ARGS, f'--user-data-dir={prof}',
                                '--virtual-time-budget=4000', *args], capture_output=True, timeout=120, **kw)
 
 
 def message(line):
-    m = re.search(r'CONSOLE:\d+\]\s*"(.*)", source:', line)
-    return (m.group(1) if m else re.sub(r'^.*?CONSOLE:\d+\]\s*', '', line))[:300]
+    # Windows: ...:CONSOLE:12] "글", source: …   Linux: ...:CONSOLE(12)] "글", source: …
+    m = re.search(r'CONSOLE[:(]\d+\)?\]\s*"(.*)", source:', line)
+    return (m.group(1) if m else re.sub(r'^.*?CONSOLE[:(]\d+\)?\]\s*', '', line))[:300]
 
 
 def check(path, exe):
@@ -90,12 +97,13 @@ def main():
     ap.add_argument('html', nargs='+', help='점검할 HTML 파일')
     ap.add_argument('--shots', metavar='폴더', help='장면 그림(PNG)을 만들 폴더')
     ap.add_argument('--grid', action='store_true', help='PNG에 좌표 격자를 그린다')
+    ap.add_argument('--strict', action='store_true', help='WARN(겹침 의심)도 실패로 친다')
     a = ap.parse_args()
     exe, bad = browser(), 0
     for f in a.html:
         errs, overlaps, steps, reveals, blank = check(f, exe)
         status = 'FAIL' if errs or blank else 'WARN' if overlaps else 'OK'
-        bad += status == 'FAIL'
+        bad += status == 'FAIL' or (a.strict and status == 'WARN')
         print(f'{status}  {f}  (단계 {steps}개)')
         for m in errs + overlaps:
             print('   ', m)

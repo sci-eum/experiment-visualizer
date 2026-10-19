@@ -16,4 +16,5 @@
 - 스킬 문서는 셋으로 나뉜다: `SKILL.md`(작업 순서·규칙, 400줄 이하), `references/parts.md`(부품 목록), `references/scenes.md`(장면 예시). 부품을 바꾸면 parts.md와 SKILL.md의 '부품 이름 한눈에'를 같이 고친다.
 - 장면 예시의 원본은 `examples/recipes.json`이다. 고친 뒤 `python scripts/make_scenes_doc.py`로 scenes.md를 만들고 recipes.html도 다시 그린다. scenes.md를 손으로 고치지 않는다.
 - 문서를 고친 뒤 `python scripts/check_docs.py`가 OK인지 확인한다 (JSON 문법, 엔진과 부품 목록 일치, scenes.md 최신, SKILL.md 길이).
-- `dist/`(스킬 zip)는 Git에 넣지 않고 Release 첨부로만 올린다.
+- `dist/`(스킬 zip)는 Git에 넣지 않는다. Release와 zip 첨부, jsDelivr 캐시 비우기는 태그를 push하면 `.github/workflows/release.yml`이 한다. 손으로 `gh release create`를 하지 않는다. 릴리스 노트는 태그 메시지로 쓴다 (`git tag -a v1.x.y -F 노트.txt`, 첫 줄 제목·빈 줄·본문).
+- push하면 `.github/workflows/check.yml`(점검)이 돈다. 실패하면 로그를 보고 같은 점검을 로컬에서 다시 돌려 고친다. 장면 그림은 실행의 Artifact `shots`에 있다.

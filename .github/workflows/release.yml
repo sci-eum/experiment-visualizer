@@ -1,0 +1,78 @@
+# 배포: v1.x.y 태그를 push하면 점검을 다시 돌린 뒤
+# ① 태그와 엔진 VERSION이 같은지 확인 ② 스킬 zip을 만들어 Release에 붙이고 ③ jsDelivr @1 캐시를 비운다.
+# 릴리스 노트는 태그 메시지로 쓴다:  git tag -a v1.8.0 -F 노트.txt   (첫 줄 = 제목, 빈 줄, 본문)
+# 태그 메시지에 본문이 없으면 커밋 목록으로 노트를 만든다. 이미 Release가 있으면 zip만 바꿔 올린다.
+name: 배포
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    uses: ./.github/workflows/check.yml
+
+  release:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 태그 메시지 가져오기
+        run: git fetch --force --tags origin
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 태그와 엔진 버전이 같은지
+        run: |
+          V=$(grep -oP "^const VERSION = '\K[0-9]+\.[0-9]+\.[0-9]+" assets/labkit.js)
+          H=$(head -1 assets/labkit.js | grep -oP 'LabKit v\K[0-9]+\.[0-9]+\.[0-9]+')
+          echo "태그 $GITHUB_REF_NAME / VERSION $V / 머리말 $H"
+          [ "v$V" = "$GITHUB_REF_NAME" ] && [ "$V" = "$H" ] || { echo "::error::태그와 labkit.js의 VERSION·첫 줄 머리말이 같아야 합니다."; exit 1; }
+
+      - name: 스킬 zip 만들기
+        run: python scripts/make_skill_zip.py
+
+      - name: Release 만들기 (이미 있으면 zip만 바꿔 올림)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/experiment-visualizer.zip --clobber
+            echo "기존 Release에 zip을 다시 올렸습니다."
+            exit 0
+          fi
+          TITLE=$(git tag -l --format='%(contents:subject)' "$TAG")
+          git tag -l --format='%(contents:body)' "$TAG" | sed '/^-----BEGIN PGP SIGNATURE-----/,$d' > notes.md
+          if grep -q '[^[:space:]]' notes.md; then
+            printf '\n설치용 스킬 파일: 아래 `experiment-visualizer.zip`\n' >> notes.md
+            gh release create "$TAG" dist/experiment-visualizer.zip --title "${TITLE:-$TAG}" --notes-file notes.md --verify-tag
+          else
+            gh release create "$TAG" dist/experiment-visualizer.zip --title "$TAG" --generate-notes --verify-tag
+          fi
+
+      - name: jsDelivr @1 캐시 비우기
+        run: |
+          V="${GITHUB_REF_NAME#v}"
+          for f in labkit.min.js labkit.js template.html; do
+            curl -fsS "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@1/assets/$f" > /dev/null || echo "::warning::$f 캐시 비우기 요청 실패"
+          done
+          for i in $(seq 1 12); do
+            got=$(curl -sI "https://cdn.jsdelivr.net/gh/${GITHUB_REPOSITORY}@1/assets/labkit.min.js" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-jsd-version"{print $2}')
+            if [ "$got" = "$V" ]; then echo "jsDelivr @1 = $got"; exit 0; fi
+            sleep 10
+          done
+          echo "::warning::jsDelivr @1이 아직 ${got:-?}입니다. 보통 몇 분, 길면 12시간 뒤 반영됩니다."

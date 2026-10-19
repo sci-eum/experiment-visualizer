@@ -1,5 +1,7 @@
 # 실험 과정 그림 HTML 만들기 (experiment-visualizer)
 
+[![점검](https://github.com/sci-eum/experiment-visualizer/actions/workflows/check.yml/badge.svg)](https://github.com/sci-eum/experiment-visualizer/actions/workflows/check.yml)
+
 실험지(hwp, hwpx, pdf, 사진 …)를 AI에게 첨부하고 이 저장소의 **SKILL 링크**를 함께 주면,
 실험 과정을 **단계별 그림**으로 보여 주는 학생용 HTML 자료를 만들어 줍니다.
 
@@ -126,6 +128,16 @@ python scripts/make_skill_zip.py                                 # dist/experime
 가벼운 HTML은 `https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/labkit.min.js`를 불러옵니다.
 엔진을 고친 뒤에는 `v1.x.y` 태그를 붙여 push해야 jsDelivr에 반영됩니다. 그림 데이터 형식을 바꾸는 큰 변경은 `v2`로 올립니다.
 버전을 올릴 때는 `labkit.js` 첫 줄 머리말과 `const VERSION`도 같은 번호로 고칩니다 (다르면 `make_template.py`가 멈춥니다).
+
+**자동 점검과 배포 (GitHub Actions)**
+
+- `main`에 push하면 [점검](.github/workflows/check.yml)이 돕니다: template.html·예시 HTML이 최신인지(다시 만들어 비교), 문서 점검, 헤드리스 Chrome 그림 점검(겹침 의심도 실패). 장면 그림 PNG는 실행 결과의 Artifact `shots`에서 내려받습니다.
+- 태그를 push하면 [배포](.github/workflows/release.yml)가 점검을 다시 돌린 뒤, 태그와 엔진 버전이 같은지 보고 Release를 만들어 스킬 zip을 붙이고 jsDelivr `@1` 캐시를 비웁니다. 릴리스 노트는 태그 메시지로 씁니다.
+
+```bash
+git tag -a v1.8.0 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
+git push origin v1.8.0
+```
 
 ## 라이선스
 
