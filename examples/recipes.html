@@ -2304,8 +2304,12 @@ document.addEventListener('keydown', ev => { if (deck.hidden) { if ((ev.key === 
 let tx = null; deck.addEventListener('touchstart', ev => { tx = ev.touches[0].clientX; }, { passive: true }); deck.addEventListener('touchend', ev => { if (tx == null) return; const dx = ev.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) showSlide(cur + (dx < 0 ? 1 : -1)); tx = null; });
 
 const app = mk('app'), CHECK = Q.has('check');
-// 겹침 점검은 글꼴을 다 불러온 뒤에 한다 (글꼴에 따라 글자 상자 크기가 달라진다)
-function afterFonts(f) { if (document.fonts && document.fonts.ready) document.fonts.ready.then(f, f); else f(); }
+// 겹침 점검은 화면 글자에 쓰인 글꼴 조각을 다 불러온 뒤에 한다 (Pretendard는 글자별로 나눠 불러와서, 덜 불러오면 글자 상자 크기가 달라진다)
+function afterFonts(f) {
+  if (!document.fonts || !document.fonts.load) return f();
+  const txt = [...document.querySelectorAll('svg text')].map(t => t.textContent).join('') || '가A1';
+  Promise.all(['500', '600', '700', '800'].map(w => document.fonts.load(`${w} 12px "Pretendard Variable"`, txt))).catch(() => { }).then(() => document.fonts.ready).then(f, f);
+}
 // 그림 점검용 촬영 화면 (check_render.py --shots): ?shot=3 은 3단계 장면 하나를 크게, ?shot=all 은 모든 장면을 한 장에
 if (Q.has('shot')) {
   const v = Q.get('shot'), all = v === 'all', cw = all ? 480 : 960;

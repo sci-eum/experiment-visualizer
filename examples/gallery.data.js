@@ -60,7 +60,7 @@ window.EXPERIMENT = {
       scene: [
         { t: 'circuit', x: 200, y: 140, w: 250, h: 150, closed: true, current: true,
           parts: [ { p: 'battery', label: '건전지' }, { p: 'bulb', label: '전구' }, { p: 'switch', label: '스위치' }, { p: 'ammeter', label: '전류계' }, { p: 'voltmeter', across: 1 } ] },
-        { t: 'resistor', x: 410, y: 70 }, { t: 'motor', x: 410, y: 130 }, { t: 'led', x: 410, y: 190, on: true }, { t: 'wire', x: 410, y: 240 } ],
+        { t: 'resistor', x: 432, y: 70 }, { t: 'motor', x: 432, y: 130 }, { t: 'led', x: 432, y: 190, on: true }, { t: 'wire', x: 432, y: 240 } ],
       bench: false },
     { title: '생물·관찰', text: 'microscope · slide · magnifier · plant(bag) · leaf(color2) · view',
       scene: [
@@ -76,7 +76,7 @@ window.EXPERIMENT = {
       scene: [
         { t: 'goggles', x: 60, y: 80 }, { t: 'gloves', x: 60, y: 190 },
         { t: 'ice', x: 150 }, { t: 'powder', x: 150, y: 210, paper: true, color: 'white' },
-        { t: 'paper', x: 225, y: 120, color: 'blue', color2: 'red', dip: .45 }, { t: 'paper', x: 255, y: 120, color: 'red' }, { t: 'paper', x: 240, y: 205, kind: 'filter' }, { t: 'ruler', x: 240, s: .55 },
+        { t: 'paper', x: 225, y: 120, color: 'blue', color2: 'red', dip: .45 }, { t: 'paper', x: 255, y: 120, color: 'red' }, { t: 'paper', x: 240, y: 205, kind: 'filter' }, { t: 'ruler', x: 248, s: .52 },
         { t: 'rack', x: 392, tubes: [ { tag: 'A', fill: .4, color: 'red' }, { tag: 'B', fill: .4, color: 'purple' }, { tag: 'C', fill: .4, color: 'green' }, { tag: 'D', fill: .4, color: 'blue' } ] } ] },
     { title: '표시 부품', text: 'arrow · note · mark · eye · label · view(입자)',
       scene: [
@@ -157,7 +157,7 @@ window.EXPERIMENT = {
         { t: 'text', x: 45, y: 158, text: 'shale', size: 10, weight: 700 }, { t: 'text', x: 122, y: 158, text: 'gneiss', size: 10, weight: 700 }, { t: 'text', x: 199, y: 158, text: 'marble', size: 10, weight: 700 },
         { t: 'text', x: 276, y: 158, text: 'quartz', size: 10, weight: 700 }, { t: 'text', x: 353, y: 158, text: 'calcite', size: 10, weight: 700 }, { t: 'text', x: 432, y: 158, text: 'streak', size: 10, weight: 700 },
         { t: 'text', x: 45, y: 288, text: 'granite', size: 10, weight: 700 }, { t: 'text', x: 122, y: 288, text: 'basalt', size: 10, weight: 700 }, { t: 'text', x: 199, y: 288, text: 'sandstone', size: 10, weight: 700 },
-        { t: 'text', x: 276, y: 288, text: 'limestone(fizz)', size: 10, weight: 700 }, { t: 'text', x: 353, y: 288, text: 'conglomerate', size: 10, weight: 700 } ] },
+        { t: 'text', x: 276, y: 288, text: 'limestone', size: 10, weight: 700 }, { t: 'text', x: 353, y: 288, text: 'conglomerate', size: 10, weight: 700 } ] },
     { title: '지층 모형·지구본', text: 'strata(layers: kind · text · fossil, fold, fault) · globe(night)',
       scene: [
         { t: 'strata', x: 100, w: 165, fold: 12, layers: [ { kind: 'gravel', h: .2, text: '역암' }, { kind: 'sand', h: .25, text: '사암' }, { kind: 'mud', h: .2, text: '이암', fossil: true }, { kind: 'limestone', h: .2, text: '석회암' }, { kind: 'sand', h: .15 } ] },
