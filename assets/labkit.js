@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit v1.5.1 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.5.2 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -123,7 +123,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.5.1'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.5.2'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -967,7 +967,7 @@ T.burette = {
     const c = col(el.color, 'clear'), top = -32 - g.lv * 124, open = !!(el.open || el.drip), max = parseVol(el.vol) || 50, step = max / 25;
     let ticks = '', nums = '';
     for (let i = 0; i <= 25; i++) { const y = r2(-154 + i * 118 / 25), big = i % 5 === 0; ticks += `M6,${y} H${big ? 1 : 3.5} `; if (big) nums += `<text x="8.5" y="${r2(y + 2.3)}" font-size="6.5" font-weight="700" fill="#5f6880">${fmtN(i * step)}</text>`; }
-    if (el.reading) cx.labels.push({ a: { x: g.x + 6 * g.s, y: g.y + top * g.s }, left: g.x - 6 * g.s, text: el.reading, side: el.labelSide });
+    if (el.reading) cx.labels.push({ a: { x: g.x + 20 * g.s, y: g.y + top * g.s }, left: g.x - 6 * g.s, text: el.reading, side: el.labelSide }); // 눈금 숫자 바깥에서
     const liq = g.lv > 0 ? `<rect x="-4.4" y="${r2(top)}" width="8.8" height="${r2(-31 - top)}" fill="${c}" opacity=".9"/><path d="M-4.4,${r2(top)} Q0,${r2(top + 2.6)} 4.4,${r2(top)}" stroke="${shade(c, -.35)}" fill="none" stroke-width="1.1"/><path d="M-2.4,-31 L-2.4,-18 L-1.2,-2 L1.2,-2 L2.4,-18 L2.4,-31 Z" fill="${c}" opacity=".9"/>` : '';
     return `<g transform="${tfm(g)}"><path d="M-1.6,0 L-3.6,-18 L3.6,-18 L1.6,0 Z" fill="${GLASS}" stroke="${INK}" stroke-width="1.3" stroke-linejoin="round"/><rect x="-4" y="-32" width="8" height="15" fill="${GLASS}" stroke="${INK}" stroke-width="1.3"/><rect x="-6" y="-162" width="12" height="131" rx="2" fill="${GLASS}" stroke="${INK}" stroke-width="1.6"/>${liq}<path d="${ticks}" stroke="${INK2}" stroke-width=".8"/><path d="M-3,-150 V-40" stroke="#fff" stroke-width="2" opacity=".7" stroke-linecap="round"/><g transform="translate(0,-25)">${cock(open)}<circle r="3.4" fill="#596173"/></g>${nums}</g>${open && g.to != null ? dropAnim(g.x, g.y, g.to, c, 2, .9) : ''}`;
   }
@@ -1525,7 +1525,7 @@ function showSlide(i) {
   deck.querySelector('.deck-count').textContent = `${cur + 1} / ${slides.length}`;
   deck.querySelectorAll('.dot').forEach((d, k) => { d.classList.toggle('on', k === cur); d.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
   deck.querySelector('[data-prev]').disabled = cur === 0; deck.querySelector('[data-next]').disabled = cur === slides.length - 1;
-  LabKit.fit(deck); if (Q.has('check')) LabKit.overlaps(deck, { mark: true });
+  LabKit.fit(deck); if (Q.has('check')) afterFonts(() => LabKit.overlaps(deck, { mark: true }));
 }
 function openDeck(i) {
   lastFocus = document.activeElement;
@@ -1538,6 +1538,8 @@ document.addEventListener('keydown', ev => { if (deck.hidden) { if ((ev.key === 
 let tx = null; deck.addEventListener('touchstart', ev => { tx = ev.touches[0].clientX; }, { passive: true }); deck.addEventListener('touchend', ev => { if (tx == null) return; const dx = ev.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) showSlide(cur + (dx < 0 ? 1 : -1)); tx = null; });
 
 const app = mk('app'), CHECK = Q.has('check');
+// 겹침 점검은 글꼴을 다 불러온 뒤에 한다 (글꼴에 따라 글자 상자 크기가 달라진다)
+function afterFonts(f) { if (document.fonts && document.fonts.ready) document.fonts.ready.then(f, f); else f(); }
 // 그림 점검용 촬영 화면 (check_render.py --shots): ?shot=3 은 3단계 장면 하나를 크게, ?shot=all 은 모든 장면을 한 장에
 if (Q.has('shot')) {
   const v = Q.get('shot'), all = v === 'all', cw = all ? 480 : 960;
@@ -1548,10 +1550,10 @@ if (Q.has('shot')) {
   const st = document.createElement('style');
   st.textContent = `body{background:#fff}#app{display:grid;grid-template-columns:repeat(${all ? 2 : 1},${cw}px);gap:16px;padding:16px;width:max-content}.shot b{display:block;height:30px;line-height:30px;font-size:${all ? 15 : 18}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shot .scene{display:block;width:${cw}px;height:${cw * LabKit.H / LabKit.W}px;outline:1px solid #e4d9f1}`;
   document.head.appendChild(st);
-  app.innerHTML = list.map(cell).join(''); app.removeAttribute('aria-busy'); LabKit.overlaps(app, { mark: true });
+  app.innerHTML = list.map(cell).join(''); app.removeAttribute('aria-busy'); afterFonts(() => LabKit.overlaps(app, { mark: true }));
   return;
 }
-app.innerHTML = page(); app.removeAttribute('aria-busy'); LabKit.fit(app); if (CHECK) LabKit.overlaps(app, { mark: true });
+app.innerHTML = page(); app.removeAttribute('aria-busy'); LabKit.fit(app); if (CHECK) afterFonts(() => LabKit.overlaps(app, { mark: true }));
 app.addEventListener('click', ev => { const o = ev.target.closest('[data-open]'); if (o) return openDeck(+o.dataset.open); if (ev.target.closest('[data-print]')) return window.print(); const st = ev.target.closest('.step'); if (st) openDeck(stepStart + +st.dataset.step); });
 if (Q.has('slide')) openDeck((+Q.get('slide') || 1) - 1);
 }
