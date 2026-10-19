@@ -54,18 +54,81 @@ SUP = str.maketrans('0123456789+-=()n', '⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽
 SMALL = set('₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ')
 
 
-def eq_to_text(script):
-    """한글 수식 스크립트(예: 'rm CaCl _{2}', 'TRIANGLE  T')를 'CaCl₂', 'ΔT'처럼 바꾼다."""
-    s = (script or '').replace('`', '\x01').replace('~', '\x01')
-    s = re.sub(r'\s*([_^])\s*', r'\1', s)
-    s = ''.join('' if t.isspace() else ('' if t in EQ_DROP else EQ_WORDS.get(t, t)) for t in re.split(r'(\s+|\x01)', s))
+EQ_FRAC = {'over', 'OVER', 'atop', 'ATOP'}
+EQ_ROOT = {'sqrt', 'SQRT'}
+EQ_OPS = set('+-−×÷/·=<>≤≥≠≈±, ')
 
-    def subsup(m):
-        mark, body = m.group(1), (m.group(2) if m.group(2) is not None else m.group(3)).strip()
-        conv = body.translate(SUB if mark == '_' else SUP)
-        return conv if conv and all(ch in SMALL for ch in conv) else mark + body
-    s = re.sub(r'([_^])(?:\{([^{}]*)\}|(\S))', subsup, s)
-    s = s.replace('{', '').replace('}', '').replace('\x01', ' ')
+
+def _eq_parse(toks, i=0):
+    """{ } 묶음을 중첩 리스트로 만든다."""
+    out = []
+    while i < len(toks):
+        t = toks[i]
+        if t == '{':
+            sub, i = _eq_parse(toks, i + 1)
+            out.append(sub)
+        elif t == '}':
+            return out, i + 1
+        else:
+            out.append(t)
+            i += 1
+    return out, i
+
+
+def _eq_wrap(text):
+    """분수·근호의 한쪽이 여러 항이면 괄호로 묶는다: a+b → (a+b), 2 → 2."""
+    if len(text) > 1 and any(ch in EQ_OPS for ch in text) and not (text[0] == '(' and text[-1] == ')'):
+        return '(' + text + ')'
+    return text
+
+
+def _eq_render(items):
+    out = []  # (글자, 묶음인지)
+
+    def operand(j):
+        while j < len(items) and isinstance(items[j], str) and items[j].isspace():
+            j += 1
+        if j >= len(items):
+            return '', j
+        it = items[j]
+        return (_eq_render(it) if isinstance(it, list) else EQ_WORDS.get(it, it)), j + 1
+
+    i = 0
+    while i < len(items):
+        it = items[i]
+        if isinstance(it, list):
+            out.append((_eq_render(it), True))
+            i += 1
+        elif it.isspace() or it in EQ_DROP:
+            i += 1
+        elif it == '\x01':
+            out.append((' ', False))
+            i += 1
+        elif it in ('_', '^'):  # 아래·위 첨자는 앞 글자에 붙인다
+            body, i = operand(i + 1)
+            conv = body.strip().translate(SUB if it == '_' else SUP)
+            small = conv if conv and all(ch in SMALL for ch in conv) else it + body.strip()
+            prev, grouped = out.pop() if out else ('', False)
+            out.append(((_eq_wrap(prev) if grouped else prev) + small, False))
+        elif it in EQ_FRAC:  # 분수: 앞뒤 묶음을 지킨다 ({a+b} over {c+d} → (a+b)/(c+d))
+            left = out.pop()[0] if out else ''
+            right, i = operand(i + 1)
+            out.append((_eq_wrap(left) + '/' + _eq_wrap(right), False))
+        elif it in EQ_ROOT:
+            arg, i = operand(i + 1)
+            out.append(('√' + _eq_wrap(arg), False))
+        else:
+            out.append((EQ_WORDS.get(it, it), False))
+            i += 1
+    return ''.join(t for t, _ in out)
+
+
+def eq_to_text(script):
+    """한글 수식 스크립트를 읽을 수 있는 글자로 바꾼다.
+    'rm CaCl _{2}' → 'CaCl₂', 'TRIANGLE T' → 'ΔT', '{a+b} over {c+d}' → '(a+b)/(c+d)', 'sqrt {x+1}' → '√(x+1)'."""
+    s = (script or '').replace('`', '\x01').replace('~', '\x01')
+    toks = re.findall(r'\{|\}|[_^]|\x01|\s+|[^\s{}_^\x01]+', s)
+    s = _eq_render(_eq_parse(toks)[0])
     return re.sub(r' {2,}', ' ', s).strip()
 
 

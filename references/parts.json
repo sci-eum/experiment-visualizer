@@ -1,0 +1,798 @@
+{
+ "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
+ "engine": "1.8.0",
+ "common": [
+  "t",
+  "id",
+  "x",
+  "y",
+  "s",
+  "tilt",
+  "label",
+  "labelSide",
+  "on",
+  "in",
+  "over",
+  "into",
+  "at",
+  "dx",
+  "dy",
+  "stand",
+  "reach"
+ ],
+ "vol": [
+  "beaker",
+  "bottle",
+  "burette",
+  "cup",
+  "cylinder",
+  "flask",
+  "roundflask",
+  "tube",
+  "volumetric"
+ ],
+ "aliases": {
+  "bunsen": "gasburner",
+  "burner": "lamp",
+  "petri": "dish",
+  "phone": "device",
+  "pipette": "dropper",
+  "spoon": "spatula",
+  "tablet": "device",
+  "tubing": "hose",
+  "zoom": "view"
+ },
+ "types": {
+  "ammeter": [
+   "closed",
+   "color"
+  ],
+  "arrow": [
+   "both",
+   "color",
+   "curve",
+   "dash",
+   "flow",
+   "from",
+   "to",
+   "width"
+  ],
+  "bag": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "balance": [
+   "reading"
+  ],
+  "ball": [
+   "color",
+   "r"
+  ],
+  "battery": [
+   "closed",
+   "color"
+  ],
+  "beaker": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "block": [
+   "color",
+   "h",
+   "text",
+   "w"
+  ],
+  "bottle": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "bulb": [
+   "closed",
+   "color"
+  ],
+  "burette": [
+   "color",
+   "drip",
+   "fill",
+   "open",
+   "reading",
+   "vol"
+  ],
+  "cabletie": [],
+  "candle": [
+   "color",
+   "h",
+   "lit"
+  ],
+  "cart": [
+   "color"
+  ],
+  "circuit": [
+   "closed",
+   "current",
+   "h",
+   "parts",
+   "w"
+  ],
+  "compass": [
+   "angle"
+  ],
+  "condenser": [
+   "color",
+   "drip",
+   "dripColor",
+   "flow",
+   "from",
+   "length",
+   "to",
+   "water"
+  ],
+  "cup": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "cylinder": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "device": [
+   "color",
+   "graph",
+   "link",
+   "markAt",
+   "markText",
+   "title",
+   "upto",
+   "value",
+   "xlabel"
+  ],
+  "dish": [
+   "color",
+   "fill",
+   "itemColor",
+   "items",
+   "lid",
+   "solid",
+   "solidColor"
+  ],
+  "dropper": [
+   "bulb",
+   "color",
+   "drops",
+   "fill",
+   "to"
+  ],
+  "evapdish": [
+   "color",
+   "fill",
+   "solid",
+   "solidColor",
+   "steam"
+  ],
+  "eye": [
+   "to"
+  ],
+  "flask": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "funnel": [
+   "color",
+   "drip",
+   "dripColor",
+   "fill",
+   "paper"
+  ],
+  "gasburner": [
+   "flame",
+   "lit"
+  ],
+  "gasjar": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "globe": [
+   "axis",
+   "night"
+  ],
+  "gloves": [
+   "color"
+  ],
+  "goggles": [],
+  "hose": [
+   "bubbles",
+   "from",
+   "glass",
+   "points",
+   "rise",
+   "to"
+  ],
+  "hotplate": [
+   "heat"
+  ],
+  "ice": [
+   "n"
+  ],
+  "label": [
+   "text",
+   "to",
+   "tone"
+  ],
+  "lamp": [
+   "color",
+   "lit"
+  ],
+  "leaf": [
+   "color",
+   "color2"
+  ],
+  "led": [
+   "closed",
+   "color"
+  ],
+  "lens": [
+   "axis",
+   "f",
+   "holder",
+   "kind"
+  ],
+  "lightbox": [
+   "dir"
+  ],
+  "magnet": [
+   "field",
+   "flip"
+  ],
+  "magnifier": [],
+  "mark": [
+   "kind"
+  ],
+  "match": [
+   "lit"
+  ],
+  "microscope": [],
+  "mirror": [
+   "holder",
+   "kind"
+  ],
+  "mortar": [
+   "color",
+   "grind",
+   "pestle"
+  ],
+  "motor": [
+   "closed",
+   "color"
+  ],
+  "note": [
+   "bg",
+   "icon",
+   "tag",
+   "text",
+   "to",
+   "w"
+  ],
+  "paper": [
+   "color",
+   "color2",
+   "dip",
+   "kind"
+  ],
+  "plant": [
+   "bag",
+   "color",
+   "droplets"
+  ],
+  "pour": [
+   "adapter",
+   "arm",
+   "band",
+   "brown",
+   "cap",
+   "cloudy",
+   "color",
+   "from",
+   "fromVol",
+   "gas",
+   "holder",
+   "lid",
+   "paper",
+   "ring",
+   "shake",
+   "side",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "to",
+   "vol"
+  ],
+  "powder": [
+   "color",
+   "paper"
+  ],
+  "power": [
+   "reading"
+  ],
+  "prism": [
+   "from",
+   "length",
+   "light"
+  ],
+  "rack": [
+   "color",
+   "n",
+   "tubes"
+  ],
+  "ramp": [
+   "color",
+   "dir",
+   "h",
+   "w"
+  ],
+  "ray": [
+   "arrow",
+   "color",
+   "dash",
+   "from",
+   "points",
+   "to"
+  ],
+  "resistor": [
+   "closed",
+   "color"
+  ],
+  "rock": [
+   "color",
+   "fizz",
+   "kind"
+  ],
+  "rod": [
+   "length",
+   "stir"
+  ],
+  "roundflask": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "ruler": [],
+  "screen": [
+   "image",
+   "imageY"
+  ],
+  "sensor": [
+   "kind",
+   "length",
+   "reading",
+   "text"
+  ],
+  "sepfunnel": [
+   "color",
+   "drip",
+   "fill",
+   "layers",
+   "open",
+   "stopper"
+  ],
+  "slide": [
+   "color",
+   "cover",
+   "specimen"
+  ],
+  "spatula": [
+   "color",
+   "powder",
+   "to"
+  ],
+  "springscale": [
+   "hang",
+   "hangColor",
+   "hangText",
+   "reading",
+   "stretch"
+  ],
+  "stand": [
+   "arm",
+   "clampY",
+   "hold"
+  ],
+  "stirbar": [],
+  "stirrer": [],
+  "stopwatch": [
+   "time"
+  ],
+  "strata": [
+   "fault",
+   "fold",
+   "h",
+   "layers",
+   "w"
+  ],
+  "streak": [
+   "color"
+  ],
+  "svg": [
+   "h",
+   "markup",
+   "w"
+  ],
+  "switch": [
+   "closed",
+   "color"
+  ],
+  "syringe": [
+   "color",
+   "drops",
+   "fill",
+   "to"
+  ],
+  "text": [
+   "anchor",
+   "color",
+   "size",
+   "text",
+   "w",
+   "weight"
+  ],
+  "thermometer": [
+   "level",
+   "reading"
+  ],
+  "tripod": [
+   "gauze"
+  ],
+  "trough": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "tube": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "tag",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "tuningfork": [
+   "box",
+   "mallet",
+   "ring"
+  ],
+  "tweezers": [],
+  "view": [
+   "bg",
+   "color",
+   "from",
+   "markup",
+   "nucleus",
+   "r",
+   "show",
+   "text"
+  ],
+  "voltmeter": [
+   "closed",
+   "color"
+  ],
+  "volumetric": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "text",
+   "vol",
+   "volText"
+  ],
+  "watchglass": [
+   "color",
+   "solid",
+   "solidColor"
+  ],
+  "weight": [
+   "color",
+   "text"
+  ],
+  "wire": [
+   "color"
+  ]
+ }
+}

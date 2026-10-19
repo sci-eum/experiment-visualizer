@@ -20,9 +20,10 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor
 
 CANDIDATES = [
+    r'C:\Program Files\Google\Chrome\Application\chrome.exe',
+    r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
     r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe',
     r'C:\Program Files\Microsoft\Edge\Application\msedge.exe',
-    r'C:\Program Files\Google\Chrome\Application\chrome.exe',
     '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser',
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
 ]
@@ -31,10 +32,20 @@ ONE = (992, 662)
 
 
 def browser():
-    for c in CANDIDATES:
-        if pathlib.Path(c).exists():
-            return c
-    sys.exit('Edge/Chrome을 찾지 못했습니다.')
+    """헤드리스로 실제 화면을 그려 내는 브라우저를 고른다.
+    설치만 되어 있고 헤드리스가 아무것도 내놓지 않는 경우가 있어(예: Edge 155) 짧게 시험해 본다.
+    CHECK_RENDER_BROWSER 환경 변수로 경로를 직접 정할 수 있다."""
+    env = os.environ.get('CHECK_RENDER_BROWSER')
+    found = [env] if env else [c for c in CANDIDATES if pathlib.Path(c).exists()]
+    for c in found:
+        try:
+            r = headless(c, '--dump-dom', 'data:text/html,<p>lk-probe-ok</p>', text=True, encoding='utf-8', errors='replace')
+            if 'lk-probe-ok' in (r.stdout or ''):
+                return c
+        except Exception:
+            pass
+        print(f'건너뜀: {c} (헤드리스로 화면을 그리지 못함)')
+    sys.exit('헤드리스로 쓸 수 있는 Chrome/Edge를 찾지 못했습니다. CHECK_RENDER_BROWSER로 브라우저 경로를 정해 보세요.')
 
 
 # GitHub Actions 같은 CI의 Linux에서는 Chrome 샌드박스를 쓸 수 없어 끈다 (CI 환경 변수가 있을 때만)

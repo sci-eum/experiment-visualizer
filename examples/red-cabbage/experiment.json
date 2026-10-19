@@ -7,7 +7,7 @@
     { "name": "붉은 양배추 지시약", "qty": "1컵", "icon": { "t": "cup", "fill": 0.55, "color": "violet" } },
     { "name": "시험관", "qty": "6개", "icon": "tube" },
     { "name": "시험관대", "qty": "1개", "icon": { "t": "rack", "tubes": [{}, {}, {}] } },
-    { "name": "눈금실린더 (10 mL)", "qty": "1개", "icon": "cylinder" },
+    { "name": "눈금실린더 (10 mL)", "qty": "1개", "icon": { "t": "cylinder", "vol": "10 mL" } },
     { "name": "스포이트", "qty": "1개", "icon": "dropper" },
     { "name": "식초", "icon": { "t": "bottle", "text": "식초", "fill": 0.6, "color": "clear" } },
     { "name": "레몬즙", "icon": { "t": "bottle", "text": "레몬즙", "fill": 0.6, "color": "#f3e6a0" } },
@@ -43,7 +43,7 @@
         { "t": "rack", "x": 270, "s": 1.1, "tubes": [
           { "id": "A", "tag": "㉠", "fill": 0.3, "color": "clear" }, { "id": "B", "tag": "㉡" }, { "id": "C", "tag": "㉢" },
           { "id": "D", "tag": "㉣" }, { "id": "E", "tag": "㉤" }, { "id": "F", "tag": "㉥" } ] },
-        { "t": "pour", "into": "A", "from": "cylinder", "color": "clear" },
+        { "t": "pour", "into": "A", "from": "cylinder", "fromVol": "10 mL", "color": "clear" },
         { "t": "label", "text": "식초 5 mL", "x": 105, "y": 96 },
         { "t": "note", "x": 385, "y": 58, "text": "㉡~㉥에도 정해진 용액을 차례로 5 mL씩 넣어요", "icon": "how" }
       ]

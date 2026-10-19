@@ -105,11 +105,13 @@ AI는 그림 코드를 직접 짜지 않습니다. 실험지를 읽어 **데이�
 SKILL.md                AI가 읽는 작업 지시서 (링크 대상): 작업 순서와 규칙
 references/parts.md     부품 목록 (장면을 쓸 때 AI가 연다)
 references/scenes.md    장면 예시 (examples/recipes.json으로 자동 생성)
+references/parts.json   부품마다 쓰는 속성 목록 (엔진에서 자동 생성, 데이터 검사에 쓴다)
 assets/labkit.js        그림 엔진 + 화면 (원본)
 assets/template.html    엔진을 품은 한 파일짜리 틀 (labkit.js로 자동 생성)
 assets/light.html       엔진을 CDN에서 불러오는 가벼운 틀
 scripts/build_html.py   데이터(JSON) + 틀 → 완성 HTML (전에 만든 HTML을 넣으면 최신 엔진으로 다시 만듦)
 scripts/extract_data.py 전에 만든 HTML에서 데이터(JSON) 꺼내기 (다시 고칠 때)
+scripts/check_data.py   만들기 전에 데이터 검사 (오타·없는 부품·id 중복·부피·용량 초과)
 scripts/extract_text.py hwp·hwpx·docx·pptx·pdf에서 글자 꺼내기 (표준 라이브러리만 사용)
 examples/               예시 실험지와 결과물, 장면 예시, 부품 카탈로그
 ```
@@ -118,10 +120,13 @@ examples/               예시 실험지와 결과물, 장면 예시, 부품 카
 
 ```bash
 python scripts/make_template.py                                  # labkit.js → template.html
-python scripts/build_html.py examples/gallery.data.js examples/gallery.html
+python scripts/build_html.py examples/gallery.json examples/gallery.html
 python scripts/make_scenes_doc.py                                # examples/recipes.json → references/scenes.md
 python scripts/build_html.py examples/recipes.json examples/recipes.html
+python scripts/make_registry.py                                  # labkit.js → references/parts.json (부품 속성 목록)
 python scripts/check_docs.py                                     # 문서와 엔진이 맞는지 (JSON 문법, 부품 목록, SKILL.md 길이)
+python scripts/check_data.py examples/gallery.json               # 데이터 검사
+python scripts/selftest.py                                       # 수식·부피 읽기와 검사기 자체 시험
 python scripts/check_render.py examples/gallery.html --shots shots  # 헤드리스 Edge/Chrome으로 열어 오류·겹침 확인, 장면 PNG를 shots/에
 python scripts/make_skill_zip.py                                 # dist/experiment-visualizer.zip
 ```

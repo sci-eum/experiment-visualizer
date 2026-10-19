@@ -4,7 +4,7 @@
 1. 문서의 ```json 예시가 모두 JSON 문법에 맞는다.
 2. 엔진(labkit.js)의 부품이 모두 references/parts.md에 있고, SKILL.md의 '부품 이름 한눈에'에도 있다.
 3. 문서·예시 데이터에 쓴 부품 이름(t)이 모두 엔진에 있다.
-4. references/scenes.md가 examples/recipes.json과 같다 (make_scenes_doc.py --check).
+4. references/scenes.md가 examples/recipes.json과, references/parts.json이 엔진과 같다.
 5. SKILL.md가 가리키는 참고 문서가 있고, SKILL.md가 너무 길지 않다.
 
 사용법:  python scripts/check_docs.py      (문제가 있으면 종료 코드 1)
@@ -18,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import make_scenes_doc  # noqa: E402
+import make_registry  # noqa: E402
 
 CIRCUIT_PARTS = {'battery', 'bulb', 'switch', 'ammeter', 'voltmeter', 'resistor', 'motor', 'led', 'wire'}
 MAX_SKILL_LINES = 400
@@ -69,17 +70,18 @@ def main():
         problems.append(f"SKILL.md '부품 이름 한눈에'에 엔진에 없는 이름: {t}")
 
     # 3. 문서·예시 데이터에 쓴 t
-    for f in ['examples/recipes.json', 'examples/red-cabbage/experiment.json']:
+    for f in ['examples/recipes.json', 'examples/gallery.json', 'examples/red-cabbage/experiment.json']:
         used += [(f, t) for t in re.findall(r'"t":\s*"([a-zA-Z_]+)"', (ROOT / f).read_text(encoding='utf-8'))]
-    used += [('examples/gallery.data.js', t) for t in re.findall(r"\bt:\s*'([a-zA-Z_]+)'", (ROOT / 'examples' / 'gallery.data.js').read_text(encoding='utf-8'))]
     for where, t in sorted(set(used)):
         if t not in known:
             problems.append(f'{where}: 엔진에 없는 부품 이름 "{t}"')
 
-    # 4. scenes.md 최신
+    # 4. scenes.md·parts.json 최신
     scenes_path = ROOT / 'references' / 'scenes.md'
     if scenes_path.read_text(encoding='utf-8') != make_scenes_doc.build():
         problems.append('references/scenes.md가 examples/recipes.json과 다릅니다. python scripts/make_scenes_doc.py 를 실행하세요.')
+    if (ROOT / 'references' / 'parts.json').read_text(encoding='utf-8') != make_registry.build():
+        problems.append('references/parts.json이 엔진과 다릅니다. python scripts/make_registry.py 를 실행하세요.')
 
     # 5. 참고 문서 링크와 길이
     for ref in sorted(set(re.findall(r'`(references/[a-z]+\.md)`', skill))):
