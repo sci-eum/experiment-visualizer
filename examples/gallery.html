@@ -1714,13 +1714,344 @@ window.EXPERIMENT = {
           "weight": 700
         }
       ]
+    },
+    {
+      "title": "분자생물학 기구 1 (튜브·피펫)",
+      "text": "micropipette(over, in, reading) · tuberack(tubes) · microtube(lid:false, vol, amount, solid) · pcrtube · spincolumn(waste)",
+      "scene": [
+        {
+          "t": "tuberack",
+          "x": 100,
+          "s": 1.3,
+          "tubes": [
+            {
+              "id": "t1",
+              "tag": "1",
+              "s": 1.3,
+              "lid": false,
+              "color": "#a9c97a",
+              "fill": 0.35
+            },
+            {
+              "tag": "2",
+              "s": 1.3,
+              "lid": false
+            },
+            {
+              "t": "pcrtube",
+              "tag": "3",
+              "s": 1.3,
+              "color": "pink"
+            },
+            {
+              "t": "spincolumn",
+              "tag": "4",
+              "s": 1.3,
+              "color": "#a9c97a",
+              "waste": "#dfeccf"
+            }
+          ]
+        },
+        {
+          "t": "micropipette",
+          "over": "t1",
+          "s": 1.3,
+          "color": "#a9c97a",
+          "reading": "200 μL"
+        },
+        {
+          "t": "microtube",
+          "x": 225,
+          "s": 1.3,
+          "vol": "1.5 mL",
+          "amount": "0.5 mL",
+          "color": "blue"
+        },
+        {
+          "t": "microtube",
+          "x": 262,
+          "s": 1.3,
+          "lid": false,
+          "color": "clear",
+          "fill": 0.3,
+          "solid": "precipitate",
+          "solidColor": "white"
+        },
+        {
+          "t": "pcrtube",
+          "x": 300,
+          "s": 1.3,
+          "vol": "0.2 mL",
+          "amount": "50 μL",
+          "color": "pink"
+        },
+        {
+          "t": "spincolumn",
+          "x": 350,
+          "s": 1.3,
+          "lid": false,
+          "color": "#a9c97a",
+          "fill": 0.6
+        },
+        {
+          "t": "microtube",
+          "id": "t9",
+          "x": 425,
+          "s": 1.3,
+          "lid": false,
+          "color": "orange",
+          "fill": 0.6
+        },
+        {
+          "t": "micropipette",
+          "in": "t9",
+          "s": 1.3,
+          "color": "orange"
+        },
+        {
+          "t": "text",
+          "x": 100,
+          "y": 288,
+          "text": "tuberack · micropipette(over)",
+          "size": 10,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 243,
+          "y": 288,
+          "text": "microtube",
+          "size": 10,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 300,
+          "y": 288,
+          "text": "pcrtube",
+          "size": 10,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 350,
+          "y": 288,
+          "text": "spincolumn",
+          "size": 10,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 425,
+          "y": 288,
+          "text": "micropipette(in)",
+          "size": 10,
+          "weight": 700
+        }
+      ]
+    },
+    {
+      "title": "분자생물학 기구 2 (원심분리기·PCR 기기·UV 램프)",
+      "text": "centrifuge(lid:false, in) · thermocycler(program) · uvlamp(bands)",
+      "scene": [
+        {
+          "t": "centrifuge",
+          "id": "cf",
+          "x": 82,
+          "s": 0.85,
+          "lid": false,
+          "on": false
+        },
+        {
+          "t": "microtube",
+          "in": "cf",
+          "dx": -14,
+          "s": 0.85
+        },
+        {
+          "t": "microtube",
+          "in": "cf",
+          "dx": 14,
+          "s": 0.85
+        },
+        {
+          "t": "thermocycler",
+          "x": 238,
+          "s": 0.82,
+          "program": "95℃ 30초 → 55℃ 30초 → 72℃ 1분"
+        },
+        {
+          "t": "uvlamp",
+          "x": 400,
+          "s": 0.75,
+          "bands": [
+            [
+              0.25,
+              0.6
+            ],
+            [
+              0.35
+            ],
+            [
+              0.25,
+              0.6
+            ],
+            [
+              0.5
+            ],
+            [
+              0.3,
+              0.7
+            ],
+            [
+              0.45
+            ],
+            [
+              0.25
+            ],
+            [
+              0.6
+            ]
+          ]
+        },
+        {
+          "t": "text",
+          "x": 82,
+          "y": 288,
+          "text": "centrifuge(lid:false)",
+          "size": 10,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 238,
+          "y": 288,
+          "text": "thermocycler(program)",
+          "size": 10,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 400,
+          "y": 288,
+          "text": "uvlamp(bands)",
+          "size": 10,
+          "weight": 700
+        }
+      ]
+    },
+    {
+      "title": "분자생물학 기구 3 (전기 영동·냉동고)",
+      "text": "geltank(loaded, run) · power + wire(from: 'ps:+', to: 'gt:+') · freezer(reading) + tuberack(on)",
+      "scene": [
+        {
+          "t": "geltank",
+          "id": "gt",
+          "x": 118,
+          "s": 0.9,
+          "loaded": "#4a5fd0",
+          "run": 0.35
+        },
+        {
+          "t": "power",
+          "id": "ps",
+          "x": 268,
+          "s": 0.8,
+          "reading": "100 V"
+        },
+        {
+          "t": "wire",
+          "from": "ps:-",
+          "to": "gt:-",
+          "color": "black",
+          "points": [
+            [
+              318,
+              214
+            ],
+            [
+              200,
+              168
+            ],
+            [
+              40,
+              182
+            ]
+          ]
+        },
+        {
+          "t": "wire",
+          "from": "ps:+",
+          "to": "gt:+",
+          "color": "red",
+          "points": [
+            [
+              296,
+              206
+            ]
+          ]
+        },
+        {
+          "t": "freezer",
+          "id": "fz",
+          "x": 395,
+          "s": 0.72,
+          "reading": "-20 ℃"
+        },
+        {
+          "t": "tuberack",
+          "on": "fz",
+          "s": 0.72,
+          "tubes": [
+            {
+              "s": 0.72,
+              "color": "#a9c97a",
+              "fill": 0.4
+            },
+            {
+              "s": 0.72,
+              "color": "#a9c97a",
+              "fill": 0.4
+            },
+            {
+              "t": "pcrtube",
+              "s": 0.72,
+              "color": "pink"
+            }
+          ]
+        },
+        {
+          "t": "text",
+          "x": 118,
+          "y": 288,
+          "text": "geltank(loaded, run)",
+          "size": 10,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 268,
+          "y": 288,
+          "text": "power + wire",
+          "size": 10,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 400,
+          "y": 288,
+          "text": "freezer(on)",
+          "size": 10,
+          "weight": 700
+        }
+      ]
     }
   ]
 };
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.9.1 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.10.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -1881,7 +2212,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.9.1'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.10.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -1967,10 +2298,21 @@ const SHAPES = {
   bag: { w: 34, h: 124, half: 12, side: 15, hold: [0, -112], hl: 'M-7,-108 C-8,-80 -8,-50 -6,-26', membrane: true,
     outline: 'M-13,-124 C-15,-80 -15,-30 -12,-14 Q-8,-3 0,-2 Q8,-3 12,-14 C15,-30 15,-80 13,-124',
     clip: 'M-11,-122 C-13,-80 -13,-30 -10,-15 Q-7,-5 0,-4 Q7,-5 10,-15 C13,-30 13,-80 11,-122 Z', inner: { top: -116, bottom: -4, half: 11 },
-    extra: '<path d="M-4,-2 L4,-2 L7,7 L0,3 L-7,7 Z" fill="#e9e1cc" stroke="#9c9178" stroke-width="1.2" stroke-linejoin="round"/><path d="M4,-90 C5,-60 5,-40 4,-20" stroke="#d9cfb6" stroke-width="1.2" fill="none"/>' }
+    extra: '<path d="M-4,-2 L4,-2 L7,7 L0,3 L-7,7 Z" fill="#e9e1cc" stroke="#9c9178" stroke-width="1.2" stroke-linejoin="round"/><path d="M4,-90 C5,-60 5,-40 4,-20" stroke="#d9cfb6" stroke-width="1.2" fill="none"/>' },
+  // 마이크로튜브(1.5 mL)·PCR 튜브(0.2 mL): 뚜껑이 붙어 있다 (snap). lid:false면 뚜껑이 열려 옆에 선다
+  microtube: { w: 16, h: 41.5, half: 6, side: 7, hold: [0, -28], hl: 'M-3.4,-35 L-2.8,-17',
+    outline: 'M-6,-38 L6,-38 L5.3,-14 L1.2,-1 Q0,0.4 -1.2,-1 L-5.3,-14 Z',
+    clip: 'M-4.8,-38 L4.8,-38 L4.1,-14.4 L0.6,-2 Q0,-1.4 -0.6,-2 L-4.1,-14.4 Z', inner: { top: -36, bottom: -2, half: 4.8, bhalf: 1.5 },
+    extra: '<rect x="-7.5" y="-41.5" width="15" height="3.5" rx="1.5" fill="#f4f6fa" stroke="#56617a" stroke-width="1.3"/>',
+    snap: { hinge: [7.5, -41.5], capH: 5, cap: '<rect x="-7" y="-46.5" width="14" height="5" rx="2"/>', strap: 'M7,-44 q4,0 4,4', openStrap: 'M7.5,-40 q3.5,.5 4.8,-2.5' } },
+  pcrtube: { w: 12, h: 30.5, half: 4, side: 5, hold: [0, -20], hl: 'M-2,-26 L-1.7,-13',
+    outline: 'M-4,-28 L4,-28 L3.5,-10.5 L0.8,-1 Q0,0.3 -0.8,-1 L-3.5,-10.5 Z',
+    clip: 'M-3,-28 L3,-28 L2.6,-10.8 L0.4,-2 Q0,-1.6 -0.4,-2 L-2.6,-10.8 Z', inner: { top: -26.5, bottom: -2, half: 3, bhalf: 1 },
+    extra: '<rect x="-5.4" y="-30.5" width="10.8" height="2.6" rx="1.2" fill="#f4f6fa" stroke="#56617a" stroke-width="1.1"/>',
+    snap: { hinge: [5.4, -30.5], capH: 4, cap: '<rect x="-4.8" y="-34.5" width="9.6" height="4" rx="1.6"/>', strap: '', openStrap: 'M5.4,-29 q2.5,.4 3.6,-2' } }
 };
 /* ---------- 용량(vol)·넣은 양(amount): 용량을 그림에 새기고, 실제 크기 비율로 그린다 ---------- */
-// ref: s=1일 때의 용량, full: 표시 용량까지 찬 높이(안쪽 높이 대비), print: [x, y, 회전, 글자 크기]
+// ref: s=1일 때의 용량, full: 표시 용량까지 찬 높이(안쪽 높이 대비), print: [x, y, 회전, 글자 크기, 가장 작은 글자(기본 7.5)]
 const VOLSPEC = {
   beaker: { ref: 250, full: .85, print: [0, -52, 0, 8], grad: 'beaker' },
   flask: { ref: 250, full: .78, print: [0, -22, 0, 8.5] },
@@ -1979,7 +2321,9 @@ const VOLSPEC = {
   cylinder: { ref: 100, full: 1, print: [6, -114, -90, 7.5], grad: 'cylinder' },
   tube: { ref: 20, full: .8, print: [1, -62, -90, 6.5] },
   bottle: { ref: 250, full: .8, print: [0, -16, 0, 7] },
-  cup: { ref: 200, full: .85, print: [0, -42, 0, 8] }
+  cup: { ref: 200, full: .85, print: [0, -42, 0, 8] },
+  microtube: { ref: 1.5, full: .85, print: [.4, -26, -90, 6.5] },
+  pcrtube: { ref: .2, full: .85, print: [.3, -19, -90, 6, 6] }
 };
 // 부피 글자를 mL 숫자로 읽는다: '100 mL', '1,000 mL', '0.5 L', '30~40 mL'(가운데 값), '0.5~1 L', '250 cc', '500 μL', '2 dL'.
 // 단위가 없으면 mL로 본다. g·kg처럼 부피가 아닌 단위나 읽을 수 없는 글자는 null (그림 점검에서 경고한다).
@@ -2007,8 +2351,8 @@ function volMarks(el, s = 1) {
   let o = '';
   if (sp.grad === 'beaker') { const B = -2, top = -2 - 80 * sp.full; for (let k = 1; k <= 4; k++) { const y = B + (top - B) * k / 4; o += `<path d="M${k % 2 ? 24 : 21},${r2(y)} H31" stroke="#8c95a8" stroke-width="1.3" stroke-linecap="round"/>` + (k % 2 ? '' : num(19, y, fmtN(v * k / 4))); } }
   if (sp.grad === 'cylinder') { for (let k = 1; k <= 10; k++) { const y = -12 - 13 * k, long = k % 5 === 0; o += `<path d="M-14,${y} H${long ? -4 : -8}" stroke="#8c95a8" stroke-width="1.2" stroke-linecap="round"/>` + (long ? num(-2, y, fmtN(v * k / 10), 'start') : ''); } }
-  const [px, py, rot, fs] = sp.print;
-  o += `<text transform="translate(${px},${py})${rot ? ` rotate(${rot})` : ''}" font-size="${r2(Math.max(fs, 7.5 / s))}" dominant-baseline="middle" font-weight="800" text-anchor="middle" fill="#3f475b" paint-order="stroke" stroke="#ffffff" stroke-width="2.6" stroke-linejoin="round">${esc(volText(el))}</text>`;
+  const [px, py, rot, fs, min] = sp.print;
+  o += `<text transform="translate(${px},${py})${rot ? ` rotate(${rot})` : ''}" font-size="${r2(Math.max(fs, (min ?? 7.5) / s))}" dominant-baseline="middle" font-weight="800" text-anchor="middle" fill="#3f475b" paint-order="stroke" stroke="#ffffff" stroke-width="2.6" stroke-linejoin="round">${esc(volText(el))}</text>`;
   return { svg: o, grad: !!sp.grad };
 }
 function fillOf(el) {
@@ -2032,7 +2376,7 @@ function cgeo(S, el, x, y, s, tilt) {
     bottomY: wpt(0, I.bottom).y, top: Math.min(wpt(-S.half, -S.h).y, wpt(S.half, -S.h).y), w: S.w * s, h: S.h * s,
     hold: wpt(S.hold[0], S.hold[1]), holdHalf: (S.half + 2) * s };
   g.surfaceY = fill > 0 ? y + s * L : g.bottomY;
-  g.mouthTop = el.stopper ? wpt(0, -S.h - (el.stopper === 'hole' || el.stopper === 'tube' ? 30 : 7)) : g.mouth;
+  g.mouthTop = el.stopper ? wpt(0, -S.h - (el.stopper === 'hole' || el.stopper === 'tube' ? 30 : 7)) : S.snap && el.lid !== false ? wpt(0, -S.h - S.snap.capH) : g.mouth;
   g.anchor = fill > 0 && !tilt ? { x: x + s * S.side, y: y + s * ((L + I.bottom) / 2) } : wpt(S.side, -S.h * 0.45);
   if (S === SHAPES.tube || S === SHAPES.cylinder) g.hold = wpt(0, -S.h * (Math.abs(tilt) > 90 ? 0.3 : 0.72));
   if (S.membrane && el.adapter !== false) { g.port = wpt(0, -S.h - 16); g.mouthTop = g.port; g.hold = wpt(0, -S.h - 4); g.holdHalf = 7 * s; }
@@ -2095,10 +2439,10 @@ function solids(el, S, g, frontOnly) {
   }
   const B = S.inner.bottom, hb = Math.min(S.inner.bhalf ?? S.inner.half, 34);
   const c = col(el.solidColor, { chips: 'gray', nail: '#8e96a3', block: '#c9ced6', leaf: 'green', egg: '#f3e3c8', zinc: '#b9bfc9', magnesium: '#d5d9df' }[k] || 'white');
-  const st = shade(c, -.32), R = rng(hb * 11 + B);
+  const st = shade(c, -.32), R = rng(hb * 11 + B), sm = Math.min(1, (B - S.inner.top) / 60); // 마이크로튜브처럼 작은 그릇은 앙금도 작게
   switch (k) {
     case 'powder': return `<path d="M${r2(-hb * .6)},${B} Q${r2(-hb * .2)},${B - 14} 0,${B - 15} Q${r2(hb * .2)},${B - 14} ${r2(hb * .6)},${B} Z" fill="${c}" stroke="${st}" stroke-width="1"/>`;
-    case 'precipitate': { let d = `M${-hb - 4},${B + 3} L${-hb - 4},${B - 6}`; for (let i = 1; i <= 8; i++) { const x = -hb + i * (2 * hb / 8); d += ` Q${r2(x - hb / 8)},${r2(B - 11 + R() * 3)} ${r2(x)},${r2(B - 7 + R() * 2)}`; } d += ` L${hb + 4},${B + 3} Z`; let dots = ''; for (let i = 0; i < 16; i++) dots += `<circle cx="${r2(-hb + R() * 2 * hb)}" cy="${r2(B - 6 - R() * 26)}" r="${r2(.8 + R() * 1.3)}" fill="${c}" stroke="${st}" stroke-width=".4"/>`; return `<path d="${d}" fill="${c}" stroke="${st}" stroke-width=".8"/>${dots}`; }
+    case 'precipitate': { let d = `M${-hb - 4},${B + 3} L${-hb - 4},${r2(B - 6 * sm)}`; for (let i = 1; i <= 8; i++) { const x = -hb + i * (2 * hb / 8); d += ` Q${r2(x - hb / 8)},${r2(B - (11 - R() * 3) * sm)} ${r2(x)},${r2(B - (7 - R() * 2) * sm)}`; } d += ` L${hb + 4},${B + 3} Z`; let dots = ''; for (let i = 0; i < 16; i++) dots += `<circle cx="${r2(-hb + R() * 2 * hb)}" cy="${r2(B - (6 + R() * 26) * sm)}" r="${r2((.8 + R() * 1.3) * Math.max(.6, sm))}" fill="${c}" stroke="${st}" stroke-width=".4"/>`; return `<path d="${d}" fill="${c}" stroke="${st}" stroke-width=".8"/>${dots}`; }
     case 'crystals': { let o = ''; for (let i = 0; i < 7; i++) { const x = r2(-hb * .7 + R() * hb * 1.4), sz = r2(4 + R() * 4); o += `<rect x="${x}" y="${r2(B - sz - 1 - R() * 3)}" width="${sz}" height="${sz}" fill="${c}" stroke="${st}" stroke-width=".9" transform="rotate(${r2(R() * 40 - 20)} ${x} ${B - 4})"/>`; } return o; }
     case 'chips': case 'zinc': case 'magnesium': { let o = ''; for (let i = 0; i < 4; i++) { const x = -hb * .6 + i * hb * .4 + R() * 4, w = 9 + R() * 6; o += `<path d="M${r2(x)},${B} L${r2(x + 2)},${r2(B - 7 - R() * 4)} L${r2(x + w * .6)},${r2(B - 9 - R() * 4)} L${r2(x + w)},${r2(B - 3)} Z" fill="${c}" stroke="${st}" stroke-width="1"/>`; } return o; }
     case 'nail': return `<g transform="translate(0,${B - 7}) rotate(-18)"><rect x="${r2(-hb * .55)}" y="-2" width="${r2(hb * 1.1)}" height="4" rx="1" fill="${c}" stroke="${st}" stroke-width="1"/><rect x="${r2(-hb * .55 - 3)}" y="-4.5" width="4" height="9" rx="1" fill="${c}" stroke="${st}" stroke-width="1"/></g>`;
@@ -2122,6 +2466,12 @@ function stopperSvg(S, kind) {
   if (kind === 'hole' || kind === 'tube') o = `<rect x="-2.3" y="${t - 30}" width="4.6" height="40" fill="#eaf5fc" stroke="${INK}" stroke-width="1.2"/>` + o + `<rect x="-2.3" y="${t - 8}" width="4.6" height="19" fill="#eaf5fc" opacity=".7"/>`;
   return o;
 }
+// 붙은 뚜껑: 닫으면 입구 위에, 열면 경첩을 축으로 돌아 입구 옆에 선다
+function snapCap(sn, closed) {
+  const [hx, hy] = sn.hinge, cap = `<g fill="#f4f6fa" stroke="${INK}" stroke-width="1.2">${sn.cap}</g>`;
+  return closed ? cap + (sn.strap ? `<path d="${sn.strap}" fill="none" stroke="${INK}" stroke-width="1.2"/>` : '')
+    : `<path d="${sn.openStrap}" fill="none" stroke="${INK}" stroke-width="1.2"/><g transform="rotate(100 ${hx} ${hy})">${cap}</g>`;
+}
 function holderSvg(S) { const y = r2(-S.h * 0.8); return `<path d="M-16,${y} L-98,${y - 9}" stroke="#c98d55" stroke-width="7" stroke-linecap="round"/><path d="M-30,${y - 1.5} L-96,${y - 9}" stroke="#a8713f" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><rect x="-16" y="${y - 6}" width="32" height="12" rx="4" fill="none" stroke="#7a5230" stroke-width="3"/>`; }
 function drawC(el, g, cx) {
   const S = g.S, s = g.s, k = uid('k'), paper = el.t === 'cup' && el.paper;
@@ -2135,12 +2485,13 @@ function drawC(el, g, cx) {
   if (el.arm) { const d = el.arm === 'left' ? -1 : 1, y0 = -S.h + 22, ex = d * (S.half + 34), ey = -S.h + 38; o += `<path d="M${d * S.half},${y0} L${ex},${ey}" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M${d * (S.half - 1)},${y0} L${ex},${ey}" stroke="#eef6fc" stroke-width="4" stroke-linecap="round"/>`; }
   o += `<path d="${S.outline}" fill="none" stroke="${S.membrane ? '#9c9178' : INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
   if (S.foot) o += S.foot;
-  if (el.lid) o += `<rect x="${-S.half - 9}" y="${-S.h - 4}" width="${2 * S.half + 18}" height="4" rx="1" fill="#eaf5fc" stroke="${INK}" stroke-width="1.2"/>`;
+  if (el.lid && !S.snap) o += `<rect x="${-S.half - 9}" y="${-S.h - 4}" width="${2 * S.half + 18}" height="4" rx="1" fill="#eaf5fc" stroke="${INK}" stroke-width="1.2"/>`;
   const vm = el.vol != null ? volMarks(el, s) : null;
   if (!paper) o += `<path d="${S.hl}" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".75"/>` + (vm && vm.grad ? '' : (S.extra || ''));
   if (vm) o += vm.svg;
   if (S.membrane && el.adapter !== false) o += `<rect x="-5.5" y="${-S.h - 16}" width="11" height="30" rx="2" fill="#f6f6f4" stroke="${INK}" stroke-width="1.3"/><rect x="-16" y="${-S.h + 5}" width="32" height="5.5" rx="2.5" fill="#3b4253"/><rect x="13" y="${-S.h + 3}" width="7" height="9" rx="1.5" fill="#3b4253"/>`;
   if (S.cap && el.cap !== false && !el.stopper) o += S.cap;
+  if (S.snap) o += snapCap(S.snap, el.lid !== false);
   if (el.t === 'bottle' && el.text) o += `<rect x="-19" y="-52" width="38" height="24" rx="3" fill="#fff" opacity=".95" stroke="#d5d9e1" stroke-width=".8"/><text x="0" y="-36.5" text-anchor="middle" font-size="${r2(Math.min(10, 34 / Math.max(1, tw(String(el.text).slice(0, 8), 1))))}" font-weight="700" fill="#3b4253">${esc(String(el.text).slice(0, 8))}</text>`;
   if (el.stopper) o += stopperSvg(S, el.stopper);
   if (el.holder) o += holderSvg(S);
@@ -2198,7 +2549,7 @@ function catmull(pts) {
   return d;
 }
 function marker(cx, color) { const id = uid('m'); cx.defs.push(`<marker id="${id}" viewBox="0 0 10 10" refX="6.5" refY="5" markerWidth="5.2" markerHeight="5.2" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="${color}"/></marker>`); return id; }
-function pt(v, R) { if (Array.isArray(v)) return { x: +v[0], y: +v[1] }; if (typeof v === 'string') { const g = R(v); if (g) return g.anchor || { x: g.x, y: g.top ?? g.y }; } if (v && typeof v === 'object' && v.x != null) return v; return null; }
+function pt(v, R) { if (Array.isArray(v)) return { x: +v[0], y: +v[1] }; if (typeof v === 'string') { const p = portOf(v, R); if (p) return p; const g = R(v); if (g) return g.anchor || { x: g.x, y: g.top ?? g.y }; } if (v && typeof v === 'object' && v.x != null) return v; return null; }
 function leafPath(c) { const st = shade(c, -.3); return `<path d="M0,-34 C22,-24 24,14 0,34 C-24,14 -22,-24 0,-34Z" fill="${c}" stroke="${st}" stroke-width="1.6"/><path d="M0,-30 L0,40 M0,-12 L12,-20 M0,-12 L-12,-20 M0,4 L13,-4 M0,4 L-13,-4 M0,18 L10,12 M0,18 L-10,12" stroke="${st}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`; }
 function particles(state, c, r, seed) {
   const R = rng(seed), st = shade(c, -.3); let o = '';
@@ -2227,6 +2578,7 @@ function partBody(name, on, o = {}) {
 const T = {};
 Object.keys(SHAPES).forEach(k => { T[k] = { geo: (el, R) => cplace(SHAPES[k], el, R), draw: drawC }; });
 const anchorOf = (g, w, h) => ({ x: g.x + w * g.s / 2, y: g.y - h * g.s / 2 });
+const RACKS = { rack: 'tube', tuberack: 'microtube' }; // tubes를 꽂는 부품과 t를 생략한 튜브의 종류
 
 T.rack = {
   geo(el, R) { const g = bplace(el, R), n = Math.max(1, (el.tubes || []).length || +el.n || 4), sp = 36 * g.s; g.n = n; g.slots = Array.from({ length: n }, (_, i) => g.x + (i - (n - 1) / 2) * sp); g.slotY = g.y - 6 * g.s; g.w = n * sp + 22 * g.s; g.h = 74 * g.s; g.top = g.y - 64 * g.s; g.anchor = { x: g.x + g.w / 2, y: g.y - 40 * g.s }; return g; },
@@ -2469,9 +2821,10 @@ T.circuit = {
   }
 };
 ['battery', 'bulb', 'switch', 'ammeter', 'voltmeter', 'resistor', 'motor', 'led'].forEach(n => { T[n] = { geo(el, R) { const g = bplace(el, R, 140); g.w = 56 * g.s; g.h = 40 * g.s; g.top = g.y - 30 * g.s; g.anchor = { x: g.x + 24 * g.s, y: g.y }; return g; }, draw(el, g) { return `<g transform="${tfm(g)}">${partBody(n, el.on ?? (n !== 'switch' ? false : el.closed !== false), { color: el.color })}</g>`; } }; });
+// 전선: from·to·points를 주면 두 곳을 잇는 전선(hose와 같이 그림, color 기본 짙은 회색), 없으면 낱개 아이콘
 T.wire = {
-  geo(el, R) { const g = bplace(el, R, 140); g.w = 76 * g.s; g.h = 40 * g.s; g.top = g.y - 20 * g.s; g.anchor = { x: g.x + 34 * g.s, y: g.y }; return g; },
-  draw(el, g) { return `<g transform="${tfm(g)}"><path d="M-30,10 C-12,-24 8,32 28,-6" stroke="${col(el.color, '#d9822b')}" stroke-width="3.6" fill="none" stroke-linecap="round"/><rect x="-42" y="6" width="14" height="8" rx="2" fill="#e5484d" transform="rotate(-30 -35 10)"/><rect x="26" y="-12" width="14" height="8" rx="2" fill="#323846" transform="rotate(-40 33 -8)"/></g>`; }
+  geo(el, R) { if (el.from || el.to || el.points) return T.hose.geo(el, R); const g = bplace(el, R, 140); g.w = 76 * g.s; g.h = 40 * g.s; g.top = g.y - 20 * g.s; g.anchor = { x: g.x + 34 * g.s, y: g.y }; return g; },
+  draw(el, g, cx) { if (g.pts) return T.hose.draw({ ...el, color: el.color ?? '#3b4253' }, g, cx); return `<g transform="${tfm(g)}"><path d="M-30,10 C-12,-24 8,32 28,-6" stroke="${col(el.color, '#d9822b')}" stroke-width="3.6" fill="none" stroke-linecap="round"/><rect x="-42" y="6" width="14" height="8" rx="2" fill="#e5484d" transform="rotate(-30 -35 10)"/><rect x="26" y="-12" width="14" height="8" rx="2" fill="#323846" transform="rotate(-40 33 -8)"/></g>`; }
 };
 T.springscale = {
   geo(el, R) { const g = bplace(el, R, 50); const ext = Math.max(0, Math.min(1, el.stretch ?? (el.hang ? .55 : .1))); g.ext = ext; g.hookY = g.y + (120 + ext * 14) * g.s; g.w = 30 * g.s; g.h = 130 * g.s; g.top = g.y - 10 * g.s; g.anchor = { x: g.x + 14 * g.s, y: g.y + 56 * g.s }; g.hold = { x: g.x, y: g.y - 6 * g.s }; g.holdHalf = 6; return g; },
@@ -2547,10 +2900,12 @@ T.powder = {
   draw(el, g) { const c = col(el.color, 'white'), st = shade(c, -.32), R = rng(g.x); let sp = ''; for (let i = 0; i < 10; i++) sp += `<circle cx="${r2(-18 + R() * 36)}" cy="${r2(-3 - R() * 14)}" r=".9" fill="${st}" opacity=".5"/>`; return `<g transform="${tfm(g)}">${el.paper ? '<path d="M-40,0 L-28,-6 L40,-6 L28,0 Z" fill="#fff" stroke="#d6d9e0" stroke-width="1.2"/>' : ''}<path d="M-28,-2 Q-12,-21 0,-22 Q12,-21 28,-2 Z" fill="${c}" stroke="${st}" stroke-width="1.2"/>${sp}</g>`; }
 };
 T.hose = {
-  geo(el, R) { let pts = (el.points || []).map(p => [+p[0], +p[1]]); if (el.from) { const t = R(el.from); if (t) { const m = t.port || t.mouthTop || t.mouth || { x: t.x, y: t.top }; pts = [[m.x, m.y], ...pts]; } } if (el.to && typeof el.to === 'string') { const t = R(el.to); if (t) { if (t.port) pts.push([t.port.x, t.port.y]); else { const m = t.mouth || { x: t.x, y: t.top }; pts.push([m.x, m.y + 18]); } } } if (pts.length < 2 && !el.from && !el.to) pts = [[200, 170], [235, 120], [275, 165], [300, 130]]; const last = pts[pts.length - 1] || [240, 150]; return { x: last[0], y: last[1], s: 1, pts, anchor: pts.length > 1 ? { x: (pts[0][0] + pts[1][0]) / 2, y: (pts[0][1] + pts[1][1]) / 2 } : { x: last[0], y: last[1] } }; },
+  geo(el, R) { let pts = (el.points || []).map(p => [+p[0], +p[1]]); const pf = portOf(el.from, R), pe = portOf(el.to, R); if (pf) pts = [[pf.x, pf.y], ...pts]; else if (el.from) { const t = R(el.from); if (t) { const m = t.port || t.mouthTop || t.mouth || { x: t.x, y: t.top }; pts = [[m.x, m.y], ...pts]; } } if (pe) pts.push([pe.x, pe.y]); else if (el.to && typeof el.to === 'string') { const t = R(el.to); if (t) { if (t.port) pts.push([t.port.x, t.port.y]); else { const m = t.mouth || { x: t.x, y: t.top }; pts.push([m.x, m.y + 18]); } } } if (pts.length < 2 && !el.from && !el.to) pts = [[200, 170], [235, 120], [275, 165], [300, 130]]; const last = pts[pts.length - 1] || [240, 150]; return { x: last[0], y: last[1], s: 1, pts, anchor: pts.length > 1 ? { x: (pts[0][0] + pts[1][0]) / 2, y: (pts[0][1] + pts[1][1]) / 2 } : { x: last[0], y: last[1] } }; },
   draw(el, g, cx) {
-    if (g.pts.length < 2) return ''; const d = catmull(g.pts), glass = el.glass;
-    let o = glass ? `<path d="${d}" fill="none" stroke="${INK}" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#eaf5fc" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>` : `<path d="${d}" fill="none" stroke="#c4834a" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#eab37c" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+    if (g.pts.length < 2) return ''; const d = catmull(g.pts), glass = el.glass, wc = el.color != null && !glass ? col(el.color) : null;
+    let o = glass ? `<path d="${d}" fill="none" stroke="${INK}" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#eaf5fc" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>`
+      : wc ? `<path d="${d}" fill="none" stroke="${shade(wc, -.4)}" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${wc}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>${[g.pts[0], g.pts[g.pts.length - 1]].map(p => `<circle cx="${r2(p[0])}" cy="${r2(p[1])}" r="3.2" fill="${wc}" stroke="${shade(wc, -.45)}" stroke-width="1.2"/>`).join('')}` // color: 전선
+      : `<path d="${d}" fill="none" stroke="#c4834a" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#eab37c" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>`;
     if (el.bubbles) { const [lx, ly] = g.pts[g.pts.length - 1], R = rng(lx + ly); let bo = ''; for (let i = 0; i < 5; i++) { const r = r2(2 + R() * 2.4), dur = r2(1.2 + R()), b = r2(-R() * dur), bx = r2(lx + R() * 8 - 4), top = ly - (el.rise ?? 50); bo += ANIM ? `<circle cx="${bx}" cy="${ly}" r="${r}" fill="#fff" fill-opacity=".8" stroke="#7aaed0" stroke-width=".8"><animate attributeName="cy" values="${r2(ly - 2)};${r2(top)}" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/></circle>` : `<circle cx="${bx}" cy="${r2(ly - 4 - R() * (ly - top))}" r="${r}" fill="#fff" fill-opacity=".8" stroke="#7aaed0" stroke-width=".8"/>`; } cx.front.push(bo); }
     return o;
   }
@@ -2855,9 +3210,9 @@ T.ray = {
     return o;
   }
 };
-// 전원 장치(직류): reading 화면 글자 (기본 '6 V')
+// 전원 장치(직류): reading 화면 글자 (기본 '6 V'). 단자는 'id:+'·'id:-'로 hose·wire의 from·to에 쓴다
 T.power = {
-  geo(el, R) { const g = bplace(el, R), s = g.s; g.w = 110 * s; g.h = 62 * s; g.top = g.y - 62 * s; g.anchor = { x: g.x + 55 * s, y: g.y - 44 * s }; return g; },
+  geo(el, R) { const g = bplace(el, R), s = g.s; g.w = 110 * s; g.h = 62 * s; g.top = g.y - 62 * s; g.anchor = { x: g.x + 55 * s, y: g.y - 44 * s }; g.ports = { '+': { x: g.x + 30 * s, y: g.y - 16 * s }, '-': { x: g.x + 44 * s, y: g.y - 16 * s } }; return g; },
   draw(el, g) {
     const dial = (x, a) => `<circle cx="${x}" cy="-15" r="8" fill="#fff" stroke="${INK}" stroke-width="1.6"/><path d="M${x},-15 L${r2(x + 5 * Math.cos(a))},${r2(-15 + 5 * Math.sin(a))}" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`;
     return `<g transform="${tfm(g)}"><rect x="-55" y="-62" width="110" height="62" rx="7" fill="#eceff4" stroke="${INK}" stroke-width="2"/><rect x="-46" y="-53" width="52" height="22" rx="3" fill="#20262f"/><text x="-20" y="-37.5" font-size="12" font-weight="800" text-anchor="middle" fill="#7ef0a4">${esc(el.reading ?? '6 V')}</text>${dial(-30, -0.9)}${dial(-6, -2.2)}<circle cx="30" cy="-16" r="5.5" fill="#e5484d" stroke="#9a2a30" stroke-width="1.4"/><circle cx="44" cy="-16" r="5.5" fill="#34343c" stroke="#111" stroke-width="1.4"/><text x="30" y="-27" font-size="10" font-weight="800" text-anchor="middle" fill="#c7323f">+</text><text x="44" y="-27" font-size="10" font-weight="800" text-anchor="middle" fill="#34343c">−</text><text x="37" y="-46" font-size="8" font-weight="800" text-anchor="middle" fill="${INK}">DC</text></g>`;
@@ -2941,6 +3296,162 @@ T.globe = {
   }
 };
 
+/* ---------- 부품 보강 (v1.10): 분자생물학 (DNA 추출·PCR·전기 영동) ---------- */
+// 그릇처럼 놓기: 튜브 꽂이 칸(tubes), on(올려놓기), in(원심분리기·PCR 기기에 꽂기), x·y
+function vplace(el, R) {
+  const s = el.s ?? 1; let x = el.x, y = el.y, tilt = el.tilt ?? 0;
+  if (el._parent) { const pg = R(el._parent); if (pg) { x = pg.slots[el._slot]; y = pg.slotY; } }
+  if (el.on) { const t = R(el.on); if (t) { if (t.surf) { const p = t.surf(el.at ?? 0.5); x ??= p.x; y ??= p.y; if (el.tilt == null) tilt = p.a; } else { x ??= t.x; y ??= t.top; } } }
+  if (el.in) { const t = R(el.in); if (t) { x ??= (t.mouth?.x ?? t.x) + (el.dx || 0); y ??= (t.bottomY ?? t.y) - 1 - (el.dy || 0); } }
+  return { x: x ?? 240, y: y ?? BENCH, s, tilt };
+}
+// 'id:+' / 'id:-' → 그 부품의 (+)·(−) 단자 자리 (전원 장치·전기 영동 장치). hose·wire·arrow의 from·to에 쓴다
+function portOf(ref, R) {
+  const m = typeof ref === 'string' && /^(.+):([+\-−])$/.exec(ref); if (!m) return null;
+  const g = R(m[1]); return g && g.ports ? g.ports[m[2] === '+' ? '+' : '-'] || null : null;
+}
+// 마이크로피펫: x, y = 팁 끝. over:'그릇id'면 팁 끝을 입구 안쪽에 넣고(방울이 떨어짐), in:'그릇id'면 액체 속에 넣는다(빨아올리기).
+// color·fill = 팁 속 액체, reading = 맞춘 부피 이름표('200 μL'), drops:false
+T.micropipette = {
+  geo(el, R) {
+    const g = tipPlace(el, R), s = g.s;
+    if (el.over && R(el.over)) g.y += 16; // 스포이트보다 깊게: 입구 4 아래
+    return Object.assign(g, { w: 23 * s, h: 127 * s, top: g.y - 127 * s, anchor: { x: g.x + 8 * s, y: g.y - 84 * s }, hold: { x: g.x, y: g.y - 80 * s }, holdHalf: 8 * s, mouth: { x: g.x, y: g.y } });
+  },
+  draw(el, g, cx) {
+    const c = col(el.color, 'water'), has = !!(el.color || el.fill), lv = Math.max(0, Math.min(1, el.fill ?? .5)), h = 3 + lv * 25, hw = r2(.45 + 1.05 * h / 31), drops = el.drops ?? (!!el.over && has);
+    if (el.reading) cx.labels.push({ a: { x: g.x + 8 * g.s, y: g.y - 92 * g.s }, left: g.x - 8 * g.s, text: el.reading, side: el.labelSide });
+    return `<g transform="${tfm(g)}"><path d="M-1.5,-31 L1.5,-31 L.45,0 L-.45,0 Z" fill="#fbf3c4" stroke="${INK}" stroke-width="1.1" stroke-linejoin="round"/>${has ? `<path d="M${-hw},${r2(-h)} L${hw},${r2(-h)} L.4,-.6 L-.4,-.6 Z" fill="${c}" opacity=".9"/>` : ''}<path d="M-2.6,-52 L2.6,-52 L2,-30 L-2,-30 Z" fill="#eef1f6" stroke="${INK}" stroke-width="1.2" stroke-linejoin="round"/><path d="M8,-102 q9,2 6,12" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><rect x="-8" y="-112" width="16" height="62" rx="6" fill="#dde3ec" stroke="${INK}" stroke-width="1.5"/><rect x="-4.5" y="-99" width="9" height="15" rx="2" fill="#fff" stroke="${INK}" stroke-width="1"/><path d="M-3,-94 H3 M-3,-89 H3" stroke="#9aa3b5" stroke-width="1.2"/><path d="M-4.6,-76 V-58" stroke="#fff" stroke-width="2.2" opacity=".7" stroke-linecap="round"/><rect x="-4" y="-127" width="8" height="15" rx="2.5" fill="#e5484d" stroke="${DARK}" stroke-width="1.1"/></g>${drops && g.to != null && !g.tilt ? dropAnim(g.x, g.y, g.to, c, 2, .9) : ''}`;
+  }
+};
+// 튜브 꽂이: tubes:[{id, tag, …튜브 속성}] (t를 생략하면 microtube, pcrtube·spincolumn도 꽂힌다), n(빈 칸 수), color(꽂이 색)
+T.tuberack = {
+  geo(el, R) { const g = bplace(el, R), s = g.s, n = Math.max(1, (el.tubes || []).length || +el.n || 4), sp = 24 * s; g.n = n; g.slots = Array.from({ length: n }, (_, i) => g.x + (i - (n - 1) / 2) * sp); g.slotY = g.y - 8 * s; g.w = n * sp + 12 * s; g.h = 19 * s; g.top = g.y - 19 * s; g.anchor = { x: g.x + g.w / 2, y: g.y - 8 * s }; return g; },
+  draw(el, g, cx) {
+    const s = g.s, hw = g.w / 2, c = col(el.color, '#a9d4f2'), st = shade(c, -.4), X = d => r2(g.x + d), Y = d => r2(g.y + d * s);
+    let o = `<path d="M${X(-hw + 3 * s)},${Y(-13)} L${X(-hw + 7 * s)},${Y(-19)} L${X(hw - 7 * s)},${Y(-19)} L${X(hw - 3 * s)},${Y(-13)} Z" fill="${shade(c, .45)}" stroke="${st}" stroke-width="1.3" stroke-linejoin="round"/>`;
+    g.slots.forEach(x => { o += `<ellipse cx="${r2(x)}" cy="${Y(-16)}" rx="${r2(8 * s)}" ry="${r2(2.2 * s)}" fill="${shade(c, -.3)}"/>`; });
+    (el.tubes || []).forEach(tb => { o += cx.emit(tb); });
+    o += `<rect x="${X(-hw)}" y="${Y(-13)}" width="${r2(g.w)}" height="${r2(13 * s)}" rx="${r2(3 * s)}" fill="${c}" fill-opacity=".6" stroke="${st}" stroke-width="1.5"/><path d="M${X(-hw + 4 * s)},${Y(-10.5)} H${X(hw - 4 * s)}" stroke="#fff" stroke-width="${r2(1.4 * s)}" opacity=".6" stroke-linecap="round"/>`;
+    (el.tubes || []).forEach((tb, i) => { if (tb && tb.tag) o += `<text x="${r2(g.slots[i])}" y="${Y(-2.4)}" font-size="${r2(7.5 * s)}" font-weight="800" text-anchor="middle" fill="${shade(c, -.62)}">${esc(tb.tag)}</text>`; });
+    return o;
+  }
+};
+// 스핀 컬럼(Binding Column을 끼운 collection tube): color·fill = 컬럼에 넣은 액체, waste = 걸러져 아래 튜브에 모인 액의 색, lid:false면 뚜껑 열림
+const SPINCAP = { hinge: [8, -67.5], capH: 4.5, cap: '<rect x="-7.5" y="-72" width="15" height="4.5" rx="2"/>', strap: 'M7.5,-70 q4,0 4,4', openStrap: 'M8,-66 q3.5,.5 4.8,-2.5' };
+T.spincolumn = {
+  geo(el, R) {
+    const g = vplace(el, R), s = g.s, lv = Math.max(0, Math.min(1, el.fill ?? (el.color ? .5 : 0))), P = (lx, ly) => { const q = rot(lx, ly, g.tilt); return { x: g.x + q[0] * s, y: g.y + q[1] * s }; };
+    return Object.assign(g, { lv, fill: lv, w: 19 * s, h: 72 * s, top: g.y - (el.lid === false ? 84 : 72) * s, half: 6 * s, mouth: P(0, -67.5), mouthTop: P(0, el.lid === false ? -67.5 : -72), surfaceY: g.y - (34 + lv * 28) * s, bottomY: g.y - 34 * s, anchor: P(9, -50), hold: P(0, -56), holdHalf: 9 * s });
+  },
+  draw(el, g) {
+    const c = col(el.color, 'water'), top = r2(-34 - g.lv * 28), wc = el.waste ? col(el.waste) : null;
+    return `<g transform="${tfm(g)}"><path d="M-8,-46 L8,-46 L7.2,-16 L1.4,-1.2 Q0,.4 -1.4,-1.2 L-7.2,-16 Z" fill="${GLASS}" fill-opacity=".75" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>${wc ? `<path d="M-6.3,-15 L6.3,-15 L1,-2.4 Q0,-1.6 -1,-2.4 Z" fill="${wc}" opacity=".85"/><path d="M-6.3,-15 H6.3" stroke="${shade(wc, -.35)}" stroke-width="1"/>` : ''}<path d="M-6,-64 L6,-64 L5.2,-28 L2.6,-23 L-2.6,-23 L-5.2,-28 Z" fill="#fafbfd" stroke="${INK}" stroke-width="1.3" stroke-linejoin="round"/>${g.lv > 0 ? `<path d="M-5.3,${top} L5.3,${top} L5.25,-34 L-5.25,-34 Z" fill="${c}" opacity=".85"/><path d="M-5.3,${top} H5.3" stroke="${shade(c, -.38)}" stroke-width="1.2"/>` : ''}<rect x="-5.2" y="-34" width="10.4" height="4" fill="#f3efe0" stroke="#b9ae8e" stroke-width="1"/><rect x="-9.5" y="-49" width="19" height="3" rx="1.4" fill="#f4f6fa" stroke="${INK}" stroke-width="1.2"/><rect x="-8" y="-67.5" width="16" height="3.5" rx="1.5" fill="#f4f6fa" stroke="${INK}" stroke-width="1.3"/><path d="M-3.4,-60 L-3,-40" stroke="#fff" stroke-width="2" opacity=".75" stroke-linecap="round"/>${snapCap(SPINCAP, el.lid !== false)}</g>`;
+  }
+};
+// 탁상 원심분리기: on:false면 멈춤, reading = 화면 글자('13,000 rpm'), lid:false면 뚜껑이 열려 회전자가 보인다.
+// 튜브는 in:'id'로 회전자에 꽂는다 (dx로 자리를 옮겨 마주 보게). 뚜껑을 닫으면 튜브는 안으로 들어가 가려진다
+T.centrifuge = {
+  geo(el, R) { const g = bplace(el, R), s = g.s, open = el.lid === false; return Object.assign(g, { w: 140 * s, h: (open ? 134 : 92) * s, top: g.y - (open ? 134 : 92) * s, mouth: { x: g.x + 29 * s, y: g.y - 60 * s }, half: 30 * s, bottomY: g.y - (open ? 48 : 26) * s, anchor: { x: g.x + 70 * s, y: g.y - 30 * s } }); },
+  draw(el, g) {
+    const on = el.on !== false, open = el.lid === false, dome = 'M-8,-60 Q-8,-92 29,-92 Q66,-92 66,-60 Z';
+    let o = `<g transform="${tfm(g)}">${open ? `<g transform="rotate(-100 -8 -60)"><path d="${dome}" fill="#d6e8f8" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M6,-64 Q8,-80 29,-82" stroke="#fff" stroke-width="2.4" fill="none" opacity=".7" stroke-linecap="round"/></g>` : ''}<path d="M-70,-52 Q-70,-60 -62,-60 H62 Q70,-60 70,-52 V-6 Q70,0 64,0 H-64 Q-70,0 -70,-6 Z" fill="#f4f6f9" stroke="${INK}" stroke-width="2"/><rect x="-60" y="-44" width="48" height="20" rx="3" fill="#20262f"/>`;
+    o += el.reading ? `<text x="-36" y="-30.6" font-size="${r2(Math.min(9.5, 42 / Math.max(1, tw(el.reading, 1))))}" font-weight="800" text-anchor="middle" fill="${on ? '#7ef0a4' : '#55705f'}">${esc(el.reading)}</text>` : on ? '<path d="M-54,-34 H-18" stroke="#7ef0a4" stroke-width="3" stroke-dasharray="4 3"/>' : '';
+    o += `<circle cx="-50" cy="-11" r="3.5" fill="${on ? '#3ccf7e' : '#cfd5df'}"/><circle cx="-38" cy="-11" r="3.5" fill="#cfd5df"/><path d="M8,-36 H52" stroke="#e1e5ec" stroke-width="2" stroke-linecap="round"/>`;
+    if (open) o += `<ellipse cx="29" cy="-60" rx="34" ry="7" fill="#3b4253" stroke="${INK}" stroke-width="1.4"/><ellipse cx="29" cy="-61" rx="21" ry="3.6" fill="none" stroke="#6b7488" stroke-width="1.2"/>`;
+    else {
+      o += `<path d="${dome}" fill="#d6e8f8" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M2,-74 Q6,-86 22,-88" stroke="#fff" stroke-width="2.6" fill="none" opacity=".8" stroke-linecap="round"/>`;
+      if (on) o += `<path d="M11,-71 A20,8 0 1 1 47,-69" fill="none" stroke="#7d2ba6" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="7 3">${A('<animate attributeName="stroke-dashoffset" from="20" to="0" dur=".5s" repeatCount="indefinite"/>')}</path><path d="M50,-75 L48.6,-66.6 L42,-70.4 Z" fill="#7d2ba6"/>`;
+    }
+    return o + '</g>';
+  },
+  cover(el, g) { return el.lid === false ? `<g transform="${tfm(g)}"><path d="M-5,-60 A34,7 0 0,0 63,-60 Z" fill="#3b4253"/><path d="M-5,-60 A34,7 0 0,0 63,-60" fill="none" stroke="${INK}" stroke-width="1.4"/><path d="M-6,-53 H64 V-47 H-6 Z" fill="#f4f6f9"/></g>` : ''; }
+};
+// PCR 기기(열 순환기): lid:false면 뚜껑을 열어 가열 블록이 보인다. PCR 튜브는 in:'id'로 블록에 꽂는다 (dx 14 간격으로 옆 칸).
+// program = 화면 글자 (예: '95℃ 30초 → 55℃ 30초 → 72℃ 1분'. 길면 글자를 줄여 5줄까지), 없으면 온도 변화 모양
+T.thermocycler = {
+  geo(el, R) { const g = bplace(el, R), s = g.s, open = el.lid === false; return Object.assign(g, { w: 170 * s, h: (open ? 122 : 92) * s, top: g.y - (open ? 122 : 92) * s, mouth: { x: g.x + 39 * s, y: g.y - 73 * s }, half: 36 * s, bottomY: g.y - (open ? 64 : 50) * s, anchor: { x: g.x + 85 * s, y: g.y - 30 * s } }); },
+  draw(el, g) {
+    const open = el.lid === false; let fs = 8, lines = [];
+    if (el.program) for (fs of [8, 7, 6]) { lines = wrap(el.program, 62, fs); if (lines.length * fs * 1.32 <= 40) break; } // 원문 수치가 잘리지 않게 글자를 줄인다
+    const lh = fs * 1.32, max = Math.floor(40 / lh), shown = lines.slice(0, max), y0 = -34 - shown.length * lh / 2 + lh / 2 + fs * .36;
+    let o = `<g transform="${tfm(g)}">`;
+    if (open) o += `<path d="M1,-70 L7,-122 L77,-122 L81,-70" fill="#dde3ec" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M15,-112 H69" stroke="#c6cdd8" stroke-width="2" stroke-linecap="round"/><rect x="-1" y="-73" width="80" height="11" rx="2" fill="${METAL}" stroke="${INK}" stroke-width="1.4"/>${[0, 1, 2, 3, 4].map(i => `<ellipse cx="${11 + i * 14}" cy="-73" rx="4.6" ry="1.6" fill="#5d6578"/>`).join('')}`;
+    else o += `<path d="M-3,-62 V-80 Q-3,-88 5,-88 H75 Q83,-88 83,-80 V-62 Z" fill="#dde3ec" stroke="${INK}" stroke-width="1.8"/><rect x="27" y="-92" width="26" height="5" rx="2.5" fill="${DARK}"/><path d="M5,-80 H75" stroke="#c6cdd8" stroke-width="2" stroke-linecap="round"/>`;
+    o += `<rect x="-85" y="-62" width="170" height="62" rx="8" fill="#eef1f5" stroke="${INK}" stroke-width="2"/><rect x="-75" y="-56" width="70" height="44" rx="3" fill="#20262f"/>`;
+    o += shown.length ? shown.map((l, i) => `<text x="-71" y="${r2(y0 + i * lh)}" font-size="${fs}" font-weight="700" fill="#7ef0a4">${esc(i === max - 1 && lines.length > max ? l.slice(0, -1) + '…' : l)}</text>`).join('')
+      : '<path d="M-70,-24 H-62 V-48 H-53 V-31 H-44 V-38 H-33 V-24 H-10" fill="none" stroke="#7ef0a4" stroke-width="1.6" stroke-linejoin="round"/>';
+    o += `<circle cx="19" cy="-30" r="7" fill="#fff" stroke="${INK}" stroke-width="1.4"/><circle cx="43" cy="-30" r="7" fill="#fff" stroke="${INK}" stroke-width="1.4"/><circle cx="67" cy="-30" r="3.2" fill="#3ccf7e"/></g>`;
+    return o;
+  },
+  cover(el, g) { return el.lid === false ? `<g transform="${tfm(g)}"><rect x="-1" y="-73" width="80" height="11" rx="2" fill="${METAL}" stroke="${INK}" stroke-width="1.4"/></g>` : ''; }
+};
+// 전기 영동 장치(비스듬히 위에서 본 모습): 왼쪽 (−) 단자 쪽 웰에서 오른쪽 (+) 쪽으로 DNA가 이동한다.
+// wells(웰 수, 기본 8), color(완충 용액 색), gel:false(겔 없음), loaded(웰에 넣은 시료 색), run:true 또는 0~1(염료가 이동한 정도 + 전극의 기포).
+// 단자는 'id:-'·'id:+'로 hose·wire의 from·to에 쓴다. 마이크로피펫 over:'id'는 가운데 웰에 팁을 넣는다 (dy로 다른 웰)
+function gelLanes(n, back, front, bh, fh) { return Array.from({ length: n }, (_, i) => { const v = (i + .5) / n; return { y: back + (front - back) * v, half: bh + (fh - bh) * v, h: (front - back) / n }; }); }
+T.geltank = {
+  geo(el, R) {
+    const g = bplace(el, R), s = g.s, n = Math.max(1, Math.min(20, Math.round(+el.wells || 8))), lanes = gelLanes(n, -73, -37, 50, 57), mid = lanes[Math.floor((n - 1) / 2)];
+    return Object.assign(g, { n, lanes, w: 206 * s, h: 82 * s, top: g.y - 82 * s, mouth: { x: g.x + (-mid.half + 7) * s, y: g.y + (mid.y - 4) * s }, half: 40 * s, surfaceY: g.y - 78 * s, ports: { '-': { x: g.x - 94 * s, y: g.y - 68 * s }, '+': { x: g.x + 94 * s, y: g.y - 68 * s } }, anchor: { x: g.x + 100 * s, y: g.y - 16 * s } });
+  },
+  draw(el, g) {
+    const bc = col(el.color, '#bfe0f5'), gel = el.gel !== false, lc = el.loaded ? col(el.loaded) : null, run = el.run === true ? .4 : Math.max(0, Math.min(1, +el.run || 0)), R = rng(g.x + g.n);
+    let o = `<g transform="${tfm(g)}"><path d="M-100,-28 L-88,-80 L88,-80 L100,-28 Z" fill="${GLASS}" fill-opacity=".5" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M-96,-31 L-86,-76 L86,-76 L96,-31 Z" fill="${bc}" opacity=".6"/>`;
+    o += `<path d="M-90,-34 L-81,-72" stroke="#34343c" stroke-width="1.6" stroke-linecap="round"/><path d="M90,-34 L81,-72" stroke="#c7323f" stroke-width="1.6" stroke-linecap="round"/>`;
+    if (gel) {
+      o += `<path d="M-57,-37 L-50,-73 L50,-73 L57,-37 Z" fill="#f7f9fb" fill-opacity=".9" stroke="#8c95a8" stroke-width="1.3" stroke-linejoin="round"/>`;
+      g.lanes.forEach(L => {
+        const wx = -L.half + 7, wh = r2(Math.max(1.4, L.h * .55));
+        o += `<rect x="${r2(wx - 1.5)}" y="${r2(L.y - wh / 2)}" width="3" height="${wh}" rx=".6" fill="${lc || '#9aa6b8'}"/>`;
+        if (run && lc) o += `<rect x="${r2(wx + run * (2 * L.half - 18))}" y="${r2(L.y - wh / 2)}" width="5" height="${wh}" rx="1" fill="${lc}" opacity=".7"/>`;
+      });
+    }
+    if (run) { let b = ''; [-1, 1].forEach(d => { for (let i = 0; i < 4; i++) { const v = (i + .5) / 4, x = r2(d * (90 - 9 * v) + (R() - .5) * 3), y = r2(-34 - 38 * v); b += `<circle cx="${x}" cy="${y}" r="${r2(1.1 + R() * .8)}" fill="#fff" stroke="#7aaed0" stroke-width=".7">${A(`<animate attributeName="cy" values="${y};${r2(y - 5)}" dur="${r2(.8 + R() * .6)}s" repeatCount="indefinite"/>`)}</circle>`; } }); o += `<g data-lk-skip="1">${b}</g>`; }
+    o += `<rect x="-100" y="-28" width="200" height="28" rx="3" fill="${GLASS}" fill-opacity=".45"/><rect x="-97" y="-24" width="194" height="21" rx="2" fill="${bc}" opacity=".55"/>${gel ? '<rect x="-57" y="-15" width="114" height="5" fill="#f7f9fb" opacity=".9"/>' : ''}<rect x="-100" y="-28" width="200" height="28" rx="3" fill="none" stroke="${INK}" stroke-width="2"/><path d="M-92,-22 V-8" stroke="#fff" stroke-width="2.4" opacity=".7" stroke-linecap="round"/>`;
+    o += `<rect x="-101" y="-68" width="14" height="15" rx="3" fill="#34343c" stroke="#111" stroke-width="1.2"/><rect x="87" y="-68" width="14" height="15" rx="3" fill="#e5484d" stroke="#9a2a30" stroke-width="1.2"/>`;
+    o += `<text x="-94" y="-55.5" font-size="11" font-weight="800" text-anchor="middle" fill="#fff">−</text><text x="94" y="-55.5" font-size="11" font-weight="800" text-anchor="middle" fill="#fff">+</text><circle cx="-94" cy="-68" r="2.2" fill="#8c95a8"/><circle cx="94" cy="-68" r="2.2" fill="#f6c4c6"/></g>`;
+    return o;
+  }
+};
+T.electrophoresis = T.geltank;
+// UV 램프로 겔 보기: 위에 UV 램프, 아래 어두운 받침 위에 겔. on:false면 꺼짐 (빛과 띠가 보이지 않는다), gel:false, wells(기본 8),
+// bands = 웰마다 띠 위치 목록 [[0.3, 0.55], [0.4], …] (0 = 웰, 1 = 겔 끝). 결과이므로 원문에 있을 때 reveal(결과 보기)에만 쓴다
+T.uvlamp = {
+  geo(el, R) { const g = bplace(el, R), s = g.s; return Object.assign(g, { w: 184 * s, h: 134 * s, top: g.y - 134 * s, anchor: { x: g.x + 82 * s, y: g.y - 102 * s } }); },
+  draw(el, g) {
+    const on = el.on !== false, n = Math.max(1, Math.min(20, Math.round(+el.wells || (Array.isArray(el.bands) && el.bands.length) || 8))), band = on ? '#f3e6ff' : null;
+    let o = `<g transform="${tfm(g)}">`;
+    if (on) o += `<path data-lk-skip="1" d="M-70,-90 L70,-90 L92,-16 L-92,-16 Z" fill="#8a5cf6" opacity=".13"/>`;
+    o += `<path d="M-76,-50 V-92 M76,-50 V-92" stroke="${METAL}" stroke-width="4" stroke-linecap="round"/><path d="M-90,-16 L-80,-50 L80,-50 L90,-16 Z" fill="${on ? '#4c3a86' : '#3a3d4a'}" stroke="${DARK}" stroke-width="1.6" stroke-linejoin="round"/><rect x="-92" y="-16" width="184" height="16" rx="3" fill="#2b2f3a" stroke="${DARK}" stroke-width="1.6"/><circle cx="76" cy="-8" r="2.6" fill="${on ? '#b98cff' : '#5d6272'}"/>`;
+    if (el.gel !== false) {
+      o += `<path d="M-48,-21 L-42,-46 L42,-46 L48,-21 Z" fill="${on ? '#6a52b8' : '#dfe5ee'}" fill-opacity="${on ? .95 : .85}" stroke="${on ? '#a58cf0' : '#8c95a8'}" stroke-width="1.2" stroke-linejoin="round"/>`;
+      for (let i = 0; i < n; i++) {
+        const u = (i + .5) / n, lane = f => { const y = -44 + 22 * f, half = 42 + 6 * (y + 46) / 25; return { x: -half + 2 * half * u, y }; }, w = lane(0), wd = r2(Math.min(7, 70 / n));
+        o += `<rect x="${r2(w.x - wd / 2)}" y="${r2(w.y - 1)}" width="${wd}" height="2" rx=".6" fill="${on ? '#3b2d6b' : '#9aa6b8'}"/>`;
+        if (band) [].concat((el.bands || [])[i] ?? []).forEach(f => { const p = lane(Math.max(0, Math.min(1, +f || 0))); o += `<rect x="${r2(p.x - wd / 2 - .4)}" y="${r2(p.y - .9)}" width="${r2(wd + .8)}" height="1.8" rx=".8" fill="${band}"/><rect x="${r2(p.x - wd / 2 - 1.4)}" y="${r2(p.y - 2)}" width="${r2(wd + 2.8)}" height="4" rx="2" fill="${band}" opacity=".3"/>`; });
+      }
+    }
+    o += `<path d="M-30,-112 Q0,-134 30,-112" fill="none" stroke="${DARK}" stroke-width="5" stroke-linecap="round"/><rect x="-80" y="-112" width="160" height="22" rx="7" fill="#4a5164" stroke="${DARK}" stroke-width="1.6"/><rect x="-70" y="-95" width="140" height="5" rx="2" fill="${on ? '#b98cff' : '#8d93a3'}"/><text x="-64" y="-98.5" font-size="8" font-weight="800" fill="#d9dce3">UV</text><circle cx="66" cy="-102" r="2.6" fill="${on ? '#b98cff' : '#6e7689'}"/></g>`;
+    return o;
+  }
+};
+// 냉동고: 문이 열려 선반이 보인다 (open:false면 닫힘). reading = 화면 글자('-20 ℃').
+// 안에 넣을 것은 on:'id'로 가운데 선반에 올린다 (at 0~1로 왼쪽~오른쪽 자리)
+T.freezer = {
+  geo(el, R) {
+    const g = bplace(el, R), s = g.s, open = el.open !== false;
+    return Object.assign(g, { w: (open ? 194 : 130) * s, h: 200 * s, top: g.y - 200 * s, surf: at => ({ x: g.x + (-46 + 92 * Math.max(0, Math.min(1, at))) * s, y: g.y - 70 * s, a: 0 }), anchor: { x: g.x + (open ? 97 : 65) * s, y: g.y - 150 * s } });
+  },
+  draw(el, g) {
+    const open = el.open !== false, flake = (x, y) => `<path d="M${x},${y - 6} V${y + 6} M${x - 5},${y - 3} L${x + 5},${y + 3} M${x - 5},${y + 3} L${x + 5},${y - 3}" stroke="#9cc8ee" stroke-width="1.4" stroke-linecap="round"/>`;
+    let o = `<g transform="${tfm(g)}"><rect x="-65" y="-200" width="130" height="200" rx="8" fill="#f2f5f9" stroke="${INK}" stroke-width="2"/><rect x="-30" y="-194" width="60" height="16" rx="3" fill="#20262f"/>${el.reading ? `<text x="0" y="-182.6" font-size="${r2(Math.min(10, 54 / Math.max(1, tw(el.reading, 1))))}" font-weight="800" text-anchor="middle" fill="#8fd3ff">${esc(el.reading)}</text>` : '<circle cx="22" cy="-186" r="2.2" fill="#8fd3ff"/>'}`;
+    if (open) o += `<rect x="-55" y="-172" width="110" height="158" rx="4" fill="#e9f4fc" stroke="#8c95a8" stroke-width="1.4"/><path d="M-53,-132 H53 M-53,-70 H53" stroke="#b9c6d6" stroke-width="3"/>${flake(-40, -156)}${flake(40, -150)}${flake(-40, -40)}${flake(40, -34)}<path d="M65,-200 L97,-186 L97,-14 L65,0 Z" fill="#e9edf3" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M71,-180 L91,-172 V-28 L71,-20 Z" fill="none" stroke="#c9d1dc" stroke-width="1.4"/><path d="M88,-118 V-80" stroke="#8c95a8" stroke-width="3.2" stroke-linecap="round"/>`;
+    else o += `<rect x="-59" y="-174" width="118" height="166" rx="5" fill="#eef2f7" stroke="${INK}" stroke-width="1.6"/><rect x="44" y="-120" width="5" height="40" rx="2.5" fill="#8c95a8"/>${flake(-36, -150)}`;
+    return o + '</g>';
+  }
+};
+
 T.generic = {
   geo(el, R) { const g = bplace(el, R, 150); g.w = 56; g.h = 56; g.top = g.y - 28; return g; },
   draw(el, g) { const ch = String(el.text || '?').trim().charAt(0) || '?'; return `<g transform="translate(${r2(g.x)},${r2(g.y)})"><rect x="-26" y="-26" width="52" height="52" rx="16" fill="#f3e2fd"/><text y="9" font-size="26" font-weight="800" text-anchor="middle" fill="#7d2ba6">${esc(ch)}</text></g>`; }
@@ -2989,7 +3500,12 @@ function lint(all, byId, where) {
   all.forEach(el => {
     REFS.forEach(k => {
       if (k === 'from' && el.t === 'pour') return; // pour의 from은 id가 아니라 그릇 종류
-      [].concat(el[k] ?? []).forEach(ref => { if (typeof ref === 'string' && !byId[ref]) warn(`${at}${name(el)}의 ${k}: '${ref}' → 이 장면에 그런 id가 없어요`); });
+      [].concat(el[k] ?? []).forEach(ref => {
+        if (typeof ref !== 'string' || byId[ref]) return;
+        const m = /^(.+):([+\-−])$/.exec(ref); // 'id:+' 단자
+        if (!m || !byId[m[1]]) warn(`${at}${name(el)}의 ${k}: '${ref}' → 이 장면에 그런 id가 없어요`);
+        else if (!(byId[m[1]]._g || {}).ports) warn(`${at}${name(el)}의 ${k}: '${ref}' → ${name(byId[m[1]])}에는 (+)·(−) 단자가 없어요 (power·geltank에 있어요)`);
+      });
     });
     if (off(el.x, W) || off(el.y, H)) warn(`${at}${name(el)}의 좌표 (${el.x ?? '-'}, ${el.y ?? '-'})가 장면(x 0~${W}, y 0~${H}) 밖이에요`);
     // 스탠드는 막대 끝이 잘려도 자연스러우므로 집게 위치만 본다
@@ -3015,7 +3531,7 @@ function groups(all, byId) {
   const join = (a, b) => { if (a && b) { const ra = find(a), rb = find(b); if (ra !== rb) up.set(ra, rb); } };
   all.forEach(el => {
     ['on', 'in', 'over', 'into'].concat(el.t === 'pour' ? ['to'] : []).forEach(k => { if (typeof el[k] === 'string') join(el, byId[el[k]]); });
-    if (el.t === 'rack') (el.tubes || []).forEach(tb => { if (tb && typeof tb === 'object') join(tb, el); });
+    if (RACKS[el.t]) (el.tubes || []).forEach(tb => { if (tb && typeof tb === 'object') join(tb, el); });
     if (el.t === 'condenser') ['from', 'to'].forEach(k => { if (typeof el[k] === 'string') join(el, byId[el[k]]); });
   });
   all.filter(el => HEATERS.has(el.t)).forEach(h => all.filter(el => el.t === 'tripod').forEach(t => { if (h._g && t._g && Math.abs(h._g.x - t._g.x) < (t._g.w || 108) / 2) join(h, t); }));
@@ -3089,7 +3605,7 @@ function overlaps(root, o = {}) {
 }
 
 /* ---------- x 자동 배치: 실험대에 서는 부품 여러 개가 x를 생략하면 쓴 순서대로 빈자리에 왼쪽부터 놓는다 ---------- */
-const BENCHY = new Set([...Object.keys(SHAPES), 'rack', 'lamp', 'burner', 'tripod', 'hotplate', 'stirrer', 'balance', 'candle', 'ruler', 'weight', 'microscope', 'dish', 'petri', 'evapdish', 'watchglass', 'mortar', 'plant', 'ramp', 'cart', 'block', 'ball', 'magnet', 'ice', 'powder', 'gasburner', 'bunsen', 'lens', 'mirror', 'prism', 'lightbox', 'screen', 'power', 'tuningfork', 'rock', 'streak', 'strata', 'globe']);
+const BENCHY = new Set([...Object.keys(SHAPES), 'rack', 'lamp', 'burner', 'tripod', 'hotplate', 'stirrer', 'balance', 'candle', 'ruler', 'weight', 'microscope', 'dish', 'petri', 'evapdish', 'watchglass', 'mortar', 'plant', 'ramp', 'cart', 'block', 'ball', 'magnet', 'ice', 'powder', 'gasburner', 'bunsen', 'lens', 'mirror', 'prism', 'lightbox', 'screen', 'power', 'tuningfork', 'rock', 'streak', 'strata', 'globe', 'tuberack', 'spincolumn', 'centrifuge', 'thermocycler', 'geltank', 'electrophoresis', 'uvlamp', 'freezer']);
 function autoX(all) {
   const M = 16, PAD = 10, placed = el => ['on', 'in', 'over', 'into'].some(k => typeof el[k] === 'string');
   const width = el => { try { return Math.max(12, (T[el.t] || T._unknown).geo({ ...el, x: 240 }, () => null).w || 60); } catch (e) { return 60; } };
@@ -3135,7 +3651,7 @@ function build(items, o = {}) {
   const all = [...pre, ...els], byId = {};
   if (autoX(all) && o.lint) warn(`${o.label ? o.label + ' — ' : ''}x를 생략한 기구들이 장면에 다 들어가지 않아요. s를 줄이거나 몇 개는 x를 정하세요`);
   const dup = new Set(), reg = el => { if (!el.id) return; if (byId[el.id]) dup.add(el.id); byId[el.id] = el; };
-  all.forEach(el => { if (el.t === 'rack') (el.tubes || []).forEach((tb, i) => { if (!tb || typeof tb !== 'object') return; tb.t = tb.t || 'tube'; tb._parent = el; tb._slot = i; reg(tb); }); reg(el); });
+  all.forEach(el => { if (RACKS[el.t]) (el.tubes || []).forEach((tb, i) => { if (!tb || typeof tb !== 'object') return; tb.t = tb.t || RACKS[el.t]; tb._parent = el; tb._slot = i; reg(tb); }); reg(el); });
   if (o.lint) dup.forEach(id => warn(`${o.label ? o.label + ' — ' : ''}id '${id}'가 이 장면에 두 번 이상 있어요. 부품마다 다른 id를 주세요`));
   const busy = new Set();
   const R = ref => { const el = typeof ref === 'string' ? byId[ref] : ref; if (!el || typeof el !== 'object') return null; if (el._g) return el._g; if (busy.has(el)) return null; busy.add(el); const Tp = T[el.t] || T._unknown; try { el._g = Tp.geo(el, R); } catch (e) { console.warn('[LabKit] 배치 오류', el, e); el._g = { x: el.x ?? 240, y: el.y ?? BENCH, s: 1 }; } busy.delete(el); return el._g; };
@@ -3152,12 +3668,13 @@ function build(items, o = {}) {
   const behind = {}; all.forEach(el => { const id = behindOf(el); if (id) (behind[id] ||= []).push(el); });
   const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }; g._sh = cx.sh; let s = ''; try { s = Tp.draw(el, g, cx) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true; return tag(el, g, s); };
   // 그릇 안의 그릇(수조 속 시험관 등)은 바깥 그릇 앞에 그리고, 잠긴 부분에 물빛을 다시 덮는다.
+  // cover가 있는 부품(뚜껑을 연 원심분리기·PCR 기기)은 꽂힌 것을 앞에 그린 뒤 그 아래쪽을 앞면(cover)으로 다시 가린다.
   const emit = el => {
     let s = '';
-    const kids = el.id && behind[el.id] ? behind[el.id] : [], front = SHAPES[el.t] ? kids.filter(b => SHAPES[b.t]) : [];
+    const kids = el.id && behind[el.id] ? behind[el.id] : [], cov = kids.length && (T[el.t] || {}).cover ? T[el.t].cover(el, R(el)) : '', front = SHAPES[el.t] ? kids.filter(b => SHAPES[b.t]) : cov ? kids : [];
     kids.forEach(b => { if (!front.includes(b) && !b._done) s += emit(b); });
     s += drawOne(el);
-    if (front.length) { front.forEach(b => { if (!b._done) s += emit(b); }); s += veil(el, R(el)); }
+    if (front.length) { front.forEach(b => { if (!b._done) s += emit(b); }); s += veil(el, R(el)) + cov; }
     return s;
   };
   cx.emit = emit;
@@ -3170,7 +3687,7 @@ function scene(items, o = {}) {
   const bench = o.bench !== false;
   return `<svg class="scene" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label || '실험 장면')}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="${P}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#faf6ff"/></linearGradient><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs><rect width="${W}" height="${H}" fill="url(#${P}bg)"/>${bench ? `<rect y="${BENCH}" width="${W}" height="${H - BENCH}" fill="#f2ecf9"/><rect y="${BENCH}" width="${W}" height="2" fill="#e4d9f1"/>` : ''}${body}${cx.front.join('')}${layoutLabels(cx.labels, cx.sh)}${o.grid ? grid() : ''}</svg>`;
 }
-const GUESS = [['가지 달린','roundflask:arm'],['가지달린','roundflask:arm'],['뷰렛','burette'],['집기병','gasjar'],['분별 깔때기','sepfunnel'],['분별깔때기','sepfunnel'],['냉각기','condenser'],['리비히','condenser'],['가스 버너','gasburner'],['분젠','gasburner'],['오목 거울','mirror:concave'],['오목거울','mirror:concave'],['볼록 거울','mirror:convex'],['볼록거울','mirror:convex'],['오목 렌즈','lens:concave'],['오목렌즈','lens:concave'],['거울','mirror'],['렌즈','lens'],['프리즘','prism'],['광원','lightbox'],['스크린','screen'],['전원 장치','power'],['전원장치','power'],['직류 전원','power'],['소리굽쇠','tuningfork'],['조흔판','streak'],['지층','strata'],['지구본','globe'],['지구의','globe'],['화강암','rock:granite'],['현무암','rock:basalt'],['사암','rock:sandstone'],['석회암','rock:limestone'],['셰일','rock:shale'],['역암','rock:conglomerate'],['편마암','rock:gneiss'],['대리암','rock:marble'],['석영','rock:quartz'],['방해석','rock:calcite'],['암석','rock'],['광물','rock:quartz'],['부피 플라스크','volumetric'],['부피플라스크','volumetric'],['압력 센서','sensor:pressure'],['온도 센서','sensor:temp'],['pH 센서','sensor:ph'],['센서','sensor'],['스마트기기','device'],['스마트 기기','device'],['태블릿','device'],['교반기','stirrer'],['마그네틱','stirbar'],['반투막','bag'],['셀로판','bag'],['케이블타이','cabletie'],['케이블 타이','cabletie'],['핀셋','tweezers'],['약포지','powder:paper'],['눈금실린더','cylinder'],['눈금 실린더','cylinder'],['메스실린더','cylinder'],['둥근바닥','roundflask'],['플라스크','flask'],['비커','beaker'],['시험관대','rack'],['시험관 꽂이','rack'],['시험관','tube'],['스포이트','dropper'],['피펫','dropper'],['알코올램프','lamp'],['알코올 램프','lamp'],['가스버너','gasburner'],['핫플레이트','hotplate'],['가열 장치','hotplate'],['가열장치','hotplate'],['온도계','thermometer'],['유리 막대','rod'],['유리막대','rod'],['약숟가락','spatula'],['약수저','spatula'],['깔때기','funnel'],['거름종이','paper:filter'],['여과지','paper:filter'],['리트머스','paper'],['시험지','paper'],['스탠드','stand'],['삼발이','tripod'],['쇠그물','tripod'],['저울','balance'],['초시계','stopwatch'],['스톱워치','stopwatch'],['타이머','stopwatch'],['페트리','dish'],['증발 접시','evapdish'],['증발접시','evapdish'],['시계 접시','watchglass'],['시계접시','watchglass'],['시약병','bottle'],['현미경','microscope'],['받침 유리','slide'],['받침유리','slide'],['덮개 유리','slide'],['슬라이드','slide'],['돋보기','magnifier'],['자석','magnet'],['나침반','compass'],['건전지','battery'],['전지','battery'],['전구','bulb'],['스위치','switch'],['전류계','ammeter'],['전압계','voltmeter'],['저항','resistor'],['전동기','motor'],['모터','motor'],['발광 다이오드','led'],['LED','led'],['전선','wire'],['용수철저울','springscale'],['용수철 저울','springscale'],['나무 도막','block'],['나무도막','block'],['수레','cart'],['양초','candle'],['성냥','match'],['보안경','goggles'],['장갑','gloves'],['얼음','ice'],['종이컵','cup:paper'],['컵','cup'],['수조','trough'],['막자사발','mortar'],['막자','mortar'],['주사기','syringe'],['고무관','hose'],['식물','plant'],['화분','plant'],['잎','leaf'],['가루','powder'],['소금','powder'],['설탕','powder'],['용액','bottle'],['증류수','bottle'],['구슬','ball'],['공','ball'],['빗면','ramp'],['자','ruler:1'],['추','weight:1'],['초','candle:1']];
+const GUESS = [['마이크로피펫','micropipette'],['마이크로 피펫','micropipette'],['튜브 꽂이','tuberack'],['튜브꽂이','tuberack'],['튜브 랙','tuberack'],['튜브랙','tuberack'],['마이크로튜브','microtube'],['마이크로 튜브','microtube'],['E-tube','microtube'],['에펜도르프','microtube'],['PCR 튜브','pcrtube'],['PCR튜브','pcrtube'],['스핀 컬럼','spincolumn'],['스핀컬럼','spincolumn'],['스핀 칼럼','spincolumn'],['바인딩 컬럼','spincolumn'],['Binding Column','spincolumn'],['원심분리기','centrifuge'],['원심 분리기','centrifuge'],['PCR 기기','thermocycler'],['PCR기기','thermocycler'],['써멀 사이클러','thermocycler'],['써멀사이클러','thermocycler'],['열 순환기','thermocycler'],['열순환기','thermocycler'],['전기 영동','geltank'],['전기영동','geltank'],['UV 램프','uvlamp'],['UV램프','uvlamp'],['자외선 램프','uvlamp'],['자외선램프','uvlamp'],['UV 조명','uvlamp'],['자외선 조명','uvlamp'],['트랜스일루미네이터','uvlamp'],['냉동고','freezer'],['냉장고','freezer'],['가지 달린','roundflask:arm'],['가지달린','roundflask:arm'],['뷰렛','burette'],['집기병','gasjar'],['분별 깔때기','sepfunnel'],['분별깔때기','sepfunnel'],['냉각기','condenser'],['리비히','condenser'],['가스 버너','gasburner'],['분젠','gasburner'],['오목 거울','mirror:concave'],['오목거울','mirror:concave'],['볼록 거울','mirror:convex'],['볼록거울','mirror:convex'],['오목 렌즈','lens:concave'],['오목렌즈','lens:concave'],['거울','mirror'],['렌즈','lens'],['프리즘','prism'],['광원','lightbox'],['스크린','screen'],['전원 장치','power'],['전원장치','power'],['직류 전원','power'],['소리굽쇠','tuningfork'],['조흔판','streak'],['지층','strata'],['지구본','globe'],['지구의','globe'],['화강암','rock:granite'],['현무암','rock:basalt'],['사암','rock:sandstone'],['석회암','rock:limestone'],['셰일','rock:shale'],['역암','rock:conglomerate'],['편마암','rock:gneiss'],['대리암','rock:marble'],['석영','rock:quartz'],['방해석','rock:calcite'],['암석','rock'],['광물','rock:quartz'],['부피 플라스크','volumetric'],['부피플라스크','volumetric'],['압력 센서','sensor:pressure'],['온도 센서','sensor:temp'],['pH 센서','sensor:ph'],['센서','sensor'],['스마트기기','device'],['스마트 기기','device'],['태블릿','device'],['교반기','stirrer'],['마그네틱','stirbar'],['반투막','bag'],['셀로판','bag'],['케이블타이','cabletie'],['케이블 타이','cabletie'],['핀셋','tweezers'],['약포지','powder:paper'],['눈금실린더','cylinder'],['눈금 실린더','cylinder'],['메스실린더','cylinder'],['둥근바닥','roundflask'],['플라스크','flask'],['비커','beaker'],['시험관대','rack'],['시험관 꽂이','rack'],['시험관','tube'],['스포이트','dropper'],['피펫','dropper'],['알코올램프','lamp'],['알코올 램프','lamp'],['가스버너','gasburner'],['핫플레이트','hotplate'],['가열 장치','hotplate'],['가열장치','hotplate'],['온도계','thermometer'],['유리 막대','rod'],['유리막대','rod'],['약숟가락','spatula'],['약수저','spatula'],['깔때기','funnel'],['거름종이','paper:filter'],['여과지','paper:filter'],['리트머스','paper'],['시험지','paper'],['스탠드','stand'],['삼발이','tripod'],['쇠그물','tripod'],['저울','balance'],['초시계','stopwatch'],['스톱워치','stopwatch'],['타이머','stopwatch'],['페트리','dish'],['증발 접시','evapdish'],['증발접시','evapdish'],['시계 접시','watchglass'],['시계접시','watchglass'],['시약병','bottle'],['현미경','microscope'],['받침 유리','slide'],['받침유리','slide'],['덮개 유리','slide'],['슬라이드','slide'],['돋보기','magnifier'],['자석','magnet'],['나침반','compass'],['건전지','battery'],['전지','battery'],['전구','bulb'],['스위치','switch'],['전류계','ammeter'],['전압계','voltmeter'],['저항','resistor'],['전동기','motor'],['모터','motor'],['발광 다이오드','led'],['LED','led'],['전선','wire'],['용수철저울','springscale'],['용수철 저울','springscale'],['나무 도막','block'],['나무도막','block'],['수레','cart'],['양초','candle'],['성냥','match'],['보안경','goggles'],['장갑','gloves'],['얼음','ice'],['종이컵','cup:paper'],['컵','cup'],['수조','trough'],['막자사발','mortar'],['막자','mortar'],['주사기','syringe'],['고무관','hose'],['식물','plant'],['화분','plant'],['잎','leaf'],['가루','powder'],['소금','powder'],['설탕','powder'],['용액','bottle'],['증류수','bottle'],['구슬','ball'],['공','ball'],['빗면','ramp'],['자','ruler:1'],['추','weight:1'],['초','candle:1']];
 function guess(name) {
   const n = String(name || '').replace(/\(.*?\)/g, '').trim();
   for (const [k, v] of GUESS) { const [t, flag] = v.split(':'); if (flag === '1') { if (n === k || n.startsWith(k + ' ')) return { t }; continue; } if (n.includes(k)) return flag === 'filter' ? { t, kind: 'filter' } : flag === 'paper' ? { t, paper: true } : flag === 'arm' ? { t, arm: true } : flag ? { t, kind: flag } : t === 'bottle' ? { t, text: n.slice(0, 5), fill: .55 } : { t }; }
@@ -3245,7 +3762,7 @@ function resolveScene(sc, i, where, chain) {
     if (base.length === n) base = base.filter(el => el.t !== r);
     if (base.length === n) LabKit.warn(`${where} — remove: '${r}' → 이어받은 장면에 그런 id나 부품이 없어요`);
   });
-  const find = id => { for (const el of base) { if (el.id === id) return el; if (el.t === 'rack') for (const tb of arr(el.tubes)) if (tb && tb.id === id) return tb; } return null; };
+  const find = id => { for (const el of base) { if (el.id === id) return el; if (el.t === 'rack' || el.t === 'tuberack') for (const tb of arr(el.tubes)) if (tb && tb.id === id) return tb; } return null; };
   Object.entries(sc.change && typeof sc.change === 'object' ? sc.change : {}).forEach(([id, ch]) => {
     const el = find(id);
     if (!el) return LabKit.warn(`${where} — change: '${id}' → 이어받은 장면에 그런 id가 없어요`);

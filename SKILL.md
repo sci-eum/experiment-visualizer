@@ -108,7 +108,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 
 - **한 단계 = 한 장면 = 핵심 동작 하나.** 그림만 보고도 "무엇을, 어디에, 어떻게" 알 수 있게. 주인공 기구는 가운데(x 180~300)에 크게, 기구는 2~5개.
 - **용량이 적힌 기구는 그 기구가 나오는 모든 장면과 준비물 아이콘에 `vol`을 준다** (실험의 스케일이 중요하다). 넣는 양은 `amount`, 붓는 그릇은 `pour`의 `fromVol`. 값은 원문 글자 그대로 (`"1,000 mL"`, `"0.5~1 L"`). 용량이 적혀 있지 않으면 `vol`을 지어내지 않는다. `vol`을 준 그릇에는 `s`를 주지 않는다 (꼭 필요하면 그 장면 그릇들에 같은 `s`).
-- **동작은 부품으로**: 붓기 `pour`, 떨어뜨리기 `dropper`+`over`, 젓기 `rod`+`stir`, 가루 넣기 `spatula`+`over`, 거르기 `funnel`+`over`, 가열 `lamp`·`gasburner`·`hotplate`, 순서 `arrow`, 관찰 `note`·`view`·`eye`. **상태는 속성으로**: `color`, `fill`, `bubbles`, `steam`, `solid:'precipitate'`, `cloudy`, `layers`.
+- **동작은 부품으로**: 붓기 `pour`, 떨어뜨리기 `dropper`+`over`, 마이크로피펫으로 넣기·빨아올리기 `micropipette`+`over`/`in`, 젓기 `rod`+`stir`, 가루 넣기 `spatula`+`over`, 거르기 `funnel`+`over`, 가열 `lamp`·`gasburner`·`hotplate`, 순서 `arrow`, 관찰 `note`·`view`·`eye`. **상태는 속성으로**: `color`, `fill`, `bubbles`, `steam`, `solid:'precipitate'`, `cloudy`, `layers`.
 - **단계 사이를 잇는다.** 같은 기구는 같은 x·색·양을 유지하다 바뀌는 단계에서만 바꾼다. 장치가 같으면 장면 이어받기(`"scene": {"from": "prev", …}`, data.md)로 바뀐 것만 쓴다.
 - 이름표 `label`은 장면마다 1~3개, 핵심 물질과 양만 (`"물 100 mL"`). 잘못된 방법은 `mark`(`kind:'no'`) + `warn`. 목록에 없는 기구는 가장 비슷한 부품 + `label`, 또는 `svg`.
 - **센서 실험**은 `sensor`와 `device`(`link`로 연결)를 함께, 그래프는 `"graph":"live"` (원문이 모양을 말할 때만 그 모양). 표지(`cover`)는 대표 장치 장면 (`{"from": 7}`).
@@ -138,6 +138,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 - 빛·소리·전기: `lens` `mirror` `prism` `lightbox` `screen` `ray` `power` `tuningfork` `circuit`
 - 지구과학: `rock` `streak` `strata` `globe` · 생물·관찰: `microscope` `slide` `magnifier` `dish` `evapdish` `watchglass` `mortar` `plant` `leaf`
 - 물리: `ramp` `cart` `block` `ball` `magnet` `compass` · 안전·재료: `goggles` `gloves` `ice` `powder` `paper` `match`
+- 분자생물학: `micropipette` `microtube` `pcrtube` `tuberack` `spincolumn` `centrifuge` `thermocycler` `geltank` `uvlamp` `freezer` (전선 `wire`는 `from:'ps:+'`처럼 단자에 잇는다)
 - 표시: `arrow` `note` `label` `text` `mark` `eye` `view` `svg`
 
 ## 5. 데이터 쓰기

@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.9.1",
+ "engine": "1.10.0",
  "common": [
   "t",
   "id",
@@ -27,6 +27,8 @@
   "cup",
   "cylinder",
   "flask",
+  "microtube",
+  "pcrtube",
   "roundflask",
   "tube",
   "volumetric"
@@ -34,6 +36,7 @@
  "aliases": {
   "bunsen": "gasburner",
   "burner": "lamp",
+  "electrophoresis": "geltank",
   "petri": "dish",
   "phone": "device",
   "pipette": "dropper",
@@ -191,6 +194,10 @@
   "cart": [
    "color"
   ],
+  "centrifuge": [
+   "lid",
+   "reading"
+  ],
   "circuit": [
    "closed",
    "current",
@@ -344,6 +351,10 @@
    "vol",
    "volText"
   ],
+  "freezer": [
+   "open",
+   "reading"
+  ],
   "funnel": [
    "color",
    "drip",
@@ -387,6 +398,13 @@
    "vol",
    "volText"
   ],
+  "geltank": [
+   "color",
+   "gel",
+   "loaded",
+   "run",
+   "wells"
+  ],
   "globe": [
    "axis",
    "night"
@@ -397,6 +415,7 @@
   "goggles": [],
   "hose": [
    "bubbles",
+   "color",
    "from",
    "glass",
    "points",
@@ -446,7 +465,47 @@
   "match": [
    "lit"
   ],
+  "micropipette": [
+   "color",
+   "drops",
+   "fill",
+   "reading",
+   "to"
+  ],
   "microscope": [],
+  "microtube": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "tag",
+   "text",
+   "vol",
+   "volText"
+  ],
   "mirror": [
    "holder",
    "kind"
@@ -473,6 +532,39 @@
    "color2",
    "dip",
    "kind"
+  ],
+  "pcrtube": [
+   "adapter",
+   "amount",
+   "arm",
+   "band",
+   "brown",
+   "bubbles",
+   "cap",
+   "cloudy",
+   "color",
+   "fill",
+   "flip",
+   "gas",
+   "holder",
+   "ice",
+   "layers",
+   "lid",
+   "meniscus",
+   "opacity",
+   "paper",
+   "print",
+   "ring",
+   "shake",
+   "solid",
+   "solidColor",
+   "steam",
+   "stirbar",
+   "stopper",
+   "tag",
+   "text",
+   "vol",
+   "volText"
   ],
   "plant": [
    "bag",
@@ -608,6 +700,13 @@
    "powder",
    "to"
   ],
+  "spincolumn": [
+   "color",
+   "fill",
+   "lid",
+   "tag",
+   "waste"
+  ],
   "springscale": [
    "hang",
    "hangColor",
@@ -657,6 +756,10 @@
    "text",
    "w",
    "weight"
+  ],
+  "thermocycler": [
+   "lid",
+   "program"
   ],
   "thermometer": [
    "level",
@@ -730,12 +833,22 @@
    "vol",
    "volText"
   ],
+  "tuberack": [
+   "color",
+   "n",
+   "tubes"
+  ],
   "tuningfork": [
    "box",
    "mallet",
    "ring"
   ],
   "tweezers": [],
+  "uvlamp": [
+   "bands",
+   "gel",
+   "wells"
+  ],
   "view": [
    "bg",
    "color",
@@ -792,7 +905,10 @@
    "text"
   ],
   "wire": [
-   "color"
+   "color",
+   "from",
+   "points",
+   "to"
   ]
  }
 }
