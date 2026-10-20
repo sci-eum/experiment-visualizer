@@ -20,7 +20,7 @@ COMMON = ["t", "id", "x", "y", "s", "tilt", "label", "labelSide", "on", "in", "o
 # 그릇(SHAPES) 부품이 함께 쓰는 함수들
 CONTAINER_FUNCS = ["cplace", "cgeo", "fillOf", "liquid", "solids", "drawC", "veil", "volMarks", "volText", "bubbles"]
 # 엔진 코드에서 el.이름으로 읽지 않지만 쓰는 속성
-EXTRA = {"rack": ["tubes", "n"], "circuit": ["parts"], "tube": ["tag"]}
+EXTRA = {"rack": ["tubes", "n"], "circuit": ["parts"], "tube": ["tag"], "microtube": ["tag"], "pcrtube": ["tag"], "spincolumn": ["tag"]}  # tag: 꽂이(tubes)에 꽂힌 튜브
 
 
 def chunks(js):

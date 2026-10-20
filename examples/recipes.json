@@ -133,6 +133,39 @@
       {"t":"rock","id":"ls","kind":"limestone","x":170,"fizz":true,"label":"석회암"},
       {"t":"dropper","over":"ls","color":"clear"},
       {"t":"rock","kind":"granite","x":330,"label":"화강암","labelSide":"right"}
+    ] },
+  { "title": "마이크로피펫으로 튜브에 넣기", "section": "분자생물학 (DNA·PCR·전기 영동)", "text": "작은 튜브는 꽂이·튜브·피펫에 같은 s를 주어 크게 그린다. 피펫은 뚜껑을 연 튜브(lid:false)에 over로 넣는다.", 
+    "scene": [
+      {"t":"tuberack","x":220,"s":1.4,"tubes":[{"id":"t1","tag":"1","s":1.4,"lid":false,"color":"#a9c97a","fill":0.3},{"id":"t2","tag":"2","s":1.4,"lid":false},{"id":"t3","tag":"3","s":1.4}]},
+      {"t":"micropipette","over":"t2","s":1.4,"color":"#a9c97a","reading":"200 μL"}
+    ] },
+  { "title": "원심분리기에 튜브 넣기 (마주 보게)", "section": "분자생물학 (DNA·PCR·전기 영동)", "text": "튜브는 in으로 회전자에 꽂고 dx로 마주 보게 놓는다.", 
+    "scene": [
+      {"t":"centrifuge","id":"cf","x":240,"s":1.3,"lid":false,"on":false},
+      {"t":"microtube","id":"a","in":"cf","dx":-18,"s":1.3,"color":"#a9c97a","fill":0.4},
+      {"t":"microtube","id":"b","in":"cf","dx":18,"s":1.3,"color":"#a9c97a","fill":0.4}
+    ] },
+  { "title": "원심분리하기 (뚜껑 닫기)", "section": "분자생물학 (DNA·PCR·전기 영동)", "text": "앞 장면을 이어받아 lid·on을 지우면 뚜껑이 닫히고 돌아간다. 닫으면 꽂힌 튜브는 가려진다.", 
+    "scene": {"from":"prev","change":{"cf":{"lid":null,"on":null,"reading":"13,000 rpm"}},"add":[{"t":"stopwatch","x":80,"y":110,"time":"1분"}]} },
+  { "title": "PCR 기기에 PCR 튜브 꽂기", "section": "분자생물학 (DNA·PCR·전기 영동)", "text": "블록의 옆 칸은 dx 14×s 간격이다.", 
+    "scene": [
+      {"t":"thermocycler","id":"tc","x":240,"s":1.2,"lid":false},
+      {"t":"pcrtube","in":"tc","dx":-17,"s":1.2,"color":"pink","fill":0.3},
+      {"t":"pcrtube","in":"tc","s":1.2,"color":"pink","fill":0.3},
+      {"t":"pcrtube","in":"tc","dx":17,"s":1.2,"color":"pink","fill":0.3}
+    ] },
+  { "title": "PCR 기기로 DNA 증폭하기", "section": "분자생물학 (DNA·PCR·전기 영동)", "text": "program에는 원문의 온도·시간을 그대로 쓴다 (\\n으로 줄 바꿈, 길면 글자를 줄여 5줄까지).", 
+    "scene": {"from":"prev","change":{"tc":{"lid":null,"program":"95℃ 30초 → 55℃ 30초 → 72℃ 1분\n30회 반복"}}} },
+  { "title": "겔의 웰에 시료 넣기", "section": "분자생물학 (DNA·PCR·전기 영동)", "text": "마이크로피펫 over에 전기 영동 장치 id를 주면 가운데 웰에 팁을 넣는다 (dy로 다른 웰). loaded는 웰에 넣은 시료 색.", 
+    "scene": [
+      {"t":"geltank","id":"gt","x":240,"s":1.3,"loaded":"#4a5fd0"},
+      {"t":"micropipette","over":"gt","s":1.3,"color":"#4a5fd0"}
+    ] },
+  { "title": "전기 영동하기 (전원 연결)", "section": "분자생물학 (DNA·PCR·전기 영동)", "text": "전선 wire는 from·to에 'id:+'·'id:-'로 단자를 잇는다 (빨강은 +, 검정은 −). run은 염료가 (+) 쪽으로 이동한 정도.", 
+    "scene": {"from":"prev","remove":["micropipette"],"change":{"gt":{"run":0.45}},"add":[{"t":"power","id":"ps","x":425,"s":0.8,"reading":"100 V"},{"t":"wire","from":"ps:+","to":"gt:+","color":"red","points":[[436,212]]},{"t":"wire","from":"ps:-","to":"gt:-","color":"black","points":[[464,206],[300,112],[120,140]]}]} },
+  { "title": "UV로 겔 관찰하기", "section": "분자생물학 (DNA·PCR·전기 영동)", "text": "띠(bands)는 결과이므로 원문이 결과를 알려 줄 때 reveal(결과 보기)에만 넣는다.", "reveal": {"text": "웰마다 DNA 띠가 보여요.", "change": {"uv": {"bands": [[0.3, 0.55], [0.3, 0.55], [0.42], [0.3, 0.55, 0.7]]}}}, 
+    "scene": [
+      {"t":"uvlamp","id":"uv","x":240,"s":1.3,"wells":4}
     ] }
   ]
 }
