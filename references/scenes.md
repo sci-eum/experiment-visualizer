@@ -258,7 +258,7 @@ remove는 id 또는 부품 이름, change의 null은 그 속성을 지운다. �
 ```json
 [{"t": "beaker", "id": "b", "x": 232, "s": 1.9, "fill": 0.8, "color": "water"},
  {"t": "microtube", "vol": "1.5 mL", "in": "b", "dx": -16, "s": 1.6, "color": "#a9c97a", "fill": 0.5},
- {"t": "thermometer", "in": "b", "dx": 16, "reading": "60 ℃"}]
+ {"t": "thermometer", "in": "b", "dx": 16, "reading": "50 ℃"}]
 ```
 
 ### 24. 원심분리기에 튜브 넣기 (마주 보게)
