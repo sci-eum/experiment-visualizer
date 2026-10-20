@@ -91,19 +91,57 @@ _UNIT = {u: (dim, k) for dim, us in QUNITS.items() for u, k in us.items()}
 _NUM = r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
 _QTY = re.compile(r"(?<![\d.,])(" + _NUM + r"(?:\s*(?:,|~|∼|〜|-|–|와|과|또는|및)\s*" + _NUM + r")*)\s*("
                   + "|".join(re.escape(u) for u in sorted(_UNIT, key=len, reverse=True)) + r")(?![A-Za-z])")
+# 표 머리처럼 숫자 없이 적힌 단위: 괄호 안 '온도 (°C)' '시간(sec)' '(단위: mL)', 또는 기호 단위 '℃' '㎖'
+_HEAD = re.compile(r"[(（\[]([^()（）\[\]]*)[)）\]]")
+_SYM = re.compile(r"℃|[°˚]C|[㎖㎕㎗㎎㎏㎜㎝ℓ]")
+_ALIAS = {"s": "sec", "secs": "sec", "second": "sec", "seconds": "sec", "mins": "min", "minute": "min", "minutes": "min"}
+_LOW = {}
+for _u in _UNIT:
+    if len(_u) > 1:
+        _LOW.setdefault(_u.lower(), set()).add(_UNIT[_u])
+_LOW = {u: v.pop() for u, v in _LOW.items() if len(v) == 1}  # 'ML' 'Sec'도 읽되, 'mm'(길이·몰농도)처럼 겹치면 대소문자대로만
+_COUNT = re.compile(r"\s*(?:개|회|번|배|쪽|단계|명|차|가지|마리)")  # '45회' '1단계'는 맨 숫자가 아니다
 
 
-def quantities(text):
+def _raw(n, unit):
+    return f"{n} {unit}" if unit[0].isascii() and unit[0].isalpha() else f"{n}{unit}"
+
+
+def head_units(text):
+    """숫자 없이 적힌 단위 → {종류: (배수, 단위)}. 수치에 붙은 단위('5 mL')는 빼고 본다.
+    'tube(s)'처럼 영어 낱말에 붙은 괄호 속 한 글자는 단위로 보지 않는다."""
+    rest = _QTY.sub(" ", text)
+    words = _SYM.findall(rest)
+    for m in _HEAD.finditer(rest):
+        glued = re.match(r"[A-Za-z]", rest[m.start() - 1:m.start()])
+        words += [w.strip() for w in re.split(r"[,/·;]", re.sub(r"^\s*단위\s*[:：]?", "", m.group(1))) if not (glued and len(w.strip()) == 1)]
+    out = {}
+    for w in words:
+        hit = _UNIT.get(w) or _LOW.get(w.lower()) or _UNIT.get(_ALIAS.get(w.lower(), ""))
+        if hit:
+            out.setdefault(hit[0], (hit[1], w))
+    return out
+
+
+def quantities(text, header=False):
     """글에서 단위가 붙은 수치를 뽑는다 → [(종류, 값, 원래 글자)]. '5, 10 mL' '30~40 mL'은 수마다 하나씩.
-    '3분의 1'(분수)은 시간이 아니다."""
-    out = []
-    for m in _QTY.finditer(str(text or "")):
+    '3분의 1'(분수)은 시간이 아니다. header=True(근거 문장)면 표처럼 단위가 머리에만 있을 때
+    ('온도 (°C) / 시간(sec): 95 / 300') 맨 숫자를 그 단위의 수치로도 친다 ('300' → 300 sec = 5분)."""
+    out, text = [], str(text or "")
+    for m in _QTY.finditer(text):
         unit = m.group(2)
         if unit == "분" and text[m.end():m.end() + 1] == "의":
             continue
         dim, k = _UNIT[unit]
         for n in re.findall(_NUM, m.group(1)):
-            out.append((dim, float(n.replace(",", "")) * k, f"{n} {unit}" if unit[0].isascii() and unit[0].isalpha() else f"{n}{unit}"))
+            out.append((dim, float(n.replace(",", "")) * k, _raw(n, unit)))
+    heads = head_units(text) if header else {}
+    if heads:
+        rest = _QTY.sub(" ", text)
+        bare = [m.group() for m in re.finditer(r"(?<![\d.A-Za-z])" + _NUM, rest) if not _COUNT.match(rest, m.end())]
+        for dim, (k, unit) in heads.items():
+            for n in dict.fromkeys(bare):
+                out.append((dim, float(n.replace(",", "")) * k, _raw(n, unit)))
     return out
 
 
@@ -417,14 +455,15 @@ def main_check(data, reg):
             elif not isinstance(rv, str):
                 rep.err(f"{where}.reveal", "글자 또는 { text, change, … } 객체여야 해요")
 
-    # 원문 숫자 대조: 설명·그림의 수치가 근거 문장(origin.quote)에 있는지. 준비물·앞 단계 근거 문장의 수치도 근거로 친다
+    # 원문 숫자 대조: 설명·그림의 수치가 근거 문장(origin.quote)에 있는지. 준비물·앞 단계 근거 문장의 수치도 근거로 친다.
+    # 근거 문장이 표라서 단위가 머리에만 있으면('온도 (°C)') 칸의 맨 숫자를 그 단위로 읽는다
     mats = data.get("materials") if isinstance(data.get("materials"), list) else []
     pool = quantities(" ".join(f"{m.get('name', '')} {m.get('qty', '')}" for m in mats if isinstance(m, dict)))
     for i, st in enumerate(steps):
         og = st.get("origin") if isinstance(st, dict) else None
         if not isinstance(og, dict) or not isinstance(og.get("quote"), str):
             continue
-        where, added, own = f"steps[{i}] ({i + 1}단계)", og.get("added") or [], quantities(og["quote"])
+        where, added, own = f"steps[{i}] ({i + 1}단계)", og.get("added") or [], quantities(og["quote"], header=True)
         if og.get("check") != "unsure":  # 판독 불확실은 이미 알렸다
             fields = [("title", "제목", st.get("title"))] + [(k, n, st.get(k)) for k, n in (("text", "설명"), ("time", "시간")) if k not in added]
             for k, name, v in fields:
