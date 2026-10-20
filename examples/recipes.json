@@ -2,7 +2,6 @@
   "title": "장면 예시 모음 (references/scenes.md)",
   "subject": "experiment-visualizer",
   "goal": "references/scenes.md의 장면 예시를 실제로 그린 결과다. 새 장면을 만들 때 출발점으로 쓴다.",
-  "source": "references/scenes.md",
   "steps": [
   { "title": "눈금실린더로 재서 비커에 붓기", 
     "scene": [

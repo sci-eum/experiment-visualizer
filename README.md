@@ -21,10 +21,11 @@
 
 - 단계 카드를 누르거나 **수업 모드로 보기**를 누르면 한 단계씩 크게 보입니다. ← → 키(또는 화면 밀기)로 넘기고 전체 화면으로 띄울 수 있습니다.
 - 거품, 김, 불꽃, 떨어지는 방울, 젓는 유리 막대가 살짝 움직여 동작을 보여 줍니다.
-- 결과 기록표의 빈칸, 생각해 보기 질문의 답, **예상하기** 칸에 화면에서 바로 적을 수 있습니다 (그 기기의 브라우저에만 저장).
+- 결과 기록표의 빈칸, 생각해 보기 질문의 답, **예상하기** 칸에 화면에서 바로 적을 수 있습니다 (그 기기의 브라우저에만 저장). 자료를 고쳐 단계·질문을 끼워 넣어도 적은 답이 제 질문을 따라갑니다.
 - 실험지에 결과가 있으면 **결과 보기**를 눌러야 결과 그림이 나옵니다. 탐구 전에는 결과를 미리 보여 주지 않습니다.
 - 단계에 '약 15분', '1분마다' 같은 시간이 있으면 수업 모드에서 **타이머**를 쓸 수 있습니다.
-- **인쇄하기**에서 **학생용 학습지**(이름 칸·적는 줄, 결과는 빼고)와 **교사용**(결과 그림까지)을 고를 수 있고, 휴대폰에서도 보입니다.
+- **인쇄하기**에서 **학생용 학습지**(이름 칸·적는 줄, 결과는 빼고)와 **교사용**(결과 그림·원문 대조까지)을 고를 수 있고, 휴대폰에서도 보입니다.
+- 바닥글의 **원문 대조 보기**를 누르면 단계마다 실험지의 어느 곳·어느 문장에서 왔는지, 원문에 없이 더한 것(선생님이 준 팁 등)이 무엇인지 보입니다. 흐려서 확실히 읽지 못한 곳은 **원문 확인 필요**로 늘 표시됩니다.
 
 ## 사용법 1 — 링크로 쓰기 (설치 없음)
 
@@ -33,8 +34,10 @@
 
 ```text
 첨부한 실험지를 읽고, 아래 스킬 지시서를 그대로 따라서 실험 과정을 그림으로 보여 주는 HTML을 만들어 줘.
-스킬: https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/SKILL.md
+스킬: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/SKILL.md
 ```
+
+주소의 `@1`은 공개된 v1 최신판입니다. 지시서·참고 문서·그림 엔진이 모두 같은 판에서 나와 버전이 어긋나지 않습니다.
 
 3. AI가 먼저 **만들 계획**(단계 구성, 그림에 넣을 기구 용량)을 보여 주고, **단계에 넣을 팁**을 물어봐요. 아래처럼 "과정 번호 - 종류: 내용"으로 답하면 그걸 넣어서 만들어요.
 
@@ -45,7 +48,7 @@
 전체 - 강조: 세 용액의 실험 조건을 똑같이 맞춰요
 ```
 
-종류는 **팁 / 주의 / 강조 / 예상** 중 하나예요. **예상**을 적으면 그 단계에 학생이 관찰 전에 예상을 적는 칸이 생겨요. 넣을 게 없으면 `없음`이라고 답하면 돼요. 묻지 않고 바로 만들게 하려면 처음 프롬프트에 `팁 없이 바로 만들어 줘`를 덧붙이세요.
+종류는 **팁 / 주의 / 강조 / 예상** 중 하나예요. **예상**을 적으면 그 단계에 학생이 관찰 전에 예상을 적는 칸이 생겨요. 넣을 게 없으면 `없음`이라고 답하면 돼요. 묻지 않고 바로 만들게 하려면 처음 프롬프트에 `팁 없이 바로 만들어 줘`를 덧붙이세요. 다만 양·농도·온도처럼 핵심 수치를 확실히 읽지 못했으면 그것만은 먼저 확인합니다.
 
 필요하면 한 줄을 덧붙이세요.
 
@@ -102,7 +105,9 @@ AI는 그림 코드를 직접 짜지 않습니다. 실험지를 읽어 **데이�
 ## 파일 구조
 
 ```text
-SKILL.md                AI가 읽는 작업 지시서 (링크 대상): 작업 순서와 규칙
+SKILL.md                AI가 읽는 작업 지시서 (링크 대상): 판단 규칙 (언제 멈추고 묻는지, 원문에서 무엇을 뽑는지, 전달 전 검사)
+references/data.md      데이터 형식 (항목, 수업 기능, 원문 대응 기록, 답 저장 이름, 장면 이어받기)
+references/build.md     환경별 만들기 방법과 그림 점검 (도구 내려받기, 가벼운 HTML 틀)
 references/parts.md     부품 목록 (장면을 쓸 때 AI가 연다)
 references/scenes.md    장면 예시 (examples/recipes.json으로 자동 생성)
 references/parts.json   부품마다 쓰는 속성 목록 (엔진에서 자동 생성, 데이터 검사에 쓴다)
@@ -113,6 +118,7 @@ scripts/build_html.py   데이터(JSON) + 틀 → 완성 HTML (전에 만든 HTM
 scripts/extract_data.py 전에 만든 HTML에서 데이터(JSON) 꺼내기 (다시 고칠 때)
 scripts/check_data.py   만들기 전에 데이터 검사 (오타·없는 부품·id 중복·부피·용량 초과)
 scripts/extract_text.py hwp·hwpx·docx·pptx·pdf에서 글자 꺼내기 (표준 라이브러리만 사용)
+scripts/check_render.py 헤드리스 Chrome·Edge로 열어 오류·겹침 확인, 장면을 PNG로 찍기
 examples/               예시 실험지와 결과물, 장면 예시, 부품 카탈로그
 ```
 
@@ -124,25 +130,25 @@ python scripts/build_html.py examples/gallery.json examples/gallery.html
 python scripts/make_scenes_doc.py                                # examples/recipes.json → references/scenes.md
 python scripts/build_html.py examples/recipes.json examples/recipes.html
 python scripts/make_registry.py                                  # labkit.js → references/parts.json (부품 속성 목록)
-python scripts/check_docs.py                                     # 문서와 엔진이 맞는지 (JSON 문법, 부품 목록, SKILL.md 길이)
+python scripts/check_docs.py                                     # 문서와 엔진이 맞는지 (JSON 문법, 부품 목록, 참고 문서 주소, SKILL.md 길이)
 python scripts/check_data.py examples/gallery.json               # 데이터 검사
 python scripts/selftest.py                                       # 수식·부피 읽기와 검사기 자체 시험
 python scripts/check_render.py examples/gallery.html --shots shots  # 헤드리스 Edge/Chrome으로 열어 오류·겹침 확인, 장면 PNG를 shots/에
 python scripts/make_skill_zip.py                                 # dist/experiment-visualizer.zip
 ```
 
-가벼운 HTML은 `https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/labkit.min.js`를 불러옵니다.
+가벼운 HTML은 `https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/labkit.min.js`를 불러오고, 링크로 쓰는 SKILL.md와 참고 문서·도구도 같은 `@1`에서 나갑니다.
 엔진을 고친 뒤에는 `v1.x.y` 태그를 붙여 push해야 jsDelivr에 반영됩니다. 그림 데이터 형식을 바꾸는 큰 변경은 `v2`로 올립니다.
 버전을 올릴 때는 `labkit.js` 첫 줄 머리말과 `const VERSION`도 같은 번호로 고칩니다 (다르면 `make_template.py`가 멈춥니다).
 
 **자동 점검과 배포 (GitHub Actions)**
 
 - `main`에 push하면 [점검](.github/workflows/check.yml)이 돕니다: template.html·예시 HTML이 최신인지(다시 만들어 비교), 문서 점검, 헤드리스 Chrome 그림 점검(겹침 의심도 실패). 장면 그림 PNG는 실행 결과의 Artifact `shots`에서 내려받습니다.
-- 태그를 push하면 [배포](.github/workflows/release.yml)가 점검을 다시 돌린 뒤, 태그와 엔진 버전이 같은지 보고 Release를 만들어 스킬 zip을 붙이고 jsDelivr `@1` 캐시를 비웁니다. 릴리스 노트는 태그 메시지로 씁니다.
+- 태그를 push하면 [배포](.github/workflows/release.yml)가 점검을 다시 돌린 뒤, 태그와 엔진 버전이 같은지 보고 Release를 만들어 스킬 zip을 붙이고 jsDelivr `@1` 캐시(엔진·문서·도구)를 비웁니다. 릴리스 노트는 태그 메시지로 씁니다.
 
 ```bash
-git tag -a v1.8.0 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
-git push origin v1.8.0
+git tag -a v1.9.0 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
+git push origin v1.9.0
 ```
 
 ## 라이선스

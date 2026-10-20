@@ -68,8 +68,9 @@ jobs:
       - name: jsDelivr @1 캐시 비우기
         run: |
           V="${GITHUB_REF_NAME#v}"
-          for f in labkit.min.js labkit.js template.html; do
-            curl -fsS "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@1/assets/$f" > /dev/null || echo "::warning::$f 캐시 비우기 요청 실패"
+          # 링크로 쓰는 SKILL.md·참고 문서·도구도 엔진과 같은 @1에서 나가므로 함께 비운다
+          for f in assets/labkit.min.js assets/labkit.js assets/template.html assets/light.html                    SKILL.md references/parts.md references/scenes.md references/data.md references/build.md references/parts.json                    scripts/build_html.py scripts/check_data.py scripts/check_render.py scripts/extract_text.py scripts/extract_data.py; do
+            curl -fsS "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@1/$f" > /dev/null || echo "::warning::$f 캐시 비우기 요청 실패"
           done
           for i in $(seq 1 12); do
             got=$(curl -sI "https://cdn.jsdelivr.net/gh/${GITHUB_REPOSITORY}@1/assets/labkit.min.js" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-jsd-version"{print $2}')

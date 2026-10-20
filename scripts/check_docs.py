@@ -6,6 +6,8 @@
 3. 문서·예시 데이터에 쓴 부품 이름(t)이 모두 엔진에 있다.
 4. references/scenes.md가 examples/recipes.json과, references/parts.json이 엔진과 같다.
 5. SKILL.md가 가리키는 참고 문서가 있고, SKILL.md가 너무 길지 않다.
+6. 문서의 jsDelivr @1 주소가 저장소에 있는 파일을 가리키고, 참고 문서가 모두 스킬 zip·캐시 비우기 목록에 있다.
+   SKILL.md는 raw main 주소를 쓰지 않는다 (지시서와 엔진의 버전이 어긋나지 않게).
 
 사용법:  python scripts/check_docs.py      (문제가 있으면 종료 코드 1)
 표준 라이브러리만 쓴다.
@@ -44,8 +46,9 @@ def main():
     problems = []
     skill = (ROOT / 'SKILL.md').read_text(encoding='utf-8')
     parts = (ROOT / 'references' / 'parts.md').read_text(encoding='utf-8')
-    docs = {'SKILL.md': skill, 'references/parts.md': parts,
-            'references/scenes.md': (ROOT / 'references' / 'scenes.md').read_text(encoding='utf-8')}
+    docs = {'SKILL.md': skill, 'references/parts.md': parts}
+    for f in sorted((ROOT / 'references').glob('*.md')):
+        docs.setdefault(f'references/{f.name}', f.read_text(encoding='utf-8'))
     types, aliases = engine_types()
     known = types | aliases
 
@@ -88,10 +91,32 @@ def main():
         if not (ROOT / ref).exists():
             problems.append(f'SKILL.md가 가리키는 파일이 없습니다: {ref}')
     lines = len(skill.splitlines())
+    for ref in sorted(set(re.findall(r'`(references/[a-z]+\.md)`', skill))):
+        if f'experiment-visualizer@1/{ref}' not in skill:
+            problems.append(f'SKILL.md 참고 문서 표에 {ref}의 @1 주소가 없습니다')
+    if 'raw.githubusercontent.com' in skill:
+        problems.append('SKILL.md에 raw main 주소가 있습니다. https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/… 를 쓰세요.')
+
+    # 6. @1 주소와 배포 목록
+    for name, text in docs.items():
+        for path in sorted(set(re.findall(r'experiment-visualizer@1/([A-Za-z0-9_./-]+)', text))):
+            if path.endswith('/'):
+                continue
+            local = ROOT / (path[:-len('.min.js')] + '.js' if path.endswith('.min.js') else path)
+            if not local.exists():
+                problems.append(f'{name}: @1 주소가 없는 파일을 가리킵니다: {path}')
+    zip_src = (ROOT / 'scripts' / 'make_skill_zip.py').read_text(encoding='utf-8')
+    release = (ROOT / '.github' / 'workflows' / 'release.yml').read_text(encoding='utf-8')
+    for f in sorted((ROOT / 'references').iterdir()):
+        ref = f'references/{f.name}'
+        if f'"{ref}"' not in zip_src:
+            problems.append(f'scripts/make_skill_zip.py 파일 목록에 {ref}가 없습니다')
+        if ref not in release:
+            problems.append(f'release.yml 캐시 비우기 목록에 {ref}가 없습니다')
     if lines > MAX_SKILL_LINES:
         problems.append(f'SKILL.md가 {lines}줄입니다 ({MAX_SKILL_LINES}줄 이하로 줄이고 자세한 내용은 references로).')
 
-    print(f'부품 {len(types)}종(별칭 {len(aliases)}), SKILL.md {lines}줄, parts.md {len(parts.splitlines())}줄, scenes.md {len(docs["references/scenes.md"].splitlines())}줄')
+    print(f'부품 {len(types)}종(별칭 {len(aliases)}), SKILL.md {lines}줄, ' + ', '.join(f'{n.split("/")[-1]} {len(t.splitlines())}줄' for n, t in docs.items() if n != 'SKILL.md'))
     for p in problems:
         print('  -', p)
     print('OK' if not problems else f'FAIL ({len(problems)}건)')

@@ -36,10 +36,14 @@ BAD = {
         {"title": "id", "scene": [{"t": "beaker", "id": "b"}, {"t": "flask", "id": "b"}, {"t": "dropper", "over": "c"}]},
         {"title": "부피", "scene": [{"t": "cylinder", "vol": "십 mL"}]},
         {"title": "이어받기", "scene": {"from": 9, "change": {"zz": {"color": "red"}}}},
+        {"title": "원문 기록", "id": "s1", "origin": {"where": "1쪽", "check": "maybe", "added": ["tipp"]}, "scene": [{"t": "beaker"}]},
+        {"title": "단계 id", "id": "s1", "scene": [{"t": "beaker"}]},
     ],
+    "results": {"questions": [{"id": "q1", "text": "가"}, {"id": "q1", "text": "나"}]},
 }
 BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항목 'obsreve'", "없는 부품 'bekaer'",
-              "id 'b'가 한 장면에 두 번", "over: 'c'", "부피로 읽지 못해요", "이어받을 단계가 없어요"]
+              "id 'b'가 한 장면에 두 번", "over: 'c'", "부피로 읽지 못해요", "이어받을 단계가 없어요",
+              "'ok'(확인함) 또는 'unsure'", "원문에 없이 더한 항목", "단계 id 's1'", "질문 id 'q1'"]
 
 
 def main():

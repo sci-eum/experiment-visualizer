@@ -5,7 +5,6 @@
   "goal": "SKILL이 쓸 수 있는 실험 기구·표시 부품을 장면별로 모아 보여 준다. 각 그림 아래 글자는 부품 이름(t 값)이다.",
   "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"이름 모를 기구"}],
   "tips": ["부품 이름(t)과 속성은 references/parts.md(부품 목록)를 보세요.","그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요."],
-  "source": "experiment-visualizer 부품 카탈로그",
   "steps": [
   { "title": "유리 기구 (그릇)", "text": "beaker · flask · roundflask · tube · cylinder · bottle", 
     "scene": [

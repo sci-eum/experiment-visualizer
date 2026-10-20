@@ -20,11 +20,15 @@ import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-RAW = "https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/references/parts.json"
+# 부품 목록: 그림 엔진과 같은 배포판(@1)을 먼저, 막히면 저장소 원본
+RAW = ["https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/references/parts.json",
+       "https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/references/parts.json"]
 W, H = 480, 300
 TOP = {"title", "subject", "unit", "duration", "group", "goal", "materials", "safety", "tips", "cover", "steps", "results",
        "source", "notes", "id", "_demo"}
-STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id"}
+STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin"}
+ORIGIN = {"where", "quote", "check", "unsure", "added"}
+ADDED = {"tip", "warn", "point", "predict", "observe", "reveal", "scene", "text"}
 RESULTS = {"expect", "conclusion", "table", "tables", "questions"}
 INHERIT = {"from", "remove", "change", "add"}
 REVEAL = {"text", "scene", "remove", "change", "add"}
@@ -82,10 +86,12 @@ def load_registry():
         return json.loads(local.read_text(encoding="utf-8"))
     except Exception:
         pass
-    try:
-        return json.loads(urllib.request.urlopen(RAW, timeout=20).read().decode("utf-8"))
-    except Exception:
-        return None
+    for url in RAW:
+        try:
+            return json.loads(urllib.request.urlopen(url, timeout=20).read().decode("utf-8"))
+        except Exception:
+            pass
+    return None
 
 
 def suggest(word, options):
@@ -301,6 +307,26 @@ def main_check(data, reg):
                 rep.warn(f"{where} ({name_of(el)})", f"준비물 '{vol_named[el['t']]}'의 용량을 vol로 주세요")
             if el.get("t") == "pour" and el.get("from", "beaker") in vol_named and not el.get("fromVol"):
                 rep.warn(f"{where} (pour)", f"붓는 그릇 '{vol_named[el.get('from', 'beaker')]}'의 용량을 fromVol로 주세요")
+        og = st.get("origin")
+        if og is not None:
+            if not isinstance(og, dict):
+                rep.err(f"{where}.origin", "{ where, quote, check, unsure, added } 객체여야 해요")
+            else:
+                for k in og:
+                    if k not in ORIGIN:
+                        rep.err(f"{where}.origin", f"알 수 없는 항목 '{k}'{suggest(k, ORIGIN)}")
+                for k in ("where", "quote", "unsure"):
+                    if k in og and not isinstance(og[k], str):
+                        rep.err(f"{where}.origin.{k}", "글자여야 해요")
+                if og.get("check") not in (None, "ok", "unsure"):
+                    rep.err(f"{where}.origin.check", "'ok'(확인함) 또는 'unsure'(판독 불확실)여야 해요")
+                added = og.get("added", [])
+                if not isinstance(added, list) or any(a not in ADDED for a in added):
+                    rep.err(f"{where}.origin.added", f"원문에 없이 더한 항목 이름의 배열이어야 해요 ({', '.join(sorted(ADDED))})")
+                if og.get("check") == "unsure":
+                    rep.warn(where, f"원문 확인 필요: {og.get('unsure') or og.get('quote') or '판독 불확실'} — 만들기 전에 사용자에게 확인했나요?")
+                if not og.get("where") and not og.get("quote"):
+                    rep.warn(f"{where}.origin", "원문 위치(where)나 근거 문장(quote)을 적어 주세요")
         rv = st.get("reveal")
         if rv is not None:
             if isinstance(rv, dict):
@@ -317,6 +343,15 @@ def main_check(data, reg):
                     check_refs(ritems, scene_ids(ritems, f"{where}.reveal", rep), f"{where}.reveal", rep)
             elif not isinstance(rv, str):
                 rep.err(f"{where}.reveal", "글자 또는 { text, change, … } 객체여야 해요")
+
+    # 원문에서 만든 자료(source가 있음)는 단계마다 원문 대응 기록(origin)을 남긴다
+    if data.get("source") and steps:
+        miss = [str(i + 1) for i, st in enumerate(steps) if isinstance(st, dict) and not isinstance(st.get("origin"), dict)]
+        if miss:
+            rep.warn("steps", f"원문 대응 기록(origin)이 없는 단계: {', '.join(miss)} (원문 위치와 근거 문장을 남겨 주세요)")
+    sids = [str(st["id"]) for st in steps if isinstance(st, dict) and st.get("id") not in (None, "")]
+    for d in sorted({i for i in sids if sids.count(i) > 1}):
+        rep.err("steps", f"단계 id '{d}'가 여러 번 나와요 (예상 칸의 학생 답이 엇갈려요)")
 
     # 표지
     if "cover" in data:
@@ -337,9 +372,15 @@ def main_check(data, reg):
             for k in ("expect", "conclusion"):
                 if k in res and not isinstance(res[k], str):
                     rep.err(f"results.{k}", "글자여야 해요")
-            if "questions" in res and not is_text(res["questions"]):
-                rep.err("results.questions", "글자 배열이어야 해요")
+            qs = res.get("questions")
+            if qs is not None and not (isinstance(qs, list) and all(isinstance(q, str) or (isinstance(q, dict) and isinstance(q.get("text"), str) and set(q) <= {"id", "text"}) for q in qs)):
+                rep.err("results.questions", "글자 또는 { id, text } 의 배열이어야 해요")
             tables = res.get("tables") or ([res["table"]] if "table" in res else [])
+            # 학생 답은 질문 id(없으면 물음 글)·표 id(없으면 제목)로 저장된다. 같으면 답이 섞이지 않게 번호가 붙지만 고치면 어긋나기 쉽다
+            for what, ids in (("질문 id", [q.get("id") for q in (qs or []) if isinstance(q, dict) and q.get("id")]),
+                              ("표 id", [tb.get("id") for tb in tables if isinstance(tb, dict) and tb.get("id")])):
+                for d in sorted({str(i) for i in ids if ids.count(i) > 1}):
+                    rep.err("results", f"{what} '{d}'가 여러 번 나와요 (학생 답이 엇갈려요)")
             for ti, tb in enumerate(tables):
                 if not isinstance(tb, dict) or not isinstance(tb.get("head"), list):
                     rep.err(f"results.table[{ti}]", "head(머리 줄 배열)가 필요해요")

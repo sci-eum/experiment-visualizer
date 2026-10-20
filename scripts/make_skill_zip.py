@@ -16,7 +16,7 @@ for s in (sys.stdout, sys.stderr):
 root = Path(__file__).resolve().parent.parent
 files = ["SKILL.md", "LICENSE", "assets/template.html", "assets/light.html", "assets/labkit.js",
          "scripts/build_html.py", "scripts/extract_text.py", "scripts/extract_data.py", "scripts/check_data.py", "scripts/check_render.py",
-         "references/parts.md", "references/parts.json", "references/scenes.md"]
+         "references/parts.md", "references/parts.json", "references/scenes.md", "references/data.md", "references/build.md"]
 out = root / "dist" / "experiment-visualizer.zip"
 out.parent.mkdir(exist_ok=True)
 with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
