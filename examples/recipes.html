@@ -821,6 +821,36 @@ window.EXPERIMENT = {
       ]
     },
     {
+      "title": "물중탕에 튜브와 온도계 함께 넣기",
+      "section": "분자생물학 (DNA·PCR·전기 영동)",
+      "text": "튜브와 온도계를 둘 다 in으로 비커 물에 넣고 dx로 나란히 놓는다. 물에 잠긴 부분도 온도계의 빨간 기둥이 보인다.",
+      "scene": [
+        {
+          "t": "beaker",
+          "id": "b",
+          "x": 232,
+          "s": 1.9,
+          "fill": 0.8,
+          "color": "water"
+        },
+        {
+          "t": "microtube",
+          "vol": "1.5 mL",
+          "in": "b",
+          "dx": -16,
+          "s": 1.6,
+          "color": "#a9c97a",
+          "fill": 0.5
+        },
+        {
+          "t": "thermometer",
+          "in": "b",
+          "dx": 16,
+          "reading": "60 ℃"
+        }
+      ]
+    },
+    {
       "title": "원심분리기에 튜브 넣기 (마주 보게)",
       "section": "분자생물학 (DNA·PCR·전기 영동)",
       "text": "튜브는 in으로 회전자에 꽂고 dx로 마주 보게 놓는다.",
@@ -1048,7 +1078,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.10.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.10.1 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -1209,7 +1239,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.10.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.10.1'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -2665,10 +2695,14 @@ function build(items, o = {}) {
   const behind = {}; all.forEach(el => { const id = behindOf(el); if (id) (behind[id] ||= []).push(el); });
   const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }; g._sh = cx.sh; let s = ''; try { s = Tp.draw(el, g, cx) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true; return tag(el, g, s); };
   // 그릇 안의 그릇(수조 속 시험관 등)은 바깥 그릇 앞에 그리고, 잠긴 부분에 물빛을 다시 덮는다.
+  // 액체·얼음물이 든 그릇이면 in으로 넣은 온도계·유리 막대·센서 같은 부품도 같이 앞에 그린다 (뒤에 그리면 유리와 액체에 가려
+  // 빨간 기둥이 안 보이고, 그릇 속 그릇이 함께 있으면 물빛이 한 번 더 덮여 더 흐려진다). 빈 그릇이면 예전처럼 뒤에 그린다.
   // cover가 있는 부품(뚜껑을 연 원심분리기·PCR 기기)은 꽂힌 것을 앞에 그린 뒤 그 아래쪽을 앞면(cover)으로 다시 가린다.
   const emit = el => {
     let s = '';
-    const kids = el.id && behind[el.id] ? behind[el.id] : [], cov = kids.length && (T[el.t] || {}).cover ? T[el.t].cover(el, R(el)) : '', front = SHAPES[el.t] ? kids.filter(b => SHAPES[b.t]) : cov ? kids : [];
+    const kids = el.id && behind[el.id] ? behind[el.id] : [], cov = kids.length && (T[el.t] || {}).cover ? T[el.t].cover(el, R(el)) : '';
+    const g = R(el), wet = SHAPES[el.t] && g && (g.fill > 0 || el.solid === 'icebath');
+    const front = SHAPES[el.t] ? kids.filter(b => SHAPES[b.t] || (wet && b.in === el.id)) : cov ? kids : [];
     kids.forEach(b => { if (!front.includes(b) && !b._done) s += emit(b); });
     s += drawOne(el);
     if (front.length) { front.forEach(b => { if (!b._done) s += emit(b); }); s += veil(el, R(el)) + cov; }
