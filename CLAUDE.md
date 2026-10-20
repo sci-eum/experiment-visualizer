@@ -11,6 +11,7 @@
 - 그림 엔진의 원본은 `assets/labkit.js` 하나다. 고친 뒤 `python scripts/make_template.py`로 `assets/template.html`을 다시 만든다.
 - 예시는 `python scripts/build_html.py <데이터> <결과.html>`로 다시 만든다 (gallery.json, recipes.json, red-cabbage/experiment.json; red-cabbage-light.html은 `--light`). 다시 만든 뒤 `python scripts/check_render.py <html…> --shots shots`로 오류·겹침을 확인하고, `shots/<이름>/overview.png`를 열어 그림을 직접 본다. 예시는 OK(경고 없음)를 유지한다. `shots/`는 Git에 넣지 않는다.
 - `my-results/`는 사용자 실험지로 만든 결과물이라 Git에 넣지 않는다 (.gitignore).
+- 사용자가 시험 삼아 준 실험지·보고서에서 나온 내용(문장, 수치·표, 이름, 사진, 자료 제목)은 예시·자체 시험(selftest)·문서·커밋 메시지·태그·릴리스 노트에 넣지 않는다. 시험 사례가 필요하면 값을 지어낸다. 다른 세션에 일을 맡길 때도 그 내용을 옮겨 적지 않는다.
 - 엔진을 바꿔 공개하면 새 태그(v1.x.y)를 push해 jsDelivr `@1`에 반영한다. 데이터 형식을 깨는 변경은 v2.
 - 버전을 올릴 때는 `labkit.js` 첫 줄 머리말과 `const VERSION`을 태그와 같은 번호로 고친다 (둘이 다르면 `make_template.py`가 멈춘다). 결과 HTML 바닥글에 이 버전이 나온다.
 - 스킬 문서: `SKILL.md`(판단 규칙만, 400줄 이하), `references/parts.md`(부품 목록), `references/scenes.md`(장면 예시, 자동 생성), `references/data.md`(데이터 형식), `references/build.md`(환경별 만들기·점검). 자세한 형식·방법은 SKILL.md가 아니라 참고 문서에 쓴다. 부품을 바꾸면 parts.md와 SKILL.md의 '부품 이름 한눈에'를 같이 고친다. 참고 문서를 더하면 `make_skill_zip.py`와 release.yml의 캐시 비우기 목록에도 넣는다.
