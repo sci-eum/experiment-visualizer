@@ -116,7 +116,7 @@ assets/template.html    엔진을 품은 한 파일짜리 틀 (labkit.js로 자�
 assets/light.html       엔진을 CDN에서 불러오는 가벼운 틀
 scripts/build_html.py   데이터(JSON) + 틀 → 완성 HTML (전에 만든 HTML을 넣으면 최신 엔진으로 다시 만듦)
 scripts/extract_data.py 전에 만든 HTML에서 데이터(JSON) 꺼내기 (다시 고칠 때)
-scripts/check_data.py   만들기 전에 데이터 검사 (오타·없는 부품·id 중복·부피·용량 초과)
+scripts/check_data.py   만들기 전에 데이터 검사 (오타·없는 부품·id 중복·부피·용량 초과·원문 숫자 대조)
 scripts/extract_text.py hwp·hwpx·docx·pptx·pdf에서 글자 꺼내기 (표준 라이브러리만 사용)
 scripts/check_render.py 헤드리스 Chrome·Edge로 열어 오류·겹침 확인, 장면을 PNG로 찍기
 examples/               예시 실험지와 결과물, 장면 예시, 부품 카탈로그
@@ -132,8 +132,8 @@ python scripts/build_html.py examples/recipes.json examples/recipes.html
 python scripts/make_registry.py                                  # labkit.js → references/parts.json (부품 속성 목록)
 python scripts/check_docs.py                                     # 문서와 엔진이 맞는지 (JSON 문법, 부품 목록, 참고 문서 주소, SKILL.md 길이)
 python scripts/check_data.py examples/gallery.json               # 데이터 검사
-python scripts/selftest.py                                       # 수식·부피 읽기와 검사기 자체 시험
-python scripts/check_render.py examples/gallery.html --shots shots  # 헤드리스 Edge/Chrome으로 열어 오류·겹침 확인, 장면 PNG를 shots/에
+python scripts/selftest.py                                       # 수식·부피 읽기, 검사기, 원문 숫자 대조, 학생 답 저장 이름(헤드리스 브라우저) 자체 시험
+python scripts/check_render.py examples/gallery.html --shots shots  # 헤드리스 Chrome/Edge로 열어 오류·겹침 확인, 장면 PNG를 shots/에 (가벼운 버전도 내 폴더 엔진으로)
 python scripts/make_skill_zip.py                                 # dist/experiment-visualizer.zip
 ```
 
@@ -147,8 +147,8 @@ python scripts/make_skill_zip.py                                 # dist/experime
 - 태그를 push하면 [배포](.github/workflows/release.yml)가 점검을 다시 돌린 뒤, 태그와 엔진 버전이 같은지 보고 Release를 만들어 스킬 zip을 붙이고 jsDelivr `@1` 캐시(엔진·문서·도구)를 비웁니다. 릴리스 노트는 태그 메시지로 씁니다.
 
 ```bash
-git tag -a v1.9.0 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
-git push origin v1.9.0
+git tag -a v1.9.1 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
+git push origin v1.9.1
 ```
 
 ## 라이선스

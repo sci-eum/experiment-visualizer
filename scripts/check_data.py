@@ -6,7 +6,8 @@
 
 오류 (고쳐야 함): 필수 항목·자료형, 없는 부품 이름, 없는 속성(오타), 같은 장면의 id 중복,
     가리키는 id가 없음, 부피를 읽지 못함, 넣은 양이 용량보다 많음, 잘못된 장면 이어받기, 남은 _demo
-확인 (볼 것): 좌표가 장면 밖, 준비물에 용량이 적혔는데 장면·아이콘에 vol/fromVol이 없음 등
+확인 (볼 것): 좌표가 장면 밖, 준비물에 용량이 적혔는데 장면·아이콘에 vol/fromVol이 없음,
+    설명·그림의 수치(양·온도·시간·농도 …)가 원문 근거 문장(origin.quote)에 없음 등
 오류가 있으면 종료 코드 1.
 
 부품 목록은 스크립트 옆의 ../references/parts.json을 쓰고, 없으면 저장소에서 내려받는다.
@@ -28,7 +29,7 @@ TOP = {"title", "subject", "unit", "duration", "group", "goal", "materials", "sa
        "source", "notes", "id", "_demo"}
 STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin"}
 ORIGIN = {"where", "quote", "check", "unsure", "added"}
-ADDED = {"tip", "warn", "point", "predict", "observe", "reveal", "scene", "text"}
+ADDED = {"tip", "warn", "point", "predict", "observe", "reveal", "scene", "text", "time"}
 RESULTS = {"expect", "conclusion", "table", "tables", "questions"}
 INHERIT = {"from", "remove", "change", "add"}
 REVEAL = {"text", "scene", "remove", "change", "add"}
@@ -66,6 +67,70 @@ def parse_volume(v):
     a = float(m.group(1)) * (VUNIT[m.group(2).lower()] if m.group(2) else k)
     b = float(m.group(3)) * k if m.group(3) else None
     return a if b is None else (a + b) / 2
+
+
+# ---------------------------------------------------------------- 원문 숫자 대조
+# 단위가 붙은 수치를 뽑아 같은 종류끼리 값으로 비교한다 ('1 L' = '1,000 mL', '15분' = '약 15 분')
+QUNITS = {
+    "부피": {"μL": .001, "µL": .001, "uL": .001, "㎕": .001, "mL": 1, "ml": 1, "㎖": 1, "cc": 1, "cm3": 1, "cm³": 1,
+             "dL": 100, "dl": 100, "㎗": 100, "L": 1000, "ℓ": 1000},
+    "질량": {"mg": .001, "㎎": .001, "g": 1, "kg": 1000, "㎏": 1000},
+    "온도": {"℃": 1, "°C": 1, "˚C": 1},
+    "시간": {"초": 1, "sec": 1, "분": 60, "min": 60, "시간": 3600},
+    "길이": {"nm": 1e-9, "mm": .001, "㎜": .001, "cm": .01, "㎝": .01, "m": 1, "km": 1000},
+    "백분율": {"%": 1},
+    "몰농도": {"mM": .001, "M": 1, "mol/L": 1},
+    "물질량": {"mol": 1},
+    "방울": {"방울": 1},
+    "전기": {"mA": .001, "A": 1, "V": 1, "Ω": 1, "W": 1, "Hz": 1},
+}
+_UNIT = {u: (dim, k) for dim, us in QUNITS.items() for u, k in us.items()}
+_NUM = r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
+_QTY = re.compile(r"(?<![\d.,])(" + _NUM + r"(?:\s*(?:,|~|∼|〜|-|–|와|과|또는|및)\s*" + _NUM + r")*)\s*("
+                  + "|".join(re.escape(u) for u in sorted(_UNIT, key=len, reverse=True)) + r")(?![A-Za-z])")
+
+
+def quantities(text):
+    """글에서 단위가 붙은 수치를 뽑는다 → [(종류, 값, 원래 글자)]. '5, 10 mL' '30~40 mL'은 수마다 하나씩.
+    '3분의 1'(분수)은 시간이 아니다."""
+    out = []
+    for m in _QTY.finditer(str(text or "")):
+        unit = m.group(2)
+        if unit == "분" and text[m.end():m.end() + 1] == "의":
+            continue
+        dim, k = _UNIT[unit]
+        for n in re.findall(_NUM, m.group(1)):
+            out.append((dim, float(n.replace(",", "")) * k, f"{n} {unit}" if unit[0].isascii() and unit[0].isalpha() else f"{n}{unit}"))
+    return out
+
+
+def missing_quantities(text, pool):
+    """text의 수치 가운데 pool(수치 목록)에 같은 종류·같은 값이 없는 것 → [(종류, 원래 글자)]."""
+    miss = []
+    for dim, v, raw in quantities(text):
+        if not any(d == dim and abs(v - w) <= 1e-6 * max(1, abs(v), abs(w)) for d, w, _ in pool) and (dim, raw) not in miss:
+            miss.append((dim, raw))
+    return miss
+
+
+def flat_text(v):
+    return " ".join(flat_text(x) for x in v) if isinstance(v, list) else (v if isinstance(v, str) else "")
+
+
+def scene_text(scene):
+    """단계가 직접 쓴 장면의 수치가 든 글자 (넣은 양, 이름표, 표시 글). 이어받은 기구는 앞 단계에서 이미 본다."""
+    items = scene if isinstance(scene, list) else []
+    if isinstance(scene, dict):
+        items = list(scene.get("add") or []) + [v for v in (scene.get("change") or {}).values() if isinstance(v, dict)]
+    out = []
+    for el in items:
+        if not isinstance(el, dict):
+            continue
+        for k in ("amount", "label", "text"):
+            if isinstance(el.get(k), str):
+                out.append(el[k])
+        out += [tb.get("amount") for tb in el.get("tubes") or [] if isinstance(tb, dict) and isinstance(tb.get("amount"), str)]
+    return " / ".join(out)
 
 
 # ---------------------------------------------------------------- 검사
@@ -343,6 +408,27 @@ def main_check(data, reg):
                     check_refs(ritems, scene_ids(ritems, f"{where}.reveal", rep), f"{where}.reveal", rep)
             elif not isinstance(rv, str):
                 rep.err(f"{where}.reveal", "글자 또는 { text, change, … } 객체여야 해요")
+
+    # 원문 숫자 대조: 설명·그림의 수치가 근거 문장(origin.quote)에 있는지. 준비물·앞 단계 근거 문장의 수치도 근거로 친다
+    mats = data.get("materials") if isinstance(data.get("materials"), list) else []
+    pool = quantities(" ".join(f"{m.get('name', '')} {m.get('qty', '')}" for m in mats if isinstance(m, dict)))
+    for i, st in enumerate(steps):
+        og = st.get("origin") if isinstance(st, dict) else None
+        if not isinstance(og, dict) or not isinstance(og.get("quote"), str):
+            continue
+        where, added, own = f"steps[{i}] ({i + 1}단계)", og.get("added") or [], quantities(og["quote"])
+        if og.get("check") != "unsure":  # 판독 불확실은 이미 알렸다
+            fields = [("title", "제목", st.get("title"))] + [(k, n, st.get(k)) for k, n in (("text", "설명"), ("time", "시간")) if k not in added]
+            for k, name, v in fields:
+                for dim, raw in missing_quantities(flat_text(v), own + pool):
+                    same = sorted({r for d, _, r in own if d == dim})
+                    hint = f" (근거 문장에는 {', '.join(same)})" if same else ""
+                    rep.warn(f"{where}.{k}", f"{name}의 '{raw}'가 원문 근거 문장에 없어요{hint} — 원문과 맞는지 확인해 주세요")
+            if "scene" not in added:
+                said = quantities(" ".join(flat_text(st.get(k)) for k in ("title", "text", "time")))
+                for _, raw in missing_quantities(scene_text(st.get("scene")), own + pool + said):
+                    rep.warn(f"{where}.scene", f"그림의 '{raw}'가 원문 근거 문장·설명·준비물에 없어요 — 원문과 맞는지 확인해 주세요")
+        pool += own
 
     # 원문에서 만든 자료(source가 있음)는 단계마다 원문 대응 기록(origin)을 남긴다
     if data.get("source") and steps:

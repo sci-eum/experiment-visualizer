@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """만든 HTML을 헤드리스 브라우저(Edge/Chrome)로 열어 자바스크립트 오류와 [LabKit] 경고를 찾고, 장면 그림을 PNG로 찍는다.
 
-사용법:  python scripts/check_render.py 결과1.html [결과2.html ...] [--shots 폴더] [--grid]
+사용법:  python scripts/check_render.py 결과1.html [결과2.html ...] [--shots 폴더] [--grid] [--strict] [--engine auto]
   --shots 폴더  장면 그림(PNG)을 만든다: 폴더/<파일 이름>/overview.png(모든 장면 한 장), step-01.png …(단계마다 크게),
                 결과 보기(reveal)가 있는 단계는 step-03-result.png 처럼 결과 장면도 따로
                 겹쳐 보이는 부품은 빨간 점선 상자로 표시된다. AI가 이 그림을 직접 열어 보고 고친다.
   --grid        PNG에 좌표 격자(20 간격)를 함께 그린다. 좌표를 고칠 때 쓴다.
   --strict      겹침 의심(WARN)도 실패로 친다 (예시를 점검하는 CI에서 쓴다).
+  --engine      가벼운 버전(엔진을 인터넷에서 불러오는 HTML)을 어떤 엔진으로 열지
+                auto(기본): 스크립트 옆 ../assets/labkit.js가 있으면 그것으로, 없으면 인터넷(@1)으로
+                local: 내 폴더의 엔진으로 (공개 전에 고친 엔진을 시험할 때) · online: 인터넷 엔진 그대로 · 파일 경로
+                한 파일 버전은 HTML 안의 엔진을 그대로 쓴다. 결과 줄에 쓴 엔진 버전이 나온다.
 결과: OK / WARN(겹침 의심만 있음, 종료 코드 0 — PNG로 실제로 가리는지 확인) / FAIL(오류·빈 화면, 종료 코드 1)
 """
 import argparse
@@ -27,6 +31,9 @@ CANDIDATES = [
     '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser',
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
 ]
+# 가벼운 버전이 엔진을 불러오는 주소 (@1, @1.9.1 …)
+ENGINE_SRC = re.compile(r'src="https://cdn\.jsdelivr\.net/gh/sci-eum/experiment-visualizer@[^/"]+/assets/labkit(?:\.min)?\.js"')
+LOCAL_ENGINE = pathlib.Path(__file__).resolve().parent.parent / 'assets' / 'labkit.js'
 # 엔진의 촬영 화면(?shot=)과 같은 크기: 여백 16, 제목 30, 장면 480×300(한 장에 2열) 또는 960×600(단계마다)
 ONE = (992, 662)
 
@@ -64,6 +71,23 @@ def message(line):
     return (m.group(1) if m else re.sub(r'^.*?CONSOLE[:(]\d+\)?\]\s*', '', line))[:300]
 
 
+def prepare(path, engine, tmp, n):
+    """가벼운 버전이면 엔진 주소를 고른 엔진으로 바꾼 사본을 tmp에 만들어 그 경로를 돌려준다 (이름은 같게: 그림 폴더 이름).
+    → (열 경로, 엔진 출처)"""
+    text = pathlib.Path(path).read_text(encoding='utf-8', errors='replace')
+    if not ENGINE_SRC.search(text):
+        return path, '파일 안'
+    eng = LOCAL_ENGINE if engine in ('auto', 'local') else None if engine == 'online' else pathlib.Path(engine)
+    if eng is None or not eng.exists():
+        if engine not in ('auto', 'online'):
+            sys.exit(f'엔진 파일이 없습니다: {eng}')
+        return path, '인터넷'
+    copy = pathlib.Path(tmp) / str(n) / pathlib.Path(path).name
+    copy.parent.mkdir(parents=True, exist_ok=True)
+    copy.write_text(ENGINE_SRC.sub(lambda m: f'src="{eng.resolve().as_uri()}"', text), encoding='utf-8')
+    return str(copy), '내 폴더' if eng.resolve() == LOCAL_ENGINE.resolve() else str(eng)
+
+
 def check(path, exe):
     url = pathlib.Path(path).resolve().as_uri() + '?check'  # 점검 화면: 움직임을 멈추고 겹침까지 본다
     r = headless(exe, '--enable-logging=stderr', '--v=0', '--dump-dom', url, text=True, encoding='utf-8', errors='replace')
@@ -75,7 +99,9 @@ def check(path, exe):
     steps = len(re.findall(r'<article class="step"', dom))
     reveals = sorted({int(n) for n in re.findall(r'data-rvi="(\d+)"', dom)})  # 결과 장면이 있는 단계 (0부터)
     blank = 'aria-busy="true"' in dom or steps == 0
-    return errs, overlaps, steps, reveals, blank
+    ver = re.search(r'experiment-visualizer</a>\s*v(\d+\.\d+\.\d+)', dom)
+    return errs, overlaps, steps, reveals, blank, ver.group(1) if ver else '?'
+
 
 
 def shots(path, exe, steps, reveals, out_dir, grid):
@@ -109,24 +135,32 @@ def main():
     ap.add_argument('--shots', metavar='폴더', help='장면 그림(PNG)을 만들 폴더')
     ap.add_argument('--grid', action='store_true', help='PNG에 좌표 격자를 그린다')
     ap.add_argument('--strict', action='store_true', help='WARN(겹침 의심)도 실패로 친다')
+    ap.add_argument('--engine', default='auto', metavar='auto|local|online|경로', help='가벼운 버전을 열 엔진')
     a = ap.parse_args()
     exe, bad = browser(), 0
-    for f in a.html:
-        errs, overlaps, steps, reveals, blank = check(f, exe)
-        status = 'FAIL' if errs or blank else 'WARN' if overlaps else 'OK'
-        bad += status == 'FAIL' or (a.strict and status == 'WARN')
-        print(f'{status}  {f}  (단계 {steps}개)')
-        for m in errs + overlaps:
-            print('   ', m)
-        if blank:
-            print('    화면이 비어 있습니다 (렌더링 실패).')
-        if a.shots and not blank:
-            out, made, total = shots(f, exe, steps, reveals, a.shots, a.grid)
-            extra = f' + 결과 {len(reveals)}장' if reveals else ''
-            print(f'    그림: {out} (overview.png + step-01~{steps:02d}.png{extra}, {made}/{total}장)')
-            if made < total:
-                print('    일부 그림을 만들지 못했습니다. 브라우저가 실행되는지 확인하세요.')
+    with tempfile.TemporaryDirectory() as tmp:
+        for n, f in enumerate(a.html):
+            bad += check_one(f, exe, a, tmp, n)
     return 1 if bad else 0
+
+
+def check_one(f, exe, a, tmp, n):
+    """HTML 하나를 점검한다. 실패(또는 --strict에서 WARN)면 True."""
+    path, src = prepare(f, a.engine, tmp, n)
+    errs, overlaps, steps, reveals, blank, ver = check(path, exe)
+    status = 'FAIL' if errs or blank else 'WARN' if overlaps else 'OK'
+    print(f'{status}  {f}  (단계 {steps}개, 엔진 v{ver} {src})')
+    for m in errs + overlaps:
+        print('   ', m)
+    if blank:
+        print('    화면이 비어 있습니다 (렌더링 실패).')
+    if a.shots and not blank:
+        out, made, total = shots(path, exe, steps, reveals, a.shots, a.grid)
+        extra = f' + 결과 {len(reveals)}장' if reveals else ''
+        print(f'    그림: {out} (overview.png + step-01~{steps:02d}.png{extra}, {made}/{total}장)')
+        if made < total:
+            print('    일부 그림을 만들지 못했습니다. 브라우저가 실행되는지 확인하세요.')
+    return status == 'FAIL' or (a.strict and status == 'WARN')
 
 
 if __name__ == '__main__':
