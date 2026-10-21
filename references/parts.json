@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.10.2",
+ "engine": "1.11.0",
  "common": [
   "t",
   "id",
@@ -30,6 +30,8 @@
   "microtube",
   "pcrtube",
   "roundflask",
+  "syringe",
+  "trough",
   "tube",
   "volumetric"
  ],
@@ -465,6 +467,11 @@
   "match": [
    "lit"
   ],
+  "meter": [
+   "kind",
+   "length",
+   "reading"
+  ],
   "micropipette": [
    "color",
    "drops",
@@ -744,10 +751,14 @@
    "color"
   ],
   "syringe": [
+   "amount",
    "color",
    "drops",
    "fill",
-   "to"
+   "gas",
+   "print",
+   "to",
+   "vol"
   ],
   "text": [
    "anchor",
@@ -903,6 +914,17 @@
   "weight": [
    "color",
    "text"
+  ],
+  "wellplate": [
+   "colTags",
+   "cols",
+   "kind",
+   "n",
+   "rowTags",
+   "rows",
+   "tags",
+   "text",
+   "wells"
   ],
   "wire": [
    "color",
@@ -1082,6 +1104,14 @@
     "x"
    ]
   },
+  "meter": {
+   "kind": [
+    "ph",
+    "conduct",
+    "temp",
+    "multi"
+   ]
+  },
   "microtube": {
    "solid": [
     "powder",
@@ -1192,6 +1222,10 @@
     "temp",
     "pressure",
     "ph",
+    "co2",
+    "o2",
+    "light",
+    "force",
     "other"
    ]
   },
@@ -1253,9 +1287,67 @@
     "ice",
     "icebath"
    ]
+  },
+  "wellplate": {
+   "kind": [
+    "plastic",
+    "white",
+    "slide"
+   ]
+  }
+ },
+ "wells": {
+  "props": [
+   "id",
+   "at",
+   "color",
+   "fill",
+   "solid",
+   "solidColor",
+   "strip",
+   "bubbles",
+   "cloudy",
+   "label",
+   "labelSide",
+   "tag"
+  ],
+  "values": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
   }
  },
  "guess": {
+  "오목받침 유리": "wellplate:slide",
+  "오목 받침 유리": "wellplate:slide",
+  "오목받침유리": "wellplate:slide",
+  "홈판": "wellplate",
+  "웰 플레이트": "wellplate",
+  "웰플레이트": "wellplate",
+  "pH 미터": "meter:ph",
+  "pH미터": "meter:ph",
+  "pH 측정기": "meter:ph",
+  "디지털 온도계": "meter:temp",
+  "탐침 온도계": "meter:temp",
+  "멀티미터": "meter:multi",
+  "멀티 미터": "meter:multi",
+  "멀티테스터": "meter:multi",
+  "멀티 테스터": "meter:multi",
+  "디지털 전압계": "meter:multi",
+  "디지털 전류계": "meter:multi",
+  "전기 전도계": "meter:conduct",
+  "전도계": "meter:conduct",
   "마이크로피펫": "micropipette",
   "마이크로 피펫": "micropipette",
   "튜브 꽂이": "tuberack",
@@ -1338,6 +1430,14 @@
   "압력 센서": "sensor:pressure",
   "온도 센서": "sensor:temp",
   "pH 센서": "sensor:ph",
+  "이산화 탄소 센서": "sensor:co2",
+  "이산화탄소 센서": "sensor:co2",
+  "CO2 센서": "sensor:co2",
+  "CO₂ 센서": "sensor:co2",
+  "산소 센서": "sensor:o2",
+  "조도 센서": "sensor:light",
+  "빛 센서": "sensor:light",
+  "힘 센서": "sensor:force",
   "센서": "sensor",
   "스마트기기": "device",
   "스마트 기기": "device",

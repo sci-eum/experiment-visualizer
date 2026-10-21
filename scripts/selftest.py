@@ -5,7 +5,7 @@
 2. 부피 읽기: 검사기(check_data.parse_volume)와 엔진(labkit.js parseVol)이 같은 값을 내는지 (node가 있으면)
 3. 데이터 검사기: 일부러 틀린 데이터에서 오류를 찾는지, 원문 숫자 대조가 수치를 바르게 뽑고 비교하는지
    (근거가 표라서 단위가 머리에만 있을 때 포함), 정해진 값(kind·solid …)·준비물 아이콘 짐작·긴 타이머를 알리는지,
-   괜찮은 것(마이크로피펫, 시험관대, kind 'other', timer false)은 알리지 않는지
+   홈판의 홈(속성·자리)과 멀티미터 단자를 검사하는지, 괜찮은 것(마이크로피펫, 시험관대, 홈 id 가리키기, timer false …)은 알리지 않는지
 4. 학생 답 저장 이름 (헤드리스 Chrome/Edge가 있으면): v1.8까지의 순번 이름에서 옮기는지,
    단계·질문·표 줄을 끼워 넣거나 id 있는 물음 글을 고쳐도 답이 제 칸을 따라가는지
 사용법:  python scripts/selftest.py      (실패가 있으면 종료 코드 1)
@@ -50,26 +50,34 @@ BAD = {
         {"title": "단계 id", "id": "s1", "scene": [{"t": "beaker"}]},
         {"title": "숫자", "text": "물 10 mL를 넣는다.", "origin": {"where": "1쪽", "quote": "물 5 mL를 넣는다.", "check": "ok"},
          "scene": [{"t": "beaker", "vol": "100 mL", "amount": "7 mL"}]},
-        {"title": "정해진 값", "scene": [{"t": "sensor", "kind": "co2"}, {"t": "lens", "kind": "concav"}, {"t": "beaker", "solid": "sand"}]},
-        {"title": "용량 없는 부품", "scene": [{"t": "syringe", "vol": "50 mL"}]},
+        {"title": "정해진 값", "scene": [{"t": "sensor", "kind": "humidity"}, {"t": "lens", "kind": "concav"}, {"t": "beaker", "solid": "sand"}]},
+        {"title": "용량 없는 부품", "scene": [{"t": "dropper", "vol": "5 mL"}]},
+        {"title": "홈판", "scene": [{"t": "wellplate", "wells": [{"id": "h1", "colr": "red"}, {"at": "3B"}, {"at": "A2", "solid": "sand"}]},
+                                  {"t": "meter", "id": "pm", "kind": "ph", "in": "h1"}, {"t": "wire", "from": "pm:+", "to": "h1"}]},
         {"title": "하룻밤 두기", "time": "24시간", "scene": [{"t": "beaker"}]},
     ],
-    "materials": [{"name": "눈금 피펫"}, {"name": "디지털 온도계"}, {"name": "시험관 집게"}, {"name": "홈판", "icon": "generic"}],
+    "materials": [{"name": "눈금 피펫"}, {"name": "적외선 온도계"}, {"name": "시험관 집게"}, {"name": "홈판", "icon": "generic"}],
     "results": {"questions": [{"id": "q1", "text": "가"}, {"id": "q1", "text": "나"}]},
 }
 BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항목 'obsreve'", "없는 부품 'bekaer'",
               "id 'b'가 한 장면에 두 번", "over: 'c'", "부피로 읽지 못해요", "이어받을 단계가 없어요",
               "'ok'(확인함) 또는 'unsure'", "원문에 없이 더한 항목", "단계 id 's1'", "질문 id 'q1'",
-              "kind 'co2'는 정해진 값이 아니에요", "kind 'other'에 text로", "'concave'인가요?", "solid 'sand'", "용량은 label로 적으세요"]
+              "kind 'humidity'는 정해진 값이 아니에요", "kind 'other'에 text로", "'concave'인가요?", "solid 'sand'", "용량은 label로 적으세요",
+              "홈에 없는 속성 'colr'", "홈 자리 at '3B'", "홈의 solid 'sand'", "meter#pm에는 (+)·(−) 단자가 없어요"]
 BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문장에는 5 mL)", "그림의 '7 mL'",
-            "'눈금 피펫'의 아이콘이 이름 짐작으로 스포이트", "'디지털 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
+            "'눈금 피펫'의 아이콘이 이름 짐작으로 스포이트", "'적외선 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
             "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[3].icon: 글자가 없으면", "24시간짜리 타이머"]
 # 알리지 않아야 하는 것: 맞게 짐작되는 준비물, 정해진 값, 그래프 숫자 배열, 꺼 둔 긴 타이머, 수업 안의 시간
 QUIET = {"title": "조용한 시험", "materials": [
-    {"name": "마이크로피펫"}, {"name": "시험관대"}, {"name": "스탠드와 집게"}, {"name": "온도계"}, {"name": "pH 미터", "icon": {"t": "generic", "text": "pH"}}],
+    {"name": "마이크로피펫"}, {"name": "시험관대"}, {"name": "스탠드와 집게"}, {"name": "온도계"}, {"name": "pH 미터", "icon": {"t": "generic", "text": "pH"}},
+    {"name": "디지털 온도계"}, {"name": "12홈판"}, {"name": "주사기 (50 mL)", "icon": {"t": "syringe", "vol": "50 mL"}}],
     "steps": [
         {"title": "센서", "time": "1시간 30분", "scene": [{"t": "sensor", "kind": "other", "text": "CO₂"}, {"t": "device", "graph": [0.2, 0.5, 0.4]}]},
-        {"title": "하룻밤", "time": "24시간", "timer": False, "scene": [{"t": "beaker", "solid": "icebath"}, {"t": "zoom", "show": "crystals"}]}]}
+        {"title": "하룻밤", "time": "24시간", "timer": False, "scene": [{"t": "beaker", "solid": "icebath"}, {"t": "zoom", "show": "crystals"}]},
+        {"title": "홈판", "scene": [{"t": "wellplate", "tags": True, "wells": [{"id": "h1", "at": "A1", "color": "red", "strip": "copper"}, {"id": "h2", "at": "B2", "label": "물 1 mL"}]},
+                                  {"t": "dropper", "over": "h2"}, {"t": "meter", "id": "mm", "kind": "multi"}, {"t": "wire", "from": "mm:+", "to": "h1"},
+                                  {"t": "syringe", "vol": "50 mL", "amount": "30 mL", "gas": "brown"}, {"t": "trough", "vol": "10 L", "amount": "8 L"}, {"t": "sensor", "kind": "co2"}]},
+        {"title": "홈 색 바꾸기", "scene": {"from": "prev", "change": {"h2": {"color": "blue"}}}}]}
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다
 TABLE_TEXT = '80°C 120초 → (60°C 30초 · 40°C 50초) 10회 → 25°C 90초'
 TABLE_QUOTE = '[표] 단계 / 온도 (°C) / 시간(sec) / 반복: 데우기 80 / 120 / 1, 식히기 60 / 30 / 10, 기다리기 40 / 50 / 10, 마무리 25 / 90 / 1'

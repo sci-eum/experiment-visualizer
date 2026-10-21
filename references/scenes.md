@@ -340,3 +340,56 @@ program에는 원문의 온도·시간을 그대로 쓴다 (\n으로 줄 바꿈,
 ```json
 {"reveal": {"text": "웰마다 DNA 띠가 보여요.", "change": {"uv": {"bands": [[0.3, 0.55], [0.3, 0.55], [0.42], [0.3, 0.55, 0.7]]}}}}
 ```
+
+## 기본 장면
+
+### 31. 홈판의 홈마다 지시약 떨어뜨리기
+
+wellplate의 wells에 id를 주고 스포이트를 over로 그 홈 위에. tags:true면 줄(A, B …)·칸(1, 2 …) 이름이 나온다.
+
+```json
+[{"t": "wellplate", "x": 220, "s": 1.2, "tags": true, "wells": [{"id": "A1", "at": "A1", "color": "clear"}, {"id": "A2", "at": "A2", "color": "clear"}, {"id": "A3", "at": "A3", "color": "clear"}, {"id": "A4", "at": "A4", "color": "clear"}]},
+ {"t": "dropper", "over": "A1", "color": "purple"},
+ {"t": "note", "x": 400, "y": 60, "text": "홈마다 색이 어떻게 변하는지 관찰해요", "icon": "eye", "w": 150}]
+```
+
+### 32. 홈에 금속판을 꽂고 멀티미터로 전압 재기
+
+홈의 strip은 세워 꽂은 금속판(색 이름). wire의 to를 홈 id로 주면 금속판 위 끝에 이어진다. 멀티미터 단자는 'id:+'·'id:-'.
+
+```json
+[{"t": "meter", "id": "mm", "kind": "multi", "x": 75},
+ {"t": "wellplate", "x": 300, "n": 6, "s": 1.1, "wells": [{"id": "p1", "at": "A1", "color": "skyblue", "strip": "copper"}, {"id": "p2", "at": "A3", "color": "clear", "strip": "silver"}]},
+ {"t": "wire", "from": "mm:+", "to": "p1", "color": "red", "points": [[130, 215]]},
+ {"t": "wire", "from": "mm:-", "to": "p2", "color": "black", "points": [[40, 170], [150, 105], [300, 110]]}]
+```
+
+### 33. pH 미터로 용액의 pH 재기
+
+meter kind:'ph'를 in으로 그릇에 넣는다. reading은 원문이 값을 줄 때만 (화면에 숫자가 나온다).
+
+```json
+[{"t": "beaker", "id": "b", "x": 240, "s": 1.2, "vol": "100 mL", "amount": "50 mL", "color": "clear", "label": "용액 50 mL"},
+ {"t": "meter", "kind": "ph", "in": "b", "dx": -22, "label": "pH 미터", "labelSide": "left"}]
+```
+
+### 34. 오목받침 유리의 홈에 시약 떨어뜨리기
+
+wellplate kind:'slide'는 오목받침 유리(기본 홈 2개).
+
+```json
+[{"t": "wellplate", "x": 240, "s": 1.5, "kind": "slide", "wells": [{"id": "h1", "color": "#d9433f", "fill": 0.5, "tag": "A"}, {"id": "h2", "color": "#d9433f", "fill": 0.5, "tag": "B"}]},
+ {"t": "dropper", "over": "h1", "color": "clear"},
+ {"t": "note", "x": 400, "y": 70, "text": "두 홈에 넣는 시약이 달라요", "icon": "how", "w": 140}]
+```
+
+### 35. 주사기와 압력 센서를 고무관으로 잇기
+
+syringe의 vol·amount로 눈금과 피스톤 위치를, gas로 안의 기체 색을. hose의 to를 주사기 id로 주면 주사기 끝에 이어진다.
+
+```json
+[{"t": "sensor", "id": "ps", "kind": "pressure", "x": 120, "y": 170},
+ {"t": "syringe", "id": "sy", "x": 215, "y": 205, "tilt": 90, "vol": "50 mL", "amount": "40 mL", "gas": "#eef3f8"},
+ {"t": "hose", "from": "ps", "to": "sy", "points": [[135, 205]]},
+ {"t": "device", "x": 395, "y": 70, "s": 0.75, "link": "ps", "title": "압력 (kPa)", "graph": "live"}]
+```

@@ -37,12 +37,13 @@ REVEAL = {"text", "scene", "remove", "change", "add"}
 FRESH = {"note", "text", "arrow", "mark", "eye", "label", "view", "zoom", "pour"}  # 이어받지 않는 설명·동작 부품
 REFS = ["on", "in", "over", "into", "hold", "link", "to", "from"]
 RACKS = {"rack": "tube", "tuberack": "microtube"}  # tubes를 꽂는 부품과 t를 생략한 튜브의 종류
-PORTS = {"power", "geltank", "electrophoresis"}  # 'id:+'·'id:-'로 단자를 가리킬 수 있는 부품
+PORTS = {"power", "geltank", "electrophoresis", "meter"}  # 'id:+'·'id:-'로 단자를 가리킬 수 있는 부품 (meter는 kind 'multi'만)
+KIDS = {"rack": "tubes", "tuberack": "tubes", "wellplate": "wells"}  # 안에 든 것(시험관·튜브·홈)에도 id를 주어 가리킨다
 TEXT_FIELDS = ["text", "point", "observe", "tip", "warn", "predict"]
 # 준비물 이름 → 부품 (용량 확인용)
 NAME_T = [("눈금실린더", "cylinder"), ("눈금 실린더", "cylinder"), ("메스실린더", "cylinder"), ("부피 플라스크", "volumetric"),
           ("부피플라스크", "volumetric"), ("둥근바닥", "roundflask"), ("삼각 플라스크", "flask"), ("삼각플라스크", "flask"),
-          ("비커", "beaker"), ("시험관", "tube"), ("시약병", "bottle"), ("뷰렛", "burette"), ("컵", "cup"),
+          ("비커", "beaker"), ("시험관", "tube"), ("시약병", "bottle"), ("뷰렛", "burette"), ("컵", "cup"), ("주사기", "syringe"), ("수조", "trough"),
           ("마이크로튜브", "microtube"), ("마이크로 튜브", "microtube"), ("E-tube", "microtube"), ("PCR 튜브", "pcrtube"), ("PCR튜브", "pcrtube")]
 # 준비물 아이콘이 이름 짐작(엔진 GUESS)으로 다른 기구 그림이 되는 경우: (이름 무늬, 짐작한 부품이 이것이면, 그림 이름)
 MISGUESS = [
@@ -180,7 +181,7 @@ def scene_text(scene):
         for k in ("amount", "label", "text"):
             if isinstance(el.get(k), str):
                 out.append(el[k])
-        out += [tb.get("amount") for tb in el.get("tubes") or [] if isinstance(tb, dict) and isinstance(tb.get("amount"), str)]
+        out += [k[f] for k in kids(el) for f in ("amount", "label", "tag") if isinstance(k.get(f), str)]
     return " / ".join(out)
 
 
@@ -264,6 +265,20 @@ def check_part(el, where, reg, rep):
             rep.err(f"{where} ({name_of(el)})", f"{k}는 숫자여야 해요 ('{v}')")
         elif isinstance(v, (int, float)) and not (0 <= v <= (W if k == "x" else H)):
             rep.warn(f"{where} ({name_of(el)})", f"{k} = {v}이(가) 장면(x 0~{W}, y 0~{H}) 밖이에요")
+    if el.get("t") == "wellplate" and reg and "wells" in reg:
+        wp, wv = set(reg["wells"]["props"]), reg["wells"]["values"]
+        for j, w in enumerate(el.get("wells") or []):
+            if not isinstance(w, dict):
+                rep.err(f"{where}.wells[{j}]", "홈은 객체({ \"id\": …, \"at\": \"A1\" })여야 해요")
+                continue
+            for k in w:
+                if k not in wp:
+                    rep.err(f"{where}.wells[{j}]", f"홈에 없는 속성 '{k}'{suggest(k, wp)}")
+            for k, opts in wv.items():
+                if isinstance(w.get(k), str) and w[k] not in opts:
+                    rep.err(f"{where}.wells[{j}]", f"홈의 {k} '{w[k]}'는 정해진 값이 아니에요 ({', '.join(opts)}){suggest(w[k], opts)}")
+            if "at" in w and not (isinstance(w["at"], str) and re.fullmatch(r"\s*[A-Za-z]\s*\d+\s*", w["at"])):
+                rep.err(f"{where}.wells[{j}]", f"홈 자리 at '{w['at']}'는 'B3'처럼 줄 글자와 칸 번호로 써요")
     if el.get("t") in RACKS:
         for j, tb in enumerate(el.get("tubes") or []):
             if isinstance(tb, dict):
@@ -283,12 +298,17 @@ def guess_icon(name, reg):
     return "generic"
 
 
+def kids(el):
+    """시험관대·튜브 꽂이의 tubes, 홈판의 wells (객체만)."""
+    return [k for k in (el.get(KIDS[el["t"]]) or []) if isinstance(k, dict)] if isinstance(el, dict) and el.get("t") in KIDS else []
+
+
 def scene_ids(items, where, rep):
     ids = {}
     for el in items:
         if not isinstance(el, dict):
             continue
-        group = [el] + [tb for tb in (el.get("tubes") or []) if isinstance(tb, dict)] if el.get("t") in RACKS else [el]
+        group = [el] + kids(el)
         for g in group:
             if g.get("id"):
                 if g["id"] in ids:
@@ -311,8 +331,8 @@ def check_refs(items, ids, where, rep):
                 m = re.match(r"^(.+):([+\-−])$", r)  # 'id:+' 단자 (전원 장치·전기 영동 장치)
                 if not m or m.group(1) not in ids:
                     rep.err(f"{where} ({name_of(el)})", f"{k}: '{r}' → 이 장면에 그런 id가 없어요")
-                elif ids[m.group(1)].get("t") not in PORTS:
-                    rep.err(f"{where} ({name_of(el)})", f"{k}: '{r}' → {name_of(ids[m.group(1)])}에는 (+)·(−) 단자가 없어요 ({', '.join(sorted(PORTS))}에 있어요)")
+                elif ids[m.group(1)].get("t") not in PORTS or (ids[m.group(1)].get("t") == "meter" and ids[m.group(1)].get("kind") != "multi"):
+                    rep.err(f"{where} ({name_of(el)})", f"{k}: '{r}' → {name_of(ids[m.group(1)])}에는 (+)·(−) 단자가 없어요 ({', '.join(sorted(PORTS - {'meter'}))}, meter(kind 'multi')에 있어요)")
 
 
 def main_check(data, reg):
@@ -409,7 +429,7 @@ def main_check(data, reg):
             for e in base:
                 if e.get("id") == id_:
                     return e
-                for tb in (e.get("tubes") or []) if e.get("t") in RACKS else []:
+                for tb in kids(e):
                     if isinstance(tb, dict) and tb.get("id") == id_:
                         return tb
             return None

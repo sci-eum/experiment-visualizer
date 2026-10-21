@@ -136,8 +136,8 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 장면은 **가로 480 × 세로 300** 좌표, 왼쪽 위가 (0, 0), 실험대 윗면은 **y = 268** 이다.
 
 - **한 단계 = 한 장면 = 핵심 동작 하나.** 그림만 보고도 "무엇을, 어디에, 어떻게" 알 수 있게. 주인공 기구는 가운데(x 180~300)에 크게, 기구는 2~5개.
-- **용량이 적힌 기구는 그 기구가 나오는 모든 장면과 준비물 아이콘에 `vol`을 준다** (실험의 스케일이 중요하다). 넣는 양은 `amount`, 붓는 그릇은 `pour`의 `fromVol`. 값은 원문 글자 그대로 (`"1,000 mL"`, `"0.5~1 L"`). 용량이 적혀 있지 않으면 `vol`을 지어내지 않는다. 주사기·수조처럼 `vol`을 새기지 않는 기구는 용량을 `label`에 쓴다 (`"50 mL 주사기"`). `vol`을 준 그릇에는 `s`를 주지 않는다 (꼭 필요하면 그 장면 그릇들에 같은 `s`).
-- **동작은 부품으로**: 붓기 `pour`, 떨어뜨리기 `dropper`+`over`, 마이크로피펫으로 넣기·빨아올리기 `micropipette`+`over`/`in`, 젓기 `rod`+`stir`, 가루 넣기 `spatula`+`over`, 거르기 `funnel`+`over`, 가열 `lamp`·`gasburner`·`hotplate`, 순서 `arrow`, 관찰 `note`·`view`·`eye`. **상태는 속성으로**: `color`, `fill`, `bubbles`, `steam`, `solid:'precipitate'`, `cloudy`, `layers`.
+- **용량이 적힌 기구는 그 기구가 나오는 모든 장면과 준비물 아이콘에 `vol`을 준다** (실험의 스케일이 중요하다). 넣는 양은 `amount`, 붓는 그릇은 `pour`의 `fromVol`. 값은 원문 글자 그대로 (`"1,000 mL"`, `"0.5~1 L"`). 용량이 적혀 있지 않으면 `vol`을 지어내지 않는다. 주사기 `syringe`·수조 `trough`도 `vol`을 준다. `vol`이 없는 기구(parts.md)는 용량을 `label`에 쓴다. `vol`을 준 그릇에는 `s`를 주지 않는다 (꼭 필요하면 그 장면 그릇들에 같은 `s`).
+- **동작은 부품으로**: 붓기 `pour`, 떨어뜨리기 `dropper`+`over`(홈판은 홈 `id`), 마이크로피펫으로 넣기·빨아올리기 `micropipette`+`over`/`in`, 젓기 `rod`+`stir`, 가루 넣기 `spatula`+`over`, 거르기 `funnel`+`over`, 가열 `lamp`·`gasburner`·`hotplate`, 순서 `arrow`, 관찰 `note`·`view`·`eye`. **상태는 속성으로**: `color`, `fill`, `bubbles`, `steam`, `solid:'precipitate'`, `cloudy`, `layers`.
 - **단계 사이를 잇는다.** 같은 기구는 같은 x·색·양을 유지하다 바뀌는 단계에서만 바꾼다. 장치가 같으면 장면 이어받기(`"scene": {"from": "prev", …}`, data.md)로 바뀐 것만 쓴다.
 - 이름표 `label`은 장면마다 1~3개, 핵심 물질과 양만 (`"물 100 mL"`). 잘못된 방법은 `mark`(`kind:'no'`) + `warn`. 목록에 없는 기구는 parts.md **없는 기구 그리는 법**대로 (다른 기구로 바꿔 그리지 않는다).
 - **센서 실험**은 `sensor`와 `device`(`link`로 연결)를 함께, 그래프는 `"graph":"live"` (원문이 모양을 말할 때만 그 모양). 표지(`cover`)는 대표 장치 장면 (`{"from": 7}`).
@@ -160,10 +160,10 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 
 ### 부품 이름 한눈에 (속성은 parts.md)
 
-- 그릇: `beaker` `flask` `roundflask` `volumetric` `tube` `cylinder` `bottle` `cup` `trough` `gasjar` `bag` · 시험관대 `rack`
+- 그릇: `beaker` `flask` `roundflask` `volumetric` `tube` `cylinder` `bottle` `cup` `trough` `gasjar` `bag` · 시험관대 `rack` · 홈판·오목받침 유리 `wellplate`
 - 가열·받침: `lamp` `gasburner` `tripod` `hotplate` `stirrer` `stand` `balance` `candle`
 - 액체 다루기: `pour` `dropper` `syringe` `rod` `spatula` `funnel` `burette` `sepfunnel` `condenser` `hose`
-- 측정·센서: `thermometer` `stopwatch` `ruler` `springscale` `weight` `sensor` `device` `stirbar` `tweezers` `cabletie`
+- 측정·센서: `thermometer` `stopwatch` `ruler` `springscale` `weight` `sensor` `device` `meter`(pH 미터·디지털 온도계·멀티미터·전도계) `stirbar` `tweezers` `cabletie`
 - 빛·소리·전기: `lens` `mirror` `prism` `lightbox` `screen` `ray` `power` `tuningfork` `circuit`
 - 지구과학: `rock` `streak` `strata` `globe` · 생물·관찰: `microscope` `slide` `magnifier` `dish` `evapdish` `watchglass` `mortar` `plant` `leaf`
 - 물리: `ramp` `cart` `block` `ball` `magnet` `compass` · 안전·재료: `goggles` `gloves` `ice` `powder` `paper` `match`

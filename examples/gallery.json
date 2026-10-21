@@ -3,7 +3,7 @@
   "subject": "experiment-visualizer",
   "unit": "모든 부품 한눈에 보기",
   "goal": "SKILL이 쓸 수 있는 실험 기구·표시 부품을 장면별로 모아 보여 준다. 각 그림 아래 글자는 부품 이름(t 값)이다.",
-  "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"이름 모를 기구"}],
+  "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"12홈판"},{"name":"pH 미터"},{"name":"멀티미터"},{"name":"이산화 탄소 센서"},{"name":"이름 모를 기구"}],
   "tips": ["부품 이름(t)과 속성은 references/parts.md(부품 목록)를 보세요.","그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요."],
   "steps": [
   { "title": "유리 기구 (그릇)", "text": "beaker · flask · roundflask · tube · cylinder · bottle", 
@@ -316,6 +316,41 @@
       {"t":"text","x":118,"y":288,"text":"geltank(loaded, run)","size":10,"weight":700},
       {"t":"text","x":268,"y":288,"text":"power + wire","size":10,"weight":700},
       {"t":"text","x":400,"y":288,"text":"freezer(on)","size":10,"weight":700}
+    ] },
+  { "title": "홈판·오목받침 유리", "text": "wellplate(tags · wells: at · color · fill · solid · bubbles · strip) · kind:'white' · kind:'slide'", 
+    "scene": [
+      {"t":"wellplate","x":92,"s":0.8,"tags":true,"wells":[{"id":"w1","at":"A1","color":"red"},{"at":"A2","color":"pink","fill":0.4},{"at":"B2","color":"blue","solid":"chips"},{"at":"B3","color":"green","bubbles":true},{"at":"C4","color":"water","strip":"copper"}]},
+      {"t":"dropper","over":"w1","color":"purple","s":0.8},
+      {"t":"wellplate","x":262,"s":0.75,"kind":"white","n":12,"wells":[{"at":"A1","color":"yellow"},{"at":"B3","color":"orange"}]},
+      {"t":"wellplate","x":405,"s":0.75,"kind":"slide","wells":[{"color":"pink"},{"color":"water","fill":0.4}]},
+      {"t":"text","x":92,"y":288,"text":"wellplate","size":11,"weight":700},
+      {"t":"text","x":262,"y":288,"text":"kind:'white'","size":11,"weight":700},
+      {"t":"text","x":405,"y":288,"text":"kind:'slide'","size":11,"weight":700}
+    ] },
+  { "title": "디지털 측정기", "text": "meter(kind: 'ph' · 'temp' · 'conduct' · 'multi', in, reading, on)", 
+    "scene": [
+      {"t":"beaker","id":"b1","x":55,"fill":0.5,"color":"clear"},
+      {"t":"meter","kind":"ph","in":"b1","reading":"pH 7.00"},
+      {"t":"cup","id":"c1","x":160,"fill":0.6},
+      {"t":"meter","kind":"temp","in":"c1","reading":"25.0 ℃"},
+      {"t":"beaker","id":"b2","x":265,"fill":0.5,"color":"clear"},
+      {"t":"meter","kind":"conduct","in":"b2","on":true},
+      {"t":"meter","kind":"multi","x":395,"reading":"1.50 V"},
+      {"t":"text","x":55,"y":288,"text":"'ph'","size":11,"weight":700},
+      {"t":"text","x":160,"y":288,"text":"'temp'","size":11,"weight":700},
+      {"t":"text","x":265,"y":288,"text":"'conduct'(on)","size":11,"weight":700},
+      {"t":"text","x":395,"y":288,"text":"'multi'","size":11,"weight":700}
+    ] },
+  { "title": "센서 종류·주사기 용량", "text": "sensor(kind: 'co2' · 'o2' · 'light' · 'force' · 'other') · syringe(vol, amount, gas)", "bench": false,
+    "scene": [
+      {"t":"sensor","x":45,"y":200,"kind":"co2"},
+      {"t":"sensor","x":115,"y":200,"kind":"o2"},
+      {"t":"sensor","x":185,"y":150,"kind":"light"},
+      {"t":"sensor","x":255,"y":170,"kind":"force"},
+      {"t":"syringe","x":340,"y":262,"vol":"10 mL","amount":"6 mL"},
+      {"t":"syringe","x":420,"y":262,"vol":"50 mL","amount":"30 mL","gas":"brown"},
+      {"t":"text","x":150,"y":288,"text":"sensor(kind)","size":11,"weight":700},
+      {"t":"text","x":380,"y":288,"text":"syringe(vol, gas)","size":11,"weight":700}
     ] }
   ]
 }

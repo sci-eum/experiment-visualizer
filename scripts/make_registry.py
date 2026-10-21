@@ -28,6 +28,8 @@ VALUES = {
     "_common": {"labelSide": ["left", "right"]},
     "_container": {"solid": ["powder", "precipitate", "crystals", "chips", "zinc", "magnesium", "nail", "block", "leaf", "egg", "ice", "icebath"]},
     "sensor": {"kind": "SENSOR"},
+    "meter": {"kind": "METER"},
+    "wellplate": {"kind": ["plastic", "white", "slide"]},
     "rock": {"kind": "ROCK"},
     "device": {"graph": "GRAPH"},
     "lens": {"kind": ["convex", "concave"]},
@@ -44,6 +46,8 @@ VALUES = {
     "pour": {"side": ["left", "right"]},
     "globe": {"night": ["left", "right"]},
 }
+# 홈판(wellplate)의 wells 항목에 쓰는 속성. 엔진이 w.이름 / el.이름으로 읽는다 (build가 확인, id는 가리키는 이름)
+WELL_PROPS = ["id", "at", "color", "fill", "solid", "solidColor", "strip", "bubbles", "cloudy", "label", "labelSide", "tag"]
 
 
 def chunks(js):
@@ -103,7 +107,7 @@ def build():
     for t in shapes:
         types[t] = container
     for (k, n), text in ch.items():
-        if k != "T" or n in ("_unknown", "generic"):
+        if k != "T" or n.startswith("_") or n == "generic":  # _unknown·_well은 엔진 안에서만 쓴다
             continue
         ps = props(text)
         for f in fn:  # 부품이 부르는 도우미 함수(bplace, tipPlace …)의 속성도 넣는다
@@ -115,6 +119,10 @@ def build():
         for n in re.findall(r"'([a-z]+)'", names):
             types[n] = props(body) | fprops.get("bplace", set())
     aliases = dict(re.findall(r"\bT\.([a-z]+) = T\.([a-z]+);", js))
+    plate = ch.get(("T", "wellplate"), "") + ch.get(("T", "_well"), "") + fn.get("wellPos", "")
+    gone = [p for p in WELL_PROPS if p != "id" and not re.search(rf"\b(?:w|el)\??\.{p}\b", plate)]
+    if gone:
+        raise ValueError(f"make_registry: WELL_PROPS의 {gone}를 엔진 홈판 코드가 읽지 않아요")
     version = re.search(r"const VERSION = '([\d.]+)'", js).group(1)
     out = {
         "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
@@ -124,6 +132,7 @@ def build():
         "aliases": dict(sorted(aliases.items())),
         "types": {t: sorted((ps | set(EXTRA.get(t, []))) - set(COMMON)) for t, ps in sorted(types.items())},
         "values": values(js, shapes, types),
+        "wells": {"props": WELL_PROPS, "values": {"solid": VALUES["_container"]["solid"]}},
         # 준비물 이름 → 아이콘 짐작 (엔진 GUESS 그대로, 앞에서부터 처음 맞는 것. '부품:1'은 이름이 그 낱말로 시작할 때만)
         "guess": dict(re.findall(r"\['([^']*)','([^']*)'\]", re.search(r"^const GUESS = (\[.*\]);$", js, re.M).group(1))),
     }
