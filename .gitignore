@@ -20,6 +20,9 @@ desktop.ini
 # 사용자 실험지로 만든 결과물 (공개 저장소에 올리지 않음)
 my-results/
 
+# 검토용 교과서 PDF (저작물, 공개 저장소에 올리지 않음)
+교과서/
+
 # 그림 점검 PNG (check_render.py --shots)
 shots/
 그림점검/
