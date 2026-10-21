@@ -166,7 +166,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 - 측정·센서: `thermometer` `stopwatch` `ruler` `springscale` `weight` `sensor` `device` `meter`(pH 미터·디지털 온도계·멀티미터·전도계) `stirbar` `tweezers` `cabletie`
 - 빛·소리·전기: `lens` `mirror` `prism` `lightbox` `screen` `ray` `power` `tuningfork` `circuit`
 - 지구과학: `rock` `streak` `strata` `globe` · 생물·관찰: `microscope` `slide` `magnifier` `dish` `evapdish` `watchglass` `mortar` `plant` `leaf`
-- 물리: `ramp` `cart` `block` `ball` `magnet` `compass` · 안전·재료: `goggles` `gloves` `ice` `powder` `paper` `match`
+- 물리: `ramp` `cart` `block` `ball` `magnet` `compass` · 역학 장치: `table` `track` `photogate` `pulley` `spring` `camera`(삼각대 촬영 폰) · 안전·재료: `goggles` `gloves` `ice` `powder` `paper` `match`
 - 분자생물학: `micropipette` `microtube` `pcrtube` `tuberack` `spincolumn` `centrifuge` `thermocycler` `geltank` `uvlamp` `freezer` (전선 `wire`는 `from:'ps:+'`처럼 단자에 잇는다)
 - 표시: `arrow` `note` `label` `text` `mark` `eye` `view` `svg`
 

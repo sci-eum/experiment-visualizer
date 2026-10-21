@@ -178,7 +178,7 @@ def scene_text(scene):
     for el in items:
         if not isinstance(el, dict):
             continue
-        for k in ("amount", "label", "text"):
+        for k in ("amount", "label", "text", "hangText"):
             if isinstance(el.get(k), str):
                 out.append(el[k])
         out += [k[f] for k in kids(el) for f in ("amount", "label", "tag") if isinstance(k.get(f), str)]

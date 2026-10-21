@@ -45,6 +45,11 @@ VALUES = {
     "ramp": {"dir": ["left", "right"]},
     "pour": {"side": ["left", "right"]},
     "globe": {"night": ["left", "right"]},
+    "track": {"dir": ["left", "right"], "support": ["block", "stand", "none"]},
+    "camera": {"dir": ["left", "right"]},
+    "weight": {"kind": ["hanger"]},
+    "pulley": {"hang": ["hanger", "weight", "block"], "side": ["left", "right"]},
+    "spring": {"hang": ["weight", "block", "hanger", "phone"]},
 }
 # 홈판(wellplate)의 wells 항목에 쓰는 속성. 엔진이 w.이름 / el.이름으로 읽는다 (build가 확인, id는 가리키는 이름)
 WELL_PROPS = ["id", "at", "color", "fill", "solid", "solidColor", "strip", "bubbles", "cloudy", "label", "labelSide", "tag"]

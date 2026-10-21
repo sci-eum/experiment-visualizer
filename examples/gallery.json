@@ -3,7 +3,7 @@
   "subject": "experiment-visualizer",
   "unit": "모든 부품 한눈에 보기",
   "goal": "SKILL이 쓸 수 있는 실험 기구·표시 부품을 장면별로 모아 보여 준다. 각 그림 아래 글자는 부품 이름(t 값)이다.",
-  "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"12홈판"},{"name":"pH 미터"},{"name":"멀티미터"},{"name":"이산화 탄소 센서"},{"name":"이름 모를 기구"}],
+  "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"12홈판"},{"name":"pH 미터"},{"name":"멀티미터"},{"name":"이산화 탄소 센서"},{"name":"저마찰 트랙"},{"name":"포토게이트"},{"name":"도르래"},{"name":"추걸이"},{"name":"용수철"},{"name":"삼각대"},{"name":"이름 모를 기구"}],
   "tips": ["부품 이름(t)과 속성은 references/parts.md(부품 목록)를 보세요.","그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요."],
   "steps": [
   { "title": "유리 기구 (그릇)", "text": "beaker · flask · roundflask · tube · cylinder · bottle", 
@@ -351,6 +351,28 @@
       {"t":"syringe","x":420,"y":262,"vol":"50 mL","amount":"30 mL","gas":"brown"},
       {"t":"text","x":150,"y":288,"text":"sensor(kind)","size":11,"weight":700},
       {"t":"text","x":380,"y":288,"text":"syringe(vol, gas)","size":11,"weight":700}
+    ] },
+  { "title": "역학 장치 1 (책상·트랙·포토게이트·도르래)", "text": "table · track(on table) · cart(on track, at, load, text) · photogate(on track, at) · pulley(on track, from cart, hang:'hanger')", 
+    "scene": [
+      {"t":"table","id":"tb","x":215,"w":360,"h":118},
+      {"t":"track","id":"tr","on":"tb","x":220,"w":320},
+      {"t":"cart","id":"c","on":"tr","at":0.15,"load":2,"text":"A"},
+      {"t":"photogate","on":"tr","at":0.5},
+      {"t":"photogate","on":"tr","at":0.78},
+      {"t":"pulley","on":"tr","from":"c","drop":70,"hangText":"추걸이","n":3},
+      {"t":"text","x":90,"y":288,"text":"table · track · cart","size":11,"weight":700},
+      {"t":"text","x":265,"y":288,"text":"photogate","size":11,"weight":700},
+      {"t":"text","x":430,"y":288,"text":"pulley","size":11,"weight":700}
+    ] },
+  { "title": "역학 장치 2 (매단 용수철·추걸이·삼각대 촬영 폰)", "text": "stand(hold) + spring(hang, stretch, osc) · weight(kind:'hanger') · camera(to, dir)", 
+    "scene": [
+      {"t":"stand","hold":"sp"},
+      {"t":"spring","id":"sp","x":150,"y":62,"hang":"weight","hangText":"100 g","stretch":0.3,"osc":true},
+      {"t":"weight","kind":"hanger","x":255,"n":2},
+      {"t":"camera","x":395,"dir":"left","to":"sp","h":112},
+      {"t":"text","x":120,"y":288,"text":"spring(osc)","size":11,"weight":700},
+      {"t":"text","x":255,"y":288,"text":"weight(hanger)","size":11,"weight":700},
+      {"t":"text","x":395,"y":288,"text":"camera(to)","size":11,"weight":700}
     ] }
   ]
 }

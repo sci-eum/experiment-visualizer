@@ -70,6 +70,24 @@ window.EXPERIMENT = {
       "name": "이산화 탄소 센서"
     },
     {
+      "name": "저마찰 트랙"
+    },
+    {
+      "name": "포토게이트"
+    },
+    {
+      "name": "도르래"
+    },
+    {
+      "name": "추걸이"
+    },
+    {
+      "name": "용수철"
+    },
+    {
+      "name": "삼각대"
+    },
+    {
       "name": "이름 모를 기구"
     }
   ],
@@ -2302,13 +2320,140 @@ window.EXPERIMENT = {
           "weight": 700
         }
       ]
+    },
+    {
+      "title": "역학 장치 1 (책상·트랙·포토게이트·도르래)",
+      "text": "table · track(on table) · cart(on track, at, load, text) · photogate(on track, at) · pulley(on track, from cart, hang:'hanger')",
+      "scene": [
+        {
+          "t": "table",
+          "id": "tb",
+          "x": 215,
+          "w": 360,
+          "h": 118
+        },
+        {
+          "t": "track",
+          "id": "tr",
+          "on": "tb",
+          "x": 220,
+          "w": 320
+        },
+        {
+          "t": "cart",
+          "id": "c",
+          "on": "tr",
+          "at": 0.15,
+          "load": 2,
+          "text": "A"
+        },
+        {
+          "t": "photogate",
+          "on": "tr",
+          "at": 0.5
+        },
+        {
+          "t": "photogate",
+          "on": "tr",
+          "at": 0.78
+        },
+        {
+          "t": "pulley",
+          "on": "tr",
+          "from": "c",
+          "drop": 70,
+          "hangText": "추걸이",
+          "n": 3
+        },
+        {
+          "t": "text",
+          "x": 90,
+          "y": 288,
+          "text": "table · track · cart",
+          "size": 11,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 265,
+          "y": 288,
+          "text": "photogate",
+          "size": 11,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 430,
+          "y": 288,
+          "text": "pulley",
+          "size": 11,
+          "weight": 700
+        }
+      ]
+    },
+    {
+      "title": "역학 장치 2 (매단 용수철·추걸이·삼각대 촬영 폰)",
+      "text": "stand(hold) + spring(hang, stretch, osc) · weight(kind:'hanger') · camera(to, dir)",
+      "scene": [
+        {
+          "t": "stand",
+          "hold": "sp"
+        },
+        {
+          "t": "spring",
+          "id": "sp",
+          "x": 150,
+          "y": 62,
+          "hang": "weight",
+          "hangText": "100 g",
+          "stretch": 0.3,
+          "osc": true
+        },
+        {
+          "t": "weight",
+          "kind": "hanger",
+          "x": 255,
+          "n": 2
+        },
+        {
+          "t": "camera",
+          "x": 395,
+          "dir": "left",
+          "to": "sp",
+          "h": 112
+        },
+        {
+          "t": "text",
+          "x": 120,
+          "y": 288,
+          "text": "spring(osc)",
+          "size": 11,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 255,
+          "y": 288,
+          "text": "weight(hanger)",
+          "size": 11,
+          "weight": 700
+        },
+        {
+          "t": "text",
+          "x": 395,
+          "y": 288,
+          "text": "camera(to)",
+          "size": 11,
+          "weight": 700
+        }
+      ]
     }
   ]
 };
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.11.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.12.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -2469,7 +2614,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.11.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.12.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -3172,9 +3317,11 @@ T.springscale = {
     return o;
   }
 };
+// 추: text('100 g'). kind:'hanger'면 추걸이 (n: 걸린 추 개수, v1.12)
 T.weight = {
-  geo(el, R) { const g = bplace(el, R); g.w = 30 * g.s; g.h = 40 * g.s; g.top = g.y - 30 * g.s; g.anchor = { x: g.x + 15 * g.s, y: g.y - 15 * g.s }; return g; },
-  draw(el, g) { return `<g transform="${tfm(g)}"><path d="M-6,-30 Q-6,-40 0,-40 Q6,-40 6,-30" stroke="${DARK}" stroke-width="2.4" fill="none"/><rect x="-15" y="-30" width="30" height="30" rx="4" fill="${col(el.color, '#a5adbb')}" stroke="${INK}" stroke-width="1.6"/><path d="M-9,-25 V-6" stroke="#fff" stroke-width="2.4" opacity=".55" stroke-linecap="round"/>${el.text ? `<text y="-11" font-size="8.5" font-weight="800" text-anchor="middle" fill="#2d3343">${esc(el.text)}</text>` : ''}</g>`; }
+  geo(el, R) { const g = bplace(el, R), hg = el.kind === 'hanger'; g.w = 30 * g.s; g.h = (hg ? 45 : 40) * g.s; g.top = g.y - (hg ? 45 : 30) * g.s; g.anchor = { x: g.x + 15 * g.s, y: g.y - 15 * g.s }; return g; },
+  draw(el, g) {
+    if (el.kind === 'hanger') return hangSvg('hanger', g.x, g.y - 45 * g.s, g.s, { text: el.text, n: el.n }).svg; return `<g transform="${tfm(g)}"><path d="M-6,-30 Q-6,-40 0,-40 Q6,-40 6,-30" stroke="${DARK}" stroke-width="2.4" fill="none"/><rect x="-15" y="-30" width="30" height="30" rx="4" fill="${col(el.color, '#a5adbb')}" stroke="${INK}" stroke-width="1.6"/><path d="M-9,-25 V-6" stroke="#fff" stroke-width="2.4" opacity=".55" stroke-linecap="round"/>${el.text ? `<text y="-11" font-size="8.5" font-weight="800" text-anchor="middle" fill="#2d3343">${esc(el.text)}</text>` : ''}</g>`; }
 };
 T.block = {
   geo(el, R) { const g = bplace(el, R), w = el.w ?? 70, h = el.h ?? 40; g.bw = w; g.bh = h; g.w = w * g.s; g.h = h * g.s; g.top = g.y - h * g.s; g.anchor = { x: g.x + w * g.s / 2, y: g.y - h * g.s / 2 }; g.mouth = { x: g.x, y: g.top }; return g; },
@@ -3194,9 +3341,118 @@ T.ramp = {
   },
   draw(el, g) { const w = g.rw, h = g.rh, f = g.f, c = col(el.color, '#ece3d3'); return `<g transform="${tfm(g)}"><path d="M${-w / 2 * f},0 L${-w / 2 * f},${-h} L${w / 2 * f},0 Z" fill="${c}" stroke="${shade(c, -.32)}" stroke-width="1.8" stroke-linejoin="round"/></g>`; }
 };
+// 역학 수레: text(몸통 글자 'A'), load(위에 올린 추 개수, v1.12)
 T.cart = {
-  geo(el, R) { const g = bplace(el, R); g.w = 70 * g.s; g.h = 32 * g.s; g.top = g.y - 30 * g.s; g.anchor = { x: g.x + 34 * g.s, y: g.y - 20 * g.s }; return g; },
-  draw(el, g) { const c = col(el.color, '#6e8ff0'); return `<g transform="${tfm(g)}"><rect x="-34" y="-30" width="68" height="17" rx="4" fill="${c}" stroke="${shade(c, -.3)}" stroke-width="1.6"/><rect x="-28" y="-26" width="20" height="5" rx="2" fill="#fff" opacity=".45"/><circle cx="-20" cy="-7" r="7" fill="${DARK}"/><circle cx="20" cy="-7" r="7" fill="${DARK}"/><circle cx="-20" cy="-7" r="2.4" fill="${METAL}"/><circle cx="20" cy="-7" r="2.4" fill="${METAL}"/></g>`; }
+  geo(el, R) { const g = bplace(el, R), n = Math.max(0, Math.min(4, Math.round(+el.load || 0))); g.w = 70 * g.s; g.h = (32 + n * 9) * g.s; g.top = g.y - (30 + n * 9) * g.s; g.anchor = { x: g.x + 34 * g.s, y: g.y - 20 * g.s }; g.load = n; return g; },
+  draw(el, g) {
+    const c = col(el.color, '#6e8ff0'); let ld = '';
+    for (let i = 0; i < g.load; i++) ld += `<rect x="-13" y="${-39 - i * 9}" width="26" height="8.5" rx="2" fill="#a5adbb" stroke="${INK}" stroke-width="1.2"/>`;
+    return `<g transform="${tfm(g)}">${ld}<rect x="-34" y="-30" width="68" height="17" rx="4" fill="${c}" stroke="${shade(c, -.3)}" stroke-width="1.6"/><rect x="-28" y="-26" width="20" height="5" rx="2" fill="#fff" opacity=".45"/>${el.text ? `<text x="12" y="-17.5" font-size="10" font-weight="800" text-anchor="middle" fill="#fff">${esc(el.text)}</text>` : ''}<circle cx="-20" cy="-7" r="7" fill="${DARK}"/><circle cx="20" cy="-7" r="7" fill="${DARK}"/><circle cx="-20" cy="-7" r="2.4" fill="${METAL}"/><circle cx="20" cy="-7" r="2.4" fill="${METAL}"/></g>`;
+  }
+};
+/* ---------- 역학 장치 (v1.12): 책상·저마찰 트랙·포토게이트·도르래·매단 용수철·삼각대 촬영 폰 ---------- */
+// 책상(실험대 윗판): 추를 매달거나 공을 굴려 떨어뜨릴 때 바닥보다 높은 곳. w(너비), h(높이). 위에 놓을 것은 on:'id', at 0~1(왼쪽~오른쪽)
+T.table = {
+  geo(el, R) {
+    const g = bplace(el, R), s = g.s, w = el.w ?? 260, h = el.h ?? 92, top = g.y - h * s;
+    return Object.assign(g, { tw: w, th: h, w: w * s, h: h * s, top, anchor: { x: g.x + w * s / 2, y: top + 6 * s },
+      surf: t => ({ x: g.x + (t - .5) * w * s, y: top, a: 0 }), ends: { left: { x: g.x - w * s / 2, y: top }, right: { x: g.x + w * s / 2, y: top } } });
+  },
+  draw(el, g) {
+    const s = g.s, w = g.tw, h = g.th, c = col(el.color, '#e6cfa9'), st = shade(c, -.32);
+    return `<g transform="${tfm(g)}"><rect x="${-w / 2 + 12}" y="${-h + 10}" width="9" height="${h - 10}" fill="${shade(c, -.12)}" stroke="${st}" stroke-width="1.3"/><rect x="${w / 2 - 21}" y="${-h + 10}" width="9" height="${h - 10}" fill="${shade(c, -.12)}" stroke="${st}" stroke-width="1.3"/><rect x="${-w / 2}" y="${-h}" width="${w}" height="11" rx="2" fill="${c}" stroke="${st}" stroke-width="1.6"/><path d="M${-w / 2 + 6},${-h + 3.5} H${w / 2 - 6}" stroke="#fff" stroke-width="1.6" opacity=".45" stroke-linecap="round"/></g>`;
+  }
+};
+// 저마찰 트랙: w(가로 길이), h(높은 쪽을 올린 높이, 기본 0 = 수평), dir:'left'면 왼쪽으로 내려간다(기본은 오른쪽으로),
+// support:'block'(높은 쪽 받침, 기본)·'stand'·'none', scale:false(눈금 끄기). 수레·공·나무 도막은 on:'트랙id', at 0~1(높은 쪽 끝 ~ 낮은 쪽 끝)
+T.track = {
+  geo(el, R) {
+    const g = bplace(el, R), s = g.s, w = el.w ?? 320, h = el.h ?? 0, f = el.dir === 'left' ? -1 : 1, ang = Math.atan2(h, w) * 180 / Math.PI * f;
+    const surf = t => ({ x: g.x + f * s * (-w / 2 + t * w), y: g.y - s * (10 + h * (1 - t)), a: ang });
+    return Object.assign(g, { rw: w, rh: h, f, w: (w + 10) * s, h: (h + 12) * s, top: g.y - (h + 12) * s, surf, ends: { start: surf(0), end: surf(1) }, anchor: (() => { const p = surf(.85); return { x: p.x, y: p.y + 4 * s }; })() });
+  },
+  draw(el, g) {
+    const w = g.rw, h = g.rh, f = g.f, A0 = [-f * w / 2, -10 - h], A1 = [f * w / 2, -10], sup = el.support ?? 'block';
+    const P = (t, d = 0) => [A0[0] + (A1[0] - A0[0]) * t, A0[1] + (A1[1] - A0[1]) * t + d], L = Math.hypot(w, h), nx = -(A1[1] - A0[1]) / L, ny = (A1[0] - A0[0]) / L; // 레일 아래쪽 방향 (nx, ny)
+    const off = (p, d) => `${r2(p[0] + nx * d * f)},${r2(p[1] + ny * d * f)}`;
+    let o = `<g transform="${tfm({ ...g, tilt: 0 })}">`;
+    if (h > 0 && sup === 'block') o += `<rect x="${r2(A0[0] - 15)}" y="${r2(A0[1] + 7)}" width="30" height="${r2(-A0[1] - 7)}" rx="2" fill="#ddb07a" stroke="${shade('#ddb07a', -.3)}" stroke-width="1.4"/><path d="M${r2(A0[0] - 15)},${r2(A0[1] / 2)} H${r2(A0[0] + 15)}" stroke="${shade('#ddb07a', -.3)}" stroke-width="1"/>`;
+    if (h > 0 && sup === 'stand') o += `<rect x="${r2(A0[0] - 16)}" y="-6" width="32" height="6" rx="2" fill="${DARK}"/><rect x="${r2(A0[0] - 2.5)}" y="${r2(A0[1] - 8)}" width="5" height="${r2(-A0[1] + 2)}" fill="${METAL}" stroke="${INK}" stroke-width="1"/><rect x="${r2(A0[0] - 6)}" y="${r2(A0[1] + 2)}" width="12" height="9" rx="2" fill="${DARK}"/>`;
+    const foot = (ex, d) => `<path d="M${r2(ex - d * 6)},-10 L${r2(ex - d * 9)},0 L${r2(ex - d * 15)},0 L${r2(ex - d * 14)},-10 Z" fill="${DARK}"/>`;
+    o += foot(A1[0], f) + (h === 0 ? foot(A0[0], -f) : ''); // 발 (수평이면 양쪽 끝)
+    o += `<path d="M${off(A0, 0)} L${off(A1, 0)} L${off(A1, 8)} L${off(A0, 8)} Z" fill="#c9ced6" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M${off(P(.01), 2.2)} L${off(P(.99), 2.2)}" stroke="#fff" stroke-width="1.4" opacity=".7"/>`;
+    if (el.scale !== false) { let d = ''; for (let i = 1; i < 40; i++) { const p = P(i / 40); d += `M${off(p, 4.2)} L${off(p, i % 5 ? 6.2 : 7.6)} `; } o += `<path d="${d}" stroke="${INK2}" stroke-width=".9"/>`; }
+    [0, 1].forEach(t => { const p = P(t); o += `<path d="M${off(p, -7)} L${off(p, 8)}" stroke="${DARK}" stroke-width="4" stroke-linecap="round"/>`; }); // 끝 막이
+    return o + '</g>';
+  }
+};
+// 매다는 것 (용수철·도르래 끝): 'weight'(추) · 'block'(나무 도막) · 'hanger'(추걸이, n 개) · 'phone'(스마트폰). (x, y) = 고리 위 끝
+function hangSvg(kind, x, y, s, o = {}) {
+  if (kind === 'block') return { svg: `<path d="M${r2(x)},${r2(y)} V${r2(y + 3 * s)}" stroke="${DARK}" stroke-width="2"/>` + T.block.draw({ text: o.text, color: o.color, w: 56, h: 34 }, { x, y: y + 37 * s, s, tilt: 0 }), h: 37 };
+  if (kind === 'phone') return { svg: `<g transform="translate(${r2(x)},${r2(y)}) scale(${s})"><path d="M0,0 V5" stroke="${DARK}" stroke-width="2"/><rect x="-13" y="5" width="26" height="48" rx="5" fill="#2b3040"/><rect x="-10.5" y="10" width="21" height="36" rx="2" fill="#dfe8f5"/><circle cy="49.5" r="1.6" fill="#9aa2b4"/></g>`, h: 53 };
+  if (kind === 'hanger') {
+    const n = Math.max(1, Math.min(6, Math.round(+o.n || 2))); let d = '';
+    for (let i = 0; i < n; i++) d += `<rect x="-13" y="${r2(40 - (i + 1) * 6.5)}" width="26" height="6" rx="1.5" fill="#a5adbb" stroke="${INK}" stroke-width="1.1"/>`;
+    return { svg: `<g transform="translate(${r2(x)},${r2(y)}) scale(${s})"><path d="M0,0 q-5,0 -5,4 q0,4 5,4 V40" fill="none" stroke="${DARK}" stroke-width="2"/>${d}<rect x="-15" y="40" width="30" height="5" rx="2" fill="${DARK}"/>${o.text ? `<text x="19" y="${r2(40 - n * 3.5)}" font-size="9" font-weight="800" fill="#2d3343">${esc(o.text)}</text>` : ''}</g>`, h: 45 };
+  }
+  return { svg: T.weight.draw({ text: o.text, color: o.color }, { x, y: y + 40 * s, s, tilt: 0 }), h: 40 };
+}
+// 포토게이트: on:'트랙id', at 0~1이면 그 자리에서 트랙을 걸쳐 선다 (트랙 기울기를 따른다). 아니면 x(실험대 위). beam:false면 빛 표시 없음
+T.photogate = {
+  geo(el, R) { const g = bplace(el, R), s = g.s; return Object.assign(g, { w: 22 * s, h: 66 * s, top: g.y - 66 * s, anchor: { x: g.x + 10 * s, y: g.y - 54 * s } }); },
+  draw(el, g) {
+    return `<g transform="${tfm(g)}"><rect x="-4.5" y="-44" width="9" height="46" rx="2" fill="#2b3040" opacity=".82"/><rect x="-11" y="-66" width="22" height="24" rx="4" fill="#3a404c" stroke="${DARK}" stroke-width="1.4"/><circle cx="5" cy="-60" r="2" fill="#7CFFB2"/><path d="M-6,-50 H6" stroke="#8c95a8" stroke-width="1.4" stroke-linecap="round"/>${el.beam !== false ? `<g data-lk-skip="1"><circle cy="-20" r="6" fill="#e5484d" opacity=".25"/><circle cy="-20" r="2.6" fill="#e5484d"/></g>` : ''}</g>`;
+  }
+};
+// 도르래와 매단 추: on:'트랙id'면 낮은 쪽 끝(at:0이면 높은 쪽 끝)에, on:'책상id'면 side 쪽 모서리('right' 기본, 'left')에 끼운다.
+// from:'수레id'면 수레에서 도르래까지 실을 잇고, 바퀴 옆으로 drop(기본 50)만큼 내려 hang('hanger' 기본·'weight'·'block')을 매단다. hangText, n(추걸이 추 개수)
+T.pulley = {
+  geo(el, R) {
+    const s = el.s ?? 1; let x = el.x, y = el.y, f = el.side === 'left' ? -1 : 1;
+    if (el.on) { const t = R(el.on); if (t && t.ends) { const e = t.ends.end ? (el.at === 0 ? t.ends.start : t.ends.end) : t.ends[el.side === 'left' ? 'left' : 'right']; if (t.ends.end) f = (el.at === 0 ? -1 : 1) * (t.f ?? 1); x ??= e.x + f * 16 * s; y ??= e.y - 6 * s; } }
+    x ??= 400; y ??= 150;
+    const r = 10 * s, drop = (el.drop ?? 50) * s, hy = y + drop, hk = el.hang ?? 'hanger', hh = (hk === 'block' ? 37 : hk === 'weight' ? 40 : 45) * s;
+    return { x, y, s, f, r, hy, mount: { x: x - f * 16 * s, y: y + 6 * s }, w: 2 * (r + 16 * s), h: hy + hh - y + r, top: y - r, anchor: { x: x + f * r + 12 * s, y: hy + hh / 2 } };
+  },
+  draw(el, g, cx) {
+    const { x, y, s, f, r } = g, sx = x + f * r;
+    let o = `<path d="M${r2(g.mount.x)},${r2(g.mount.y)} L${r2(x)},${r2(y)}" stroke="${DARK}" stroke-width="${r2(4 * s)}" stroke-linecap="round"/><circle cx="${r2(x)}" cy="${r2(y)}" r="${r2(r)}" fill="#e9ecf2" stroke="${INK}" stroke-width="1.6"/><circle cx="${r2(x)}" cy="${r2(y)}" r="${r2(r * .3)}" fill="${DARK}"/>`;
+    const t = el.from && cx.R(el.from);
+    if (t) { const d = Math.sign(x - t.x) || 1, [hx, hy] = rot(d * 34 * t.s, -20 * t.s, t.tilt || 0); o += `<path data-lk-skip="1" d="M${r2(t.x + hx)},${r2(t.y + hy)} L${r2(x)},${r2(y - r)}" stroke="#6b5a1e" stroke-width="1.4" fill="none"/>`; }
+    o += `<path data-lk-skip="1" d="M${r2(sx)},${r2(y)} V${r2(g.hy)}" stroke="#6b5a1e" stroke-width="1.4"/>`;
+    return o + hangSvg(el.hang ?? 'hanger', sx, g.hy, s, { text: el.hangText, n: el.n, color: el.hangColor }).svg;
+  }
+};
+// 매단 용수철: x, y = 위 고리 (스탠드 hold로 잡는다). length(늘어나지 않은 길이, 기본 70), stretch 0~1(늘어난 정도, 1이면 두 배),
+// coils(감은 수), hang:'weight'·'block'·'hanger'·'phone', hangText, osc:true면 위아래로 진동
+T.spring = {
+  geo(el, R) {
+    const g = bplace(el, R, 60), s = g.s, L = (el.length ?? 70) * (1 + Math.max(0, Math.min(1, +el.stretch || 0))), hk = el.hang, hh = !hk ? 0 : (hk === 'block' ? 37 : hk === 'phone' ? 53 : hk === 'hanger' ? 45 : 40);
+    return Object.assign(g, { L, bottom: g.y + (8 + L) * s, w: 30 * s, h: (12 + L + hh) * s, top: g.y - 4 * s, hold: { x: g.x, y: g.y - 2 * s }, holdHalf: 4 * s, anchor: { x: g.x + 9 * s, y: g.y + (8 + L / 2) * s } });
+  },
+  draw(el, g, cx) {
+    const { x, y, s, L } = g, n = Math.max(4, Math.round(+el.coils || 12)), c = col(el.color, '#7d8698');
+    let d = `M0,0 V6`; for (let i = 0; i < n; i++) d += ` L${i % 2 ? -7 : 7},${r2(6 + L * (i + .5) / n)}`; d += ` L0,${r2(6 + L)} V${r2(8 + L)}`;
+    const hang = el.hang ? hangSvg(el.hang, 0, 8 + L, 1, { text: el.hangText, n: el.n, color: el.hangColor }).svg : '';
+    const dur = '1.2s', k = (L + 8) * .14;
+    const coil = `<g>${el.osc ? A(`<animateTransform attributeName="transform" type="scale" values="1 1;1 ${r2(1 + k / (L + 8))};1 1" dur="${dur}" repeatCount="indefinite"/>`) : ''}<path d="${d}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/></g>`;
+    const body = `<g>${el.osc ? A(`<animateTransform attributeName="transform" type="translate" values="0 0;0 ${r2(k)};0 0" dur="${dur}" repeatCount="indefinite"/>`) : ''}${hang}</g>`;
+    if (el.osc) cx.front.push(`<g data-lk-skip="1" transform="translate(${r2(x + 22 * s)},${r2(g.bottom + 10 * s)}) scale(${s})"><path d="M0,-12 V12 M-4,-7 L0,-12 L4,-7 M-4,7 L0,12 L4,7" fill="none" stroke="#b14de0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>`);
+    return `<g transform="translate(${r2(x)},${r2(y)}) scale(${s})"><circle cy="-1" r="3.2" fill="none" stroke="${DARK}" stroke-width="1.8"/>${coil}${body}</g>`;
+  }
+};
+// 삼각대에 꽂은 촬영용 스마트폰: h(삼각대 높이, 기본 120), dir:'left'면 왼쪽을 찍는다, to:'id' 또는 [x,y]면 찍는 범위(점선), rec:false면 녹화 표시 없음
+T.camera = {
+  geo(el, R) { const g = bplace(el, R), s = g.s, h = el.h ?? 120; return Object.assign(g, { ch: h, f: el.dir === 'left' ? -1 : 1, w: 64 * s, h: (h + 22) * s, top: g.y - (h + 22) * s, lens: { x: g.x + (el.dir === 'left' ? -1 : 1) * 24 * s, y: g.y - (h + 11) * s }, anchor: { x: g.x + 28 * s, y: g.y - (h + 11) * s } }); },
+  draw(el, g, cx) {
+    const s = g.s, h = g.ch, f = g.f;
+    if (el.to != null) {
+      const t = typeof el.to === 'string' ? cx.R(el.to) : null, p = t ? null : pt(el.to, cx.R);
+      const top = t ? (t.top ?? t.y) : 0, a = t ? { x: t.x, y: top - 10 } : p, b = t ? { x: t.x, y: (t.h != null ? top + t.h : t.y) + 4 } : p && { x: p.x, y: p.y + 30 }; // 대상의 위~아래
+      if (a && b) cx.front.push(`<g data-lk-skip="1"><path d="M${r2(g.lens.x)},${r2(g.lens.y)} L${r2(a.x)},${r2(a.y)} L${r2(b.x)},${r2(b.y)} Z" fill="#b14de0" opacity=".07"/><path d="M${r2(a.x)},${r2(a.y)} L${r2(g.lens.x)},${r2(g.lens.y)} L${r2(b.x)},${r2(b.y)}" fill="none" stroke="#b14de0" stroke-width="1.3" stroke-dasharray="4 4" opacity=".75"/></g>`);
+    }
+    return `<g transform="${tfm({ ...g, tilt: 0 })}"><path d="M0,${-h} L-30,0 M0,${-h} L30,0" stroke="${DARK}" stroke-width="3" stroke-linecap="round"/><path d="M0,${-h} L7,-2" stroke="${INK2}" stroke-width="2.4" stroke-linecap="round"/><rect x="-3" y="${-h - 4}" width="6" height="${h * .55}" fill="${METAL}" stroke="${INK}" stroke-width="1"/><rect x="-8" y="${-h - 6}" width="16" height="6" rx="2" fill="${DARK}"/><g transform="translate(0,${-h - 11})"><rect x="-30" y="-11" width="60" height="22" rx="5" fill="#2b3040"/><rect x="-26" y="-8" width="48" height="16" rx="2" fill="#dfe8f5"/><circle cx="${f * 25.5}" r="2.6" fill="#5a6274" stroke="#9aa2b4" stroke-width="1"/>${el.rec !== false ? `<circle cx="-18" cy="-3" r="2.4" fill="#e5484d">${A('<animate attributeName="opacity" values="1;.2;1" dur="1.2s" repeatCount="indefinite"/>')}</circle>` : ''}</g></g>`;
+  }
 };
 T.candle = {
   geo(el, R) { const g = bplace(el, R), h = el.h ?? 60; g.ch = h; g.w = 20 * g.s; g.h = (h + (el.lit === false ? 6 : 40)) * g.s; g.top = g.y - g.h; g.anchor = { x: g.x + 9 * g.s, y: g.y - h * .5 * g.s }; return g; },
@@ -3980,7 +4236,7 @@ function overlaps(root, o = {}) {
 }
 
 /* ---------- x 자동 배치: 실험대에 서는 부품 여러 개가 x를 생략하면 쓴 순서대로 빈자리에 왼쪽부터 놓는다 ---------- */
-const BENCHY = new Set([...Object.keys(SHAPES), 'rack', 'lamp', 'burner', 'tripod', 'hotplate', 'stirrer', 'balance', 'candle', 'ruler', 'weight', 'microscope', 'dish', 'petri', 'evapdish', 'watchglass', 'mortar', 'plant', 'ramp', 'cart', 'block', 'ball', 'magnet', 'ice', 'powder', 'gasburner', 'bunsen', 'lens', 'mirror', 'prism', 'lightbox', 'screen', 'power', 'tuningfork', 'rock', 'streak', 'strata', 'globe', 'tuberack', 'spincolumn', 'centrifuge', 'thermocycler', 'geltank', 'electrophoresis', 'uvlamp', 'freezer', 'wellplate', 'meter']);
+const BENCHY = new Set([...Object.keys(SHAPES), 'rack', 'lamp', 'burner', 'tripod', 'hotplate', 'stirrer', 'balance', 'candle', 'ruler', 'weight', 'microscope', 'dish', 'petri', 'evapdish', 'watchglass', 'mortar', 'plant', 'ramp', 'cart', 'block', 'ball', 'magnet', 'ice', 'powder', 'gasburner', 'bunsen', 'lens', 'mirror', 'prism', 'lightbox', 'screen', 'power', 'tuningfork', 'rock', 'streak', 'strata', 'globe', 'tuberack', 'spincolumn', 'centrifuge', 'thermocycler', 'geltank', 'electrophoresis', 'uvlamp', 'freezer', 'wellplate', 'meter', 'table', 'track', 'camera', 'photogate']);
 function autoX(all) {
   const M = 16, PAD = 10, placed = el => ['on', 'in', 'over', 'into'].some(k => typeof el[k] === 'string');
   const width = el => { try { return Math.max(12, (T[el.t] || T._unknown).geo({ ...el, x: 240 }, () => null).w || 60); } catch (e) { return 60; } };
@@ -4070,7 +4326,7 @@ function scene(items, o = {}) {
   const bench = o.bench !== false;
   return `<svg class="scene" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label || '실험 장면')}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="${P}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#faf6ff"/></linearGradient><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs><rect width="${W}" height="${H}" fill="url(#${P}bg)"/>${bench ? `<rect y="${BENCH}" width="${W}" height="${H - BENCH}" fill="#f2ecf9"/><rect y="${BENCH}" width="${W}" height="2" fill="#e4d9f1"/>` : ''}${body}${cx.front.join('')}${layoutLabels(cx.labels, cx.sh)}${o.grid ? grid() : ''}</svg>`;
 }
-const GUESS = [['오목받침 유리','wellplate:slide'],['오목 받침 유리','wellplate:slide'],['오목받침유리','wellplate:slide'],['홈판','wellplate'],['웰 플레이트','wellplate'],['웰플레이트','wellplate'],['pH 미터','meter:ph'],['pH미터','meter:ph'],['pH 측정기','meter:ph'],['디지털 온도계','meter:temp'],['탐침 온도계','meter:temp'],['멀티미터','meter:multi'],['멀티 미터','meter:multi'],['멀티테스터','meter:multi'],['멀티 테스터','meter:multi'],['디지털 전압계','meter:multi'],['디지털 전류계','meter:multi'],['전기 전도계','meter:conduct'],['전도계','meter:conduct'],['마이크로피펫','micropipette'],['마이크로 피펫','micropipette'],['튜브 꽂이','tuberack'],['튜브꽂이','tuberack'],['튜브 랙','tuberack'],['튜브랙','tuberack'],['마이크로튜브','microtube'],['마이크로 튜브','microtube'],['E-tube','microtube'],['에펜도르프','microtube'],['PCR 튜브','pcrtube'],['PCR튜브','pcrtube'],['스핀 컬럼','spincolumn'],['스핀컬럼','spincolumn'],['스핀 칼럼','spincolumn'],['바인딩 컬럼','spincolumn'],['Binding Column','spincolumn'],['원심분리기','centrifuge'],['원심 분리기','centrifuge'],['PCR 기기','thermocycler'],['PCR기기','thermocycler'],['써멀 사이클러','thermocycler'],['써멀사이클러','thermocycler'],['열 순환기','thermocycler'],['열순환기','thermocycler'],['전기 영동','geltank'],['전기영동','geltank'],['UV 램프','uvlamp'],['UV램프','uvlamp'],['자외선 램프','uvlamp'],['자외선램프','uvlamp'],['UV 조명','uvlamp'],['자외선 조명','uvlamp'],['트랜스일루미네이터','uvlamp'],['냉동고','freezer'],['냉장고','freezer'],['가지 달린','roundflask:arm'],['가지달린','roundflask:arm'],['뷰렛','burette'],['집기병','gasjar'],['분별 깔때기','sepfunnel'],['분별깔때기','sepfunnel'],['냉각기','condenser'],['리비히','condenser'],['가스 버너','gasburner'],['분젠','gasburner'],['오목 거울','mirror:concave'],['오목거울','mirror:concave'],['볼록 거울','mirror:convex'],['볼록거울','mirror:convex'],['오목 렌즈','lens:concave'],['오목렌즈','lens:concave'],['거울','mirror'],['렌즈','lens'],['프리즘','prism'],['광원','lightbox'],['스크린','screen'],['전원 장치','power'],['전원장치','power'],['직류 전원','power'],['소리굽쇠','tuningfork'],['조흔판','streak'],['지층','strata'],['지구본','globe'],['지구의','globe'],['화강암','rock:granite'],['현무암','rock:basalt'],['사암','rock:sandstone'],['석회암','rock:limestone'],['셰일','rock:shale'],['역암','rock:conglomerate'],['편마암','rock:gneiss'],['대리암','rock:marble'],['석영','rock:quartz'],['방해석','rock:calcite'],['암석','rock'],['광물','rock:quartz'],['부피 플라스크','volumetric'],['부피플라스크','volumetric'],['압력 센서','sensor:pressure'],['온도 센서','sensor:temp'],['pH 센서','sensor:ph'],['이산화 탄소 센서','sensor:co2'],['이산화탄소 센서','sensor:co2'],['CO2 센서','sensor:co2'],['CO₂ 센서','sensor:co2'],['산소 센서','sensor:o2'],['조도 센서','sensor:light'],['빛 센서','sensor:light'],['힘 센서','sensor:force'],['센서','sensor'],['스마트기기','device'],['스마트 기기','device'],['태블릿','device'],['교반기','stirrer'],['마그네틱','stirbar'],['반투막','bag'],['셀로판','bag'],['케이블타이','cabletie'],['케이블 타이','cabletie'],['핀셋','tweezers'],['약포지','powder:paper'],['눈금실린더','cylinder'],['눈금 실린더','cylinder'],['메스실린더','cylinder'],['둥근바닥','roundflask'],['플라스크','flask'],['비커','beaker'],['시험관대','rack'],['시험관 꽂이','rack'],['시험관','tube'],['스포이트','dropper'],['피펫','dropper'],['알코올램프','lamp'],['알코올 램프','lamp'],['가스버너','gasburner'],['핫플레이트','hotplate'],['가열 장치','hotplate'],['가열장치','hotplate'],['온도계','thermometer'],['유리 막대','rod'],['유리막대','rod'],['약숟가락','spatula'],['약수저','spatula'],['깔때기','funnel'],['거름종이','paper:filter'],['여과지','paper:filter'],['리트머스','paper'],['시험지','paper'],['스탠드','stand'],['삼발이','tripod'],['쇠그물','tripod'],['저울','balance'],['초시계','stopwatch'],['스톱워치','stopwatch'],['타이머','stopwatch'],['페트리','dish'],['증발 접시','evapdish'],['증발접시','evapdish'],['시계 접시','watchglass'],['시계접시','watchglass'],['시약병','bottle'],['현미경','microscope'],['받침 유리','slide'],['받침유리','slide'],['덮개 유리','slide'],['슬라이드','slide'],['돋보기','magnifier'],['자석','magnet'],['나침반','compass'],['건전지','battery'],['전지','battery'],['전구','bulb'],['스위치','switch'],['전류계','ammeter'],['전압계','voltmeter'],['저항','resistor'],['전동기','motor'],['모터','motor'],['발광 다이오드','led'],['LED','led'],['전선','wire'],['용수철저울','springscale'],['용수철 저울','springscale'],['나무 도막','block'],['나무도막','block'],['수레','cart'],['양초','candle'],['성냥','match'],['보안경','goggles'],['장갑','gloves'],['얼음','ice'],['종이컵','cup:paper'],['컵','cup'],['수조','trough'],['막자사발','mortar'],['막자','mortar'],['주사기','syringe'],['고무관','hose'],['식물','plant'],['화분','plant'],['잎','leaf'],['가루','powder'],['소금','powder'],['설탕','powder'],['용액','bottle'],['증류수','bottle'],['구슬','ball'],['공','ball'],['빗면','ramp'],['자','ruler:1'],['추','weight:1'],['초','candle:1']];
+const GUESS = [['저마찰 트랙','track'],['역학 트랙','track'],['역학 레일','track'],['포토게이트','photogate'],['광게이트','photogate'],['광 게이트','photogate'],['속력 측정기','photogate'],['도르래','pulley'],['추걸이','weight:hanger'],['삼각대','camera'],['카메라','camera'],['책상','table'],['오목받침 유리','wellplate:slide'],['오목 받침 유리','wellplate:slide'],['오목받침유리','wellplate:slide'],['홈판','wellplate'],['웰 플레이트','wellplate'],['웰플레이트','wellplate'],['pH 미터','meter:ph'],['pH미터','meter:ph'],['pH 측정기','meter:ph'],['디지털 온도계','meter:temp'],['탐침 온도계','meter:temp'],['멀티미터','meter:multi'],['멀티 미터','meter:multi'],['멀티테스터','meter:multi'],['멀티 테스터','meter:multi'],['디지털 전압계','meter:multi'],['디지털 전류계','meter:multi'],['전기 전도계','meter:conduct'],['전도계','meter:conduct'],['마이크로피펫','micropipette'],['마이크로 피펫','micropipette'],['튜브 꽂이','tuberack'],['튜브꽂이','tuberack'],['튜브 랙','tuberack'],['튜브랙','tuberack'],['마이크로튜브','microtube'],['마이크로 튜브','microtube'],['E-tube','microtube'],['에펜도르프','microtube'],['PCR 튜브','pcrtube'],['PCR튜브','pcrtube'],['스핀 컬럼','spincolumn'],['스핀컬럼','spincolumn'],['스핀 칼럼','spincolumn'],['바인딩 컬럼','spincolumn'],['Binding Column','spincolumn'],['원심분리기','centrifuge'],['원심 분리기','centrifuge'],['PCR 기기','thermocycler'],['PCR기기','thermocycler'],['써멀 사이클러','thermocycler'],['써멀사이클러','thermocycler'],['열 순환기','thermocycler'],['열순환기','thermocycler'],['전기 영동','geltank'],['전기영동','geltank'],['UV 램프','uvlamp'],['UV램프','uvlamp'],['자외선 램프','uvlamp'],['자외선램프','uvlamp'],['UV 조명','uvlamp'],['자외선 조명','uvlamp'],['트랜스일루미네이터','uvlamp'],['냉동고','freezer'],['냉장고','freezer'],['가지 달린','roundflask:arm'],['가지달린','roundflask:arm'],['뷰렛','burette'],['집기병','gasjar'],['분별 깔때기','sepfunnel'],['분별깔때기','sepfunnel'],['냉각기','condenser'],['리비히','condenser'],['가스 버너','gasburner'],['분젠','gasburner'],['오목 거울','mirror:concave'],['오목거울','mirror:concave'],['볼록 거울','mirror:convex'],['볼록거울','mirror:convex'],['오목 렌즈','lens:concave'],['오목렌즈','lens:concave'],['거울','mirror'],['렌즈','lens'],['프리즘','prism'],['광원','lightbox'],['스크린','screen'],['전원 장치','power'],['전원장치','power'],['직류 전원','power'],['소리굽쇠','tuningfork'],['조흔판','streak'],['지층','strata'],['지구본','globe'],['지구의','globe'],['화강암','rock:granite'],['현무암','rock:basalt'],['사암','rock:sandstone'],['석회암','rock:limestone'],['셰일','rock:shale'],['역암','rock:conglomerate'],['편마암','rock:gneiss'],['대리암','rock:marble'],['석영','rock:quartz'],['방해석','rock:calcite'],['암석','rock'],['광물','rock:quartz'],['부피 플라스크','volumetric'],['부피플라스크','volumetric'],['압력 센서','sensor:pressure'],['온도 센서','sensor:temp'],['pH 센서','sensor:ph'],['이산화 탄소 센서','sensor:co2'],['이산화탄소 센서','sensor:co2'],['CO2 센서','sensor:co2'],['CO₂ 센서','sensor:co2'],['산소 센서','sensor:o2'],['조도 센서','sensor:light'],['빛 센서','sensor:light'],['힘 센서','sensor:force'],['센서','sensor'],['스마트기기','device'],['스마트 기기','device'],['태블릿','device'],['교반기','stirrer'],['마그네틱','stirbar'],['반투막','bag'],['셀로판','bag'],['케이블타이','cabletie'],['케이블 타이','cabletie'],['핀셋','tweezers'],['약포지','powder:paper'],['눈금실린더','cylinder'],['눈금 실린더','cylinder'],['메스실린더','cylinder'],['둥근바닥','roundflask'],['플라스크','flask'],['비커','beaker'],['시험관대','rack'],['시험관 꽂이','rack'],['시험관','tube'],['스포이트','dropper'],['피펫','dropper'],['알코올램프','lamp'],['알코올 램프','lamp'],['가스버너','gasburner'],['핫플레이트','hotplate'],['가열 장치','hotplate'],['가열장치','hotplate'],['온도계','thermometer'],['유리 막대','rod'],['유리막대','rod'],['약숟가락','spatula'],['약수저','spatula'],['깔때기','funnel'],['거름종이','paper:filter'],['여과지','paper:filter'],['리트머스','paper'],['시험지','paper'],['스탠드','stand'],['삼발이','tripod'],['쇠그물','tripod'],['저울','balance'],['초시계','stopwatch'],['스톱워치','stopwatch'],['타이머','stopwatch'],['페트리','dish'],['증발 접시','evapdish'],['증발접시','evapdish'],['시계 접시','watchglass'],['시계접시','watchglass'],['시약병','bottle'],['현미경','microscope'],['받침 유리','slide'],['받침유리','slide'],['덮개 유리','slide'],['슬라이드','slide'],['돋보기','magnifier'],['자석','magnet'],['나침반','compass'],['건전지','battery'],['전지','battery'],['전구','bulb'],['스위치','switch'],['전류계','ammeter'],['전압계','voltmeter'],['저항','resistor'],['전동기','motor'],['모터','motor'],['발광 다이오드','led'],['LED','led'],['전선','wire'],['용수철저울','springscale'],['용수철 저울','springscale'],['용수철','spring'],['나무 도막','block'],['나무도막','block'],['수레','cart'],['양초','candle'],['성냥','match'],['보안경','goggles'],['장갑','gloves'],['얼음','ice'],['종이컵','cup:paper'],['컵','cup'],['수조','trough'],['막자사발','mortar'],['막자','mortar'],['주사기','syringe'],['고무관','hose'],['식물','plant'],['화분','plant'],['잎','leaf'],['가루','powder'],['소금','powder'],['설탕','powder'],['용액','bottle'],['증류수','bottle'],['구슬','ball'],['공','ball'],['빗면','ramp'],['자','ruler:1'],['추','weight:1'],['초','candle:1']];
 function guess(name) {
   const n = String(name || '').replace(/\(.*?\)/g, '').trim();
   for (const [k, v] of GUESS) { const [t, flag] = v.split(':'); if (flag === '1') { if (n === k || n.startsWith(k + ' ')) return { t }; continue; } if (n.includes(k)) return flag === 'filter' ? { t, kind: 'filter' } : flag === 'paper' ? { t, paper: true } : flag === 'arm' ? { t, arm: true } : flag ? { t, kind: flag } : t === 'bottle' ? { t, text: n.slice(0, 5), fill: .55 } : { t }; }

@@ -203,6 +203,36 @@
       {"t":"syringe","id":"sy","x":215,"y":205,"tilt":90,"vol":"50 mL","amount":"40 mL","gas":"#eef3f8"},
       {"t":"hose","from":"ps","to":"sy","points":[[135,205]]},
       {"t":"device","x":395,"y":70,"s":0.75,"link":"ps","title":"압력 (kPa)","graph":"live"}
+    ] },
+  { "title": "기울인 트랙에서 수레를 놓고 촬영하기", "text": "track의 h로 높은 쪽을 올리고(받침은 support), 수레는 on·at으로 트랙 위에. camera의 to로 찍는 범위를 보인다.",
+    "scene": [
+      {"t":"track","id":"tr","x":285,"w":330,"h":56},
+      {"t":"cart","id":"c","on":"tr","at":0.08},
+      {"t":"arrow","from":[198,196],"to":[340,220],"flow":true,"color":"#b14de0"},
+      {"t":"camera","x":55,"to":"c","h":118}
+    ] },
+  { "title": "도르래에 추걸이를 매달아 수레 끌기", "text": "추가 내려갈 자리가 있게 트랙을 table 위에 놓는다. pulley의 from으로 수레와 실을 잇고, 포토게이트는 트랙의 at 자리에.",
+    "scene": [
+      {"t":"table","id":"tb","x":205,"w":340,"h":120},
+      {"t":"track","id":"tr","on":"tb","x":210,"w":300},
+      {"t":"cart","id":"c","on":"tr","at":0.12},
+      {"t":"photogate","id":"pg","on":"tr","at":0.62},
+      {"t":"pulley","on":"tr","from":"c","drop":64},
+      {"t":"device","x":400,"y":48,"s":0.62,"link":"pg","title":"속력","graph":"live"}
+    ] },
+  { "title": "용수철에 추를 매달고 늘어난 길이 재기", "text": "spring의 위 고리를 스탠드 hold로 잡고, stretch로 늘어난 정도를 준다. 길이는 세운 자(ruler tilt:-90) 옆에서 읽는다.",
+    "scene": [
+      {"t":"stand","hold":"sp"},
+      {"t":"spring","id":"sp","x":230,"y":64,"hang":"weight","hangText":"50 g","stretch":0.25},
+      {"t":"ruler","x":272,"y":156,"tilt":-90},
+      {"t":"eye","x":385,"y":176,"to":[262,176]}
+    ] },
+  { "title": "책상 끝으로 공을 굴려 촬영하기", "text": "table 위의 공은 on·at으로. 굴러가는 방향은 arrow, 촬영 범위는 camera의 to.",
+    "scene": [
+      {"t":"table","id":"tb","x":150,"w":250,"h":122},
+      {"t":"ball","on":"tb","at":0.55,"r":9},
+      {"t":"arrow","from":[175,134],"to":[255,134],"flow":true,"color":"#b14de0"},
+      {"t":"camera","x":405,"dir":"left","to":[300,210],"h":130}
     ] }
   ]
 }

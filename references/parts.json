@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.11.0",
+ "engine": "1.12.0",
  "common": [
   "t",
   "id",
@@ -188,13 +188,21 @@
    "vol"
   ],
   "cabletie": [],
+  "camera": [
+   "dir",
+   "h",
+   "rec",
+   "to"
+  ],
   "candle": [
    "color",
    "h",
    "lit"
   ],
   "cart": [
-   "color"
+   "color",
+   "load",
+   "text"
   ],
   "centrifuge": [
    "lid",
@@ -573,6 +581,9 @@
    "vol",
    "volText"
   ],
+  "photogate": [
+   "beam"
+  ],
   "plant": [
    "bag",
    "color",
@@ -613,6 +624,15 @@
    "from",
    "length",
    "light"
+  ],
+  "pulley": [
+   "drop",
+   "from",
+   "hang",
+   "hangColor",
+   "hangText",
+   "n",
+   "side"
   ],
   "rack": [
    "color",
@@ -714,6 +734,17 @@
    "tag",
    "waste"
   ],
+  "spring": [
+   "coils",
+   "color",
+   "hang",
+   "hangColor",
+   "hangText",
+   "length",
+   "n",
+   "osc",
+   "stretch"
+  ],
   "springscale": [
    "hang",
    "hangColor",
@@ -760,6 +791,11 @@
    "to",
    "vol"
   ],
+  "table": [
+   "color",
+   "h",
+   "w"
+  ],
   "text": [
    "anchor",
    "color",
@@ -775,6 +811,13 @@
   "thermometer": [
    "level",
    "reading"
+  ],
+  "track": [
+   "dir",
+   "h",
+   "scale",
+   "support",
+   "w"
   ],
   "tripod": [
    "gauze"
@@ -913,6 +956,8 @@
   ],
   "weight": [
    "color",
+   "kind",
+   "n",
    "text"
   ],
   "wellplate": [
@@ -986,6 +1031,12 @@
     "egg",
     "ice",
     "icebath"
+   ]
+  },
+  "camera": {
+   "dir": [
+    "left",
+    "right"
    ]
   },
   "cup": {
@@ -1175,6 +1226,17 @@
     "right"
    ]
   },
+  "pulley": {
+   "hang": [
+    "hanger",
+    "weight",
+    "block"
+   ],
+   "side": [
+    "left",
+    "right"
+   ]
+  },
   "ramp": {
    "dir": [
     "left",
@@ -1227,6 +1289,25 @@
     "light",
     "force",
     "other"
+   ]
+  },
+  "spring": {
+   "hang": [
+    "weight",
+    "block",
+    "hanger",
+    "phone"
+   ]
+  },
+  "track": {
+   "dir": [
+    "left",
+    "right"
+   ],
+   "support": [
+    "block",
+    "stand",
+    "none"
    ]
   },
   "trough": {
@@ -1288,6 +1369,11 @@
     "icebath"
    ]
   },
+  "weight": {
+   "kind": [
+    "hanger"
+   ]
+  },
   "wellplate": {
    "kind": [
     "plastic",
@@ -1329,6 +1415,18 @@
   }
  },
  "guess": {
+  "저마찰 트랙": "track",
+  "역학 트랙": "track",
+  "역학 레일": "track",
+  "포토게이트": "photogate",
+  "광게이트": "photogate",
+  "광 게이트": "photogate",
+  "속력 측정기": "photogate",
+  "도르래": "pulley",
+  "추걸이": "weight:hanger",
+  "삼각대": "camera",
+  "카메라": "camera",
+  "책상": "table",
   "오목받침 유리": "wellplate:slide",
   "오목 받침 유리": "wellplate:slide",
   "오목받침유리": "wellplate:slide",
@@ -1512,6 +1610,7 @@
   "전선": "wire",
   "용수철저울": "springscale",
   "용수철 저울": "springscale",
+  "용수철": "spring",
   "나무 도막": "block",
   "나무도막": "block",
   "수레": "cart",
