@@ -98,7 +98,8 @@ AI는 그림 코드를 직접 짜지 않습니다. 실험지를 읽어 **데이�
 ## 한계
 
 - 그림은 이해를 돕는 **모식도**입니다. 실제 기구의 모양·크기와 다를 수 있습니다.
-- 부품에 없는 기구는 가장 비슷한 부품으로 그리거나 간단한 도형으로 대신합니다. [부품 카탈로그](https://sci-eum.github.io/experiment-visualizer/examples/gallery.html)를 참고하세요.
+- 실험대에서 기구로 하는 **실험 활동**만 만듭니다. 조사·자료 해석·시뮬레이션·종이 모형 같은 활동은 만들지 않고 까닭을 알려 줍니다. 과정을 학생이 설계하는 활동은 선생님이 정한 과정을 받아 만들거나, 준비물과 설계 물음만 담은 설계 안내판으로 만듭니다. 탐구 활동이 여러 개 든 문서는 목록을 보여 주고 고르게 합니다.
+- 부품에 없는 기구는 다른 기구로 바꿔 그리지 않고, 같은 일을 하는 부품에 이름표를 붙이거나 간단한 도형으로 대신합니다. [부품 카탈로그](https://sci-eum.github.io/experiment-visualizer/examples/gallery.html)를 참고하세요.
 - AI가 원문을 잘못 읽을 수 있습니다. 수업에 쓰기 전에 **양·농도·순서를 꼭 확인**하세요.
 - 코드 실행이 안 되는 AI는 "가벼운 HTML"을 만드는데, 이 파일은 열 때 인터넷이 필요합니다 (그림 엔진을 jsDelivr에서 불러옴). 코드 실행이 되면 인터넷 없이 열리는 한 파일로 만듭니다.
 
@@ -110,13 +111,13 @@ references/data.md      데이터 형식 (항목, 수업 기능, 원문 대응 �
 references/build.md     환경별 만들기 방법과 그림 점검 (도구 내려받기, 가벼운 HTML 틀)
 references/parts.md     부품 목록 (장면을 쓸 때 AI가 연다)
 references/scenes.md    장면 예시 (examples/recipes.json으로 자동 생성)
-references/parts.json   부품마다 쓰는 속성 목록 (엔진에서 자동 생성, 데이터 검사에 쓴다)
+references/parts.json   부품마다 쓰는 속성·정해진 값 목록, 준비물 이름 짐작표 (엔진에서 자동 생성, 데이터 검사에 쓴다)
 assets/labkit.js        그림 엔진 + 화면 (원본)
 assets/template.html    엔진을 품은 한 파일짜리 틀 (labkit.js로 자동 생성)
 assets/light.html       엔진을 CDN에서 불러오는 가벼운 틀
 scripts/build_html.py   데이터(JSON) + 틀 → 완성 HTML (전에 만든 HTML을 넣으면 최신 엔진으로 다시 만듦)
 scripts/extract_data.py 전에 만든 HTML에서 데이터(JSON) 꺼내기 (다시 고칠 때)
-scripts/check_data.py   만들기 전에 데이터 검사 (오타·없는 부품·id 중복·부피·용량 초과·원문 숫자 대조)
+scripts/check_data.py   만들기 전에 데이터 검사 (오타·없는 부품·정해진 값·id 중복·부피·용량 초과·원문 숫자 대조·준비물 아이콘 짐작·긴 타이머)
 scripts/extract_text.py hwp·hwpx·docx·pptx·pdf에서 글자 꺼내기 (표준 라이브러리만 사용)
 scripts/check_render.py 헤드리스 Chrome·Edge로 열어 오류·겹침 확인, 장면을 PNG로 찍기
 examples/               예시 실험지와 결과물, 장면 예시, 부품 카탈로그
@@ -147,8 +148,8 @@ python scripts/make_skill_zip.py                                 # dist/experime
 - 태그를 push하면 [배포](.github/workflows/release.yml)가 점검을 다시 돌린 뒤, 태그와 엔진 버전이 같은지 보고 Release를 만들어 스킬 zip을 붙이고 jsDelivr `@1` 캐시(엔진·문서·도구)를 비웁니다. 릴리스 노트는 태그 메시지로 씁니다.
 
 ```bash
-git tag -a v1.10.1 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
-git push origin v1.10.1
+git tag -a v1.10.2 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
+git push origin v1.10.2
 ```
 
 ## 라이선스

@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.10.1",
+ "engine": "1.10.2",
  "common": [
   "t",
   "id",
@@ -910,5 +910,536 @@
    "points",
    "to"
   ]
+ },
+ "values": {
+  "_common": {
+   "labelSide": [
+    "left",
+    "right"
+   ]
+  },
+  "bag": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "beaker": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "bottle": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "cup": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "cylinder": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "device": {
+   "graph": [
+    "live",
+    "rise",
+    "fall",
+    "flat",
+    "boil",
+    "cool",
+    "freeze",
+    "exo",
+    "endo"
+   ]
+  },
+  "dish": {
+   "items": [
+    "seeds",
+    "colony",
+    "beans",
+    "cells"
+   ]
+  },
+  "flask": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "gasburner": {
+   "flame": [
+    "yellow",
+    "blue"
+   ]
+  },
+  "gasjar": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "globe": {
+   "night": [
+    "left",
+    "right"
+   ]
+  },
+  "lens": {
+   "kind": [
+    "convex",
+    "concave"
+   ]
+  },
+  "lightbox": {
+   "dir": [
+    "left",
+    "right"
+   ]
+  },
+  "mark": {
+   "kind": [
+    "ok",
+    "no",
+    "x"
+   ]
+  },
+  "microtube": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "mirror": {
+   "kind": [
+    "plane",
+    "concave",
+    "convex"
+   ]
+  },
+  "note": {
+   "icon": [
+    "eye",
+    "how",
+    "tip",
+    "time",
+    "ok",
+    "no",
+    "warn",
+    "idea",
+    "result"
+   ]
+  },
+  "paper": {
+   "kind": [
+    "filter"
+   ]
+  },
+  "pcrtube": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "pour": {
+   "side": [
+    "left",
+    "right"
+   ]
+  },
+  "ramp": {
+   "dir": [
+    "left",
+    "right"
+   ]
+  },
+  "rock": {
+   "kind": [
+    "granite",
+    "basalt",
+    "sandstone",
+    "limestone",
+    "shale",
+    "conglomerate",
+    "gneiss",
+    "marble",
+    "quartz",
+    "calcite"
+   ]
+  },
+  "roundflask": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "screen": {
+   "image": [
+    "inverted",
+    "upright"
+   ]
+  },
+  "sensor": {
+   "kind": [
+    "temp",
+    "pressure",
+    "ph",
+    "other"
+   ]
+  },
+  "trough": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "tube": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  },
+  "view": {
+   "show": [
+    "plantcells",
+    "animalcells",
+    "solid",
+    "liquid",
+    "gas",
+    "crystals",
+    "bubbles"
+   ]
+  },
+  "volumetric": {
+   "solid": [
+    "powder",
+    "precipitate",
+    "crystals",
+    "chips",
+    "zinc",
+    "magnesium",
+    "nail",
+    "block",
+    "leaf",
+    "egg",
+    "ice",
+    "icebath"
+   ]
+  }
+ },
+ "guess": {
+  "마이크로피펫": "micropipette",
+  "마이크로 피펫": "micropipette",
+  "튜브 꽂이": "tuberack",
+  "튜브꽂이": "tuberack",
+  "튜브 랙": "tuberack",
+  "튜브랙": "tuberack",
+  "마이크로튜브": "microtube",
+  "마이크로 튜브": "microtube",
+  "E-tube": "microtube",
+  "에펜도르프": "microtube",
+  "PCR 튜브": "pcrtube",
+  "PCR튜브": "pcrtube",
+  "스핀 컬럼": "spincolumn",
+  "스핀컬럼": "spincolumn",
+  "스핀 칼럼": "spincolumn",
+  "바인딩 컬럼": "spincolumn",
+  "Binding Column": "spincolumn",
+  "원심분리기": "centrifuge",
+  "원심 분리기": "centrifuge",
+  "PCR 기기": "thermocycler",
+  "PCR기기": "thermocycler",
+  "써멀 사이클러": "thermocycler",
+  "써멀사이클러": "thermocycler",
+  "열 순환기": "thermocycler",
+  "열순환기": "thermocycler",
+  "전기 영동": "geltank",
+  "전기영동": "geltank",
+  "UV 램프": "uvlamp",
+  "UV램프": "uvlamp",
+  "자외선 램프": "uvlamp",
+  "자외선램프": "uvlamp",
+  "UV 조명": "uvlamp",
+  "자외선 조명": "uvlamp",
+  "트랜스일루미네이터": "uvlamp",
+  "냉동고": "freezer",
+  "냉장고": "freezer",
+  "가지 달린": "roundflask:arm",
+  "가지달린": "roundflask:arm",
+  "뷰렛": "burette",
+  "집기병": "gasjar",
+  "분별 깔때기": "sepfunnel",
+  "분별깔때기": "sepfunnel",
+  "냉각기": "condenser",
+  "리비히": "condenser",
+  "가스 버너": "gasburner",
+  "분젠": "gasburner",
+  "오목 거울": "mirror:concave",
+  "오목거울": "mirror:concave",
+  "볼록 거울": "mirror:convex",
+  "볼록거울": "mirror:convex",
+  "오목 렌즈": "lens:concave",
+  "오목렌즈": "lens:concave",
+  "거울": "mirror",
+  "렌즈": "lens",
+  "프리즘": "prism",
+  "광원": "lightbox",
+  "스크린": "screen",
+  "전원 장치": "power",
+  "전원장치": "power",
+  "직류 전원": "power",
+  "소리굽쇠": "tuningfork",
+  "조흔판": "streak",
+  "지층": "strata",
+  "지구본": "globe",
+  "지구의": "globe",
+  "화강암": "rock:granite",
+  "현무암": "rock:basalt",
+  "사암": "rock:sandstone",
+  "석회암": "rock:limestone",
+  "셰일": "rock:shale",
+  "역암": "rock:conglomerate",
+  "편마암": "rock:gneiss",
+  "대리암": "rock:marble",
+  "석영": "rock:quartz",
+  "방해석": "rock:calcite",
+  "암석": "rock",
+  "광물": "rock:quartz",
+  "부피 플라스크": "volumetric",
+  "부피플라스크": "volumetric",
+  "압력 센서": "sensor:pressure",
+  "온도 센서": "sensor:temp",
+  "pH 센서": "sensor:ph",
+  "센서": "sensor",
+  "스마트기기": "device",
+  "스마트 기기": "device",
+  "태블릿": "device",
+  "교반기": "stirrer",
+  "마그네틱": "stirbar",
+  "반투막": "bag",
+  "셀로판": "bag",
+  "케이블타이": "cabletie",
+  "케이블 타이": "cabletie",
+  "핀셋": "tweezers",
+  "약포지": "powder:paper",
+  "눈금실린더": "cylinder",
+  "눈금 실린더": "cylinder",
+  "메스실린더": "cylinder",
+  "둥근바닥": "roundflask",
+  "플라스크": "flask",
+  "비커": "beaker",
+  "시험관대": "rack",
+  "시험관 꽂이": "rack",
+  "시험관": "tube",
+  "스포이트": "dropper",
+  "피펫": "dropper",
+  "알코올램프": "lamp",
+  "알코올 램프": "lamp",
+  "가스버너": "gasburner",
+  "핫플레이트": "hotplate",
+  "가열 장치": "hotplate",
+  "가열장치": "hotplate",
+  "온도계": "thermometer",
+  "유리 막대": "rod",
+  "유리막대": "rod",
+  "약숟가락": "spatula",
+  "약수저": "spatula",
+  "깔때기": "funnel",
+  "거름종이": "paper:filter",
+  "여과지": "paper:filter",
+  "리트머스": "paper",
+  "시험지": "paper",
+  "스탠드": "stand",
+  "삼발이": "tripod",
+  "쇠그물": "tripod",
+  "저울": "balance",
+  "초시계": "stopwatch",
+  "스톱워치": "stopwatch",
+  "타이머": "stopwatch",
+  "페트리": "dish",
+  "증발 접시": "evapdish",
+  "증발접시": "evapdish",
+  "시계 접시": "watchglass",
+  "시계접시": "watchglass",
+  "시약병": "bottle",
+  "현미경": "microscope",
+  "받침 유리": "slide",
+  "받침유리": "slide",
+  "덮개 유리": "slide",
+  "슬라이드": "slide",
+  "돋보기": "magnifier",
+  "자석": "magnet",
+  "나침반": "compass",
+  "건전지": "battery",
+  "전지": "battery",
+  "전구": "bulb",
+  "스위치": "switch",
+  "전류계": "ammeter",
+  "전압계": "voltmeter",
+  "저항": "resistor",
+  "전동기": "motor",
+  "모터": "motor",
+  "발광 다이오드": "led",
+  "LED": "led",
+  "전선": "wire",
+  "용수철저울": "springscale",
+  "용수철 저울": "springscale",
+  "나무 도막": "block",
+  "나무도막": "block",
+  "수레": "cart",
+  "양초": "candle",
+  "성냥": "match",
+  "보안경": "goggles",
+  "장갑": "gloves",
+  "얼음": "ice",
+  "종이컵": "cup:paper",
+  "컵": "cup",
+  "수조": "trough",
+  "막자사발": "mortar",
+  "막자": "mortar",
+  "주사기": "syringe",
+  "고무관": "hose",
+  "식물": "plant",
+  "화분": "plant",
+  "잎": "leaf",
+  "가루": "powder",
+  "소금": "powder",
+  "설탕": "powder",
+  "용액": "bottle",
+  "증류수": "bottle",
+  "구슬": "ball",
+  "공": "ball",
+  "빗면": "ramp",
+  "자": "ruler:1",
+  "추": "weight:1",
+  "초": "candle:1"
  }
 }

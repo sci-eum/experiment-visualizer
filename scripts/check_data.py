@@ -4,10 +4,11 @@
 사용법:
     python check_data.py experiment.json      (전에 만든 결과 .html도 된다)
 
-오류 (고쳐야 함): 필수 항목·자료형, 없는 부품 이름, 없는 속성(오타), 같은 장면의 id 중복,
-    가리키는 id가 없음, 부피를 읽지 못함, 넣은 양이 용량보다 많음, 잘못된 장면 이어받기, 남은 _demo
+오류 (고쳐야 함): 필수 항목·자료형, 없는 부품 이름, 없는 속성(오타), 정해진 값이 아님(kind·solid …),
+    같은 장면의 id 중복, 가리키는 id가 없음, 부피를 읽지 못함, 넣은 양이 용량보다 많음, 잘못된 장면 이어받기, 남은 _demo
 확인 (볼 것): 좌표가 장면 밖, 준비물에 용량이 적혔는데 장면·아이콘에 vol/fromVol이 없음,
-    설명·그림의 수치(양·온도·시간·농도 …)가 원문 근거 문장(origin.quote)에 없음 등
+    설명·그림의 수치(양·온도·시간·농도 …)가 원문 근거 문장(origin.quote)에 없음,
+    준비물 아이콘이 이름 짐작으로 다른 기구 그림이 됨('눈금 피펫' → 스포이트), 몇 시간짜리 타이머가 생김 등
 오류가 있으면 종료 코드 1.
 
 부품 목록은 스크립트 옆의 ../references/parts.json을 쓰고, 없으면 저장소에서 내려받는다.
@@ -43,6 +44,15 @@ NAME_T = [("눈금실린더", "cylinder"), ("눈금 실린더", "cylinder"), ("�
           ("부피플라스크", "volumetric"), ("둥근바닥", "roundflask"), ("삼각 플라스크", "flask"), ("삼각플라스크", "flask"),
           ("비커", "beaker"), ("시험관", "tube"), ("시약병", "bottle"), ("뷰렛", "burette"), ("컵", "cup"),
           ("마이크로튜브", "microtube"), ("마이크로 튜브", "microtube"), ("E-tube", "microtube"), ("PCR 튜브", "pcrtube"), ("PCR튜브", "pcrtube")]
+# 준비물 아이콘이 이름 짐작(엔진 GUESS)으로 다른 기구 그림이 되는 경우: (이름 무늬, 짐작한 부품이 이것이면, 그림 이름)
+MISGUESS = [
+    (re.compile(r"피펫"), {"dropper"}, "스포이트"),
+    (re.compile(r"(디지털|적외선|탐침)\s*온도계"), {"thermometer"}, "유리 막대 온도계"),
+    (re.compile(r"(시험관|비커|플라스크|뷰렛|깔때기|실린더|수조)\s*(집게|홀더|솔|받침)"),
+     {"tube", "beaker", "flask", "roundflask", "burette", "funnel", "cylinder", "trough"}, None),
+]
+GENERIC = {"t", "text"}  # 준비물 아이콘 전용 { "t": "generic", "text": … }: 맞는 그림이 없을 때 첫 글자 상자
+TIMER_MAX = 2 * 3600  # 이보다 긴 시간('24시간')은 수업 모드 타이머로 쓸 일이 거의 없다
 
 # ---------------------------------------------------------------- 부피 읽기 (엔진 parseVol과 같은 규칙)
 VUNIT = {"ml": 1, "㎖": 1, "cc": 1, "cm3": 1, "cm³": 1, "l": 1000, "ℓ": 1000, "dl": 100, "㎗": 100,
@@ -230,7 +240,15 @@ def check_part(el, where, reg, rep):
         allowed = set(reg["common"]) | set(types[real])
         for k in el:
             if k not in allowed:
-                rep.err(f"{where} ({name_of(el)})", f"'{t}'에 없는 속성 '{k}'{suggest(k, allowed)}")
+                hint = (" — 용량을 그림에 새기지 않는 부품이에요. 용량은 label로 적으세요 (예: '50 mL 주사기')"
+                        if k in ("vol", "amount") else suggest(k, allowed))
+                rep.err(f"{where} ({name_of(el)})", f"'{t}'에 없는 속성 '{k}'{hint}")
+        vals = {**reg.get("values", {}).get("_common", {}), **reg.get("values", {}).get(real, {})}
+        for k, opts in vals.items():
+            v = el.get(k)
+            if isinstance(v, str) and v not in opts:
+                more = " — 그 밖의 센서는 kind 'other'에 text로 이름을 적으세요 (예: 'CO₂')" if real == "sensor" and k == "kind" else ""
+                rep.err(f"{where} ({name_of(el)})", f"'{t}'의 {k} '{v}'는 정해진 값이 아니에요 ({', '.join(opts)}){suggest(v, opts)}{more}")
         if el.get("vol") is not None and real not in reg["vol"] and real in types and "vol" in types[real]:
             rep.warn(f"{where} ({name_of(el)})", f"'{t}'에는 vol이 그림에 새겨지지 않아요. 용량은 label로 적으세요")
     for k in ("vol", "amount", "fromVol"):
@@ -250,6 +268,19 @@ def check_part(el, where, reg, rep):
         for j, tb in enumerate(el.get("tubes") or []):
             if isinstance(tb, dict):
                 check_part({"t": tb.get("t", RACKS[el["t"]]), **{k: v for k, v in tb.items() if k != "t"}}, f"{where}.tubes[{j}]", reg, rep)
+
+
+def guess_icon(name, reg):
+    """준비물 이름 → 엔진이 짐작하는 아이콘 부품 (엔진 guess와 같은 규칙). 맞는 것이 없으면 'generic'."""
+    n = re.sub(r"\(.*?\)", "", str(name)).strip()
+    for k, v in (reg or {}).get("guess", {}).items():
+        t, _, flag = v.partition(":")
+        if flag == "1":
+            if n == k or n.startswith(k + " "):
+                return t
+        elif k in n:
+            return t
+    return "generic"
 
 
 def scene_ids(items, where, rep):
@@ -317,10 +348,25 @@ def main_check(data, reg):
             rep.err(where, "준비물에는 name이 필요해요")
             continue
         icon = m.get("icon")
-        if isinstance(icon, dict):
+        if isinstance(icon, dict) and icon.get("t") == "generic":
+            for k in icon:
+                if k not in GENERIC:
+                    rep.err(f"{where}.icon", f"generic 아이콘에 없는 속성 '{k}' (text만 써요)")
+        elif isinstance(icon, dict):
             check_part(icon, f"{where}.icon", reg, rep)
+        elif icon == "generic":
+            rep.warn(f"{where}.icon", "글자가 없으면 '?' 상자로 나와요. {\"t\": \"generic\", \"text\": \"…\"}로 주세요")
         elif isinstance(icon, str) and reg and reg["aliases"].get(icon, icon) not in reg["types"]:
             rep.err(f"{where}.icon", f"없는 부품 '{icon}'{suggest(icon, reg['types'])}")
+        if icon is None and reg:
+            n = re.sub(r"\(.*?\)", "", m["name"])
+            g = guess_icon(m["name"], reg)
+            for rx, bad, what in MISGUESS:
+                hit = rx.search(n)
+                if hit and g in bad:
+                    rep.warn(where, f"준비물 '{m['name']}'의 아이콘이 이름 짐작으로 {what or repr(hit.group(1))}({g}) 그림이 돼요. "
+                                    "다른 기구면 icon을 주세요 — 비슷한 부품이나 {\"t\": \"generic\", \"text\": \"…\"}(첫 글자 상자)")
+                    break
         t = icon.get("t") if isinstance(icon, dict) else icon if isinstance(icon, str) else next((v for k, v in NAME_T if k in m["name"]), None)
         vol = parse_volume(m["name"]) if re.search(r"\d\s*(m[lL]|L|ℓ|cc)\b", m["name"]) else None
         if t and vol and (reg is None or t in reg["vol"]):
@@ -405,6 +451,10 @@ def main_check(data, reg):
             rep.err(f"{where}.bench", "true 또는 false여야 해요")
         if "timer" in st and not (st["timer"] is False or (isinstance(st["timer"], (int, float)) and not isinstance(st["timer"], bool) and st["timer"] > 0)):
             rep.err(f"{where}.timer", "초(양수) 또는 false여야 해요")
+        if "timer" not in st and isinstance(st.get("time"), str):  # 엔진 timerOf와 같은 규칙으로 타이머 길이를 읽는다
+            sec = sum(float(n) * {"시간": 3600, "분": 60, "초": 1}[u] for n, u in re.findall(r"(\d+(?:\.\d+)?)\s*(시간|분|초)", st["time"]))
+            if sec > TIMER_MAX:
+                rep.warn(f"{where}.time", f"'{st['time']}'(으)로 수업 모드에 {sec / 3600:g}시간짜리 타이머가 생겨요. 수업 중에 재는 시간이 아니면 \"timer\": false를 주세요")
         items = get_scene(i)
         for j, el in enumerate(items):
             check_part(el, f"{where}.scene[{j}]", reg, rep)

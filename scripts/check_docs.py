@@ -83,8 +83,11 @@ def main():
     scenes_path = ROOT / 'references' / 'scenes.md'
     if scenes_path.read_text(encoding='utf-8') != make_scenes_doc.build():
         problems.append('references/scenes.md가 examples/recipes.json과 다릅니다. python scripts/make_scenes_doc.py 를 실행하세요.')
-    if (ROOT / 'references' / 'parts.json').read_text(encoding='utf-8') != make_registry.build():
-        problems.append('references/parts.json이 엔진과 다릅니다. python scripts/make_registry.py 를 실행하세요.')
+    try:
+        if (ROOT / 'references' / 'parts.json').read_text(encoding='utf-8') != make_registry.build():
+            problems.append('references/parts.json이 엔진과 다릅니다. python scripts/make_registry.py 를 실행하세요.')
+    except ValueError as e:
+        problems.append(str(e))
 
     # 5. 참고 문서 링크와 길이
     for ref in sorted(set(re.findall(r'`(references/[a-z]+\.md)`', skill))):

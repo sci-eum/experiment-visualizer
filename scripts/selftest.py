@@ -4,7 +4,8 @@
 1. 한글 수식 → 글자 (extract_text.eq_to_text): 묶음 괄호를 지키는지
 2. 부피 읽기: 검사기(check_data.parse_volume)와 엔진(labkit.js parseVol)이 같은 값을 내는지 (node가 있으면)
 3. 데이터 검사기: 일부러 틀린 데이터에서 오류를 찾는지, 원문 숫자 대조가 수치를 바르게 뽑고 비교하는지
-   (근거가 표라서 단위가 머리에만 있을 때 포함)
+   (근거가 표라서 단위가 머리에만 있을 때 포함), 정해진 값(kind·solid …)·준비물 아이콘 짐작·긴 타이머를 알리는지,
+   괜찮은 것(마이크로피펫, 시험관대, kind 'other', timer false)은 알리지 않는지
 4. 학생 답 저장 이름 (헤드리스 Chrome/Edge가 있으면): v1.8까지의 순번 이름에서 옮기는지,
    단계·질문·표 줄을 끼워 넣거나 id 있는 물음 글을 고쳐도 답이 제 칸을 따라가는지
 사용법:  python scripts/selftest.py      (실패가 있으면 종료 코드 1)
@@ -44,18 +45,31 @@ BAD = {
         {"title": "오타", "obsreve": "x", "scene": [{"t": "beaker", "amout": "10 mL"}, {"t": "bekaer"}]},
         {"title": "id", "scene": [{"t": "beaker", "id": "b"}, {"t": "flask", "id": "b"}, {"t": "dropper", "over": "c"}]},
         {"title": "부피", "scene": [{"t": "cylinder", "vol": "십 mL"}]},
-        {"title": "이어받기", "scene": {"from": 9, "change": {"zz": {"color": "red"}}}},
+        {"title": "이어받기", "scene": {"from": 99, "change": {"zz": {"color": "red"}}}},
         {"title": "원문 기록", "id": "s1", "origin": {"where": "1쪽", "check": "maybe", "added": ["tipp"]}, "scene": [{"t": "beaker"}]},
         {"title": "단계 id", "id": "s1", "scene": [{"t": "beaker"}]},
         {"title": "숫자", "text": "물 10 mL를 넣는다.", "origin": {"where": "1쪽", "quote": "물 5 mL를 넣는다.", "check": "ok"},
          "scene": [{"t": "beaker", "vol": "100 mL", "amount": "7 mL"}]},
+        {"title": "정해진 값", "scene": [{"t": "sensor", "kind": "co2"}, {"t": "lens", "kind": "concav"}, {"t": "beaker", "solid": "sand"}]},
+        {"title": "용량 없는 부품", "scene": [{"t": "syringe", "vol": "50 mL"}]},
+        {"title": "하룻밤 두기", "time": "24시간", "scene": [{"t": "beaker"}]},
     ],
+    "materials": [{"name": "눈금 피펫"}, {"name": "디지털 온도계"}, {"name": "시험관 집게"}, {"name": "홈판", "icon": "generic"}],
     "results": {"questions": [{"id": "q1", "text": "가"}, {"id": "q1", "text": "나"}]},
 }
 BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항목 'obsreve'", "없는 부품 'bekaer'",
               "id 'b'가 한 장면에 두 번", "over: 'c'", "부피로 읽지 못해요", "이어받을 단계가 없어요",
-              "'ok'(확인함) 또는 'unsure'", "원문에 없이 더한 항목", "단계 id 's1'", "질문 id 'q1'"]
-BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문장에는 5 mL)", "그림의 '7 mL'"]
+              "'ok'(확인함) 또는 'unsure'", "원문에 없이 더한 항목", "단계 id 's1'", "질문 id 'q1'",
+              "kind 'co2'는 정해진 값이 아니에요", "kind 'other'에 text로", "'concave'인가요?", "solid 'sand'", "용량은 label로 적으세요"]
+BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문장에는 5 mL)", "그림의 '7 mL'",
+            "'눈금 피펫'의 아이콘이 이름 짐작으로 스포이트", "'디지털 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
+            "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[3].icon: 글자가 없으면", "24시간짜리 타이머"]
+# 알리지 않아야 하는 것: 맞게 짐작되는 준비물, 정해진 값, 그래프 숫자 배열, 꺼 둔 긴 타이머, 수업 안의 시간
+QUIET = {"title": "조용한 시험", "materials": [
+    {"name": "마이크로피펫"}, {"name": "시험관대"}, {"name": "스탠드와 집게"}, {"name": "온도계"}, {"name": "pH 미터", "icon": {"t": "generic", "text": "pH"}}],
+    "steps": [
+        {"title": "센서", "time": "1시간 30분", "scene": [{"t": "sensor", "kind": "other", "text": "CO₂"}, {"t": "device", "graph": [0.2, 0.5, 0.4]}]},
+        {"title": "하룻밤", "time": "24시간", "timer": False, "scene": [{"t": "beaker", "solid": "icebath"}, {"t": "zoom", "show": "crystals"}]}]}
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다
 TABLE_TEXT = '80°C 120초 → (60°C 30초 · 40°C 50초) 10회 → 25°C 90초'
 TABLE_QUOTE = '[표] 단계 / 온도 (°C) / 시간(sec) / 반복: 데우기 80 / 120 / 1, 식히기 60 / 30 / 10, 기다리기 40 / 50 / 10, 마무리 25 / 90 / 1'
@@ -191,12 +205,15 @@ def main():
     good = main_check(GOOD, load_registry())
     if good.errors or good.warns:
         fails.append(f'표 근거 단계에 오류·확인이 나옴: {good.errors + good.warns}')
+    quiet = main_check(QUIET, load_registry())
+    if quiet.errors or quiet.warns:
+        fails.append(f'알리지 않아야 할 것에 오류·확인이 나옴: {quiet.errors + quiet.warns}')
     keys = answer_key_test()
     if keys is None:
         print('헤드리스 브라우저가 없어 답 저장 이름 시험은 건너뜀')
     else:
         fails += keys[0]
-    total = (len(EQ) + len(VOL) * (2 if node else 1) + len(BAD_EXPECT) + len(BAD_WARN) + len(QTY) + len(MISS) + 1
+    total = (len(EQ) + len(VOL) * (2 if node else 1) + len(BAD_EXPECT) + len(BAD_WARN) + len(QTY) + len(MISS) + 2
              + (keys[1] if keys else 0))
     for f in fails:
         print('  -', f)
