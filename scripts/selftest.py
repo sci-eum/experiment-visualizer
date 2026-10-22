@@ -56,9 +56,10 @@ BAD = {
                                   {"t": "meter", "id": "pm", "kind": "ph", "in": "h1"}, {"t": "wire", "from": "pm:+", "to": "h1"}]},
         {"title": "역학", "scene": [{"t": "track", "id": "tk", "support": "books"}, {"t": "pulley", "on": "tk", "from": "nocart", "hang": "bag"}]},
         {"title": "전기", "scene": [{"t": "beaker", "id": "bk"}, {"t": "battery", "id": "bt", "kind": "aa"}, {"t": "wire", "from": "bk:+", "to": "bt:-", "clip": "both"}]},
+        {"title": "작은 기구", "scene": [{"t": "glasspipette", "kind": "mohr", "vol": "10 mL", "amount": "20 mL"}, {"t": "appliance", "kind": "oven"}, {"t": "tlc", "kind": "silica"}]},
         {"title": "하룻밤 두기", "time": "24시간", "scene": [{"t": "beaker"}]},
     ],
-    "materials": [{"name": "눈금 피펫"}, {"name": "적외선 온도계"}, {"name": "시험관 집게"}, {"name": "홈판", "icon": "generic"}],
+    "materials": [{"name": "피펫"}, {"name": "적외선 온도계"}, {"name": "시험관 집게"}, {"name": "홈판", "icon": "generic"}],
     "results": {"questions": [{"id": "q1", "text": "가"}, {"id": "q1", "text": "나"}]},
 }
 BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항목 'obsreve'", "없는 부품 'bekaer'",
@@ -67,14 +68,15 @@ BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항�
               "kind 'humidity'는 정해진 값이 아니에요", "kind 'other'에 text로", "'concave'인가요?", "solid 'sand'", "용량은 label로 적으세요",
               "홈에 없는 속성 'colr'", "홈 자리 at '3B'", "홈의 solid 'sand'", "meter#pm에는 (+)·(−) 단자가 없어요",
               "support 'books'", "hang 'bag'", "from: 'nocart'",
-              "beaker#bk에는 (+)·(−) 단자가 없어요", "kind 'aa'", "clip 'both'"]
+              "beaker#bk에는 (+)·(−) 단자가 없어요", "kind 'aa'", "clip 'both'",
+              "kind 'mohr'", "넣은 양 amount '20 mL'", "kind 'oven'", "kind 'silica'"]
 BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문장에는 5 mL)", "그림의 '7 mL'",
-            "'눈금 피펫'의 아이콘이 이름 짐작으로 스포이트", "'적외선 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
+            "'피펫'의 아이콘이 이름 짐작으로 스포이트", "'적외선 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
             "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[3].icon: 글자가 없으면", "24시간짜리 타이머"]
 # 알리지 않아야 하는 것: 맞게 짐작되는 준비물, 정해진 값, 그래프 숫자 배열, 꺼 둔 긴 타이머, 수업 안의 시간
 QUIET = {"title": "조용한 시험", "materials": [
     {"name": "마이크로피펫"}, {"name": "시험관대"}, {"name": "스탠드와 집게"}, {"name": "온도계"}, {"name": "pH 미터", "icon": {"t": "generic", "text": "pH"}},
-    {"name": "디지털 온도계"}, {"name": "12홈판"}, {"name": "저마찰 트랙"}, {"name": "도르래"}, {"name": "추걸이"}, {"name": "용수철"}, {"name": "삼각대"}, {"name": "코일"}, {"name": "검류계"}, {"name": "건전지 끼우개"}, {"name": "9 V 건전지"}, {"name": "탄소 막대"}, {"name": "주사기 (50 mL)", "icon": {"t": "syringe", "vol": "50 mL"}}],
+    {"name": "디지털 온도계"}, {"name": "12홈판"}, {"name": "저마찰 트랙"}, {"name": "도르래"}, {"name": "추걸이"}, {"name": "용수철"}, {"name": "삼각대"}, {"name": "코일"}, {"name": "검류계"}, {"name": "건전지 끼우개"}, {"name": "9 V 건전지"}, {"name": "탄소 막대"}, {"name": "향"}, {"name": "면봉"}, {"name": "홀 피펫"}, {"name": "피펫 필러"}, {"name": "한천 배지"}, {"name": "TLC 판"}, {"name": "항온기"}, {"name": "눈금 피펫 (10 mL)", "icon": {"t": "glasspipette", "vol": "10 mL"}}, {"name": "주사기 (50 mL)", "icon": {"t": "syringe", "vol": "50 mL"}}],
     "steps": [
         {"title": "센서", "time": "1시간 30분", "scene": [{"t": "sensor", "kind": "other", "text": "CO₂"}, {"t": "device", "graph": [0.2, 0.5, 0.4]}]},
         {"title": "하룻밤", "time": "24시간", "timer": False, "scene": [{"t": "beaker", "solid": "icebath"}, {"t": "zoom", "show": "crystals"}]},
@@ -89,7 +91,11 @@ QUIET = {"title": "조용한 시험", "materials": [
                                   {"t": "wire", "from": "co:+", "to": "gv:+", "clip": True}, {"t": "battery", "id": "bh", "kind": "holder", "n": 2, "switch": True},
                                   {"t": "bulb", "id": "bu", "x": 200, "y": 150}, {"t": "wire", "from": "bh:+", "to": "bu:-", "clip": "to"},
                                   {"t": "beaker", "id": "bk"}, {"t": "electrode", "id": "el", "in": "bk", "kind": "rod"}, {"t": "battery", "id": "nv", "kind": "9v"},
-                                  {"t": "wire", "from": "nv:-", "to": "el"}]}]}
+                                  {"t": "wire", "from": "nv:-", "to": "el"}]},
+        {"title": "작은 기구", "scene": [{"t": "tube", "id": "tb", "foam": True}, {"t": "splint", "over": "tb", "lit": True}, {"t": "agar", "id": "ag", "sectors": ["A", "B"], "disks": [{"zone": 0.3}]},
+                                  {"t": "swab", "in": "ag"}, {"t": "tlc", "id": "tl", "kind": "paper", "spots": ["red"]}, {"t": "capillary", "over": "tl"},
+                                  {"t": "glasspipette", "kind": "volumetric", "vol": "10 mL", "amount": "10 mL", "filler": True}, {"t": "filler"}, {"t": "paper", "kind": "disk"},
+                                  {"t": "appliance", "id": "ap", "open": True, "reading": "30 ℃"}, {"t": "dish", "on": "ap"}]}]}
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다
 TABLE_TEXT = '80°C 120초 → (60°C 30초 · 40°C 50초) 10회 → 25°C 90초'
 TABLE_QUOTE = '[표] 단계 / 온도 (°C) / 시간(sec) / 반복: 데우기 80 / 120 / 1, 식히기 60 / 30 / 10, 기다리기 40 / 50 / 10, 마무리 25 / 90 / 1'

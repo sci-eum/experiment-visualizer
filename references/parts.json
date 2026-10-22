@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.13.0",
+ "engine": "1.14.0",
  "common": [
   "t",
   "id",
@@ -27,6 +27,7 @@
   "cup",
   "cylinder",
   "flask",
+  "glasspipette",
   "microtube",
   "pcrtube",
   "roundflask",
@@ -48,12 +49,32 @@
   "zoom": "view"
  },
  "types": {
+  "agar": [
+   "colonies",
+   "colonyColor",
+   "color",
+   "disks",
+   "lid",
+   "r",
+   "sectors",
+   "streak"
+  ],
   "ammeter": [
    "closed",
    "color",
    "kind",
    "n",
    "switch"
+  ],
+  "appliance": [
+   "color",
+   "h",
+   "kind",
+   "open",
+   "reading",
+   "steam",
+   "text",
+   "w"
   ],
   "arrow": [
    "both",
@@ -77,6 +98,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -123,6 +145,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -161,6 +184,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -207,6 +231,11 @@
    "color",
    "h",
    "lit"
+  ],
+  "capillary": [
+   "color",
+   "fill",
+   "to"
   ],
   "cart": [
    "color",
@@ -257,6 +286,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -289,6 +319,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -351,6 +382,7 @@
   "eye": [
    "to"
   ],
+  "filler": [],
   "flask": [
    "adapter",
    "amount",
@@ -363,6 +395,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -410,6 +443,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -436,6 +470,17 @@
    "loaded",
    "run",
    "wells"
+  ],
+  "glasspipette": [
+   "amount",
+   "color",
+   "drops",
+   "fill",
+   "filler",
+   "kind",
+   "to",
+   "vol",
+   "volText"
   ],
   "globe": [
    "axis",
@@ -527,6 +572,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -590,6 +636,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -627,6 +674,7 @@
    "cap",
    "cloudy",
    "color",
+   "foam",
    "from",
    "fromVol",
    "gas",
@@ -711,6 +759,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -767,6 +816,11 @@
    "tag",
    "waste"
   ],
+  "splint": [
+   "ember",
+   "lit",
+   "to"
+  ],
   "spring": [
    "coils",
    "color",
@@ -810,6 +864,10 @@
    "markup",
    "w"
   ],
+  "swab": [
+   "color",
+   "to"
+  ],
   "switch": [
    "closed",
    "color",
@@ -848,6 +906,15 @@
    "level",
    "reading"
   ],
+  "tlc": [
+   "bands",
+   "front",
+   "h",
+   "kind",
+   "line",
+   "spots",
+   "w"
+  ],
   "track": [
    "dir",
    "h",
@@ -870,6 +937,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -902,6 +970,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -968,6 +1037,7 @@
    "color",
    "fill",
    "flip",
+   "foam",
    "gas",
    "holder",
    "ice",
@@ -1023,6 +1093,14 @@
    "labelSide": [
     "left",
     "right"
+   ]
+  },
+  "appliance": {
+   "kind": [
+    "incubator",
+    "microwave",
+    "kettle",
+    "box"
    ]
   },
   "bag": {
@@ -1187,6 +1265,12 @@
     "icebath"
    ]
   },
+  "glasspipette": {
+   "kind": [
+    "graduated",
+    "volumetric"
+   ]
+  },
   "globe": {
    "night": [
     "left",
@@ -1267,7 +1351,8 @@
   },
   "paper": {
    "kind": [
-    "filter"
+    "filter",
+    "disk"
    ]
   },
   "pcrtube": {
@@ -1363,6 +1448,12 @@
     "block",
     "hanger",
     "phone"
+   ]
+  },
+  "tlc": {
+   "kind": [
+    "plate",
+    "paper"
    ]
   },
   "track": {
@@ -1487,6 +1578,30 @@
   }
  },
  "guess": {
+  "향": "splint:1",
+  "불씨": "splint",
+  "면봉": "swab",
+  "모세관": "capillary",
+  "눈금 피펫": "glasspipette",
+  "메스 피펫": "glasspipette",
+  "홀 피펫": "glasspipette:volumetric",
+  "부피 피펫": "glasspipette:volumetric",
+  "피펫 필러": "filler",
+  "피펫필러": "filler",
+  "한천 배지": "agar",
+  "고체 배지": "agar",
+  "배지": "agar",
+  "종이 디스크": "paper:disk",
+  "항생제 디스크": "paper:disk",
+  "TLC": "tlc",
+  "박층 크로마토그래피": "tlc",
+  "크로마토그래피 종이": "tlc:paper",
+  "항온기": "appliance:incubator",
+  "배양기": "appliance:incubator",
+  "인큐베이터": "appliance:incubator",
+  "전자레인지": "appliance:microwave",
+  "전기 포트": "appliance:kettle",
+  "전기포트": "appliance:kettle",
   "검류계": "meter:galvano",
   "9 V 건전지": "battery:9v",
   "9V 건전지": "battery:9v",

@@ -8,7 +8,7 @@
     같은 장면의 id 중복, 가리키는 id가 없음, 부피를 읽지 못함, 넣은 양이 용량보다 많음, 잘못된 장면 이어받기, 남은 _demo
 확인 (볼 것): 좌표가 장면 밖, 준비물에 용량이 적혔는데 장면·아이콘에 vol/fromVol이 없음,
     설명·그림의 수치(양·온도·시간·농도 …)가 원문 근거 문장(origin.quote)에 없음,
-    준비물 아이콘이 이름 짐작으로 다른 기구 그림이 됨('눈금 피펫' → 스포이트), 몇 시간짜리 타이머가 생김 등
+    준비물 아이콘이 이름 짐작으로 다른 기구 그림이 됨('피펫' → 스포이트), 몇 시간짜리 타이머가 생김 등
 오류가 있으면 종료 코드 1.
 
 부품 목록은 스크립트 옆의 ../references/parts.json을 쓰고, 없으면 저장소에서 내려받는다.
@@ -44,7 +44,7 @@ TEXT_FIELDS = ["text", "point", "observe", "tip", "warn", "predict"]
 # 준비물 이름 → 부품 (용량 확인용)
 NAME_T = [("눈금실린더", "cylinder"), ("눈금 실린더", "cylinder"), ("메스실린더", "cylinder"), ("부피 플라스크", "volumetric"),
           ("부피플라스크", "volumetric"), ("둥근바닥", "roundflask"), ("삼각 플라스크", "flask"), ("삼각플라스크", "flask"),
-          ("비커", "beaker"), ("시험관", "tube"), ("시약병", "bottle"), ("뷰렛", "burette"), ("컵", "cup"), ("주사기", "syringe"), ("수조", "trough"),
+          ("비커", "beaker"), ("시험관", "tube"), ("시약병", "bottle"), ("뷰렛", "burette"), ("컵", "cup"), ("주사기", "syringe"), ("수조", "trough"), ("눈금 피펫", "glasspipette"), ("메스 피펫", "glasspipette"), ("홀 피펫", "glasspipette"), ("부피 피펫", "glasspipette"),
           ("마이크로튜브", "microtube"), ("마이크로 튜브", "microtube"), ("E-tube", "microtube"), ("PCR 튜브", "pcrtube"), ("PCR튜브", "pcrtube")]
 # 준비물 아이콘이 이름 짐작(엔진 GUESS)으로 다른 기구 그림이 되는 경우: (이름 무늬, 짐작한 부품이 이것이면, 그림 이름)
 MISGUESS = [

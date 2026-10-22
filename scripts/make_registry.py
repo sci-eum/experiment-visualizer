@@ -34,7 +34,7 @@ VALUES = {
     "device": {"graph": "GRAPH"},
     "lens": {"kind": ["convex", "concave"]},
     "mirror": {"kind": ["plane", "concave", "convex"]},
-    "paper": {"kind": ["filter"]},
+    "paper": {"kind": ["filter", "disk"]},
     "gasburner": {"flame": ["yellow", "blue"]},
     "mark": {"kind": ["ok", "no", "x"]},
     "note": {"icon": ["eye", "how", "tip", "time", "ok", "no", "warn", "idea", "result"]},
@@ -54,6 +54,9 @@ VALUES = {
     "coil": {"kind": ["flat"]},
     "electrode": {"kind": ["plate", "rod"]},
     "wire": {"clip": ["from", "to"]},
+    "glasspipette": {"kind": ["graduated", "volumetric"]},
+    "tlc": {"kind": ["plate", "paper"]},
+    "appliance": {"kind": "APPL"},
     "hose": {"clip": ["from", "to"]},
 }
 # 홈판(wellplate)의 wells 항목에 쓰는 속성. 엔진이 w.이름 / el.이름으로 읽는다 (build가 확인, id는 가리키는 이름)
@@ -138,7 +141,7 @@ def build():
         "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
         "engine": version,
         "common": COMMON,
-        "vol": sorted(set(volspec) | {"burette"}),  # vol을 그림에 새기는 부품
+        "vol": sorted(set(volspec) | {"burette", "glasspipette"}),  # vol을 그림에 새기는 부품
         "aliases": dict(sorted(aliases.items())),
         "types": {t: sorted((ps | set(EXTRA.get(t, []))) - set(COMMON)) for t, ps in sorted(types.items())},
         "values": values(js, shapes, types),
