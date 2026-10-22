@@ -233,6 +233,32 @@
       {"t":"ball","on":"tb","at":0.55,"r":9},
       {"t":"arrow","from":[175,134],"to":[255,134],"flow":true,"color":"#b14de0"},
       {"t":"camera","x":405,"dir":"left","to":[300,210],"h":130}
+    ] },
+  { "title": "코일에 막대자석을 넣었다 빼며 검류계 보기", "text": "magnet의 in으로 코일 입구에 놓고 dx만큼 넣는다. 코일과 검류계의 단자는 'id:+'·'id:-', 집게 전선은 wire의 clip.",
+    "scene": [
+      {"t":"coil","id":"co","x":200},
+      {"t":"magnet","in":"co","dx":12},
+      {"t":"arrow","from":[55,205],"to":[140,205],"both":true,"color":"#b14de0"},
+      {"t":"meter","id":"g","kind":"galvano","x":395},
+      {"t":"wire","from":"co:-","to":"g:-","color":"black","clip":true,"points":[[190,140],[335,160]]},
+      {"t":"wire","from":"co:+","to":"g:+","color":"red","clip":true,"points":[[320,188],[425,205]]},
+      {"t":"note","x":395,"y":70,"text":"검류계 바늘이 어느 쪽으로 움직이는지 관찰해요","icon":"eye","w":150}
+    ] },
+  { "title": "건전지 끼우개와 전구를 집게 전선으로 잇기", "text": "battery kind:'holder'(switch:true면 스위치)는 실험대 위에 서고, 전구 bulb는 x, y 가운데에 놓는다. 낱개 부품의 양 끝 단자도 'id:+'·'id:-'.",
+    "scene": [
+      {"t":"battery","id":"bh","kind":"holder","n":2,"switch":true,"x":110},
+      {"t":"bulb","id":"bu","x":310,"y":180,"s":1.4},
+      {"t":"wire","from":"bh:+","to":"bu:-","color":"red","clip":"to","points":[[220,240]]},
+      {"t":"wire","from":"bh:-","to":"bu:+","color":"black","clip":"to","points":[[60,150],[360,120]]}
+    ] },
+  { "title": "용액에 전극 두 개를 꽂고 9 V 건전지에 잇기", "text": "electrode의 in·dx로 그릇에 꽂는다(kind:'rod' 탄소 막대). wire의 to를 전극 id로 주면 전극 위 끝에 이어진다.",
+    "scene": [
+      {"t":"beaker","id":"b","x":200,"vol":"250 mL","amount":"200 mL","color":"clear","label":"용액 200 mL"},
+      {"t":"electrode","id":"e1","in":"b","dx":-16,"kind":"rod"},
+      {"t":"electrode","id":"e2","in":"b","dx":16,"kind":"rod"},
+      {"t":"battery","id":"nv","kind":"9v","x":380},
+      {"t":"wire","from":"nv:-","to":"e1","color":"black","clip":"to","points":[[300,110]]},
+      {"t":"wire","from":"nv:+","to":"e2","color":"red","clip":"to","points":[[335,145]]}
     ] }
   ]
 }

@@ -19,7 +19,7 @@
 | 습도·운동 같은 그 밖의 센서 | `sensor` `kind:'other'`, `text:'습도'` |
 | 눈금 피펫·홀 피펫, 항온기·전자레인지 같은 기기 | `svg` 관·상자 + `label` (`dropper`·`pipette`는 스포이트 그림) |
 
-홈판·오목받침 유리(`wellplate`), pH 미터·디지털 온도계·멀티미터·전기 전도계(`meter`), CO₂·O₂·조도·힘 센서(`sensor`의 `kind`), 주사기·수조의 용량(`vol`)은 v1.11부터, 저마찰 트랙·포토게이트·도르래와 추걸이·매단 용수철·삼각대 촬영 폰·책상은 v1.12부터 부품으로 그린다.
+홈판·오목받침 유리(`wellplate`), pH 미터·디지털 온도계·멀티미터·전기 전도계(`meter`), CO₂·O₂·조도·힘 센서(`sensor`의 `kind`), 주사기·수조의 용량(`vol`)은 v1.11부터, 저마찰 트랙·포토게이트·도르래와 추걸이·매단 용수철·삼각대 촬영 폰·책상은 v1.12부터, 코일·검류계·전류계·전압계·건전지 끼우개·9 V 건전지·전극·집게 전선은 v1.13부터 부품으로 그린다.
 
 - 준비물 아이콘도 이름으로 짐작해 다른 기구 그림이 될 수 있다 ('눈금 피펫' → 스포이트, '시험관 집게' → 시험관). 검사기가 알려 주면 `icon`에 비슷한 부품이나 `{ "t": "generic", "text": "…" }`(첫 글자 상자)를 준다.
 - `kind`·`solid`·`graph`·`icon`·`show` 같은 속성은 이 문서에 적힌 값만 그림이 된다. 다른 값은 검사기가 오류로 알린다.
@@ -108,7 +108,7 @@
 | `ruler` ★ | 자 | `tilt:-90`이면 세움 |
 | `springscale` ● | 용수철저울 (`x,y`=위 고리) | `hang:'weight'/'block'`, `hangText`, `stretch` 0~1, `reading` |
 | `weight` ★ | 추 | `text:'100 g'`. `kind:'hanger'`면 추걸이 (`n` 걸린 추 개수) |
-| `meter` | 디지털 측정기 | `kind:'ph'`(펜형 pH 미터, 기본) · `'temp'`(탐침형 디지털 온도계, `length` 탐침 길이) · `'conduct'`(간이 전기 전도계, `on:true`면 불이 켜짐) — `x,y` = 탐침 끝, `in:'id'`(그릇이나 홈판의 홈). `'multi'`(멀티미터) ★ — (+)·(−) 단자를 `'id:+'`·`'id:-'`로 `wire`에 잇는다. `reading`은 화면 글자 (펜·온도계는 숫자만 나온다). 원문이 값을 주지 않으면 `reading`을 쓰지 않는다 |
+| `meter` | 디지털 측정기 | `kind:'ph'`(펜형 pH 미터, 기본) · `'temp'`(탐침형 디지털 온도계, `length` 탐침 길이) · `'conduct'`(간이 전기 전도계, `on:true`면 불이 켜짐) — `x,y` = 탐침 끝, `in:'id'`(그릇이나 홈판의 홈). `'multi'`(멀티미터) ★, 바늘 측정기 `'galvano'`(검류계)·`'ammeter'`(전류계)·`'voltmeter'`(전압계) ★ — (+)·(−) 단자를 `'id:+'`·`'id:-'`로 `wire`에 잇는다. 바늘은 `deflect`(검류계 −1~1, 0이 가운데 / 전류계·전압계 0~1, 기본 0 = 결과를 드러내지 않음). `reading`은 화면 글자 (펜·온도계는 숫자만 나온다). 원문이 값을 주지 않으면 `reading`을 쓰지 않는다 |
 
 ## 센서 실험
 
@@ -193,8 +193,17 @@
 - `parts` 항목: `'battery'` `'bulb'` `'switch'` `'ammeter'` `'voltmeter'` `'resistor'` `'motor'` `'led'` 또는 `{p:'bulb', label:'전구 A', edge:'top', on:false}`
 - 순서대로 아래 → 위 → 오른쪽 → 왼쪽 변에 놓인다. `edge`로 직접 정할 수 있다.
 - 전압계처럼 병렬로 연결할 부품은 `{p:'voltmeter', across: 1}` (1 = 같은 `parts` 배열에서 병렬로 걸 부품의 번호, 0부터).
-- 낱개 부품(`battery`, `bulb`, `switch`, `ammeter`, `voltmeter`, `resistor`, `motor`, `led`, `wire`)도 ●로 따로 놓을 수 있다 (준비물 아이콘용).
-- `wire`에 `from`·`to`(·`points`)를 주면 두 곳을 잇는 전선이 된다. 단자는 `'id:+'`·`'id:-'` (전원 장치 `power`, 전기 영동 장치 `geltank`, 멀티미터 `meter` `kind:'multi'`). `to`에 홈판의 홈 id를 주면 그 홈의 금속판(`strip`)에 이어진다. `color`(기본 짙은 회색, `'red'`·`'black'`). 예: `{t:'wire', from:'ps:-', to:'gt:-', color:'black'}`
+- 낱개 부품(`battery`, `bulb`, `switch`, `ammeter`, `voltmeter`, `resistor`, `motor`, `led`, `wire`)도 ●로 따로 놓을 수 있다 (`x, y` = 가운데). 양 끝 단자를 `'id:-'`(왼쪽)·`'id:+'`(오른쪽)로 `wire`에 이어 실물 배선을 그린다.
+- 건전지 `battery`: `kind:'holder'`면 건전지 끼우개(`n` 건전지 수 1~4, `switch:true` 스위치, `on:false` 꺼짐), `kind:'9v'`면 9 V 건전지. 둘은 ★ (x만 주면 실험대 위에 선다). 단자는 `'id:+'`·`'id:-'`.
+- `wire`에 `from`·`to`(·`points`)를 주면 두 곳을 잇는 전선이 된다. 단자는 `'id:+'`·`'id:-'` (전원 장치 `power`, 전기 영동 장치 `geltank`, 측정기 `meter`의 `'multi'`·`'galvano'`·`'ammeter'`·`'voltmeter'`, 코일 `coil`, 위의 낱개 부품). `to`에 홈판의 홈 id를 주면 그 홈의 금속판(`strip`)에, 전극 `electrode` id를 주면 전극 위 끝에 이어진다. `clip:true`면 두 끝에 집게(집게 전선), `'from'`·`'to'`면 그 끝에만. `color`(기본 짙은 회색, `'red'`·`'black'`). 예: `{t:'wire', from:'ps:-', to:'gt:-', color:'black'}`
+
+
+## 코일·전극
+
+| t | 이름 | 놓는 법 / 속성 |
+|---|---|---|
+| `coil` ★ | 코일(가로로 누운 감은 도선) | `w`(길이, 기본 110), `r`(반지름, 기본 26), `turns`(그린 감은 수), `core:true`(철심), `color`(도선 색). `kind:'flat'`이면 납작한 원형 코일(`w` = 지름). 두 끝 도선은 `'id:-'`(왼쪽)·`'id:+'`(오른쪽)로 `wire`에 잇는다. 막대자석 `magnet`은 `in:'코일id'`면 코일 왼쪽 입구에 오른쪽 끝을 맞추고 `dx`(+)만큼 안으로 들어간다. 넣고 빼는 동작은 `arrow`(`both:true`) |
+| `electrode` | 전극(금속판·탄소 막대) | `in:'그릇id'`(`dx`로 옆으로 — 두 개면 `dx:-14`·`dx:14`), `kind:'plate'`(금속판, 기본)·`'rod'`(탄소 막대), `color`(`'copper'`·`'silver'`·`'gray'`·`'black'`). 위 끝에 `wire`의 `to`·`from:'전극id'`가 이어진다. 스탠드 `hold`로 잡을 수 있다 |
 
 ## 안전·재료
 

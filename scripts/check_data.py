@@ -37,7 +37,8 @@ REVEAL = {"text", "scene", "remove", "change", "add"}
 FRESH = {"note", "text", "arrow", "mark", "eye", "label", "view", "zoom", "pour"}  # 이어받지 않는 설명·동작 부품
 REFS = ["on", "in", "over", "into", "hold", "link", "to", "from"]
 RACKS = {"rack": "tube", "tuberack": "microtube"}  # tubes를 꽂는 부품과 t를 생략한 튜브의 종류
-PORTS = {"power", "geltank", "electrophoresis", "meter"}  # 'id:+'·'id:-'로 단자를 가리킬 수 있는 부품 (meter는 kind 'multi'만)
+PORTS = {"power", "geltank", "electrophoresis", "meter", "coil", "battery", "bulb", "switch", "ammeter", "voltmeter", "resistor", "motor", "led"}  # 'id:+'·'id:-' 단자가 있는 부품
+METER_PORTS = {"multi", "galvano", "ammeter", "voltmeter"}  # 단자가 있는 meter kind
 KIDS = {"rack": "tubes", "tuberack": "tubes", "wellplate": "wells"}  # 안에 든 것(시험관·튜브·홈)에도 id를 주어 가리킨다
 TEXT_FIELDS = ["text", "point", "observe", "tip", "warn", "predict"]
 # 준비물 이름 → 부품 (용량 확인용)
@@ -331,8 +332,8 @@ def check_refs(items, ids, where, rep):
                 m = re.match(r"^(.+):([+\-−])$", r)  # 'id:+' 단자 (전원 장치·전기 영동 장치)
                 if not m or m.group(1) not in ids:
                     rep.err(f"{where} ({name_of(el)})", f"{k}: '{r}' → 이 장면에 그런 id가 없어요")
-                elif ids[m.group(1)].get("t") not in PORTS or (ids[m.group(1)].get("t") == "meter" and ids[m.group(1)].get("kind") != "multi"):
-                    rep.err(f"{where} ({name_of(el)})", f"{k}: '{r}' → {name_of(ids[m.group(1)])}에는 (+)·(−) 단자가 없어요 ({', '.join(sorted(PORTS - {'meter'}))}, meter(kind 'multi')에 있어요)")
+                elif ids[m.group(1)].get("t") not in PORTS or (ids[m.group(1)].get("t") == "meter" and ids[m.group(1)].get("kind") not in METER_PORTS):
+                    rep.err(f"{where} ({name_of(el)})", f"{k}: '{r}' → {name_of(ids[m.group(1)])}에는 (+)·(−) 단자가 없어요 (power·geltank·coil·회로 낱개 부품, meter kind {'·'.join(sorted(METER_PORTS))}에 있어요)")
 
 
 def main_check(data, reg):

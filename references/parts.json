@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.12.0",
+ "engine": "1.13.0",
  "common": [
   "t",
   "id",
@@ -50,7 +50,10 @@
  "types": {
   "ammeter": [
    "closed",
-   "color"
+   "color",
+   "kind",
+   "n",
+   "switch"
   ],
   "arrow": [
    "both",
@@ -103,7 +106,10 @@
   ],
   "battery": [
    "closed",
-   "color"
+   "color",
+   "kind",
+   "n",
+   "switch"
   ],
   "beaker": [
    "adapter",
@@ -177,7 +183,10 @@
   ],
   "bulb": [
    "closed",
-   "color"
+   "color",
+   "kind",
+   "n",
+   "switch"
   ],
   "burette": [
    "color",
@@ -213,6 +222,14 @@
    "current",
    "h",
    "parts",
+   "w"
+  ],
+  "coil": [
+   "color",
+   "core",
+   "kind",
+   "r",
+   "turns",
    "w"
   ],
   "compass": [
@@ -318,6 +335,11 @@
    "drops",
    "fill",
    "to"
+  ],
+  "electrode": [
+   "color",
+   "kind",
+   "length"
   ],
   "evapdish": [
    "color",
@@ -425,6 +447,7 @@
   "goggles": [],
   "hose": [
    "bubbles",
+   "clip",
    "color",
    "from",
    "glass",
@@ -453,7 +476,10 @@
   ],
   "led": [
    "closed",
-   "color"
+   "color",
+   "kind",
+   "n",
+   "switch"
   ],
   "lens": [
    "axis",
@@ -476,6 +502,7 @@
    "lit"
   ],
   "meter": [
+   "deflect",
    "kind",
    "length",
    "reading"
@@ -532,7 +559,10 @@
   ],
   "motor": [
    "closed",
-   "color"
+   "color",
+   "kind",
+   "n",
+   "switch"
   ],
   "note": [
    "bg",
@@ -655,7 +685,10 @@
   ],
   "resistor": [
    "closed",
-   "color"
+   "color",
+   "kind",
+   "n",
+   "switch"
   ],
   "rock": [
    "color",
@@ -779,7 +812,10 @@
   ],
   "switch": [
    "closed",
-   "color"
+   "color",
+   "kind",
+   "n",
+   "switch"
   ],
   "syringe": [
    "amount",
@@ -915,7 +951,10 @@
   ],
   "voltmeter": [
    "closed",
-   "color"
+   "color",
+   "kind",
+   "n",
+   "switch"
   ],
   "volumetric": [
    "adapter",
@@ -972,6 +1011,7 @@
    "wells"
   ],
   "wire": [
+   "clip",
    "color",
    "from",
    "points",
@@ -999,6 +1039,12 @@
     "egg",
     "ice",
     "icebath"
+   ]
+  },
+  "battery": {
+   "kind": [
+    "holder",
+    "9v"
    ]
   },
   "beaker": {
@@ -1037,6 +1083,11 @@
    "dir": [
     "left",
     "right"
+   ]
+  },
+  "coil": {
+   "kind": [
+    "flat"
    ]
   },
   "cup": {
@@ -1092,6 +1143,12 @@
     "cells"
    ]
   },
+  "electrode": {
+   "kind": [
+    "plate",
+    "rod"
+   ]
+  },
   "flask": {
    "solid": [
     "powder",
@@ -1136,6 +1193,12 @@
     "right"
    ]
   },
+  "hose": {
+   "clip": [
+    "from",
+    "to"
+   ]
+  },
   "lens": {
    "kind": [
     "convex",
@@ -1160,7 +1223,10 @@
     "ph",
     "conduct",
     "temp",
-    "multi"
+    "multi",
+    "galvano",
+    "ammeter",
+    "voltmeter"
    ]
   },
   "microtube": {
@@ -1380,6 +1446,12 @@
     "white",
     "slide"
    ]
+  },
+  "wire": {
+   "clip": [
+    "from",
+    "to"
+   ]
   }
  },
  "wells": {
@@ -1415,6 +1487,20 @@
   }
  },
  "guess": {
+  "검류계": "meter:galvano",
+  "9 V 건전지": "battery:9v",
+  "9V 건전지": "battery:9v",
+  "9볼트 건전지": "battery:9v",
+  "사각 건전지": "battery:9v",
+  "건전지 끼우개": "battery:holder",
+  "건전지 홀더": "battery:holder",
+  "전지 끼우개": "battery:holder",
+  "코일": "coil",
+  "솔레노이드": "coil",
+  "탄소 막대": "electrode:rod",
+  "탄소 전극": "electrode:rod",
+  "전극": "electrode",
+  "금속판": "electrode",
   "저마찰 트랙": "track",
   "역학 트랙": "track",
   "역학 레일": "track",

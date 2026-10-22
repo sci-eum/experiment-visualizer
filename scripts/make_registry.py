@@ -21,7 +21,7 @@ COMMON = ["t", "id", "x", "y", "s", "tilt", "label", "labelSide", "on", "in", "o
 # 그릇(SHAPES) 부품이 함께 쓰는 함수들
 CONTAINER_FUNCS = ["cplace", "cgeo", "fillOf", "liquid", "solids", "drawC", "veil", "volMarks", "volText", "bubbles"]
 # 엔진 코드에서 el.이름으로 읽지 않지만 쓰는 속성
-EXTRA = {"rack": ["tubes", "n"], "circuit": ["parts"], "tube": ["tag"], "microtube": ["tag"], "pcrtube": ["tag"], "spincolumn": ["tag"]}  # tag: 꽂이(tubes)에 꽂힌 튜브
+EXTRA = {"rack": ["tubes", "n"], "circuit": ["parts"], "wire": ["clip"], "tube": ["tag"], "microtube": ["tag"], "pcrtube": ["tag"], "spincolumn": ["tag"]}  # tag: 꽂이(tubes)에 꽂힌 튜브
 # 정해진 값만 그림이 되는 속성. 글자면 엔진의 그 이름 객체(const SENSOR = {…})의 키, 목록이면 그 값들.
 # '_common'은 모든 부품, '_container'는 그릇 모양(SHAPES) 부품. 값은 모두 엔진 코드에 있어야 한다 (build가 확인).
 VALUES = {
@@ -50,6 +50,11 @@ VALUES = {
     "weight": {"kind": ["hanger"]},
     "pulley": {"hang": ["hanger", "weight", "block"], "side": ["left", "right"]},
     "spring": {"hang": ["weight", "block", "hanger", "phone"]},
+    "battery": {"kind": ["holder", "9v"]},
+    "coil": {"kind": ["flat"]},
+    "electrode": {"kind": ["plate", "rod"]},
+    "wire": {"clip": ["from", "to"]},
+    "hose": {"clip": ["from", "to"]},
 }
 # 홈판(wellplate)의 wells 항목에 쓰는 속성. 엔진이 w.이름 / el.이름으로 읽는다 (build가 확인, id는 가리키는 이름)
 WELL_PROPS = ["id", "at", "color", "fill", "solid", "solidColor", "strip", "bubbles", "cloudy", "label", "labelSide", "tag"]
@@ -119,10 +124,10 @@ def build():
             if f in fprops and re.search(rf"\b{f}\(", text):
                 ps |= fprops[f]
         types[n] = ps
-    for group in re.findall(r"\[([^\]]*)\]\.forEach\(n => \{ T\[n\] = \{(.*?)\}; \}\);", js):
+    for group in re.findall(r"\[([^\]]*)\]\.forEach\(n => \{ T\[n\] = \{(.*?)\}; \}\);", js, re.S):
         names, body = group
         for n in re.findall(r"'([a-z]+)'", names):
-            types[n] = props(body) | fprops.get("bplace", set())
+            types[n] = props(body).union(*(fprops[f] for f in fprops if re.search(r"\b" + f + r"\(", body)))  # 부르는 도우미 함수(bplace, cellBox …)의 속성도
     aliases = dict(re.findall(r"\bT\.([a-z]+) = T\.([a-z]+);", js))
     plate = ch.get(("T", "wellplate"), "") + ch.get(("T", "_well"), "") + fn.get("wellPos", "")
     gone = [p for p in WELL_PROPS if p != "id" and not re.search(rf"\b(?:w|el)\??\.{p}\b", plate)]

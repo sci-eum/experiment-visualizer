@@ -3,7 +3,7 @@
   "subject": "experiment-visualizer",
   "unit": "모든 부품 한눈에 보기",
   "goal": "SKILL이 쓸 수 있는 실험 기구·표시 부품을 장면별로 모아 보여 준다. 각 그림 아래 글자는 부품 이름(t 값)이다.",
-  "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"12홈판"},{"name":"pH 미터"},{"name":"멀티미터"},{"name":"이산화 탄소 센서"},{"name":"저마찰 트랙"},{"name":"포토게이트"},{"name":"도르래"},{"name":"추걸이"},{"name":"용수철"},{"name":"삼각대"},{"name":"이름 모를 기구"}],
+  "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"12홈판"},{"name":"pH 미터"},{"name":"멀티미터"},{"name":"이산화 탄소 센서"},{"name":"저마찰 트랙"},{"name":"포토게이트"},{"name":"도르래"},{"name":"추걸이"},{"name":"용수철"},{"name":"삼각대"},{"name":"코일"},{"name":"검류계"},{"name":"건전지 끼우개"},{"name":"9 V 건전지"},{"name":"탄소 막대"},{"name":"이름 모를 기구"}],
   "tips": ["부품 이름(t)과 속성은 references/parts.md(부품 목록)를 보세요.","그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요."],
   "steps": [
   { "title": "유리 기구 (그릇)", "text": "beaker · flask · roundflask · tube · cylinder · bottle", 
@@ -373,6 +373,31 @@
       {"t":"text","x":120,"y":288,"text":"spring(osc)","size":11,"weight":700},
       {"t":"text","x":255,"y":288,"text":"weight(hanger)","size":11,"weight":700},
       {"t":"text","x":395,"y":288,"text":"camera(to)","size":11,"weight":700}
+    ] },
+  { "title": "전자기 실물 1 (코일·검류계·집게 전선)", "text": "coil + magnet(in: coil, dx) · meter(kind:'galvano') · wire(from 'co:-', to 'g:-', clip) · coil(kind:'flat')",
+    "scene": [
+      {"t":"coil","id":"co","x":205},
+      {"t":"magnet","in":"co","dx":18},
+      {"t":"meter","id":"g","kind":"galvano","x":395},
+      {"t":"wire","from":"co:-","to":"g:-","color":"black","clip":true,"points":[[200,150],[335,165]]},
+      {"t":"wire","from":"co:+","to":"g:+","color":"red","clip":true,"points":[[330,190],[425,205]]},
+      {"t":"coil","kind":"flat","x":420,"y":95,"w":70},
+      {"t":"text","x":150,"y":288,"text":"coil + magnet(in)","size":11,"weight":700},
+      {"t":"text","x":395,"y":288,"text":"meter(galvano)","size":11,"weight":700}
+    ] },
+  { "title": "전자기 실물 2 (건전지·전극·바늘 측정기)", "text": "battery(kind:'holder', n, switch) · battery(kind:'9v') · electrode(in, kind:'rod'·'plate') · meter(kind:'ammeter'·'voltmeter', deflect)",
+    "scene": [
+      {"t":"battery","kind":"holder","n":2,"switch":true,"x":75},
+      {"t":"battery","kind":"9v","x":180},
+      {"t":"beaker","id":"b","x":275,"fill":0.6,"color":"clear"},
+      {"t":"electrode","in":"b","dx":-14,"kind":"rod"},
+      {"t":"electrode","in":"b","dx":14,"color":"copper"},
+      {"t":"meter","kind":"ammeter","x":405,"y":190,"s":0.85},
+      {"t":"meter","kind":"voltmeter","x":405,"deflect":0.5,"s":0.85},
+      {"t":"text","x":75,"y":288,"text":"holder","size":11,"weight":700},
+      {"t":"text","x":180,"y":288,"text":"'9v'","size":11,"weight":700},
+      {"t":"text","x":275,"y":288,"text":"electrode","size":11,"weight":700},
+      {"t":"text","x":405,"y":288,"text":"ammeter·voltmeter","size":11,"weight":700}
     ] }
   ]
 }
