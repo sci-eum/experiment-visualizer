@@ -501,7 +501,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.14.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.15.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -595,7 +595,7 @@ section{margin:40px 0}
 .foot{color:var(--ink-3);font-size:13.5px;padding:8px 0 56px;line-height:1.7}
 .foot a{color:var(--primary-ink)}
 .sk{background:linear-gradient(90deg,#eceff5 25%,#f6f7fa 37%,#eceff5 63%);background-size:400% 100%;animation:sk 1.4s ease infinite;border-radius:24px}
-.sk-hero{height:240px;margin:36px 0 28px}.sk-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.sk-card{height:200px}
+.sk-hero{height:240px;margin:36px 0 28px}.dr-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.sk-card{height:200px}
 @keyframes sk{0%{background-position:100% 50%}100%{background-position:0 50%}}
 .deck{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column}
 .deck[hidden]{display:none}
@@ -624,7 +624,7 @@ section{margin:40px 0}
 .write{margin-top:8px;min-height:46px;padding:8px 12px;border-radius:12px;background:#fff;border:1.5px dashed #e2c46f;font-size:15px;line-height:1.6;color:var(--ink);outline:none;cursor:text;white-space:pre-wrap;overflow-wrap:anywhere}
 .write:focus{border-style:solid;border-color:var(--primary)}
 .write:empty::before{content:attr(data-ph);color:var(--ink-3)}
-.qs li>div{flex:1;min-width:0}.qs .ans{border-color:#d9c6ec}
+.qs li>div{flex:1;min-width:0}.qs .ans{border-color:#d9c6ec}.dr-group{margin-top:10px}.dr-t{font-size:15.5px;font-weight:700;color:var(--ink-2);margin:0 0 8px}.dr-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}.dr{margin:0;width:240px;max-width:100%;text-align:center}.dr-row.many .dr{width:190px}.dr-pad{position:relative;width:100%;aspect-ratio:1/1}.dr-pad.box{aspect-ratio:4/3}.dr-pad svg,.dr-pad canvas{position:absolute;inset:0;width:100%;height:100%;display:block}.dr-pad canvas{touch-action:none;cursor:crosshair}.dr-pad.circle canvas{clip-path:circle(49.5% at 50% 50%)}.dr-pad.polar canvas{clip-path:circle(39.5% at 50% 50%)}.dr figcaption{font-size:14px;font-weight:700;color:var(--ink-2);margin-top:6px}.dr-note{font-size:14px;color:var(--ink-2);margin:8px 0 0;text-align:center}.dr-tools{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px;flex-wrap:wrap}.dr-c{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px #c9cdd6;cursor:pointer;padding:0}.dr-c[aria-pressed=true]{box-shadow:0 0 0 3px var(--primary)}.step .dr-group{background:#fff;border-radius:14px;padding:10px 8px 8px;border:1.5px dashed #d9c6ec}
 .tbl td.in{background:#fffdf4;cursor:text;outline:none;min-width:60px}
 .tbl td.in:focus{box-shadow:inset 0 0 0 2px var(--primary)}
 .save-note{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;color:var(--ink-3);font-size:13.5px}
@@ -654,15 +654,15 @@ section{margin:40px 0}
 .pmenu button:hover,.pmenu button:focus-visible{background:var(--primary-50);outline:none}
 .pmenu b{font-size:15px}.pmenu span{font-size:13px;color:var(--ink-3);line-height:1.45}
 .pname{display:none}
-@media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.sk-row{grid-template-columns:1fr}}
+@media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.dr-row{grid-template-columns:1fr}}
 @media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
-@media print{body{background:#fff}.toolbar,.zoom-hint,.deck,.demo,.rv-btn,.save-note,.tm{display:none!important}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.tbl td.in{height:40px;background:#fff!important}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
+@media print{body{background:#fff}.dr-tools{display:none!important}.toolbar,.zoom-hint,.deck,.demo,.rv-btn,.save-note,.tm{display:none!important}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.tbl td.in{height:40px;background:#fff!important}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
 if (!document.getElementById('lk-css')) { const st = document.createElement('style'); st.id = 'lk-css'; st.textContent = CSS; document.head.appendChild(st); }
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.14.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.15.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -2699,6 +2699,50 @@ arr(res.questions).forEach((q, k) => akey(q && q.id ? `q:${q.id}` : `q:${hashStr
 arr(res.tables || res.table).forEach((tb, ti) => { if (!tb) return; const tk = tb.id || hashStr(tb.title || `표${ti}`); arr(tb.rows).forEach((r, ri) => arr(r).forEach((c, ci) => { if (c === '' || c == null) { const row = arr(r)[0]; akey(`t:${tk}:${row !== '' && row != null ? row : 'r' + ri}:${arr(tb.head)[ci] ?? 'c' + ci}`, `t${ti}.${ri}.${ci}`); } })); });
 { let moved = false; AK.forEach((k, old) => { if (saved[old] != null && saved[k] == null) { saved[k] = saved[old]; delete saved[old]; moved = true; } }); if (moved) persist(); }
 const ak = old => AK.get(old) || old;
+// 그림 칸 (v1.15): results.sketches와 단계의 sketch. { id, title, shape:'circle'(현미경 시야)|'box'(빈 네모)|'polar'(극좌표 원), n, labels, write, note }
+// 그린 그림은 적은 답처럼 이 기기의 브라우저에 PNG로 저장한다 (저장 이름: 's:' + id 또는 제목)
+const SK_SHAPES = { circle: [480, 480], box: [480, 360], polar: [480, 480] }, SK_COLORS = [['#2b3040', '검정'], ['#e5484d', '빨강'], ['#2c5fb3', '파랑'], ['#178a5c', '초록']];
+const skList = v => arr(v).filter(x => x && typeof x === 'object');
+const SKEY = new Map(), skUsed = new Set();
+[...skList(res.sketches), ...steps.flatMap(st => skList(st.sketch))].forEach((sk, k) => { let b = `s:${sk.id != null ? sk.id : hashStr(sk.title || `그림${k}`)}`, key = b, n = 2; while (skUsed.has(key)) key = `${b}~${n++}`; skUsed.add(key); SKEY.set(sk, key); });
+function skGuide(shape) {
+  if (shape === 'box') return '<svg viewBox="0 0 100 75" aria-hidden="true"><rect x=".6" y=".6" width="98.8" height="73.8" rx="3" fill="#fff" stroke="#9aa2b4" stroke-width=".9"/></svg>';
+  if (shape === 'polar') {
+    let o = '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40" fill="#fff" stroke="#9aa2b4" stroke-width=".8"/>';
+    [10, 20, 30].forEach(r => { o += `<circle cx="50" cy="50" r="${r}" fill="none" stroke="#dde1e8" stroke-width=".6"/>`; });
+    for (let a = 0; a < 360; a += 45) { const t = (a - 90) * Math.PI / 180; o += `<path d="M50,50 L${r2(50 + 40 * Math.cos(t))},${r2(50 + 40 * Math.sin(t))}" stroke="#dde1e8" stroke-width=".6"/><text x="${r2(50 + 46 * Math.cos(t))}" y="${r2(51.6 + 46 * Math.sin(t))}" font-size="4.6" text-anchor="${a === 90 ? 'end' : a === 270 ? 'start' : 'middle'}" fill="#7f8698">${a}°</text>`; }
+    return o + '</svg>';
+  }
+  return '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="49.3" fill="#fff" stroke="#9aa2b4" stroke-width=".9"/></svg>';
+}
+const r2 = v => Math.round(v * 100) / 100;
+function sketchHtml(sk) {
+  const shape = SK_SHAPES[sk.shape] ? sk.shape : 'circle', labels = arr(sk.labels), n = Math.max(1, Math.min(6, Math.round(+sk.n || labels.length || 1))), key = SKEY.get(sk), [cw, ch] = SK_SHAPES[shape];
+  const items = Array.from({ length: n }, (_, k) => `<figure class="dr"><div class="dr-pad ${shape}">${skGuide(shape)}<canvas data-sk="${e(key)}:${k}" width="${cw}" height="${ch}" role="img" aria-label="${e(labels[k] || sk.title || '그림')} 그리는 칸"></canvas></div>${labels[k] ? `<figcaption>${e(labels[k])}</figcaption>` : ''}${sk.write ? writeBox(`${key}:${k}:w`, sk.write, 'skw') : ''}</figure>`).join('');
+  return `<div class="dr-group" data-skg>${sk.title ? `<p class="dr-t">${md(sk.title)}</p>` : ''}<div class="dr-row${n > 2 ? ' many' : ''}">${items}</div>${sk.note ? `<p class="dr-note">${md(sk.note)}</p>` : ''}<div class="dr-tools">${SK_COLORS.map(([c, nm], k) => `<button class="dr-c" type="button" data-skc="${c}" style="background:${c}" aria-label="${nm} 펜" aria-pressed="${!k}"></button>`).join('')}<button class="btn sm" type="button" data-skclear>다시 그리기</button></div></div>`;
+}
+const sketchBox = st => skList(st.sketch).map(sketchHtml).join('');
+// 그림 칸 그리기: 손가락·마우스·펜. 저장된 그림을 다시 그려 넣는다
+function initSketches(root) { (root || document).querySelectorAll('canvas[data-sk]').forEach(c => { const ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height); const v = saved[c.dataset.sk]; if (v && /^data:image\/png;base64,/.test(v)) { const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0, c.width, c.height); img.src = v; } }); }
+let skDraw = null;
+const skPt = (c, ev) => { const b = c.getBoundingClientRect(); return { x: (ev.clientX - b.left) * c.width / b.width, y: (ev.clientY - b.top) * c.height / b.height }; };
+document.addEventListener('pointerdown', ev => {
+  const c = ev.target.closest && ev.target.closest('canvas[data-sk]'); if (!c) return;
+  ev.preventDefault(); try { c.setPointerCapture(ev.pointerId); } catch (err) { }
+  const g = c.closest('[data-skg]'), ctx = c.getContext('2d'), p = skPt(c, ev);
+  Object.assign(ctx, { strokeStyle: (g && g.dataset.color) || SK_COLORS[0][0], lineWidth: 4, lineCap: 'round', lineJoin: 'round' });
+  ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + .1, p.y + .1); ctx.stroke(); skDraw = { c, ctx, p };
+});
+document.addEventListener('pointermove', ev => { if (!skDraw) return; const p = skPt(skDraw.c, ev); skDraw.ctx.beginPath(); skDraw.ctx.moveTo(skDraw.p.x, skDraw.p.y); skDraw.ctx.lineTo(p.x, p.y); skDraw.ctx.stroke(); skDraw.p = p; });
+const skEnd = () => { if (!skDraw) return; saved[skDraw.c.dataset.sk] = skDraw.c.toDataURL('image/png'); persist(); skDraw = null; };
+document.addEventListener('pointerup', skEnd); document.addEventListener('pointercancel', skEnd);
+document.addEventListener('click', ev => {
+  const b = ev.target.closest && ev.target.closest('[data-skc], [data-skclear]'); if (!b) return;
+  const g = b.closest('[data-skg]'); if (!g) return;
+  if (b.dataset.skc) { g.dataset.color = b.dataset.skc; g.querySelectorAll('[data-skc]').forEach(x => x.setAttribute('aria-pressed', x === b)); return; }
+  if (!confirm('이 그림 칸에 그린 것을 지울까요?')) return;
+  g.querySelectorAll('canvas[data-sk]').forEach(c => { delete saved[c.dataset.sk]; c.getContext('2d').clearRect(0, 0, c.width, c.height); }); persist();
+});
 const writeBox = (id, ph, cls) => `<div class="write${cls ? ' ' + cls : ''}" contenteditable="true" role="textbox" aria-multiline="true" aria-label="${e(ph)}" data-w="${e(id)}" data-ph="${e(ph)}">${wtext(id)}</div>`;
 const predictBox = (st, i) => arr(st.predict).filter(Boolean).map((q, k) => `<div class="box pred"><span class="bi">예상</span><div>${md(q)}${writeBox(ak(`p${i}.${k}`), '내 예상을 적어요')}</div></div>`).join('');
 // 결과 보기: reveal은 글자 하나, 또는 { text, scene } / { text, change, add, remove } (그 단계 장면을 이어받아 바꾼다)
@@ -2720,7 +2764,7 @@ function originBox(st) {
   const added = arr(o.added).map(k => ADDED[k] || k).join(', ');
   return `${unsure}<div class="origin"><b>원문</b> ${o.where ? e(o.where) : '위치 없음'}${o.quote ? ` · “${md(o.quote)}”` : ''}${o.check === 'ok' ? ' · 확인함' : ''}${added ? ` · 원문에 없이 더한 것: ${e(added)}` : ''}</div>`;
 }
-const stepBoxes = (st, i) => `${originBox(st)}${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${predictBox(st, i)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}${revealUi(st, i)}`;
+const stepBoxes = (st, i) => `${originBox(st)}${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${predictBox(st, i)}${sketchBox(st)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}${revealUi(st, i)}`;
 function toggleReveal(i) {
   if (rvOn.has(i)) rvOn.delete(i); else rvOn.add(i);
   const label = rvOn.has(i) ? (i === 'res' ? '감추기' : '과정 보기') : '결과 보기';
@@ -2767,11 +2811,11 @@ const matGrid = () => `<div class="mat-grid">${mats.map(m => `<div class="mat">$
 const tipList = () => `<div class="safety">${tips.map(s => `<div class="safe tipl"><span class="ic">${IC.star}</span><div>${md(s)}</div></div>`).join('')}</div>`;
 const safeList = () => `<div class="safety">${safety.map(s => `<div class="safe"><span class="ic">${IC.alert}</span><div>${md(s)}</div></div>`).join('')}</div>`;
 const tableHtml = (t, ti) => { if (!t || !arr(t.head).length) return ''; return `<div class="tbl-wrap"><table class="tbl"><thead><tr>${arr(t.head).map(h => `<th>${e(h)}</th>`).join('')}</tr></thead><tbody>${arr(t.rows).map((r, ri) => `<tr>${arr(r).map((c, ci) => c === '' || c == null ? `<td class="in" contenteditable="true" aria-label="${e(arr(t.head)[ci] || '')} 칸에 적기" data-w="${e(ak(`t${ti}.${ri}.${ci}`))}">${wtext(ak(`t${ti}.${ri}.${ci}`))}</td>` : `<td>${e(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; };
-const hasWrite = steps.some(st => arr(st.predict).length) || arr(res.questions).length > 0 || arr(res.tables || res.table).some(tb => tb && arr(tb.rows).some(r => arr(r).some(c => c === '' || c == null)));
+const hasWrite = SKEY.size > 0 || steps.some(st => arr(st.predict).length) || arr(res.questions).length > 0 || arr(res.tables || res.table).some(tb => tb && arr(tb.rows).some(r => arr(r).some(c => c === '' || c == null)));
 const saveNote = () => hasWrite ? `<div class="save-note"><span>적은 내용은 이 기기의 브라우저에만 저장돼요.</span><button class="btn sm" type="button" data-clear>적은 내용 지우기</button></div>` : '';
-const hasRes = res.expect || arr(res.tables || res.table).some(tb => tb && arr(tb.head).length) || arr(res.questions).length || res.conclusion;
+const hasRes = skList(res.sketches).length > 0 || res.expect || arr(res.tables || res.table).some(tb => tb && arr(tb.head).length) || arr(res.questions).length || res.conclusion;
 const resHidden = (cls, title, body) => `<div class="card ${cls}${rvOn.has('res') ? ' rv-on' : ''}" data-rvs="res"><h3>${IC.flask}${title}</h3><p class="rv-hide">실험을 마친 뒤 '결과 보기'를 눌러 확인해요.</p><div class="rv-body"><p>${md(body)}</p></div><button class="btn sm rv-btn" type="button" data-rv="res" aria-pressed="${rvOn.has('res')}">${IC.eye}<span class="rv-l">${rvOn.has('res') ? '감추기' : '결과 보기'}</span></button></div>`;
-const resCards = () => [res.expect && resHidden('res-expect', '예상 결과', res.expect), res.conclusion && resHidden('res-conc', '정리', res.conclusion), arr(res.tables || res.table).map((tb, ti) => tb && arr(tb.head).length ? `<div class="card wide"><h3>${IC.table}${e(tb.title || '결과 기록표')}</h3>${tableHtml(tb, ti)}</div>` : '').join(''), arr(res.questions).length && `<div class="card${res.table ? '' : ''}"><h3>${IC.q}생각해 보기</h3><ol class="qs">${arr(res.questions).map((q, k) => `<li><div>${md(qText(q))}${writeBox(ak(`q${k}`), '내 생각을 적어요', 'ans')}</div></li>`).join('')}</ol></div>`].filter(Boolean).join('');
+const resCards = () => [res.expect && resHidden('res-expect', '예상 결과', res.expect), res.conclusion && resHidden('res-conc', '정리', res.conclusion), arr(res.tables || res.table).map((tb, ti) => tb && arr(tb.head).length ? `<div class="card wide"><h3>${IC.table}${e(tb.title || '결과 기록표')}</h3>${tableHtml(tb, ti)}</div>` : '').join(''), skList(res.sketches).length && `<div class="card wide"><h3>${IC.q}관찰한 모습 그리기</h3>${skList(res.sketches).map(sketchHtml).join('')}</div>`, arr(res.questions).length && `<div class="card${res.table ? '' : ''}"><h3>${IC.q}생각해 보기</h3><ol class="qs">${arr(res.questions).map((q, k) => `<li><div>${md(qText(q))}${writeBox(ak(`q${k}`), '내 생각을 적어요', 'ans')}</div></li>`).join('')}</ol></div>`].filter(Boolean).join('');
 const emptyState = `<div class="card empty">${LabKit.scene([{ t: 'beaker', x: 200, fill: 0 }, { t: 'dropper', x: 200, y: 110, drops: false }, { t: 'note', x: 340, y: 120, text: '실험 단계를 기다리는 중이에요', icon: 'idea' }], { label: '빈 상태' }).replace('class="scene"', 'class="scene ill"')}<b>아직 실험 단계가 없어요</b><span>실험지 내용을 넣으면 이곳에 단계별 그림이 나타나요!</span></div>`;
 
 function page() {
@@ -2807,7 +2851,7 @@ function showSlide(i) {
   deck.querySelector('.deck-count').textContent = `${cur + 1} / ${slides.length}`;
   deck.querySelectorAll('.dot').forEach((d, k) => { d.classList.toggle('on', k === cur); d.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
   deck.querySelector('[data-prev]').disabled = cur === 0; deck.querySelector('[data-next]').disabled = cur === slides.length - 1;
-  LabKit.fit(deck); if (Q.has('check')) afterFonts(() => LabKit.overlaps(deck, { mark: true }));
+  LabKit.fit(deck); initSketches(deck); if (Q.has('check')) afterFonts(() => LabKit.overlaps(deck, { mark: true }));
   if (tm) tmRender();
 }
 function openDeck(i) {
@@ -2815,7 +2859,7 @@ function openDeck(i) {
   deck.innerHTML = `<div class="deck-top"><div class="deck-title">${e(D.title || '실험 과정')}</div><span class="tm-mini" hidden></span><span class="deck-count"></span><button class="btn icon" data-full aria-label="전체 화면">${IC.full}</button><button class="btn icon" data-close aria-label="닫기">${IC.x}</button></div><div class="deck-stage"></div><div class="deck-nav"><button class="btn" data-prev>${IC.left}이전</button><div class="dots">${slides.map((s, k) => `<button class="dot" data-go="${k}" aria-label="${e(s.name)}"></button>`).join('')}</div><button class="btn primary" data-next>다음${IC.right}</button></div>`;
   deck.hidden = false; document.body.style.overflow = 'hidden'; showSlide(i); deck.querySelector('[data-next]').focus();
 }
-function closeDeck() { deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
+function closeDeck() { deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(app); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
 deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
 document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].res && (res.expect || res.conclusion)) toggleReveal('res'); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
 let tx = null; deck.addEventListener('touchstart', ev => { tx = ev.touches[0].clientX; }, { passive: true }); deck.addEventListener('touchend', ev => { if (tx == null) return; const dx = ev.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) showSlide(cur + (dx < 0 ? 1 : -1)); tx = null; });
@@ -2841,8 +2885,8 @@ if (Q.has('shot')) {
   return;
 }
 if (CHECK) document.documentElement.classList.add('lk-check'); // 점검 화면은 결과 장면도 함께 보인다
-app.innerHTML = page(); app.removeAttribute('aria-busy'); LabKit.fit(app); if (CHECK) afterFonts(() => LabKit.overlaps(app, { mark: true }));
-function clearWrites() { if (!confirm('이 기기에 적은 내용을 모두 지울까요?')) return; saved = {}; persist(); document.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = ''; }); }
+app.innerHTML = page(); app.removeAttribute('aria-busy'); LabKit.fit(app); initSketches(app); if (CHECK) afterFonts(() => LabKit.overlaps(app, { mark: true }));
+function clearWrites() { if (!confirm('이 기기에 적은 내용을 모두 지울까요?')) return; saved = {}; persist(); document.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = ''; }); initSketches(document); }
 // 인쇄: 학생용은 결과 그림·예상 결과·메모를 빼고, 교사용은 결과 그림까지 함께 인쇄한다
 function printAs(mode) {
   const root = document.documentElement, done = () => { delete root.dataset.print; window.removeEventListener('afterprint', done); };
@@ -2857,7 +2901,7 @@ app.addEventListener('click', ev => {
   const rv = t.closest('[data-rv]'); if (rv) return toggleReveal(rvKey(rv.dataset.rv));
   if (t.closest('[data-clear]')) return clearWrites();
   const ob = t.closest('[data-origin]'); if (ob) { const on = document.documentElement.classList.toggle('lk-origin'); ob.setAttribute('aria-pressed', on); ob.textContent = on ? '원문 대조 감추기' : '원문 대조 보기'; return; }
-  if (t.closest('[data-w]')) return; // 적는 칸을 누르면 수업 모드를 열지 않는다
+  if (t.closest('[data-w], [data-skg]')) return; // 적는 칸·그림 칸을 누르면 수업 모드를 열지 않는다
   const o = t.closest('[data-open]'); if (o) return openDeck(+o.dataset.open);
   const st = t.closest('.step'); if (st) openDeck(stepStart + +st.dataset.step);
 });

@@ -28,10 +28,12 @@ RAW = ["https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/references/p
 W, H = 480, 300
 TOP = {"title", "subject", "unit", "duration", "group", "goal", "materials", "safety", "tips", "cover", "steps", "results",
        "source", "notes", "id", "_demo"}
-STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin"}
+STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin", "sketch"}
 ORIGIN = {"where", "quote", "check", "unsure", "added"}
 ADDED = {"tip", "warn", "point", "predict", "observe", "reveal", "scene", "text", "time"}
-RESULTS = {"expect", "conclusion", "table", "tables", "questions"}
+RESULTS = {"expect", "conclusion", "table", "tables", "questions", "sketches"}
+SKETCH = {"id", "title", "shape", "n", "labels", "write", "note"}  # 그림 칸
+SKETCH_SHAPES = ("circle", "box", "polar")
 INHERIT = {"from", "remove", "change", "add"}
 REVEAL = {"text", "scene", "remove", "change", "add"}
 FRESH = {"note", "text", "arrow", "mark", "eye", "label", "view", "zoom", "pour"}  # 이어받지 않는 설명·동작 부품
@@ -304,6 +306,33 @@ def kids(el):
     return [k for k in (el.get(KIDS[el["t"]]) or []) if isinstance(k, dict)] if isinstance(el, dict) and el.get("t") in KIDS else []
 
 
+def check_sketches(v, where, rep):
+    """그림 칸(단계의 sketch, results.sketches): 객체 또는 객체 배열 → 저장 이름(id 또는 제목) 목록."""
+    keys = []
+    for j, sk in enumerate(v if isinstance(v, list) else [v]):
+        w = f"{where}[{j}]" if isinstance(v, list) else where
+        if not isinstance(sk, dict):
+            rep.err(w, "그림 칸은 { title, shape, … } 객체여야 해요")
+            continue
+        for k in sk:
+            if k not in SKETCH:
+                rep.err(w, f"그림 칸에 없는 항목 '{k}'{suggest(k, SKETCH)}")
+        if sk.get("shape") is not None and sk["shape"] not in SKETCH_SHAPES:
+            rep.err(w, f"shape '{sk['shape']}'는 정해진 값이 아니에요 ({', '.join(SKETCH_SHAPES)}){suggest(str(sk['shape']), SKETCH_SHAPES)}")
+        n = sk.get("n")
+        if n is not None and not (isinstance(n, int) and not isinstance(n, bool) and 1 <= n <= 6):
+            rep.err(w, "n(칸 수)은 1~6 정수여야 해요")
+        if "labels" in sk and not (isinstance(sk["labels"], list) and all(isinstance(x, str) for x in sk["labels"])):
+            rep.err(w, "labels는 글자 배열이어야 해요")
+        for k in ("title", "write", "note"):
+            if k in sk and not isinstance(sk[k], str):
+                rep.err(w, f"{k}는 글자여야 해요")
+        if not sk.get("title") and sk.get("id") is None:
+            rep.warn(w, "그림 칸에 title(무엇을 그리는지)을 적어 주세요")
+        keys.append(str(sk["id"]) if sk.get("id") is not None else sk.get("title"))
+    return keys
+
+
 def scene_ids(items, where, rep):
     ids = {}
     for el in items:
@@ -397,6 +426,7 @@ def main_check(data, reg):
 
     # 단계와 장면 (이어받기는 엔진과 같은 규칙으로 풀어서 검사)
     resolved = {}
+    sk_keys = []
 
     def resolve(i, sc, where, chain):
         if sc is None:
@@ -468,6 +498,8 @@ def main_check(data, reg):
         for k in TEXT_FIELDS:
             if k in st and not is_text(st[k]):
                 rep.err(f"{where}.{k}", "글자 또는 글자 배열이어야 해요")
+        if "sketch" in st:
+            sk_keys += check_sketches(st["sketch"], f"{where}.sketch", rep)
         if "bench" in st and not isinstance(st["bench"], bool):
             rep.err(f"{where}.bench", "true 또는 false여야 해요")
         if "timer" in st and not (st["timer"] is False or (isinstance(st["timer"], (int, float)) and not isinstance(st["timer"], bool) and st["timer"] > 0)):
@@ -576,6 +608,8 @@ def main_check(data, reg):
             for k in ("expect", "conclusion"):
                 if k in res and not isinstance(res[k], str):
                     rep.err(f"results.{k}", "글자여야 해요")
+            if "sketches" in res:
+                sk_keys += check_sketches(res["sketches"], "results.sketches", rep)
             qs = res.get("questions")
             if qs is not None and not (isinstance(qs, list) and all(isinstance(q, str) or (isinstance(q, dict) and isinstance(q.get("text"), str) and set(q) <= {"id", "text"}) for q in qs)):
                 rep.err("results.questions", "글자 또는 { id, text } 의 배열이어야 해요")
@@ -594,6 +628,8 @@ def main_check(data, reg):
                         rep.err(f"results.table[{ti}].rows[{ri}]", "줄은 배열이어야 해요")
                     elif len(row) != len(tb["head"]):
                         rep.warn(f"results.table[{ti}].rows[{ri}]", f"칸 수({len(row)})가 머리 줄({len(tb['head'])})과 달라요")
+    for d in sorted({k for k in sk_keys if k and sk_keys.count(k) > 1}):
+        rep.err("그림 칸", f"id·제목 '{d}'가 여러 번 나와요 (그린 그림이 엇갈려요. id를 따로 주세요)")
     return rep
 
 

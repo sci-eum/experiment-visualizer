@@ -437,5 +437,12 @@
       {"t":"text","x":265,"y":288,"text":"'microwave'","size":11,"weight":700},
       {"t":"text","x":415,"y":288,"text":"'kettle'","size":11,"weight":700}
     ] }
-  ]
+  ],
+  "results": {
+    "sketches": [
+      { "id": "g-circle", "title": "그림 칸: 현미경 시야 (shape 'circle', labels, write)", "shape": "circle", "labels": ["칸 1", "칸 2"], "write": "배율" },
+      { "id": "g-polar", "title": "그림 칸: 극좌표 원 (shape 'polar')", "shape": "polar", "n": 2 },
+      { "id": "g-box", "title": "그림 칸: 빈 네모 (shape 'box', note)", "shape": "box", "note": "칸 아래 안내 글" }
+    ]
+  }
 }

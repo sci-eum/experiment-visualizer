@@ -57,10 +57,11 @@ BAD = {
         {"title": "역학", "scene": [{"t": "track", "id": "tk", "support": "books"}, {"t": "pulley", "on": "tk", "from": "nocart", "hang": "bag"}]},
         {"title": "전기", "scene": [{"t": "beaker", "id": "bk"}, {"t": "battery", "id": "bt", "kind": "aa"}, {"t": "wire", "from": "bk:+", "to": "bt:-", "clip": "both"}]},
         {"title": "작은 기구", "scene": [{"t": "glasspipette", "kind": "mohr", "vol": "10 mL", "amount": "20 mL"}, {"t": "appliance", "kind": "oven"}, {"t": "tlc", "kind": "silica"}]},
+        {"title": "그림 칸", "sketch": {"id": "d", "shape": "oval", "n": 9, "colr": "red"}, "scene": [{"t": "microscope"}]},
         {"title": "하룻밤 두기", "time": "24시간", "scene": [{"t": "beaker"}]},
     ],
     "materials": [{"name": "피펫"}, {"name": "적외선 온도계"}, {"name": "시험관 집게"}, {"name": "홈판", "icon": "generic"}],
-    "results": {"questions": [{"id": "q1", "text": "가"}, {"id": "q1", "text": "나"}]},
+    "results": {"questions": [{"id": "q1", "text": "가"}, {"id": "q1", "text": "나"}], "sketches": [{"id": "d", "title": "같은 id"}]},
 }
 BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항목 'obsreve'", "없는 부품 'bekaer'",
               "id 'b'가 한 장면에 두 번", "over: 'c'", "부피로 읽지 못해요", "이어받을 단계가 없어요",
@@ -69,7 +70,8 @@ BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항�
               "홈에 없는 속성 'colr'", "홈 자리 at '3B'", "홈의 solid 'sand'", "meter#pm에는 (+)·(−) 단자가 없어요",
               "support 'books'", "hang 'bag'", "from: 'nocart'",
               "beaker#bk에는 (+)·(−) 단자가 없어요", "kind 'aa'", "clip 'both'",
-              "kind 'mohr'", "넣은 양 amount '20 mL'", "kind 'oven'", "kind 'silica'"]
+              "kind 'mohr'", "넣은 양 amount '20 mL'", "kind 'oven'", "kind 'silica'",
+              "shape 'oval'", "n(칸 수)은 1~6", "그림 칸에 없는 항목 'colr'", "id·제목 'd'가 여러 번"]
 BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문장에는 5 mL)", "그림의 '7 mL'",
             "'피펫'의 아이콘이 이름 짐작으로 스포이트", "'적외선 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
             "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[3].icon: 글자가 없으면", "24시간짜리 타이머"]
@@ -95,7 +97,9 @@ QUIET = {"title": "조용한 시험", "materials": [
         {"title": "작은 기구", "scene": [{"t": "tube", "id": "tb", "foam": True}, {"t": "splint", "over": "tb", "lit": True}, {"t": "agar", "id": "ag", "sectors": ["A", "B"], "disks": [{"zone": 0.3}]},
                                   {"t": "swab", "in": "ag"}, {"t": "tlc", "id": "tl", "kind": "paper", "spots": ["red"]}, {"t": "capillary", "over": "tl"},
                                   {"t": "glasspipette", "kind": "volumetric", "vol": "10 mL", "amount": "10 mL", "filler": True}, {"t": "filler"}, {"t": "paper", "kind": "disk"},
-                                  {"t": "appliance", "id": "ap", "open": True, "reading": "30 ℃"}, {"t": "dish", "on": "ap"}]}]}
+                                  {"t": "appliance", "id": "ap", "open": True, "reading": "30 ℃"}, {"t": "dish", "on": "ap"}]},
+        {"title": "그림 칸", "sketch": [{"id": "s1", "title": "보이는 모습", "labels": ["가", "나"], "write": "배율"}], "scene": [{"t": "microscope"}]}],
+    "results": {"sketches": [{"title": "궤적", "shape": "polar", "n": 2}, {"id": "s2", "title": "흐름", "shape": "box", "note": "화살표로"}]}}
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다
 TABLE_TEXT = '80°C 120초 → (60°C 30초 · 40°C 50초) 10회 → 25°C 90초'
 TABLE_QUOTE = '[표] 단계 / 온도 (°C) / 시간(sec) / 반복: 데우기 80 / 120 / 1, 식히기 60 / 30 / 10, 기다리기 40 / 50 / 10, 마무리 25 / 90 / 1'
