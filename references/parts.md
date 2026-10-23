@@ -67,7 +67,7 @@
 | `n` | 홈 수 `6`·`12`(기본)·`24`·`48`·`96`. 줄·칸을 직접 정하려면 `rows`·`cols` |
 | `kind` | `'plastic'`(투명 플라스틱, 기본) · `'white'`(도자기 홈판) · `'slide'`(오목받침 유리, 기본 홈 2개) |
 | `tags` | `true`면 판 옆에 줄 이름(A, B …)과 칸 번호(1, 2 …). 다른 글자는 `rowTags:['가','나']`·`colTags:[…]` |
-| `wells` | 내용물이 있는 홈만 적는다: `[{id, at:'B3', color, fill, solid, solidColor, bubbles, cloudy, strip, label, tag}]`. `at`은 줄 글자 + 칸 번호 (생략하면 쓴 순서대로 A1, A2 …) |
+| `wells` | 내용물이 있는 홈만 적는다: `[{id, at:'B3', color, fill, solid, solidColor, bubbles, cloudy, strip, label, tag}]`. `at`은 줄 글자 + 칸 번호 (생략하면 쓴 순서대로 A1, A2 …) 홈의 `label`은 판 바깥에 붙는다 (앞쪽 칸은 왼쪽, 뒤쪽 칸은 오른쪽, `labelSide`로 바꿈) |
 
 - 홈 속성: `color`·`fill`(0~1, `color`만 주면 0.6) 액체, `solid:'chips'`(조각)·`'powder'`·`'precipitate'` 고체, `bubbles:true` 기포, `cloudy:true` 흐림, `strip`(세워 꽂은 금속판, 색 이름 `'copper'`·`'silver'` 또는 `true`), `label`(홈 이름표, 예 `"식초 1 mL"`), `tag`(홈 안에 쓰는 짧은 글자).
 - 금속판(`strip`)이 꽂힌 홈을 `wire`의 `to`로 가리키면 금속판 위 끝에 이어진다. 결과(색이 변한 뒤)는 이어받기 `change`나 `reveal`의 `change`로 홈 `id`를 골라 바꾼다.
@@ -116,7 +116,7 @@
 | t | 이름 | 놓는 법 / 속성 |
 |---|---|---|
 | `sensor` | 무선 센서 (`x,y` = 탐침 끝 또는 압력 포트) | `kind:'temp'`(온도, 기본)/`'pressure'`(압력, 아래 포트에 `hose`를 연결)/`'ph'`/`'co2'`·`'o2'`(기체, 짧은 탐침)/`'light'`(조도, 아래 창)/`'force'`(힘, 아래 고리)/`'other'`(그 밖의 센서, 이름은 `text`), `in:'id'`(탐침을 그릇 안에, `dy`로 바닥에서 띄움), `length`(탐침 길이, 기본 112), `text`(몸통 글자), `reading` |
-| `device` ● | 스마트기기 그래프 (`tablet`·`phone`) | `link:'센서id'`(무선 연결 표시), `title:'온도 (℃)'`, `xlabel:'시간'`, `value`, `graph`, `upto`(0~1, 그래프를 어디까지 그릴지), `markAt`·`markText`(그래프 위 표시) |
+| `device` ● | 스마트기기 화면 (`tablet`·`phone`) | `link:'센서id'`(무선 연결 표시), `title:'온도 (℃)'`, `xlabel:'시간'`, `value`, `graph`, `upto`(0~1, 그래프를 어디까지 그릴지), `markAt`·`markText`(그래프 위 표시) `display`: `'graph'`(그래프, 기본) · `'camera'`(촬영 중인 카메라 화면, `title`) · `'blank'`(그래프 없는 앱 화면, `title`과 크게 `value`) — 동영상 촬영·앱 분석 단계는 그래프가 아니라 이것을 쓴다 |
 | `stirrer` ★ | 자석 교반기 | `on:false` |
 | `stirbar` ● | 마그네틱 바 (준비물 아이콘용. 그릇 안에서는 그릇의 `stirbar:true`) | |
 | `tweezers` ● | 핀셋 | `tilt` |
@@ -236,7 +236,7 @@
 | `mark` | O·X 표시 | `kind:'ok'` 또는 `'no'` |
 | `eye` | 눈 + 시선 | `to:[x,y]` (눈금 읽기 장면) |
 | `view` | 확대 원 (`zoom`) | `r`, `show:'plantcells'/'animalcells'/'solid'/'liquid'/'gas'/'crystals'/'bubbles'`, `color`, `from:[x,y]`(확대한 곳), `label`, `markup`(직접 그린 SVG, 원 중심이 0,0) |
-| `svg` | 직접 그리기 | `markup`(SVG 조각, 기준점이 0,0), `w`, `h` |
+| `svg` | 직접 그리기 | `markup`(SVG 조각, 기준점이 0,0 — 실험대에 세울 것은 0,0에서 위쪽(음수 y)으로 그리고 `y:268`), `w`, `h`. `y`를 주지 않으면 y 150이 기준이고, `h`가 150보다 크면 실험대 위에 선다 |
 
 ## 색 이름
 

@@ -58,9 +58,10 @@ BAD = {
         {"title": "전기", "scene": [{"t": "beaker", "id": "bk"}, {"t": "battery", "id": "bt", "kind": "aa"}, {"t": "wire", "from": "bk:+", "to": "bt:-", "clip": "both"}]},
         {"title": "작은 기구", "scene": [{"t": "glasspipette", "kind": "mohr", "vol": "10 mL", "amount": "20 mL"}, {"t": "appliance", "kind": "oven"}, {"t": "tlc", "kind": "silica"}]},
         {"title": "그림 칸", "sketch": {"id": "d", "shape": "oval", "n": 9, "colr": "red"}, "scene": [{"t": "microscope"}]},
+        {"title": "화면·svg", "scene": [{"t": "device", "display": "photo"}, {"t": "svg", "x": 100, "w": 40, "h": 40}]},
         {"title": "하룻밤 두기", "time": "24시간", "scene": [{"t": "beaker"}]},
     ],
-    "materials": [{"name": "피펫"}, {"name": "적외선 온도계"}, {"name": "시험관 집게"}, {"name": "홈판", "icon": "generic"}],
+    "materials": [{"name": "설탕 녹인 물"}, {"name": "피펫"}, {"name": "적외선 온도계"}, {"name": "시험관 집게"}, {"name": "홈판", "icon": "generic"}],
     "results": {"questions": [{"id": "q1", "text": "가"}, {"id": "q1", "text": "나"}], "sketches": [{"id": "d", "title": "같은 id"}]},
 }
 BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항목 'obsreve'", "없는 부품 'bekaer'",
@@ -71,14 +72,14 @@ BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항�
               "support 'books'", "hang 'bag'", "from: 'nocart'",
               "beaker#bk에는 (+)·(−) 단자가 없어요", "kind 'aa'", "clip 'both'",
               "kind 'mohr'", "넣은 양 amount '20 mL'", "kind 'oven'", "kind 'silica'",
-              "shape 'oval'", "n(칸 수)은 1~6", "그림 칸에 없는 항목 'colr'", "id·제목 'd'가 여러 번"]
+              "shape 'oval'", "n(칸 수)은 1~6", "그림 칸에 없는 항목 'colr'", "id·제목 'd'가 여러 번", "display 'photo'"]
 BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문장에는 5 mL)", "그림의 '7 mL'",
             "'피펫'의 아이콘이 이름 짐작으로 스포이트", "'적외선 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
-            "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[3].icon: 글자가 없으면", "24시간짜리 타이머"]
+            "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[4].icon: 글자가 없으면", "24시간짜리 타이머", "'설탕 녹인 물'의 아이콘이 이름 짐작으로 가루 더미", "svg에 y가 없어요"]
 # 알리지 않아야 하는 것: 맞게 짐작되는 준비물, 정해진 값, 그래프 숫자 배열, 꺼 둔 긴 타이머, 수업 안의 시간
 QUIET = {"title": "조용한 시험", "materials": [
     {"name": "마이크로피펫"}, {"name": "시험관대"}, {"name": "스탠드와 집게"}, {"name": "온도계"}, {"name": "pH 미터", "icon": {"t": "generic", "text": "pH"}},
-    {"name": "디지털 온도계"}, {"name": "12홈판"}, {"name": "저마찰 트랙"}, {"name": "도르래"}, {"name": "추걸이"}, {"name": "용수철"}, {"name": "삼각대"}, {"name": "코일"}, {"name": "검류계"}, {"name": "건전지 끼우개"}, {"name": "9 V 건전지"}, {"name": "탄소 막대"}, {"name": "향"}, {"name": "면봉"}, {"name": "홀 피펫"}, {"name": "피펫 필러"}, {"name": "한천 배지"}, {"name": "TLC 판"}, {"name": "항온기"}, {"name": "눈금 피펫 (10 mL)", "icon": {"t": "glasspipette", "vol": "10 mL"}}, {"name": "주사기 (50 mL)", "icon": {"t": "syringe", "vol": "50 mL"}}],
+    {"name": "디지털 온도계"}, {"name": "12홈판"}, {"name": "20 % 설탕물"}, {"name": "소금물"}, {"name": "설탕 용액"}, {"name": "스마트폰"}, {"name": "저마찰 트랙"}, {"name": "도르래"}, {"name": "추걸이"}, {"name": "용수철"}, {"name": "삼각대"}, {"name": "코일"}, {"name": "검류계"}, {"name": "건전지 끼우개"}, {"name": "9 V 건전지"}, {"name": "탄소 막대"}, {"name": "향"}, {"name": "면봉"}, {"name": "홀 피펫"}, {"name": "피펫 필러"}, {"name": "한천 배지"}, {"name": "TLC 판"}, {"name": "항온기"}, {"name": "눈금 피펫 (10 mL)", "icon": {"t": "glasspipette", "vol": "10 mL"}}, {"name": "주사기 (50 mL)", "icon": {"t": "syringe", "vol": "50 mL"}}],
     "steps": [
         {"title": "센서", "time": "1시간 30분", "scene": [{"t": "sensor", "kind": "other", "text": "CO₂"}, {"t": "device", "graph": [0.2, 0.5, 0.4]}]},
         {"title": "하룻밤", "time": "24시간", "timer": False, "scene": [{"t": "beaker", "solid": "icebath"}, {"t": "zoom", "show": "crystals"}]},
@@ -98,6 +99,8 @@ QUIET = {"title": "조용한 시험", "materials": [
                                   {"t": "swab", "in": "ag"}, {"t": "tlc", "id": "tl", "kind": "paper", "spots": ["red"]}, {"t": "capillary", "over": "tl"},
                                   {"t": "glasspipette", "kind": "volumetric", "vol": "10 mL", "amount": "10 mL", "filler": True}, {"t": "filler"}, {"t": "paper", "kind": "disk"},
                                   {"t": "appliance", "id": "ap", "open": True, "reading": "30 ℃"}, {"t": "dish", "on": "ap"}]},
+        {"title": "화면·svg", "scene": [{"t": "device", "display": "camera", "title": "촬영"}, {"t": "device", "display": "blank", "value": "0.0 s"}, {"t": "svg", "x": 100, "y": 268, "w": 40, "h": 40},
+                                    {"t": "wellplate", "wells": [{"id": "lw", "label": "물질 가", "labelSide": "right"}]}]},
         {"title": "그림 칸", "sketch": [{"id": "s1", "title": "보이는 모습", "labels": ["가", "나"], "write": "배율"}], "scene": [{"t": "microscope"}]}],
     "results": {"sketches": [{"title": "궤적", "shape": "polar", "n": 2}, {"id": "s2", "title": "흐름", "shape": "box", "note": "화살표로"}]}}
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다

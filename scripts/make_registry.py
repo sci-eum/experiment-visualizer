@@ -31,7 +31,7 @@ VALUES = {
     "meter": {"kind": "METER"},
     "wellplate": {"kind": ["plastic", "white", "slide"]},
     "rock": {"kind": "ROCK"},
-    "device": {"graph": "GRAPH"},
+    "device": {"graph": "GRAPH", "display": ["graph", "camera", "blank"]},
     "lens": {"kind": ["convex", "concave"]},
     "mirror": {"kind": ["plane", "concave", "convex"]},
     "paper": {"kind": ["filter", "disk"]},

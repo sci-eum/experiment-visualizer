@@ -436,6 +436,15 @@
       {"t":"text","x":90,"y":288,"text":"'incubator'","size":11,"weight":700},
       {"t":"text","x":265,"y":288,"text":"'microwave'","size":11,"weight":700},
       {"t":"text","x":415,"y":288,"text":"'kettle'","size":11,"weight":700}
+    ] },
+  { "title": "스마트기기 화면 (display)", "text": "device(display: 'graph' · 'camera' · 'blank', title, value)", "bench": false,
+    "scene": [
+      {"t":"device","x":85,"y":130,"s":0.95,"title":"온도 (℃)","graph":"live"},
+      {"t":"device","x":240,"y":130,"s":0.95,"display":"camera","title":"촬영"},
+      {"t":"device","x":395,"y":130,"s":0.95,"display":"blank","title":"측정 앱","value":"0.0 s"},
+      {"t":"text","x":85,"y":230,"text":"'graph'","size":11,"weight":700},
+      {"t":"text","x":240,"y":230,"text":"'camera'","size":11,"weight":700},
+      {"t":"text","x":395,"y":230,"text":"'blank'","size":11,"weight":700}
     ] }
   ],
   "results": {

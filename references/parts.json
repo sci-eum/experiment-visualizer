@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.15.0",
+ "engine": "1.16.0",
  "common": [
   "t",
   "id",
@@ -342,6 +342,7 @@
   ],
   "device": [
    "color",
+   "display",
    "graph",
    "link",
    "markAt",
@@ -1211,6 +1212,11 @@
     "freeze",
     "exo",
     "endo"
+   ],
+   "display": [
+    "graph",
+    "camera",
+    "blank"
    ]
   },
   "dish": {
@@ -1578,6 +1584,15 @@
   }
  },
  "guess": {
+  "설탕물": "bottle",
+  "소금물": "bottle",
+  "석회수": "bottle",
+  "수용액": "bottle",
+  "용액": "bottle",
+  "스마트폰": "device",
+  "휴대폰": "device",
+  "휴대 전화": "device",
+  "휴대전화": "device",
   "향": "splint:1",
   "불씨": "splint",
   "면봉": "swab",
@@ -1833,7 +1848,6 @@
   "가루": "powder",
   "소금": "powder",
   "설탕": "powder",
-  "용액": "bottle",
   "증류수": "bottle",
   "구슬": "ball",
   "공": "ball",

@@ -297,6 +297,15 @@
     "scene": [
       {"t":"cylinder","id":"c","x":220,"vol":"100 mL","amount":"30 mL","color":"clear"},
       {"t":"dropper","over":"c","color":"clear"}
+    ] },
+  { "title": "홈판의 홈마다 다른 물질 넣기 (홈 이름표)", "text": "홈의 label은 판 바깥에 붙는다 (앞쪽 칸은 왼쪽, 뒤쪽 칸은 오른쪽). 스포이트는 over로 그 홈 위에.",
+    "scene": [
+      {"t":"wellplate","x":240,"n":6,"s":1.25,"wells":[
+        {"id":"h1","at":"A1","solid":"powder","label":"물질 가"},
+        {"id":"h2","at":"A3","solid":"crystals","label":"물질 나"},
+        {"id":"h3","at":"B1","solid":"chips","solidColor":"white","label":"물질 다"},
+        {"id":"h4","at":"B3","color":"clear","label":"증류수"}]},
+      {"t":"dropper","over":"h2","color":"clear"}
     ] }
   ]
 }

@@ -51,6 +51,7 @@ NAME_T = [("눈금실린더", "cylinder"), ("눈금 실린더", "cylinder"), ("�
 # 준비물 아이콘이 이름 짐작(엔진 GUESS)으로 다른 기구 그림이 되는 경우: (이름 무늬, 짐작한 부품이 이것이면, 그림 이름)
 MISGUESS = [
     (re.compile(r"피펫"), {"dropper"}, "스포이트"),
+    (re.compile(r"(물|용액|수용액|액)\s*$"), {"powder"}, "가루 더미"),
     (re.compile(r"(디지털|적외선|탐침)\s*온도계"), {"thermometer"}, "유리 막대 온도계"),
     (re.compile(r"(시험관|비커|플라스크|뷰렛|깔때기|실린더|수조)\s*(집게|홀더|솔|받침)"),
      {"tube", "beaker", "flask", "roundflask", "burette", "funnel", "cylinder", "trough"}, None),
@@ -253,6 +254,8 @@ def check_part(el, where, reg, rep):
             if isinstance(v, str) and v not in opts:
                 more = " — 그 밖의 센서는 kind 'other'에 text로 이름을 적으세요 (예: 'CO₂')" if real == "sensor" and k == "kind" else ""
                 rep.err(f"{where} ({name_of(el)})", f"'{t}'의 {k} '{v}'는 정해진 값이 아니에요 ({', '.join(opts)}){suggest(v, opts)}{more}")
+        if real == "svg" and el.get("y") is None and not where.endswith(".icon") and not any(el.get(k) for k in ("on", "in", "over")):  # 준비물 아이콘은 위치와 상관없다
+            rep.warn(f"{where} ({name_of(el)})", "svg에 y가 없어요. 실험대 위에 세우려면 y: 268 (markup은 0,0에서 위쪽(음수 y)으로 그린다)")
         if el.get("vol") is not None and real not in reg["vol"] and real in types and "vol" in types[real]:
             rep.warn(f"{where} ({name_of(el)})", f"'{t}'에는 vol이 그림에 새겨지지 않아요. 용량은 label로 적으세요")
     for k in ("vol", "amount", "fromVol"):

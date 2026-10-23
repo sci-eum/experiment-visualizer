@@ -554,3 +554,12 @@ tlc의 in으로 그릇 바닥 가까이 세우고 spots로 출발선의 점을. 
 ```json
 {"reveal": {"text": "결과는 원문이 알려 줄 때만 여기에 적는다.", "remove": ["dropper"], "change": {"c": {"foam": true}}}}
 ```
+
+### 49. 홈판의 홈마다 다른 물질 넣기 (홈 이름표)
+
+홈의 label은 판 바깥에 붙는다 (앞쪽 칸은 왼쪽, 뒤쪽 칸은 오른쪽). 스포이트는 over로 그 홈 위에.
+
+```json
+[{"t": "wellplate", "x": 240, "n": 6, "s": 1.25, "wells": [{"id": "h1", "at": "A1", "solid": "powder", "label": "물질 가"}, {"id": "h2", "at": "A3", "solid": "crystals", "label": "물질 나"}, {"id": "h3", "at": "B1", "solid": "chips", "solidColor": "white", "label": "물질 다"}, {"id": "h4", "at": "B3", "color": "clear", "label": "증류수"}]},
+ {"t": "dropper", "over": "h2", "color": "clear"}]
+```
