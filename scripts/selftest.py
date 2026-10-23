@@ -60,9 +60,13 @@ BAD = {
         {"title": "그림 칸", "sketch": {"id": "d", "shape": "oval", "n": 9, "colr": "red"}, "scene": [{"t": "microscope"}]},
         {"title": "화면·svg", "scene": [{"t": "device", "display": "photo"}, {"t": "svg", "x": 100, "w": 40, "h": 40}]},
         {"title": "하룻밤 두기", "time": "24시간", "scene": [{"t": "beaker"}]},
+        {"title": "공 놓기", "scene": [{"t": "table", "id": "tb"}, {"t": "ball", "id": "b1", "on": "tb", "at": 0.2}]},
+        {"title": "공 또 놓기", "scene": {"from": "prev", "add": [{"t": "ball", "on": "tb", "at": 0.8}]}},
     ],
     "materials": [{"name": "설탕 녹인 물"}, {"name": "피펫"}, {"name": "적외선 온도계"}, {"name": "시험관 집게"}, {"name": "홈판", "icon": "generic"}],
-    "results": {"questions": [{"id": "q1", "text": "가"}, {"id": "q1", "text": "나"}], "sketches": [{"id": "d", "title": "같은 id"}]},
+    "results": {"questions": [{"id": "q1", "text": "가"}, {"id": "q1", "text": "나"}], "sketches": [{"id": "d", "title": "같은 id"}],
+                "tables": [{"title": "합친 칸", "head": [{"text": "시간", "span": 0, "colour": "red"}, "1"],
+                            "rows": [[{"txt": "가", "rowspan": 3}, ""], ["", "", ""]]}]},
 }
 BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항목 'obsreve'", "없는 부품 'bekaer'",
               "id 'b'가 한 장면에 두 번", "over: 'c'", "부피로 읽지 못해요", "이어받을 단계가 없어요",
@@ -72,11 +76,15 @@ BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항�
               "support 'books'", "hang 'bag'", "from: 'nocart'",
               "beaker#bk에는 (+)·(−) 단자가 없어요", "kind 'aa'", "clip 'both'",
               "kind 'mohr'", "넣은 양 amount '20 mL'", "kind 'oven'", "kind 'silica'",
-              "shape 'oval'", "n(칸 수)은 1~6", "그림 칸에 없는 항목 'colr'", "id·제목 'd'가 여러 번", "display 'photo'"]
+              "shape 'oval'", "n(칸 수)은 1~6", "그림 칸에 없는 항목 'colr'", "id·제목 'd'가 여러 번", "display 'photo'",
+              "span는 1 이상의 정수", "머리 칸에 없는 항목 'colour'", "표 칸에 없는 항목 'txt'"]
 BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문장에는 5 mL)", "그림의 '7 mL'",
             "'피펫'의 아이콘이 이름 짐작으로 스포이트", "'적외선 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
-            "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[4].icon: 글자가 없으면", "24시간짜리 타이머", "'설탕 녹인 물'의 아이콘이 이름 짐작으로 가루 더미", "svg에 y가 없어요"]
+            "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[4].icon: 글자가 없으면", "24시간짜리 타이머", "'설탕 녹인 물'의 아이콘이 이름 짐작으로 가루 더미", "svg에 y가 없어요",
+            "이어받은 장면에 'ball'가 이미 있어요", "칸 수(4, 합친 칸 포함)가 머리 줄(2)과 달라요", "rowspan)이 표의 줄 수보다 길어요"]
 # 알리지 않아야 하는 것: 맞게 짐작되는 준비물, 정해진 값, 그래프 숫자 배열, 꺼 둔 긴 타이머, 수업 안의 시간
+MERGE_TABLE = {"id": "m", "title": "합친 표", "head": [{"text": "구분", "span": 2}, "1회", "2회"],
+                "rows": [[{"text": "A 모둠", "rowspan": 2}, "길이", "5", ""], ["무게", {"off": True}, ""], [{"text": "B 모둠", "rowspan": 1}, "길이", "5", ""]]}
 QUIET = {"title": "조용한 시험", "materials": [
     {"name": "마이크로피펫"}, {"name": "시험관대"}, {"name": "스탠드와 집게"}, {"name": "온도계"}, {"name": "pH 미터", "icon": {"t": "generic", "text": "pH"}},
     {"name": "디지털 온도계"}, {"name": "12홈판"}, {"name": "20 % 설탕물"}, {"name": "소금물"}, {"name": "설탕 용액"}, {"name": "스마트폰"}, {"name": "저마찰 트랙"}, {"name": "도르래"}, {"name": "추걸이"}, {"name": "용수철"}, {"name": "삼각대"}, {"name": "코일"}, {"name": "검류계"}, {"name": "건전지 끼우개"}, {"name": "9 V 건전지"}, {"name": "탄소 막대"}, {"name": "향"}, {"name": "면봉"}, {"name": "홀 피펫"}, {"name": "피펫 필러"}, {"name": "한천 배지"}, {"name": "TLC 판"}, {"name": "항온기"}, {"name": "눈금 피펫 (10 mL)", "icon": {"t": "glasspipette", "vol": "10 mL"}}, {"name": "주사기 (50 mL)", "icon": {"t": "syringe", "vol": "50 mL"}}],
@@ -102,7 +110,12 @@ QUIET = {"title": "조용한 시험", "materials": [
         {"title": "화면·svg", "scene": [{"t": "device", "display": "camera", "title": "촬영"}, {"t": "device", "display": "blank", "value": "0.0 s"}, {"t": "svg", "x": 100, "y": 268, "w": 40, "h": 40},
                                     {"t": "wellplate", "wells": [{"id": "lw", "label": "물질 가", "labelSide": "right"}]}]},
         {"title": "그림 칸", "sketch": [{"id": "s1", "title": "보이는 모습", "labels": ["가", "나"], "write": "배율"}], "scene": [{"t": "microscope"}]}],
-    "results": {"sketches": [{"title": "궤적", "shape": "polar", "n": 2}, {"id": "s2", "title": "흐름", "shape": "box", "note": "화살표로"}]}}
+    "results": {"sketches": [{"title": "궤적", "shape": "polar", "n": 2}, {"id": "s2", "title": "흐름", "shape": "box", "note": "화살표로"}],
+                "tables": [MERGE_TABLE]}}
+QUIET["steps"] += [
+    {"title": "공 놓기", "scene": [{"t": "table", "id": "tb"}, {"t": "ball", "id": "b1", "on": "tb", "at": 0.2}]},
+    {"title": "공 옮기기", "scene": {"from": "prev", "change": {"b1": {"at": 0.6}}}},
+    {"title": "새 공", "scene": {"from": "prev", "remove": ["b1"], "add": [{"t": "ball", "on": "tb", "at": 0.9}]}}]
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다
 TABLE_TEXT = '80°C 120초 → (60°C 30초 · 40°C 50초) 10회 → 25°C 90초'
 TABLE_QUOTE = '[표] 단계 / 온도 (°C) / 시간(sec) / 반복: 데우기 80 / 120 / 1, 식히기 60 / 30 / 10, 기다리기 40 / 50 / 10, 마무리 25 / 90 / 1'
@@ -133,6 +146,10 @@ KEYS_V1 = {"id": "selftest-keys", "title": "답 이름 시험", "steps": [
 KEYS_OLD = {"p0.0": "예상A", "p1.0": "예상B", "t0.0.1": "식초색", "t0.1.1": "비눗물색", "q0": "답1", "q1": "답2"}
 KEYS_SHOWN_V1 = ["예상A", "예상B", "식초색", "비눗물색", "답1", "답2"]
 KEYS_SHOWN_V2 = ["", "예상A", "예상B", "", "식초색", "비눗물색", "답2", "", "답1"]
+# 합친 칸 표: 저장 이름으로 넣어 둔 답이 제 칸에 나오는지 (A 모둠 길이·A 모둠 무게·B 모둠 길이의 2회 칸)
+KEYS_MERGE = {"id": "selftest-merge", "title": "합친 표 시험", "steps": [{"title": "A", "scene": [{"t": "beaker"}]}], "results": {"table": MERGE_TABLE}}
+KEYS_MERGE_SEED = {"t:m:A 모둠 길이:2회": "가", "t:m:A 모둠 무게:2회": "나", "t:m:B 모둠 길이:2회": "다"}
+KEYS_MERGE_SHOWN = ["가", "나", "다"]
 
 
 def keys_v2():
@@ -177,14 +194,17 @@ def answer_key_test():
     fails = []
     r1 = open_with_answers(exe, KEYS_V1, KEYS_OLD)
     if not r1:
-        return ["답 이름 시험: 화면을 읽지 못했어요"], 2
+        return ["답 이름 시험: 화면을 읽지 못했어요"], 3
     old_left = [k for k in r1["stored"] if re.match(r"^[pqt]\d", k)]
     if [t for _, t in r1["shown"]] != KEYS_SHOWN_V1 or old_left:
         fails.append(f"예전 순번 이름 옮기기: 보인 답 {[t for _, t in r1['shown']]} (기대 {KEYS_SHOWN_V1}), 남은 예전 이름 {old_left}")
     r2 = open_with_answers(exe, keys_v2(), r1["stored"])
     if not r2 or [t for _, t in r2["shown"]] != KEYS_SHOWN_V2:
         fails.append(f"끼워 넣은 뒤 답 따라가기: 보인 답 {r2 and [t for _, t in r2['shown']]} (기대 {KEYS_SHOWN_V2})")
-    return fails, 2
+    r3 = open_with_answers(exe, KEYS_MERGE, KEYS_MERGE_SEED)
+    if not r3 or [t for _, t in r3["shown"]] != KEYS_MERGE_SHOWN:
+        fails.append(f"합친 칸 표의 답 이름: 보인 답 {r3 and r3['shown']} (기대 {KEYS_MERGE_SHOWN})")
+    return fails, 3
 
 
 def main():

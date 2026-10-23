@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit v1.16.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.17.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -80,7 +80,7 @@ section{margin:40px 0}
 .tbl{width:100%;border-collapse:collapse;font-size:15px;min-width:420px}
 .tbl th{background:var(--primary-100);color:var(--primary-ink);font-weight:700;padding:11px 10px;text-align:center;white-space:nowrap}
 .tbl td{padding:13px 10px;text-align:center;background:#fff}
-.tbl tr:nth-child(even) td{background:#faf7fd}
+.tbl tr:nth-child(even) td{background:#faf7fd}.tbl td.off,.tbl tr:nth-child(even) td.off{background:repeating-linear-gradient(135deg,#eceef3 0 6px,#e2e5eb 6px 12px);-webkit-print-color-adjust:exact;print-color-adjust:exact}.tbl td.grp,.tbl tr:nth-child(even) td.grp{background:#f6f1fb;color:var(--primary-ink);font-weight:800;border-right:1px solid #ece4f5}
 .tbl td:first-child{font-weight:700;color:var(--ink-2)}
 .qs{margin:0;padding:0;list-style:none;counter-reset:q}
 .qs li{counter-increment:q;display:flex;gap:12px;padding:8px 0;font-size:16px;color:var(--ink-2)}
@@ -122,7 +122,7 @@ section{margin:40px 0}
 .write:focus{border-style:solid;border-color:var(--primary)}
 .write:empty::before{content:attr(data-ph);color:var(--ink-3)}
 .qs li>div{flex:1;min-width:0}.qs .ans{border-color:#d9c6ec}.dr-group{margin-top:10px}.dr-t{font-size:15.5px;font-weight:700;color:var(--ink-2);margin:0 0 8px}.dr-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}.dr{margin:0;width:240px;max-width:100%;text-align:center}.dr-row.many .dr{width:190px}.dr-pad{position:relative;width:100%;aspect-ratio:1/1}.dr-pad.box{aspect-ratio:4/3}.dr-pad svg,.dr-pad canvas{position:absolute;inset:0;width:100%;height:100%;display:block}.dr-pad canvas{touch-action:none;cursor:crosshair}.dr-pad.circle canvas{clip-path:circle(49.5% at 50% 50%)}.dr-pad.polar canvas{clip-path:circle(39.5% at 50% 50%)}.dr figcaption{font-size:14px;font-weight:700;color:var(--ink-2);margin-top:6px}.dr-note{font-size:14px;color:var(--ink-2);margin:8px 0 0;text-align:center}.dr-tools{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px;flex-wrap:wrap}.dr-c{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px #c9cdd6;cursor:pointer;padding:0}.dr-c[aria-pressed=true]{box-shadow:0 0 0 3px var(--primary)}.step .dr-group{background:#fff;border-radius:14px;padding:10px 8px 8px;border:1.5px dashed #d9c6ec}.step>.dr-group{grid-column:1/-1;margin-top:0}.slide .dr{width:calc(50% - 8px);max-width:230px}.slide .dr-row.many .dr{width:calc(33% - 11px)}
-.tbl td.in{background:#fffdf4;cursor:text;outline:none;min-width:60px}
+.tbl td.in,.tbl tr:nth-child(even) td.in{background:#fffdf4;cursor:text;outline:none;min-width:60px}
 .tbl td.in:focus{box-shadow:inset 0 0 0 2px var(--primary)}
 .save-note{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;color:var(--ink-3);font-size:13.5px}
 .btn.sm{padding:7px 12px;font-size:13.5px;border-radius:10px;gap:6px}.btn.sm svg{width:15px;height:15px}
@@ -154,12 +154,12 @@ section{margin:40px 0}
 @media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.dr-row{grid-template-columns:1fr}}
 @media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
-@media print{body{background:#fff}.dr-tools{display:none!important}.toolbar,.zoom-hint,.deck,.demo,.rv-btn,.save-note,.tm{display:none!important}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
+@media print{body{background:#fff}.dr-tools{display:none!important}.toolbar,.zoom-hint,.deck,.demo,.rv-btn,.save-note,.tm{display:none!important}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl th,.tbl td{border:1px solid #cfd4dd}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
 if (!document.getElementById('lk-css')) { const st = document.createElement('style'); st.id = 'lk-css'; st.textContent = CSS; document.head.appendChild(st); }
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.16.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.17.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -2199,7 +2199,33 @@ const AK = new Map(), akUsed = new Set(), qText = q => typeof q === 'string' ? q
 const akey = (base, old) => { let k = base, n = 2; while (akUsed.has(k)) k = `${base}~${n++}`; akUsed.add(k); AK.set(old, k); };
 steps.forEach((st, i) => arr(st.predict).filter(Boolean).forEach((q, k) => akey(st.id ? `p:${st.id}:${k}` : `p:${hashStr(qText(q))}`, `p${i}.${k}`)));
 arr(res.questions).forEach((q, k) => akey(q && q.id ? `q:${q.id}` : `q:${hashStr(qText(q))}`, `q${k}`));
-arr(res.tables || res.table).forEach((tb, ti) => { if (!tb) return; const tk = tb.id || hashStr(tb.title || `표${ti}`); arr(tb.rows).forEach((r, ri) => arr(r).forEach((c, ci) => { if (c === '' || c == null) { const row = arr(r)[0]; akey(`t:${tk}:${row !== '' && row != null ? row : 'r' + ri}:${arr(tb.head)[ci] ?? 'c' + ci}`, `t${ti}.${ri}.${ci}`); } })); });
+// 표 칸 (v1.17): 칸은 글자, ""(적는 칸), 또는 { text, span(가로로 합치기), rowspan(세로로 합치기), off:true(쓰지 않는 회색 칸) }. 머리 칸도 { text, span }.
+// 칸마다 화면의 열(vc)과 답 저장 이름에 쓰는 줄 이름·열 이름을 붙인다. 합친 칸이 없는 표는 예전과 같은 이름 (적은 답이 그대로 이어진다)
+const cellText = c => c && typeof c === 'object' ? String(c.text ?? '') : c == null ? '' : String(c);
+const spanOf = (c, k) => Math.max(1, Math.round(+(c && typeof c === 'object' && c[k]) || 1));
+function tblGrid(tb) {
+  const heads = [], names = [];
+  arr(tb.head).forEach(h => { const n = spanOf(h, 'span'); for (let k = 0; k < n; k++) { heads.push(n > 1 ? `${cellText(h)}#${k + 1}` : cellText(h)); names.push(cellText(h)); } });
+  const fancy = arr(tb.head).some(h => h && typeof h === 'object') || arr(tb.rows).some(r => arr(r).some(c => c && typeof c === 'object'));
+  const dl = [], dt = [], dg = []; // 위 줄에서 내려온 세로 합친 칸: 남은 줄 수, 글자, 줄 이름에 넣을지
+  return arr(tb.rows).map((r, ri) => {
+    const cells = []; let vc = 0;
+    const lead = [], pass = () => { while (dl[vc] > 0) { dl[vc]--; if (lead.open !== false && dg[vc]) lead.push(dt[vc]); vc++; } };
+    arr(r).forEach((c, ci) => {
+      pass();
+      const o = c && typeof c === 'object' ? c : null, span = spanOf(c, 'span'), rs = spanOf(c, 'rowspan'), off = !!(o && o.off), inp = c === '' || c == null;
+      if (lead.open !== false) { if (inp || off) lead.open = false; else { lead.push(cellText(c)); if (!(o && o.rowspan != null)) lead.open = false; } } // rowspan을 준 칸(묶음 이름)은 다음 칸과 함께 줄 이름이 된다
+      cells.push({ c, ci, vc, span, rs, off, inp, grp: !!(o && o.rowspan != null) });
+      if (rs > 1) for (let k = 0; k < span; k++) { dl[vc + k] = rs - 1; dt[vc + k] = cellText(c); dg[vc + k] = true; }
+      vc += span;
+    });
+    pass();
+    const label = fancy ? lead.filter(Boolean).join(' ') : cellText(arr(r)[0]);
+    cells.forEach(x => { x.row = label !== '' ? label : 'r' + ri; x.col = heads[x.vc] ?? 'c' + x.vc; x.colName = names[x.vc] ?? ''; });
+    return cells;
+  });
+}
+arr(res.tables || res.table).forEach((tb, ti) => { if (!tb) return; const tk = tb.id || hashStr(tb.title || `표${ti}`); tblGrid(tb).forEach((row, ri) => row.forEach(x => { if (x.inp) akey(`t:${tk}:${x.row}:${x.col}`, `t${ti}.${ri}.${x.ci}`); })); });
 { let moved = false; AK.forEach((k, old) => { if (saved[old] != null && saved[k] == null) { saved[k] = saved[old]; delete saved[old]; moved = true; } }); if (moved) persist(); }
 const ak = old => AK.get(old) || old;
 // 그림 칸 (v1.15): results.sketches와 단계의 sketch. { id, title, shape:'circle'(현미경 시야)|'box'(빈 네모)|'polar'(극좌표 원), n, labels, write, note }
@@ -2313,7 +2339,15 @@ const chips = () => [D.subject && `<span class="chip primary">${e(D.subject)}</s
 const matGrid = () => `<div class="mat-grid">${mats.map(m => `<div class="mat">${LabKit.icon(m.icon, m.name)}<div class="nm">${e(m.name)}</div>${m.qty ? `<div class="qty">${e(m.qty)}</div>` : ''}</div>`).join('')}</div>`;
 const tipList = () => `<div class="safety">${tips.map(s => `<div class="safe tipl"><span class="ic">${IC.star}</span><div>${md(s)}</div></div>`).join('')}</div>`;
 const safeList = () => `<div class="safety">${safety.map(s => `<div class="safe"><span class="ic">${IC.alert}</span><div>${md(s)}</div></div>`).join('')}</div>`;
-const tableHtml = (t, ti) => { if (!t || !arr(t.head).length) return ''; return `<div class="tbl-wrap"><table class="tbl"><thead><tr>${arr(t.head).map(h => `<th>${e(h)}</th>`).join('')}</tr></thead><tbody>${arr(t.rows).map((r, ri) => `<tr>${arr(r).map((c, ci) => c === '' || c == null ? `<td class="in" contenteditable="true" aria-label="${e(arr(t.head)[ci] || '')} 칸에 적기" data-w="${e(ak(`t${ti}.${ri}.${ci}`))}">${wtext(ak(`t${ti}.${ri}.${ci}`))}</td>` : `<td>${e(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`; };
+const tableHtml = (t, ti) => {
+  if (!t || !arr(t.head).length) return '';
+  const sp = x => `${x.span > 1 ? ` colspan="${x.span}"` : ''}${x.rs > 1 ? ` rowspan="${x.rs}"` : ''}`;
+  const head = arr(t.head).map(h => { const n = spanOf(h, 'span'); return `<th${n > 1 ? ` colspan="${n}"` : ''}>${e(cellText(h))}</th>`; }).join('');
+  const body = tblGrid(t).map((row, ri) => `<tr>${row.map(x => { const k = ak(`t${ti}.${ri}.${x.ci}`);
+    return x.inp ? `<td class="in"${sp(x)} contenteditable="true" aria-label="${e(x.colName)} 칸에 적기" data-w="${e(k)}">${wtext(k)}</td>`
+      : x.off ? `<td class="off"${sp(x)} aria-label="쓰지 않는 칸"></td>` : `<td${sp(x)}${x.grp ? ' class="grp"' : ''}>${e(cellText(x.c))}</td>`; }).join('')}</tr>`).join('');
+  return `<div class="tbl-wrap"><table class="tbl"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+};
 const hasWrite = SKEY.size > 0 || steps.some(st => arr(st.predict).length) || arr(res.questions).length > 0 || arr(res.tables || res.table).some(tb => tb && arr(tb.rows).some(r => arr(r).some(c => c === '' || c == null)));
 const saveNote = () => hasWrite ? `<div class="save-note"><span>적은 내용은 이 기기의 브라우저에만 저장돼요.</span><button class="btn sm" type="button" data-clear>적은 내용 지우기</button></div>` : '';
 const hasRes = skList(res.sketches).length > 0 || res.expect || arr(res.tables || res.table).some(tb => tb && arr(tb.head).length) || arr(res.questions).length || res.conclusion;

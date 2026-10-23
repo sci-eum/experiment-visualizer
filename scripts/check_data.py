@@ -34,6 +34,10 @@ ADDED = {"tip", "warn", "point", "predict", "observe", "reveal", "scene", "text"
 RESULTS = {"expect", "conclusion", "table", "tables", "questions", "sketches"}
 SKETCH = {"id", "title", "shape", "n", "labels", "write", "note"}  # 그림 칸
 SKETCH_SHAPES = ("circle", "box", "polar")
+CELL = {"text", "span", "rowspan", "off"}  # 표 칸 객체 (합친 칸·쓰지 않는 칸)
+# 이어받기에서 앞 단계 것이 그대로 남기 쉬운 동작 부품. add로 같은 부품을 또 놓으면 둘이 된다
+MOVERS = {"ball", "cart", "block", "dropper", "pipette", "spatula", "spoon", "splint", "swab", "capillary", "tweezers", "rod",
+          "glasspipette", "micropipette", "syringe", "magnet", "meter"}
 INHERIT = {"from", "remove", "change", "add"}
 REVEAL = {"text", "scene", "remove", "change", "add"}
 FRESH = {"note", "text", "arrow", "mark", "eye", "label", "view", "zoom", "pour"}  # 이어받지 않는 설명·동작 부품
@@ -309,6 +313,56 @@ def kids(el):
     return [k for k in (el.get(KIDS[el["t"]]) or []) if isinstance(k, dict)] if isinstance(el, dict) and el.get("t") in KIDS else []
 
 
+def check_table(tb, where, rep):
+    """결과 표: 칸 객체 { text, span, rowspan, off }, 머리 칸 { text, span }. 합친 칸까지 세어 줄마다 칸 수가 머리 줄과 같은지 본다."""
+    def span_of(c, k, w):
+        if not isinstance(c, dict) or k not in c:
+            return 1
+        v = c[k]
+        if not (isinstance(v, int) and not isinstance(v, bool) and v >= 1):
+            rep.err(w, f"{k}는 1 이상의 정수여야 해요 ('{v}')")
+            return 1
+        return v
+    width = 0
+    for hi, h in enumerate(tb["head"]):
+        if isinstance(h, dict):
+            for k in h:
+                if k not in ("text", "span"):
+                    rep.err(f"{where}.head[{hi}]", f"머리 칸에 없는 항목 '{k}'{suggest(k, ('text', 'span'))}")
+        width += span_of(h, "span", f"{where}.head[{hi}]")
+    down = {}
+    for ri, row in enumerate(tb.get("rows") or []):
+        w = f"{where}.rows[{ri}]"
+        if not isinstance(row, list):
+            rep.err(w, "줄은 배열이어야 해요")
+            continue
+        vc = 0
+
+        def skip():
+            nonlocal vc
+            while down.get(vc, 0) > 0:
+                down[vc] -= 1
+                vc += 1
+        for ci, c in enumerate(row):
+            skip()
+            if isinstance(c, dict):
+                for k in c:
+                    if k not in CELL:
+                        rep.err(f"{w}[{ci}]", f"표 칸에 없는 항목 '{k}'{suggest(k, CELL)}")
+            elif c is not None and not isinstance(c, (str, int, float)):
+                rep.err(f"{w}[{ci}]", "표 칸은 글자, \"\"(적는 칸), 또는 { text, span, rowspan, off } 객체여야 해요")
+            span, rs = span_of(c, "span", f"{w}[{ci}]"), span_of(c, "rowspan", f"{w}[{ci}]")
+            for k in range(span):
+                if rs > 1:
+                    down[vc + k] = rs - 1
+            vc += span
+        skip()
+        if vc != width:
+            rep.warn(w, f"칸 수({vc}, 합친 칸 포함)가 머리 줄({width})과 달라요")
+    if any(v > 0 for v in down.values()):
+        rep.warn(where, "세로로 합친 칸(rowspan)이 표의 줄 수보다 길어요")
+
+
 def check_sketches(v, where, rep):
     """그림 칸(단계의 sketch, results.sketches): 객체 또는 객체 배열 → 저장 이름(id 또는 제목) 목록."""
     keys = []
@@ -481,6 +535,10 @@ def main_check(data, reg):
         if not isinstance(add, list):
             rep.err(where, "add는 부품 배열이어야 해요")
             add = []
+        if "from" in sc:  # 앞 단계의 공·스포이트 같은 동작 부품은 그대로 이어지므로, 같은 부품을 add하면 둘이 된다
+            have = {e.get("t") for e in base}
+            for t in sorted({a.get("t") for a in add if isinstance(a, dict)} & have & MOVERS):
+                rep.warn(where, f"이어받은 장면에 '{t}'가 이미 있어요 (앞 단계에서 이어짐). 옮기려면 change, 새로 놓으려면 remove로 앞 것을 빼세요")
         return base + add
 
     def get_scene(k, chain=()):
@@ -626,11 +684,7 @@ def main_check(data, reg):
                 if not isinstance(tb, dict) or not isinstance(tb.get("head"), list):
                     rep.err(f"results.table[{ti}]", "head(머리 줄 배열)가 필요해요")
                     continue
-                for ri, row in enumerate(tb.get("rows") or []):
-                    if not isinstance(row, list):
-                        rep.err(f"results.table[{ti}].rows[{ri}]", "줄은 배열이어야 해요")
-                    elif len(row) != len(tb["head"]):
-                        rep.warn(f"results.table[{ti}].rows[{ri}]", f"칸 수({len(row)})가 머리 줄({len(tb['head'])})과 달라요")
+                check_table(tb, f"results.table[{ti}]", rep)
     for d in sorted({k for k in sk_keys if k and sk_keys.count(k) > 1}):
         rep.err("그림 칸", f"id·제목 '{d}'가 여러 번 나와요 (그린 그림이 엇갈려요. id를 따로 주세요)")
     return rep

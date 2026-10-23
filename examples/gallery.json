@@ -452,6 +452,15 @@
       { "id": "g-circle", "title": "그림 칸: 현미경 시야 (shape 'circle', labels, write)", "shape": "circle", "labels": ["칸 1", "칸 2"], "write": "배율" },
       { "id": "g-polar", "title": "그림 칸: 극좌표 원 (shape 'polar')", "shape": "polar", "n": 2 },
       { "id": "g-box", "title": "그림 칸: 빈 네모 (shape 'box', note)", "shape": "box", "note": "칸 아래 안내 글" }
+    ],
+    "tables": [
+      { "id": "g-merge", "title": "표 칸: 합친 칸(span·rowspan)과 쓰지 않는 칸(off)",
+        "head": [{ "text": "구분", "span": 2 }, "칸 1", "칸 2", "칸 3"],
+        "rows": [
+          [{ "text": "묶음 가", "rowspan": 2 }, "줄 1", "", "", ""],
+          ["줄 2", { "off": true }, "", { "off": true }],
+          [{ "text": "묶음 나", "rowspan": 1 }, "줄 1", { "text": "합친 칸", "span": 2 }, ""]
+        ] }
     ]
   }
 }
