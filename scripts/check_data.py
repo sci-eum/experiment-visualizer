@@ -32,8 +32,8 @@ STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "pr
 ORIGIN = {"where", "quote", "check", "unsure", "added"}
 ADDED = {"tip", "warn", "point", "predict", "observe", "reveal", "scene", "text", "time"}
 RESULTS = {"expect", "conclusion", "table", "tables", "questions", "sketches"}
-SKETCH = {"id", "title", "shape", "n", "labels", "write", "note"}  # 그림 칸
-SKETCH_SHAPES = ("circle", "box", "polar")
+SKETCH = {"id", "title", "shape", "n", "labels", "write", "note", "range"}  # 그림 칸 (range: 스펙트럼 띠의 파장 범위)
+SKETCH_SHAPES = ("circle", "box", "polar", "spectrum")
 CELL = {"text", "span", "rowspan", "off"}  # 표 칸 객체 (합친 칸·쓰지 않는 칸)
 # 이어받기에서 앞 단계 것이 그대로 남기 쉬운 동작 부품. add로 같은 부품을 또 놓으면 둘이 된다
 MOVERS = {"ball", "cart", "block", "dropper", "pipette", "spatula", "spoon", "splint", "swab", "capillary", "tweezers", "rod",
@@ -56,7 +56,7 @@ NAME_T = [("눈금실린더", "cylinder"), ("눈금 실린더", "cylinder"), ("�
 MISGUESS = [
     (re.compile(r"피펫"), {"dropper"}, "스포이트"),
     (re.compile(r"(물|용액|수용액|액)\s*$"), {"powder"}, "가루 더미"),
-    (re.compile(r"(디지털|적외선|탐침)\s*온도계"), {"thermometer"}, "유리 막대 온도계"),
+    (re.compile(r"(디지털|적외선|탐침|레이저|전자)\s*온도계"), {"thermometer"}, "유리 막대 온도계"),
     (re.compile(r"(시험관|비커|플라스크|뷰렛|깔때기|실린더|수조)\s*(집게|홀더|솔|받침)"),
      {"tube", "beaker", "flask", "roundflask", "burette", "funnel", "cylinder", "trough"}, None),
 ]
@@ -379,6 +379,9 @@ def check_sketches(v, where, rep):
         n = sk.get("n")
         if n is not None and not (isinstance(n, int) and not isinstance(n, bool) and 1 <= n <= 6):
             rep.err(w, "n(칸 수)은 1~6 정수여야 해요")
+        rg = sk.get("range")
+        if rg is not None and not (isinstance(rg, list) and len(rg) == 2 and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in rg) and rg[0] < rg[1]):
+            rep.err(w, "range는 [작은 값, 큰 값] 두 숫자여야 해요 (예: [400, 700])")
         if "labels" in sk and not (isinstance(sk["labels"], list) and all(isinstance(x, str) for x in sk["labels"])):
             rep.err(w, "labels는 글자 배열이어야 해요")
         for k in ("title", "write", "note"):

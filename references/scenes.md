@@ -563,3 +563,45 @@ tlc의 in으로 그릇 바닥 가까이 세우고 spots로 출발선의 점을. 
 [{"t": "wellplate", "x": 240, "n": 6, "s": 1.25, "wells": [{"id": "h1", "at": "A1", "solid": "powder", "label": "물질 가"}, {"id": "h2", "at": "A3", "solid": "crystals", "label": "물질 나"}, {"id": "h3", "at": "B1", "solid": "chips", "solidColor": "white", "label": "물질 다"}, {"id": "h4", "at": "B3", "color": "clear", "label": "증류수"}]},
  {"t": "dropper", "over": "h2", "color": "clear"}]
 ```
+
+### 50. 방전관의 빛을 분광기로 보기
+
+discharge는 고전압 장치와 방전관 한 벌(text에 기체 이름). spectroscope의 to로 방전관을 향하게 하고 eye로 들여다본다. 스펙트럼은 그림 칸 shape 'spectrum'에 그린다.
+
+```json
+[{"t": "discharge", "id": "dt", "x": 110, "text": "기체 A"},
+ {"t": "spectroscope", "x": 300, "y": 150, "to": "dt"},
+ {"t": "eye", "x": 410, "y": 146, "to": [352, 152]},
+ {"t": "note", "x": 385, "y": 60, "text": "어떤 색의 선이 보이는지 관찰해요", "icon": "eye", "w": 150}]
+```
+
+### 51. 적외선 온도계로 표면 온도 재기
+
+meter kind:'ir'는 x, y가 앞 끝이고 to로 겨누는 곳에 빨간 점선. 값은 원문이 줄 때만 reading.
+
+```json
+[{"t": "beaker", "id": "b", "x": 150, "s": 1.2, "fill": 0.6, "color": "clear", "steam": true, "label": "따뜻한 물"},
+ {"t": "meter", "kind": "ir", "x": 330, "y": 120, "s": 1.4, "to": "b"}]
+```
+
+### 52. 점화기로 향에 불 붙이기
+
+lighter의 x, y는 불이 나오는 끝. 향 splint의 끝(x, y)에 대어 그린다 (ember:false면 아직 불 없음).
+
+```json
+[{"t": "splint", "x": 200, "y": 150, "ember": false, "tilt": -20},
+ {"t": "lighter", "x": 203, "y": 146, "tilt": -35},
+ {"t": "note", "x": 385, "y": 70, "text": "불을 붙인 뒤 불꽃을 꺼서 불씨만 남겨요", "icon": "how", "w": 150}]
+```
+
+### 53. 핀셋으로 재료 조각을 시험관에 넣기
+
+tweezers의 piece는 집은 조각, 그릇 속 조각은 solid:'potato'·'liver'. 접시 위 조각은 piece를 on으로.
+
+```json
+[{"t": "rack", "x": 160, "s": 1.2, "tubes": [{"id": "A", "tag": "A", "fill": 0.3, "color": "clear"}, {"id": "B", "tag": "B", "fill": 0.3, "color": "clear", "solid": "potato"}]},
+ {"t": "tweezers", "x": 205, "y": 70, "tilt": 10, "piece": "liver"},
+ {"t": "dish", "id": "d", "x": 360},
+ {"t": "piece", "kind": "liver", "on": "d", "x": 345},
+ {"t": "piece", "kind": "potato", "on": "d", "x": 380}]
+```

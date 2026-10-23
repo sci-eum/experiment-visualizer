@@ -3,7 +3,7 @@
   "subject": "experiment-visualizer",
   "unit": "모든 부품 한눈에 보기",
   "goal": "SKILL이 쓸 수 있는 실험 기구·표시 부품을 장면별로 모아 보여 준다. 각 그림 아래 글자는 부품 이름(t 값)이다.",
-  "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"12홈판"},{"name":"pH 미터"},{"name":"멀티미터"},{"name":"이산화 탄소 센서"},{"name":"저마찰 트랙"},{"name":"포토게이트"},{"name":"도르래"},{"name":"추걸이"},{"name":"용수철"},{"name":"삼각대"},{"name":"코일"},{"name":"검류계"},{"name":"건전지 끼우개"},{"name":"9 V 건전지"},{"name":"탄소 막대"},{"name":"향"},{"name":"면봉"},{"name":"홀 피펫"},{"name":"피펫 필러"},{"name":"한천 배지"},{"name":"TLC 판"},{"name":"항온기"},{"name":"이름 모를 기구"}],
+  "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"12홈판"},{"name":"pH 미터"},{"name":"멀티미터"},{"name":"이산화 탄소 센서"},{"name":"저마찰 트랙"},{"name":"포토게이트"},{"name":"도르래"},{"name":"추걸이"},{"name":"용수철"},{"name":"삼각대"},{"name":"코일"},{"name":"검류계"},{"name":"건전지 끼우개"},{"name":"9 V 건전지"},{"name":"탄소 막대"},{"name":"향"},{"name":"면봉"},{"name":"홀 피펫"},{"name":"피펫 필러"},{"name":"한천 배지"},{"name":"TLC 판"},{"name":"항온기"},{"name":"분광기"},{"name":"적외선 온도계"},{"name":"점화기"},{"name":"칼"},{"name":"감자 조각"},{"name":"이름 모를 기구"}],
   "tips": ["부품 이름(t)과 속성은 references/parts.md(부품 목록)를 보세요.","그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요."],
   "steps": [
   { "title": "유리 기구 (그릇)", "text": "beaker · flask · roundflask · tube · cylinder · bottle", 
@@ -445,13 +445,40 @@
       {"t":"text","x":85,"y":230,"text":"'graph'","size":11,"weight":700},
       {"t":"text","x":240,"y":230,"text":"'camera'","size":11,"weight":700},
       {"t":"text","x":395,"y":230,"text":"'blank'","size":11,"weight":700}
+    ] },
+  { "title": "남은 기구 1 (방전관·분광기·적외선 온도계)", "text": "discharge(text, on) · spectroscope(to) + eye · meter(kind:'ir', to, reading)",
+    "scene": [
+      {"t":"discharge","id":"dt","x":75,"text":"기체 A"},
+      {"t":"spectroscope","x":220,"y":140,"to":"dt"},
+      {"t":"eye","x":300,"y":132,"to":[268,138]},
+      {"t":"cup","id":"cu","x":420,"fill":0.6},
+      {"t":"meter","kind":"ir","x":380,"y":90,"to":"cu","reading":"20.0 ℃"},
+      {"t":"text","x":75,"y":288,"text":"discharge","size":11,"weight":700},
+      {"t":"text","x":220,"y":288,"text":"spectroscope","size":11,"weight":700},
+      {"t":"text","x":400,"y":288,"text":"meter(kind:'ir')","size":11,"weight":700}
+    ] },
+  { "title": "남은 기구 2 (칼·점화기·폰 거치대·재료 조각)", "text": "knife · lighter + splint · microscope(phone) · piece(kind) · tweezers(piece) · tube(solid: 'potato'·'liver')",
+    "scene": [
+      {"t":"microscope","x":60,"s":0.85,"phone":true},
+      {"t":"splint","x":160,"y":110,"ember":false,"tilt":-20},
+      {"t":"lighter","x":162,"y":106,"tilt":-35},
+      {"t":"knife","x":190,"y":225},
+      {"t":"rack","x":300,"s":0.9,"tubes":[{"fill":0.3,"color":"clear","solid":"potato"},{"fill":0.3,"color":"clear","solid":"liver"}]},
+      {"t":"tweezers","x":385,"y":100,"piece":"potato"},
+      {"t":"piece","kind":"liver","x":405},
+      {"t":"piece","kind":"onion","x":455},
+      {"t":"text","x":60,"y":288,"text":"phone","size":11,"weight":700},
+      {"t":"text","x":175,"y":288,"text":"lighter · knife","size":11,"weight":700},
+      {"t":"text","x":300,"y":288,"text":"solid","size":11,"weight":700},
+      {"t":"text","x":425,"y":288,"text":"piece","size":11,"weight":700}
     ] }
   ],
   "results": {
     "sketches": [
       { "id": "g-circle", "title": "그림 칸: 현미경 시야 (shape 'circle', labels, write)", "shape": "circle", "labels": ["칸 1", "칸 2"], "write": "배율" },
       { "id": "g-polar", "title": "그림 칸: 극좌표 원 (shape 'polar')", "shape": "polar", "n": 2 },
-      { "id": "g-box", "title": "그림 칸: 빈 네모 (shape 'box', note)", "shape": "box", "note": "칸 아래 안내 글" }
+      { "id": "g-box", "title": "그림 칸: 빈 네모 (shape 'box', note)", "shape": "box", "note": "칸 아래 안내 글" },
+      { "id": "g-spec", "title": "그림 칸: 스펙트럼 띠 (shape 'spectrum', range)", "shape": "spectrum", "range": [400, 700], "labels": ["띠 1", "띠 2"] }
     ],
     "tables": [
       { "id": "g-merge", "title": "표 칸: 합친 칸(span·rowspan)과 쓰지 않는 칸(off)",

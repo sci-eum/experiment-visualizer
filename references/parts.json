@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.17.0",
+ "engine": "1.18.0",
  "common": [
   "t",
   "id",
@@ -352,6 +352,10 @@
    "value",
    "xlabel"
   ],
+  "discharge": [
+   "color",
+   "text"
+  ],
   "dish": [
    "color",
    "fill",
@@ -507,6 +511,9 @@
   "ice": [
    "n"
   ],
+  "knife": [
+   "color"
+  ],
   "label": [
    "text",
    "to",
@@ -536,6 +543,10 @@
   "lightbox": [
    "dir"
   ],
+  "lighter": [
+   "color",
+   "lit"
+  ],
   "magnet": [
    "field",
    "flip"
@@ -549,9 +560,11 @@
   ],
   "meter": [
    "deflect",
+   "dir",
    "kind",
    "length",
-   "reading"
+   "reading",
+   "to"
   ],
   "micropipette": [
    "color",
@@ -560,7 +573,9 @@
    "reading",
    "to"
   ],
-  "microscope": [],
+  "microscope": [
+   "phone"
+  ],
   "microtube": [
    "adapter",
    "amount",
@@ -661,6 +676,10 @@
   ],
   "photogate": [
    "beam"
+  ],
+  "piece": [
+   "color",
+   "kind"
   ],
   "plant": [
    "bag",
@@ -808,6 +827,9 @@
   "spatula": [
    "color",
    "powder",
+   "to"
+  ],
+  "spectroscope": [
    "to"
   ],
   "spincolumn": [
@@ -1003,7 +1025,10 @@
    "mallet",
    "ring"
   ],
-  "tweezers": [],
+  "tweezers": [
+   "piece",
+   "pieceColor"
+  ],
   "uvlamp": [
    "bands",
    "gel",
@@ -1116,6 +1141,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1138,6 +1165,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1154,6 +1183,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1181,6 +1212,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1197,6 +1230,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1245,6 +1280,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1267,6 +1304,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1316,7 +1355,12 @@
     "multi",
     "galvano",
     "ammeter",
+    "ir",
     "voltmeter"
+   ],
+   "dir": [
+    "left",
+    "right"
    ]
   },
   "microtube": {
@@ -1331,6 +1375,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1373,8 +1419,22 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
+   ]
+  },
+  "piece": {
+   "kind": [
+    "potato",
+    "liver",
+    "onion",
+    "radish",
+    "tofu",
+    "banana",
+    "apple",
+    "cube"
    ]
   },
   "pour": {
@@ -1426,6 +1486,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1485,6 +1547,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1501,8 +1565,22 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
+   ]
+  },
+  "tweezers": {
+   "piece": [
+    "potato",
+    "liver",
+    "onion",
+    "radish",
+    "tofu",
+    "banana",
+    "apple",
+    "cube"
    ]
   },
   "view": {
@@ -1528,6 +1606,8 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
@@ -1578,12 +1658,34 @@
     "block",
     "leaf",
     "egg",
+    "potato",
+    "liver",
     "ice",
     "icebath"
    ]
   }
  },
  "guess": {
+  "분광기": "spectroscope",
+  "방전관": "discharge",
+  "고전압": "discharge",
+  "적외선 온도계": "meter:ir",
+  "비접촉 온도계": "meter:ir",
+  "점화기": "lighter",
+  "라이터": "lighter",
+  "커터": "knife",
+  "실험용 칼": "knife",
+  "해부용 칼": "knife",
+  "칼": "knife:1",
+  "거치대": "microscope:phone",
+  "감자": "piece:potato",
+  "생간": "piece:liver",
+  "간 조각": "piece:liver",
+  "양파": "piece:onion",
+  "무 조각": "piece:radish",
+  "두부": "piece:tofu",
+  "바나나": "piece:banana",
+  "사과": "piece:apple",
   "설탕물": "bottle",
   "소금물": "bottle",
   "석회수": "bottle",

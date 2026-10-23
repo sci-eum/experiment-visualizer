@@ -26,9 +26,11 @@ EXTRA = {"rack": ["tubes", "n"], "circuit": ["parts"], "wire": ["clip"], "tube":
 # '_common'은 모든 부품, '_container'는 그릇 모양(SHAPES) 부품. 값은 모두 엔진 코드에 있어야 한다 (build가 확인).
 VALUES = {
     "_common": {"labelSide": ["left", "right"]},
-    "_container": {"solid": ["powder", "precipitate", "crystals", "chips", "zinc", "magnesium", "nail", "block", "leaf", "egg", "ice", "icebath"]},
+    "_container": {"solid": ["powder", "precipitate", "crystals", "chips", "zinc", "magnesium", "nail", "block", "leaf", "egg", "potato", "liver", "ice", "icebath"]},
     "sensor": {"kind": "SENSOR"},
-    "meter": {"kind": "METER"},
+    "meter": {"kind": "METER", "dir": ["left", "right"]},
+    "piece": {"kind": "PIECE"},
+    "tweezers": {"piece": "PIECE"},
     "wellplate": {"kind": ["plastic", "white", "slide"]},
     "rock": {"kind": "ROCK"},
     "device": {"graph": "GRAPH", "display": ["graph", "camera", "blank"]},

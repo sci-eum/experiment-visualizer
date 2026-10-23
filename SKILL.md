@@ -168,6 +168,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 - 빛·소리·전기: `lens` `mirror` `prism` `lightbox` `screen` `ray` `power` `tuningfork` `circuit` · 코일·전극: `coil` `electrode` (회로 낱개 부품은 단자로 `wire` 배선)
 - 지구과학: `rock` `streak` `strata` `globe` · 생물·관찰: `microscope` `slide` `magnifier` `dish` `evapdish` `watchglass` `mortar` `plant` `leaf`
 - 물리: `ramp` `cart` `block` `ball` `magnet` `compass` · 역학 장치: `table` `track` `photogate` `pulley` `spring` `camera`(삼각대 촬영 폰) · 안전·재료: `goggles` `gloves` `ice` `powder` `paper` `match`
+- 남은 기구: `spectroscope`(분광기) `discharge`(기체 방전관) `knife`(칼) `lighter`(점화기) `piece`(재료 조각) · 적외선 온도계는 `meter`의 `kind:'ir'`, 현미경 폰 거치대는 `microscope`의 `phone`
 - 작은 기구: `splint`(향 불씨) `swab`(면봉) `capillary`(모세관) `glasspipette`(눈금·홀 피펫) `filler` `agar`(위에서 본 배지) `tlc` `appliance`(항온기·전자레인지·전기 포트) (그릇의 넘치는 거품은 속성 foam)
 - 분자생물학: `micropipette` `microtube` `pcrtube` `tuberack` `spincolumn` `centrifuge` `thermocycler` `geltank` `uvlamp` `freezer` (전선 `wire`는 `from:'ps:+'`처럼 단자에 잇는다)
 - 표시: `arrow` `note` `label` `text` `mark` `eye` `view` `svg`

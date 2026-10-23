@@ -19,7 +19,7 @@
 | 습도·운동 같은 그 밖의 센서 | `sensor` `kind:'other'`, `text:'습도'` |
 | 그 밖의 기기(증폭기·건조기 …) | `appliance` `kind:'box'` + `text`(앞면 글자)·`reading`(화면) |
 
-홈판·오목받침 유리(`wellplate`), pH 미터·디지털 온도계·멀티미터·전기 전도계(`meter`), CO₂·O₂·조도·힘 센서(`sensor`의 `kind`), 주사기·수조의 용량(`vol`)은 v1.11부터, 저마찰 트랙·포토게이트·도르래와 추걸이·매단 용수철·삼각대 촬영 폰·책상은 v1.12부터, 코일·검류계·전류계·전압계·건전지 끼우개·9 V 건전지·전극·집게 전선은 v1.13부터, 향 불씨·면봉·모세관·눈금/홀 피펫과 필러·한천 배지·종이 디스크·TLC 판·넘치는 거품·기기 상자는 v1.14부터 부품으로 그린다.
+홈판·오목받침 유리(`wellplate`), pH 미터·디지털 온도계·멀티미터·전기 전도계(`meter`), CO₂·O₂·조도·힘 센서(`sensor`의 `kind`), 주사기·수조의 용량(`vol`)은 v1.11부터, 저마찰 트랙·포토게이트·도르래와 추걸이·매단 용수철·삼각대 촬영 폰·책상은 v1.12부터, 코일·검류계·전류계·전압계·건전지 끼우개·9 V 건전지·전극·집게 전선은 v1.13부터, 향 불씨·면봉·모세관·눈금/홀 피펫과 필러·한천 배지·종이 디스크·TLC 판·넘치는 거품·기기 상자는 v1.14부터, 분광기·기체 방전관·적외선 온도계·칼·점화기·현미경 폰 거치대·재료 조각은 v1.18부터 부품으로 그린다.
 
 - 준비물 아이콘도 이름으로 짐작해 다른 기구 그림이 될 수 있다 ('피펫' → 스포이트, '시험관 집게' → 시험관). 검사기가 알려 주면 `icon`에 비슷한 부품이나 `{ "t": "generic", "text": "…" }`(첫 글자 상자)를 준다.
 - `kind`·`solid`·`graph`·`icon`·`show` 같은 속성은 이 문서에 적힌 값만 그림이 된다. 다른 값은 검사기가 오류로 알린다.
@@ -39,7 +39,7 @@
 | `steam` | 김 `true` |
 | `cloudy` | 뿌옇게 흐림 `true` |
 | `ice` | 떠 있는 얼음 개수 |
-| `solid` | 바닥의 고체: `'powder'` `'precipitate'`(앙금) `'crystals'`(결정) `'chips'`(조각) `'nail'`(못) `'block'` `'leaf'` `'egg'` `'icebath'`(얼음+소금 한 가득, 한제) — 색은 `solidColor` |
+| `solid` | 바닥의 고체: `'powder'` `'precipitate'`(앙금) `'crystals'`(결정) `'chips'`(조각) `'nail'`(못) `'block'` `'leaf'` `'egg'` `'potato'`(감자 조각) `'liver'`(생간 조각) `'icebath'`(얼음+소금 한 가득, 한제) — 색은 `solidColor` |
 | `stirbar` | 바닥의 마그네틱 바(돌아감). 교반기 위 그릇에 쓴다 |
 | `shake` | 손으로 흔드는 동작 (흔들림 + 양옆 움직임 표시) |
 | `stopper` | 고무마개 `true`, 유리관이 꽂힌 마개 `'hole'` |
@@ -109,7 +109,7 @@
 | `ruler` ★ | 자 | `tilt:-90`이면 세움 |
 | `springscale` ● | 용수철저울 (`x,y`=위 고리) | `hang:'weight'/'block'`, `hangText`, `stretch` 0~1, `reading` |
 | `weight` ★ | 추 | `text:'100 g'`. `kind:'hanger'`면 추걸이 (`n` 걸린 추 개수) |
-| `meter` | 디지털 측정기 | `kind:'ph'`(펜형 pH 미터, 기본) · `'temp'`(탐침형 디지털 온도계, `length` 탐침 길이) · `'conduct'`(간이 전기 전도계, `on:true`면 불이 켜짐) — `x,y` = 탐침 끝, `in:'id'`(그릇이나 홈판의 홈). `'multi'`(멀티미터) ★, 바늘 측정기 `'galvano'`(검류계)·`'ammeter'`(전류계)·`'voltmeter'`(전압계) ★ — (+)·(−) 단자를 `'id:+'`·`'id:-'`로 `wire`에 잇는다. 바늘은 `deflect`(검류계 −1~1, 0이 가운데 / 전류계·전압계 0~1, 기본 0 = 결과를 드러내지 않음). `reading`은 화면 글자 (펜·온도계는 숫자만 나온다). 원문이 값을 주지 않으면 `reading`을 쓰지 않는다 |
+| `meter` | 디지털 측정기 | `kind:'ph'`(펜형 pH 미터, 기본) · `'temp'`(탐침형 디지털 온도계, `length` 탐침 길이) · `'conduct'`(간이 전기 전도계, `on:true`면 불이 켜짐) — `x,y` = 탐침 끝, `in:'id'`(그릇이나 홈판의 홈). `'multi'`(멀티미터) ★, 바늘 측정기 `'galvano'`(검류계)·`'ammeter'`(전류계)·`'voltmeter'`(전압계) ★ — (+)·(−) 단자를 `'id:+'`·`'id:-'`로 `wire`에 잇는다. 바늘은 `deflect`(검류계 −1~1, 0이 가운데 / 전류계·전압계 0~1, 기본 0 = 결과를 드러내지 않음). `reading`은 화면 글자 (펜·온도계는 숫자만 나온다). 원문이 값을 주지 않으면 `reading`을 쓰지 않는다 `'ir'`(적외선 온도계, 총 모양) — `x,y` = 앞 끝, `to:'id'`·`[x,y]`면 그곳을 겨누는 빨간 점선(그쪽을 향한다, `dir:'left'`·`'right'`로 정할 수도 있다), 값은 `reading` |
 
 ## 센서 실험
 
@@ -119,7 +119,7 @@
 | `device` ● | 스마트기기 화면 (`tablet`·`phone`) | `link:'센서id'`(무선 연결 표시), `title:'온도 (℃)'`, `xlabel:'시간'`, `value`, `graph`, `upto`(0~1, 그래프를 어디까지 그릴지), `markAt`·`markText`(그래프 위 표시) `display`: `'graph'`(그래프, 기본) · `'camera'`(촬영 중인 카메라 화면, `title`) · `'blank'`(그래프 없는 앱 화면, `title`과 크게 `value`) — 동영상 촬영·앱 분석 단계는 그래프가 아니라 이것을 쓴다 |
 | `stirrer` ★ | 자석 교반기 | `on:false` |
 | `stirbar` ● | 마그네틱 바 (준비물 아이콘용. 그릇 안에서는 그릇의 `stirbar:true`) | |
-| `tweezers` ● | 핀셋 | `tilt` |
+| `tweezers` ● | 핀셋 | `tilt`, `piece`(집은 재료 조각: `'potato'` `'liver'` `'onion'` … 아래 `piece`의 `kind`) |
 | `cabletie` ● | 케이블 타이 | |
 
 `graph` 모양: `'live'`(측정 시작, 기본 — 결과를 드러내지 않음) · `'flat'`(안정화) · `'rise'` · `'fall'` · `'boil'`(올라가다 일정) · `'cool'`(내려가다 일정) · `'freeze'`(과냉각 후 기울기 변화) · `'exo'`(빠르게 올랐다 천천히 내림) · `'endo'` · 숫자 배열(0~1 값을 차례로).
@@ -168,7 +168,7 @@
 
 ## 생물·관찰
 
-`microscope` ★ 현미경 · `slide` ● 받침·덮개 유리(`color` 시료 색) · `magnifier` ● 돋보기 · `dish` ★ 페트리 접시(`items:'seeds'/'colony'/'beans'`, `lid`, `fill`) · `evapdish` ★ 증발 접시(`solid`, `steam`) · `watchglass` ★ 시계 접시 · `mortar` ★ 막자사발(`color`, `grind:true`) · `plant` ★ 화분 식물(`bag:true` 비닐 씌움, `droplets:true` 물방울) · `leaf` ● 잎(`color`, `color2`면 절반을 다른 색으로)
+`microscope` ★ 현미경(`phone:true`면 접안렌즈 위에 스마트폰 촬영 거치대) · `slide` ● 받침·덮개 유리(`color` 시료 색) · `magnifier` ● 돋보기 · `dish` ★ 페트리 접시(`items:'seeds'/'colony'/'beans'`, `lid`, `fill`) · `evapdish` ★ 증발 접시(`solid`, `steam`) · `watchglass` ★ 시계 접시 · `mortar` ★ 막자사발(`color`, `grind:true`) · `plant` ★ 화분 식물(`bag:true` 비닐 씌움, `droplets:true` 물방울) · `leaf` ● 잎(`color`, `color2`면 절반을 다른 색으로)
 
 ## 물리
 
@@ -220,6 +220,16 @@
 | `appliance` ★ | 기기 상자 | `kind:'incubator'`(항온기·배양기, 기본)·`'microwave'`(전자레인지)·`'kettle'`(전기 포트, `steam:true`)·`'box'`(그 밖의 기기). `text`(앞면 글자), `reading`(화면 글자, 예 `'37 ℃'`), `open:true`(문을 열어 안쪽 선반이 보임 — 넣을 것은 `on:'기기id'`, `at` 0~1), `on:false`(꺼짐), `w`·`h` |
 
 - 종이 디스크를 따로 놓을 때는 `paper`의 `kind:'disk'`(`color`는 적신 용액 색), 핀셋 `tweezers`와 함께 쓴다.
+
+## 남은 기구 (분광기·방전관·칼·점화기·재료 조각)
+
+| t | 이름 | 놓는 법 / 속성 |
+|---|---|---|
+| `spectroscope` ● | 분광기 (손에 드는 관) | `x,y` = 가운데, `tilt`. `to:'id'`·`[x,y]`면 슬릿 끝(왼쪽)이 그쪽을 향하고 빛이 오는 길을 점선으로. 눈 쪽은 오른쪽 (`eye`와 함께) |
+| `discharge` ★ | 기체 방전관 + 고전압 발생 장치 | `text`(기체 이름, 예 `'네온'`), `on:false`(꺼짐: 빛 없음), `color`(빛 색, 기본 연보라). 분광기 `to`로 가리킨다 |
+| `knife` ● | 칼(커터·실험용 칼) | `x,y` = 가운데, `tilt`(기본 -15), `color`(손잡이 색) |
+| `lighter` ● | 점화기(긴 가스 점화기) | `x,y` = 불이 나오는 끝, `tilt`(기본 -25: 손잡이가 오른쪽 위), `lit:false`(불 끔). 향 `splint`의 끝에 대어 불을 붙이는 장면 |
+| `piece` ★ | 재료 조각 | `kind`: `'potato'`(감자) `'liver'`(생간) `'onion'`(양파 비늘잎) `'radish'`(무) `'tofu'`(두부) `'banana'`(바나나) `'apple'`(사과) `'cube'`(그 밖의 조각, `color`). `on:'접시·받침 유리·책상 id'`면 그 위에. 그릇 속은 그릇의 `solid:'potato'`·`'liver'`, 핀셋으로 집은 것은 `tweezers`의 `piece` |
 
 ## 안전·재료
 
