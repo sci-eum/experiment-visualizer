@@ -54,7 +54,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.20.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.21.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -217,6 +217,10 @@ section{margin:40px 0}
 .v3-chip{display:inline-block;margin-right:8px;padding:2px 8px;border-radius:8px;background:var(--primary);color:#fff;font-size:12px;vertical-align:2px}
 .v3-stage{position:relative;flex:1;min-height:0;margin:0 16px 16px;border-radius:20px;overflow:hidden;background:linear-gradient(#ffffff,#f4eefc);box-shadow:var(--sh-md)}
 .v3-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;margin:0;color:var(--ink-2);font-weight:600}
+.scene-box.v3-on>.sc-main,.scene-box.v3-on>.sc-rv{visibility:hidden}
+.scene-box>.v3-inline{position:absolute;inset:0;margin:0;border-radius:inherit;box-shadow:none}
+.v3-on>.v3-btn{display:none}
+.deck-top .btn[aria-pressed=true]{background:var(--primary);color:#fff}
 @media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.dr-row{grid-template-columns:1fr}}
 @media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
@@ -225,7 +229,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.20.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.21.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -698,9 +702,9 @@ T.wellplate = {
 T._well = {
   geo(el, R) {
     const pg = el._parent && R(el._parent); if (!pg || !pg.well) return { x: 240, y: BENCH, s: 1 };
-    const list = (el._parent.wells || []).filter(w => w && typeof w === 'object'), p = pg.well(...wellPos(el, list.indexOf(el), pg.d));
+    const list = (el._parent.wells || []).filter(w => w && typeof w === 'object'), rc = wellPos(el, list.indexOf(el), pg.d), p = pg.well(...rc);
     const lv = el.fill != null ? Math.max(0, Math.min(1, +el.fill || 0)) : el.color ? .6 : 0, sh = 34 * pg.s;
-    return { x: p.x, y: p.y, s: pg.s, top: p.y - p.ry, w: 2 * p.r, h: 2 * p.ry, half: p.r * .7, fill: lv, mouth: { x: p.x, y: p.y }, mouthTop: { x: p.x, y: p.y },
+    return { rc, x: p.x, y: p.y, s: pg.s, top: p.y - p.ry, w: 2 * p.r, h: 2 * p.ry, half: p.r * .7, fill: lv, mouth: { x: p.x, y: p.y }, mouthTop: { x: p.x, y: p.y },
       surfaceY: p.y + (1 - lv) * p.ry * .45, bottomY: p.y + p.ry * .35, port: el.strip ? { x: p.x, y: p.y + p.ry * .3 - sh + 4 } : { x: p.x, y: p.y }, anchor: { x: p.x + p.r * .7, y: p.y } };
   },
   draw() { return ''; }
@@ -1199,7 +1203,8 @@ T.hose = {
     let o = glass ? `<path d="${d}" fill="none" stroke="${INK}" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#eaf5fc" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>`
       : wc ? `<path d="${d}" fill="none" stroke="${shade(wc, -.4)}" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${wc}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>${[g.pts[0], g.pts[g.pts.length - 1]].map(p => `<circle cx="${r2(p[0])}" cy="${r2(p[1])}" r="3.2" fill="${wc}" stroke="${shade(wc, -.45)}" stroke-width="1.2"/>`).join('')}` // color: 전선
       : `<path d="${d}" fill="none" stroke="#c4834a" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#eab37c" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>`;
-    if (el.clip && wc) { // 집게: 끝 점에서 앞 점 쪽으로 물린 모양
+    if (cx && cx.u3) o = ''; // 입체 보기: 관·전선은 labkit3d.js가 두 끝을 입체 자리에 이어 긋는다 (거품만 남긴다)
+    else if (el.clip && wc) { // 집게: 끝 점에서 앞 점 쪽으로 물린 모양
       const P = g.pts, ends = [[P[0], P[1]], [P[P.length - 1], P[P.length - 2]]].filter((_, i) => el.clip === true || el.clip === (i ? 'to' : 'from'));
       ends.forEach(([e, q]) => { const a = Math.atan2(e[1] - q[1], e[0] - q[0]) * 180 / Math.PI; o += `<g transform="translate(${r2(e[0])},${r2(e[1])}) rotate(${r2(a)})"><rect x="-24" y="-4" width="11" height="8" rx="2.5" fill="${wc}" stroke="${shade(wc, -.45)}" stroke-width="1"/><path d="M-14,-3.6 L0,-1.2 L0,1.2 L-14,3.6 Z" fill="${METAL}" stroke="${INK}" stroke-width="1"/><path d="M-11,0 H-2" stroke="${INK}" stroke-width=".8"/></g>`; });
     }
@@ -1217,6 +1222,7 @@ T.arrow = {
     let o = `<path d="${d}" fill="none" stroke="${c}" stroke-width="${el.width ?? 3.2}" stroke-linecap="round"${el.dash ? ' stroke-dasharray="7 6"' : ''} marker-end="url(#${mid})"${el.both ? ` marker-start="url(#${mid})"` : ''}>${el.flow ? A('<animate attributeName="stroke-dashoffset" from="26" to="0" dur=".9s" repeatCount="indefinite"/>') : ''}</path>`;
     if (el.flow && !el.dash) o = o.replace('stroke-linecap="round"', 'stroke-linecap="round" stroke-dasharray="9 4"');
     if (el.label) { const lx = cv ? g.x + nx * cv * .55 : g.x, ly = cv ? g.y + ny * cv * .55 : g.y; const side = (el.labelSide === 'left' ? -1 : 1); cx.labels.push({ fixed: true, x: lx + nx * 16 * side, y: ly + ny * 16 * side - (Math.abs(nx) < .3 ? 0 : 0), text: el.label, tone: 'arrow', fg: c }); }
+    if (cx.u3) { g.ctrl = { x: qx, y: qy }; return ''; } // 입체 보기: 화살표는 labkit3d.js가 두 끝을 입체 자리에 이어 긋는다
     return o;
   }
 };
@@ -1241,7 +1247,8 @@ T.note = {
     g.box = { x: x0, y: y0, w, h }; // 겹침 점검용 (말풍선은 앞 층에 따로 그린다)
     let o = '';
     const to = el.to != null ? pt(el.to, cx.R) : null;
-    if (to) o += `<path d="M${r2(x0 + w / 2)},${r2(y0 + h / 2)} L${r2(to.x)},${r2(to.y)}" stroke="${INK2}" stroke-width="1.3" stroke-dasharray="3 3"/><circle cx="${r2(to.x)}" cy="${r2(to.y)}" r="2.8" fill="${INK2}"/>`;
+    if (to && cx.u3) g.toPt = to; // 입체 보기: 지시선은 labkit3d.js가 긋는다
+    else if (to) o += `<path d="M${r2(x0 + w / 2)},${r2(y0 + h / 2)} L${r2(to.x)},${r2(to.y)}" stroke="${INK2}" stroke-width="1.3" stroke-dasharray="3 3"/><circle cx="${r2(to.x)}" cy="${r2(to.y)}" r="2.8" fill="${INK2}"/>`;
     o += `<rect x="${r2(x0)}" y="${r2(y0)}" width="${r2(w)}" height="${r2(h)}" rx="12" fill="${el.bg ?? '#fff'}" filter="url(#${cx.sh})"/>`;
     if (tag) o += `<text x="${r2(x0 + 12)}" y="${r2(y0 + 21)}" font-size="11" font-weight="800" fill="${tc}">${esc(tag)}</text>`;
     lines.forEach((l, i) => { o += `<text x="${r2(x0 + 12)}" y="${r2(y0 + (tag ? 18 : 0) + 22 + i * fs * 1.45)}" font-size="${fs}" font-weight="600" fill="#2b3040">${esc(l)}</text>`; });
@@ -1254,7 +1261,7 @@ T.mark = {
 };
 T.eye = {
   geo(el, R) { return { x: el.x ?? 80, y: el.y ?? 150, s: el.s ?? 1 }; },
-  draw(el, g, cx) { const to = el.to != null ? pt(el.to, cx.R) : null; return `${to ? `<path d="M${r2(g.x + 16)},${r2(g.y)} L${r2(to.x)},${r2(to.y)}" stroke="#2c5fb3" stroke-width="1.6" stroke-dasharray="4 4"/>` : ''}<g transform="translate(${r2(g.x)},${r2(g.y)}) scale(${g.s})"><path d="M-18,0 Q0,-15 18,0 Q0,15 -18,0Z" fill="#fff" stroke="${DARK}" stroke-width="2"/><circle r="6.5" fill="#2c5fb3"/><circle r="2.8" fill="#1d2130"/><circle cx="-2" cy="-2" r="1.3" fill="#fff"/></g>`; }
+  draw(el, g, cx) { const to = el.to != null ? pt(el.to, cx.R) : null; if (to && cx.u3) g.toPt = to; return `${to && !cx.u3 ? `<path d="M${r2(g.x + 16)},${r2(g.y)} L${r2(to.x)},${r2(to.y)}" stroke="#2c5fb3" stroke-width="1.6" stroke-dasharray="4 4"/>` : ''}<g transform="translate(${r2(g.x)},${r2(g.y)}) scale(${g.s})"><path d="M-18,0 Q0,-15 18,0 Q0,15 -18,0Z" fill="#fff" stroke="${DARK}" stroke-width="2"/><circle r="6.5" fill="#2c5fb3"/><circle r="2.8" fill="#1d2130"/><circle cx="-2" cy="-2" r="1.3" fill="#fff"/></g>`; }
 };
 T.view = {
   selfLabel: true,
@@ -1272,7 +1279,8 @@ T.view = {
     }
     let o = '';
     const fr = el.from != null ? pt(el.from, cx.R) : null;
-    if (fr) { const dx = g.x - fr.x, dy = g.y - fr.y, d = Math.hypot(dx, dy) || 1, nx = -dy / d, ny = dx / d; o += `<path d="M${r2(fr.x)},${r2(fr.y)} L${r2(g.x + nx * r)},${r2(g.y + ny * r)} M${r2(fr.x)},${r2(fr.y)} L${r2(g.x - nx * r)},${r2(g.y - ny * r)}" stroke="#c99be6" stroke-width="1.4" stroke-dasharray="4 4"/><circle cx="${r2(fr.x)}" cy="${r2(fr.y)}" r="7" fill="none" stroke="#c99be6" stroke-width="2"/>`; }
+    if (fr && cx.u3) g.fromPt = fr; // 입체 보기: 들여다본 곳에서 오는 선은 labkit3d.js가 긋는다
+    else if (fr) { const dx = g.x - fr.x, dy = g.y - fr.y, d = Math.hypot(dx, dy) || 1, nx = -dy / d, ny = dx / d; o += `<path d="M${r2(fr.x)},${r2(fr.y)} L${r2(g.x + nx * r)},${r2(g.y + ny * r)} M${r2(fr.x)},${r2(fr.y)} L${r2(g.x - nx * r)},${r2(g.y - ny * r)}" stroke="#c99be6" stroke-width="1.4" stroke-dasharray="4 4"/><circle cx="${r2(fr.x)}" cy="${r2(fr.y)}" r="7" fill="none" stroke="#c99be6" stroke-width="2"/>`; }
     o += `<g transform="translate(${r2(g.x)},${r2(g.y)})"><defs><clipPath id="${k}"><circle r="${r}"/></clipPath></defs><circle r="${r + 4}" fill="#fff" filter="url(#${cx.sh})"/><g clip-path="url(#${k})"><rect x="${-r}" y="${-r}" width="${2 * r}" height="${2 * r}" fill="${el.bg ?? '#fbfdff'}"/>${inner}</g><circle r="${r}" fill="none" stroke="#c58ce8" stroke-width="3"/></g>`;
     if (el.label) cx.labels.push({ fixed: true, x: g.x, y: g.y + r + 16, text: el.label });
     cx.front.push(o); return '';
@@ -2216,7 +2224,8 @@ function build(items, o = {}) {
   const grp = groups(all, byId), U3 = o.u3 ? units3(all, byId) : null;
   // 입체 보기(v1.20): 부품마다 번호(_e3)를 붙이고, 입체로 빚을 수 있는 부품(o.mesh3)은 _3d로 표시한다.
   // 꽂힌 튜브는 꽂은 부품이, 그릇 안(in)에 든 것은 그 그릇이 입체일 때만 입체로 (평면 그림 속에 입체가 떠 있지 않게)
-  const every = f => all.forEach(el => { f(el); if (RACKS[el.t]) (el.tubes || []).forEach(tb => { if (tb && typeof tb === 'object') f(tb); }); });
+  const kids3 = el => RACKS[el.t] ? el.tubes || [] : el.t === 'wellplate' ? el.wells || [] : [];
+  const every = f => all.forEach(el => { f(el); kids3(el).forEach(k => { if (k && typeof k === 'object') f(k); }); });
   if (U3) { let k = 0; every(el => { el._e3 = k++; }); }
   if (U3 && o.mesh3) {
     const M3 = new Set(o.mesh3), memo = new Map();
@@ -2232,7 +2241,7 @@ function build(items, o = {}) {
     const b = g.box ? ` data-lk-box="${[g.box.x, g.box.y, g.box.w, g.box.h].map(r2).join(',')}"` : '';
     return `<g data-lk="${OV_TOP.has(el.t) ? 'o' : 's'}" data-lk-c="${grp(el)}" data-lk-t="${esc(el.t)}" data-lk-n="${esc(name(el))}"${b}>${s}</g>`;
   };
-  const P = uid('s'), cx = { front: [], labels: [], defs: [], R, sh: P + 'sh' };
+  const P = uid('s'), cx = { front: [], labels: [], defs: [], R, sh: P + 'sh', u3: !!U3 }; // u3: 입체 보기용 (화살표·지시선은 labkit3d.js가 입체 자리에 긋는다)
   const behindOf = el => { const id = el.in || (el.t === 'funnel' ? el.over : null); return id && byId[id] ? id : null; };
   const behind = {}; all.forEach(el => { const id = behindOf(el); if (id) (behind[id] ||= []).push(el); });
   const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }, f0 = cx.front.length, l0 = cx.labels.length; g._sh = cx.sh; let s = ''; try { s = (el._3d ? Tp.decal3 && Tp.decal3(el, g, cx) : Tp.draw(el, g, cx)) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true;
@@ -2286,6 +2295,15 @@ T.tuberack.decal3 = (el, g, cx) => {
 T.funnel.decal3 = (el, g) => el.drip && g.to != null ? dropAnim(g.x + 1.5, g.y, g.to, col(el.dripColor, el.paper !== false ? 'water' : el.color || 'water'), 2, 1.1) : '';
 T.evapdish.decal3 = (el, g) => el.steam ? steam(g.x, g.y - 30 * g.s, g.s) : '';
 T.block.decal3 = (el, g) => { const w = g.bw ?? 56, h = g.bh ?? 34, c = col(el.color, '#ddb07a'); return `<g transform="${tfm(g)}">${el.color ? '' : `<path d="M${-w / 2 + 6},${-h * .65} q${w * .25},-5 ${w * .5},0 t${w * .35},0 M${-w / 2 + 10},${-h * .3} q${w * .2},4 ${w * .45},0" stroke="${shade(c, -.18)}" stroke-width="1.2" fill="none"/>`}${el.text ? `<text y="${-h / 2 + 4}" font-size="11" font-weight="800" text-anchor="middle" fill="#2d3343">${esc(el.text)}</text>` : ''}</g>`; };
+T.microscope.decal3 = (el, g) => el.phone ? `<g transform="${tfm(g)}"><g transform="translate(27.5,-230)"><rect x="-17" y="-20" width="34" height="40" rx="2" fill="#3a4a60"/><circle r="12" fill="#e9eef6" opacity=".9"/><circle cx="-12" cy="-15" r="2" fill="#e5484d"/></g></g>` : '';
+T.device.decal3 = T.device.draw; T.power.decal3 = T.power.draw; T.lightbox.decal3 = T.lightbox.draw; // 앞면 그림 전체를 상자 앞면에
+T.sepfunnel.decal3 = (el, g) => { const open = !!(el.open || el.drip), ls = Array.isArray(el.layers) && el.layers.length ? el.layers : [{ color: el.color ?? 'water' }]; return `<g transform="${tfm(g)}"><g transform="translate(0,-47)">${cock(open)}<circle r="3.2" fill="#596173"/></g></g>${open && g.to != null ? dropAnim(g.x, g.y, g.to, col(ls[0].color, 'water'), 2, .9) : ''}`; };
+T.cart.decal3 = (el, g) => el.text ? `<g transform="${tfm(g)}"><text x="12" y="-17.5" font-size="10" font-weight="800" text-anchor="middle" fill="#fff">${esc(el.text)}</text></g>` : '';
+T.wellplate.decal3 = (el, g, cx) => { // 홈의 이름표만 (홈 자리는 labkit3d.js가 입체 홈에 맞춘다)
+  const list = (el.wells || []).filter(w => w && typeof w === 'object');
+  list.forEach((w, i) => { if (!w.label) return; const rc = wellPos(w, i, g.d), p = g.well(...rc); cx.labels.push({ a: { x: p.x, y: p.y }, text: w.label, well: rc }); });
+  return '';
+};
 T.magnet.decal3 = (el, g) => {
   const f = el.flip ? -1 : 1; let o = '';
   if (el.field) [16, 30, 46].forEach((h, i) => { o += `<path d="M${-50 * f},-14 C${-50 * f},${-14 - h * 1.4} ${50 * f},${-14 - h * 1.4} ${50 * f},-14" fill="none" stroke="${INK2}" stroke-width="1.3" stroke-dasharray="4 4" opacity="${.9 - i * .2}"/>`; });
@@ -2303,12 +2321,12 @@ function scene3(items, o = {}) {
   const prev = ANIM; ANIM = false;
   try {
     const { body, cx, all, U3 } = build(items, { ...o, u3: true });
-    const labels = cx.labels.filter(l => l.text != null && l.text !== '' && l.u != null).map(l => { const p = l.a || l; return { u: l.u, e: l.e, x: r2(p.x), y: r2(p.y), text: String(l.text), pin: !!l.a, tone: l.tone || '' }; });
+    const labels = cx.labels.filter(l => l.text != null && l.text !== '' && l.u != null).map(l => { const p = l.a || l; return { u: l.u, e: l.e, x: r2(p.x), y: r2(p.y), text: String(l.text), pin: !!l.a, tone: l.tone || '', well: l.well ?? null }; });
     const els = [], list = [], byId = {}, idx = el => el && el._e3 != null ? el._e3 : null;
-    all.forEach(el => { list.push(el); if (RACKS[el.t]) (el.tubes || []).forEach(tb => { if (tb && typeof tb === 'object') list.push(tb); }); });
+    all.forEach(el => { list.push(el); (RACKS[el.t] ? el.tubes || [] : el.t === 'wellplate' ? el.wells || [] : []).forEach(k => { if (k && typeof k === 'object') list.push(k); }); });
     list.forEach(el => { if (el.id) byId[el.id] = el; });
     const ref = v => typeof v === 'string' ? idx(byId[v.replace(/:[+\-−]$/, '')]) : null;
-    list.forEach(el => { if (el._e3 == null) return; const g = el._g || {}; els[el._e3] = { e: el._e3, u: String(U3(el)), t: el.t, id: el.id ?? null, d3: !!el._3d, inE: ref(el.in), overE: ref(el.over), onE: ref(el.on), parentE: idx(el._parent), shape: g.S ? Object.keys(SHAPES).find(k => SHAPES[k] === g.S) || null : null, g: plain3(g), p: plain3(el) }; });
+    list.forEach(el => { if (el._e3 == null) return; const g = el._g || {}; els[el._e3] = { e: el._e3, u: String(U3(el)), t: el.t, id: el.id ?? null, d3: !!el._3d, inE: ref(el.in), overE: ref(el.over), onE: ref(el.on), toE: ref(el.to), fromE: ref(el.from), parentE: idx(el._parent), shape: g.S ? Object.keys(SHAPES).find(k => SHAPES[k] === g.S) || null : null, g: plain3(g), p: plain3(el) }; });
     return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}"><defs><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs>${body}${cx.front.join('')}</svg>`, labels, els };
   } finally { ANIM = prev; }
 }
@@ -2353,6 +2371,16 @@ function view3d(o = {}) {
     .catch(err => { if (closed) return; console.warn('[LabKit] 입체 보기 오류', err); fail(err && err.code === 'nogl' ? '이 기기(브라우저)에서는 입체 그림을 열 수 없어요. 그래픽 가속(WebGL)이 꺼져 있을 수 있어요. 2D 그림으로 보세요.' : '입체 그림을 그리지 못했어요. 2D 그림으로 보세요.'); });
   return { close };
 }
+// 수업 모드 안에서 장면 칸에 바로 입체를 띄운다 (v1.21). → { dispose }
+function mount3d(box, o = {}) {
+  let inst = null, gone = false;
+  const msg = t => { if (!gone) box.innerHTML = `<p class="v3-msg">${esc(t)}</p>`; };
+  msg('입체 그림을 준비하는 중이에요…');
+  load3d().then(K => { if (gone) return; box.innerHTML = ''; inst = K.open(box, { ...o, inline: true }); },
+    err => { console.warn('[LabKit] ' + err.message); msg('입체 그림을 불러오지 못했어요. 인터넷에 연결되어 있는지 확인해 주세요.'); })
+    .catch(err => { console.warn('[LabKit] 입체 보기 오류', err); msg(err && err.code === 'nogl' ? '이 기기(브라우저)에서는 입체 그림을 열 수 없어요. 2D 그림으로 보세요.' : '입체 그림을 그리지 못했어요.'); });
+  return { dispose() { gone = true; try { if (inst) inst.dispose(); } catch (e) { } } };
+}
 function guess(name) {
   const n = String(name || '').replace(/\(.*?\)/g, '').trim();
   for (const [k, v] of GUESS) { const [t, flag] = v.split(':'); if (flag === '1') { if (n === k || n.startsWith(k + ' ')) return { t }; continue; } if (n.includes(k)) return flag === 'phone' ? { t, phone: true } : flag === 'filter' ? { t, kind: 'filter' } : flag === 'paper' ? { t, paper: true } : flag === 'arm' ? { t, arm: true } : flag ? { t, kind: flag } : t === 'bottle' ? { t, text: n.replace(/^[\d.,%\s~M]+/, '').slice(0, 5), fill: .55 } : { t }; }
@@ -2369,7 +2397,7 @@ function icon(spec, name) {
   return out;
 }
 function fit(root) { (root || document).querySelectorAll('svg[data-fit]').forEach(svg => { const g = svg.querySelector('.fit'); try { const b = g.getBBox(); if (b.width && b.height) { const p = Math.max(b.width, b.height) * .08 + 2; svg.setAttribute('viewBox', `${r2(b.x - p)} ${r2(b.y - p)} ${r2(b.width + 2 * p)} ${r2(b.height + 2 * p)}`); svg.removeAttribute('data-fit'); } } catch (e) { } }); }
-return { version: VERSION, scene, scene3, shapes3, load3d, view3d, icon, fit, overlaps, layout, esc, col, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
+return { version: VERSION, scene, scene3, shapes3, load3d, view3d, mount3d, icon, fit, overlaps, layout, esc, col, shade, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
 })();
 window.LabKit = LabKit;
 function lkStart() {
@@ -2568,6 +2596,7 @@ function toggleReveal(i) {
   if (rvOn.has(i)) rvOn.delete(i); else rvOn.add(i);
   const label = rvOn.has(i) ? (i === 'res' ? '감추기' : '과정 보기') : '결과 보기';
   document.querySelectorAll(`[data-rvs="${i}"]`).forEach(n => { n.classList.toggle('rv-on', rvOn.has(i)); n.querySelectorAll('.rv-btn').forEach(b => { b.setAttribute('aria-pressed', rvOn.has(i)); b.querySelector('.rv-l').textContent = label; }); });
+  if (deck3d && !deck.hidden && (slides[cur] || {}).step === i) mountInline();
 }
 // 타이머 (수업 모드): time의 '15분', '30초', '1분마다'를 읽는다. timer: 초(숫자)로 직접 정하거나 false로 끈다
 const timerOf = st => { if (!st || st.timer === false) return null; if (+st.timer > 0) return { sec: Math.round(+st.timer), every: false }; const s = String(st.time || ''); let sec = 0; s.replace(/(\d+(?:\.\d+)?)\s*(시간|분|초)/g, (m, n, u) => { sec += +n * (u === '시간' ? 3600 : u === '분' ? 60 : 1); return m; }); return sec > 0 ? { sec: Math.round(sec), every: /마다/.test(s) } : null; };
@@ -2651,10 +2680,24 @@ if (hasRes) slides.push({ name: '결과 정리', res: true, html: () => `<div cl
 
 const mk = (id, cls) => { let n = document.getElementById(id); if (!n) { n = document.createElement('div'); n.id = id; if (cls) n.className = cls; document.body.appendChild(n); } return n; };
 const deck = mk('deck', 'deck'); deck.hidden = true; deck.setAttribute('role', 'dialog'); deck.setAttribute('aria-modal', 'true'); deck.setAttribute('aria-label', '수업 모드');
-let cur = 0, lastFocus = null;
+let cur = 0, lastFocus = null, deck3d = false, inl = null;
+// 수업 모드의 3D 단추를 켜면 단계마다 장면 칸에 입체를 바로 띄운다 (넘기면 다음 단계도 입체로)
+function mountInline() {
+  if (inl) { inl.dispose(); inl = null; }
+  const st = steps[(slides[cur] || {}).step], box = deck.querySelector('.deck-stage .scene-box');
+  if (!box) return;
+  box.querySelectorAll('.v3-inline').forEach(n => n.remove()); box.classList.toggle('v3-on', !!(deck3d && st));
+  if (!deck3d || !st) return;
+  const i = slides[cur].step; let rv = null; try { rv = rvOn.has(i) ? revealItems(st, i) : null; } catch (err) { console.error(err); }
+  const host = document.createElement('div'); host.className = 'v3-stage v3-inline'; box.appendChild(host);
+  const h = LabKit.mount3d(host, { items: rv || sceneItems(i), bench: st.bench, title: `${i + 1}단계: ${st.title || ''}${rv ? ' — 결과' : ''}` });
+  inl = { dispose() { h.dispose(); host.remove(); box.classList.remove('v3-on'); } };
+}
 function showSlide(i) {
   cur = Math.max(0, Math.min(slides.length - 1, i));
+  if (inl) { inl.dispose(); inl = null; }
   deck.querySelector('.deck-stage').innerHTML = slides[cur].html();
+  mountInline();
   deck.querySelector('.deck-count').textContent = `${cur + 1} / ${slides.length}`;
   deck.querySelectorAll('.dot').forEach((d, k) => { d.classList.toggle('on', k === cur); d.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
   deck.querySelector('[data-prev]').disabled = cur === 0; deck.querySelector('[data-next]').disabled = cur === slides.length - 1;
@@ -2663,13 +2706,13 @@ function showSlide(i) {
 }
 function openDeck(i) {
   lastFocus = document.activeElement;
-  deck.innerHTML = `<div class="deck-top"><div class="deck-title">${e(D.title || '실험 과정')}</div><span class="tm-mini" hidden></span><span class="deck-count"></span><button class="btn icon" data-full aria-label="전체 화면">${IC.full}</button><button class="btn icon" data-close aria-label="닫기">${IC.x}</button></div><div class="deck-stage"></div><div class="deck-nav"><button class="btn" data-prev>${IC.left}이전</button><div class="dots">${slides.map((s, k) => `<button class="dot" data-go="${k}" aria-label="${e(s.name)}"></button>`).join('')}</div><button class="btn primary" data-next>다음${IC.right}</button></div>`;
+  deck.innerHTML = `<div class="deck-top"><div class="deck-title">${e(D.title || '실험 과정')}</div><span class="tm-mini" hidden></span><span class="deck-count"></span><button class="btn icon" type="button" data-v3deck aria-pressed="${deck3d}" aria-label="장면을 입체(3D)로 보기" title="장면을 입체(3D)로 보기">${IC.cube}</button><button class="btn icon" data-full aria-label="전체 화면">${IC.full}</button><button class="btn icon" data-close aria-label="닫기">${IC.x}</button></div><div class="deck-stage"></div><div class="deck-nav"><button class="btn" data-prev>${IC.left}이전</button><div class="dots">${slides.map((s, k) => `<button class="dot" data-go="${k}" aria-label="${e(s.name)}"></button>`).join('')}</div><button class="btn primary" data-next>다음${IC.right}</button></div>`;
   deck.hidden = false; document.body.style.overflow = 'hidden'; showSlide(i); deck.querySelector('[data-next]').focus();
 }
-function closeDeck() { deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(app); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
-deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.v3 != null) return open3d(+b.dataset.v3); if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
+function closeDeck() { if (inl) { inl.dispose(); inl = null; } deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(app); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
+deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.v3 != null) return open3d(+b.dataset.v3); if (b.hasAttribute('data-v3deck')) { deck3d = !deck3d; b.setAttribute('aria-pressed', deck3d); return mountInline(); } if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
 document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].res && (res.expect || res.conclusion)) toggleReveal('res'); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
-let tx = null; deck.addEventListener('touchstart', ev => { tx = ev.touches[0].clientX; }, { passive: true }); deck.addEventListener('touchend', ev => { if (tx == null) return; const dx = ev.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) showSlide(cur + (dx < 0 ? 1 : -1)); tx = null; });
+let tx = null; deck.addEventListener('touchstart', ev => { tx = ev.target.closest && ev.target.closest('.v3-cv') ? null : ev.touches[0].clientX; }, { passive: true }); // 입체 그림을 끌어 돌릴 때는 넘기지 않는다 deck.addEventListener('touchend', ev => { if (tx == null) return; const dx = ev.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) showSlide(cur + (dx < 0 ? 1 : -1)); tx = null; });
 
 const app = mk('app'), CHECK = Q.has('check');
 // 겹침 점검은 화면 글자에 쓰인 글꼴 조각을 다 불러온 뒤에 한다 (Pretendard는 글자별로 나눠 불러와서, 덜 불러오면 글자 상자 크기가 달라진다)

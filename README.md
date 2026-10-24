@@ -21,7 +21,7 @@
 
 - 단계 카드를 누르거나 **수업 모드로 보기**를 누르면 한 단계씩 크게 보입니다. ← → 키(또는 화면 밀기)로 넘기고 전체 화면으로 띄울 수 있습니다.
 - 거품, 김, 불꽃, 떨어지는 방울, 젓는 유리 막대가 살짝 움직여 동작을 보여 줍니다.
-- 장면 그림 오른쪽 아래의 **3D**를 누르면 그 단계를 실험대 위에 세워 **입체로 돌려 볼 수 있습니다** (끌어서 돌리기, 휠·두 손가락으로 확대, 앞에서·비스듬히·위에서 시점). 비커·플라스크·시험관 같은 **그릇 13종은 유리와 액체(높이·색·층)를**, 삼발이·알코올램프·스탠드·가열판·시험관대·저울 같은 **자주 쓰는 기구는 모양을 입체로 빚고**, 나머지 기구는 2D 그림을 카드로 세워 보여 줍니다. 입체 엔진은 처음 누를 때 인터넷에서 불러오고, `--3d`로 만들면 파일 안에 들어가 인터넷 없이도 됩니다.
+- 장면 그림 오른쪽 아래의 **3D**를 누르면 그 단계를 실험대 위에 세워 **입체로 돌려 볼 수 있습니다** (끌어서 돌리기, 휠·두 손가락으로 확대, 앞에서·비스듬히·위에서 시점). 비커·플라스크·시험관 같은 **그릇 13종은 유리와 액체(높이·색·층)를**, 삼발이·알코올램프·스탠드·가열판·시험관대·저울 같은 **자주 쓰는 기구는 모양을 입체로 빚고**(현미경·홈판·책상·트랙·빗면·분별 깔때기 …), 나머지 기구는 2D 그림을 카드로 세워 보여 줍니다. 화살표·말풍선 지시선·관·전선은 돌려도 가리키는 부품에 붙어 있습니다. 수업 모드에서는 위쪽 **3D 단추**를 누르면 단계마다 장면 칸에 입체가 바로 뜹니다. 입체 엔진은 처음 누를 때 인터넷에서 불러오고, `--3d`로 만들면 파일 안에 들어가 인터넷 없이도 됩니다.
 - 결과 기록표의 빈칸, 생각해 보기 질문의 답, **예상하기** 칸에 화면에서 바로 적을 수 있습니다 (그 기기의 브라우저에만 저장). 자료를 고쳐 단계·질문을 끼워 넣어도 적은 답이 제 질문을 따라갑니다.
 - 실험지가 관찰한 모습을 그리게 하면 **그림 칸**(현미경 시야 원, 빈 네모, 극좌표 원)이 생겨 손가락·마우스·펜으로 그릴 수 있습니다 (그 기기의 브라우저에 저장, 인쇄에도 나옴).
 - 실험지에 결과가 있으면 **결과 보기**를 눌러야 결과 그림이 나옵니다. 탐구 전에는 결과를 미리 보여 주지 않습니다.
@@ -135,15 +135,15 @@ python scripts/build_html.py examples/gallery.json examples/gallery.html
 python scripts/make_scenes_doc.py                                # examples/recipes.json → references/scenes.md
 python scripts/build_html.py examples/recipes.json examples/recipes.html
 python scripts/make_registry.py                                  # labkit.js → references/parts.json (부품 속성 목록)
-python scripts/check_docs.py                                     # 문서와 엔진이 맞는지 (JSON 문법, 부품 목록, 참고 문서 주소, SKILL.md 길이)
+python scripts/check_docs.py                                     # 문서와 엔진이 맞는지 (JSON 문법, 부품 목록, 참고 문서 주소, SKILL.md 길이, parts.md 입체 등급 표)
 python scripts/check_data.py examples/gallery.json               # 데이터 검사
-python scripts/selftest.py                                       # 수식·부피 읽기, 검사기, 원문 숫자 대조, 학생 답 저장 이름·입체 카드 묶음·입체로 빚는 부품(헤드리스 브라우저) 자체 시험
+python scripts/selftest.py                                       # 수식·부피 읽기, 검사기, 원문 숫자 대조, 학생 답 저장 이름·입체 카드 묶음·입체로 빚는 부품·입체 앞뒤 z(헤드리스 브라우저) 자체 시험
 python scripts/check_render.py examples/gallery.html --shots shots --3d  # 헤드리스 Chrome/Edge로 열어 오류·겹침·입체 보기 확인, 장면 PNG(3d-*.png 포함)를 shots/에 (가벼운 버전도 내 폴더 엔진으로)
 python scripts/make_skill_zip.py                                 # dist/experiment-visualizer.zip
 ```
 
 가벼운 HTML은 `https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/labkit.min.js`를 불러오고, 링크로 쓰는 SKILL.md와 참고 문서·도구도 같은 `@1`에서 나갑니다.
-입체 엔진은 그림 엔진과 **같은 버전** 주소(`@1.20.0/assets/labkit3d.min.js`처럼)에서 불러오므로, 한 파일로 만든 HTML도 그때 엔진과 맞는 입체 엔진을 씁니다.
+입체 엔진은 그림 엔진과 **같은 버전** 주소(`@1.21.0/assets/labkit3d.min.js`처럼)에서 불러오므로, 한 파일로 만든 HTML도 그때 엔진과 맞는 입체 엔진을 씁니다.
 엔진을 고친 뒤에는 `v1.x.y` 태그를 붙여 push해야 jsDelivr에 반영됩니다. 그림 데이터 형식을 바꾸는 큰 변경은 `v2`로 올립니다.
 버전을 올릴 때는 `labkit.js`와 `labkit3d.js`의 첫 줄 머리말과 `const VERSION`을 모두 같은 번호로 고칩니다 (다르면 `make_template.py`가 멈춥니다).
 
@@ -153,8 +153,8 @@ python scripts/make_skill_zip.py                                 # dist/experime
 - 태그를 push하면 [배포](.github/workflows/release.yml)가 점검을 다시 돌린 뒤, 태그와 엔진 버전이 같은지 보고 Release를 만들어 스킬 zip을 붙이고 jsDelivr `@1` 캐시(엔진·문서·도구)를 비웁니다. 릴리스 노트는 태그 메시지로 씁니다.
 
 ```bash
-git tag -a v1.20.0 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
-git push origin v1.20.0
+git tag -a v1.21.0 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
+git push origin v1.21.0
 ```
 
 ## 라이선스

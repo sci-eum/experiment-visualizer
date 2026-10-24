@@ -7,6 +7,7 @@
 4. references/scenes.md가 examples/recipes.json과, references/parts.json이 엔진과 같다.
 5. SKILL.md가 가리키는 참고 문서가 있고, SKILL.md가 너무 길지 않다.
 6. 문서의 jsDelivr @1 주소가 저장소에 있는 파일을 가리키고, 참고 문서가 모두 스킬 zip·캐시 비우기 목록에 있다.
+7. parts.md의 '입체(3D) 보기' 표가 입체 엔진(labkit3d.js)이 빚는 부품·설명 부품과 같다.
    SKILL.md는 raw main 주소를 쓰지 않는다 (지시서와 엔진의 버전이 어긋나지 않게).
 
 사용법:  python scripts/check_docs.py      (문제가 있으면 종료 코드 1)
@@ -116,6 +117,22 @@ def main():
             problems.append(f'scripts/make_skill_zip.py 파일 목록에 {ref}가 없습니다')
         if ref not in release:
             problems.append(f'release.yml 캐시 비우기 목록에 {ref}가 없습니다')
+    # 7. 입체 등급 표 = 엔진의 그릇 + labkit3d.js의 BUILD(별칭 포함) + OVERLAY
+    l3 = (ROOT / 'assets' / 'labkit3d.js').read_text(encoding='utf-8')
+    js = (ROOT / 'assets' / 'labkit.js').read_text(encoding='utf-8')
+    want = {
+        '입체 그릇': set(re.findall(r'^  ([a-z]+): \{', re.search(r'const SHAPES = \{(.*?)\n\};', js, re.S).group(1), re.M)),
+        '입체 기구': set(re.findall(r'^  ([a-z]+)\(d, b\)', re.search(r'const BUILD = \{(.*?)\n\};', l3, re.S).group(1), re.M)) | set(re.findall(r'BUILD\.([a-z]+) = BUILD\.[a-z]+', l3)),
+        '설명': set(re.findall(r"'([a-z]+)'", re.search(r'const OVERLAY = new Set\(\[(.*?)\]\)', l3).group(1))),
+    }
+    for grade, names in want.items():
+        row = re.search(r'^\| ' + grade + r'[^|]*\|(.*)\|$', parts, re.M)
+        got = set(re.findall(r'`([a-z]+)`', row.group(1))) if row else set()
+        if got != names:
+            problems.append(f"parts.md '입체(3D) 보기' 표의 {grade}: 빠짐 {sorted(names - got)}, 남음 {sorted(got - names)} (labkit3d.js와 맞추세요)")
+        unknown = got - known
+        if unknown:
+            problems.append(f"parts.md '입체(3D) 보기' 표에 엔진에 없는 부품: {sorted(unknown)}")
     if lines > MAX_SKILL_LINES:
         problems.append(f'SKILL.md가 {lines}줄입니다 ({MAX_SKILL_LINES}줄 이하로 줄이고 자세한 내용은 references로).')
 

@@ -45,6 +45,7 @@ BAD = {
         {"title": "오타", "obsreve": "x", "scene": [{"t": "beaker", "amout": "10 mL"}, {"t": "bekaer"}]},
         {"title": "id", "scene": [{"t": "beaker", "id": "b"}, {"t": "flask", "id": "b"}, {"t": "dropper", "over": "c"}]},
         {"title": "부피", "scene": [{"t": "cylinder", "vol": "십 mL"}]},
+        {"title": "입체 앞뒤", "scene": [{"t": "beaker", "z": "앞"}]},
         {"title": "이어받기", "scene": {"from": 99, "change": {"zz": {"color": "red"}}}},
         {"title": "원문 기록", "id": "s1", "origin": {"where": "1쪽", "check": "maybe", "added": ["tipp"]}, "scene": [{"t": "beaker"}]},
         {"title": "단계 id", "id": "s1", "scene": [{"t": "beaker"}]},
@@ -70,7 +71,7 @@ BAD = {
                 "tables": [{"title": "합친 칸", "head": [{"text": "시간", "span": 0, "colour": "red"}, "1"],
                             "rows": [[{"txt": "가", "rowspan": 3}, ""], ["", "", ""]]}]},
 }
-BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "알 수 없는 항목 'obsreve'", "없는 부품 'bekaer'",
+BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "z는 숫자여야 해요", "알 수 없는 항목 'obsreve'", "없는 부품 'bekaer'",
               "id 'b'가 한 장면에 두 번", "over: 'c'", "부피로 읽지 못해요", "이어받을 단계가 없어요",
               "'ok'(확인함) 또는 'unsure'", "원문에 없이 더한 항목", "단계 id 's1'", "질문 id 'q1'",
               "kind 'humidity'는 정해진 값이 아니에요", "kind 'other'에 text로", "'concave'인가요?", "solid 'sand'", "용량은 label로 적으세요",
@@ -231,6 +232,44 @@ M3_TYPES = ["rack", "tube", "beaker", "microtube"]
 M3_WANT = {"rack": True, "tube#A": True, "tube#B": True, "beaker#b": True, "thermometer#th": False, "centrifuge#cf": False, "microtube#m1": False}
 
 
+# 입체 보기의 z(v1.21): z를 준 그릇은 앞으로, 그 안에 넣은 온도계·위에 둔 스포이트도 따라간다. z가 없는 그릇은 제자리
+Z3_SCENE = [
+    {"t": "beaker", "id": "b1", "x": 150, "fill": 0.4, "z": 40}, {"t": "thermometer", "id": "th", "in": "b1"},
+    {"t": "dropper", "id": "dr", "over": "b1"}, {"t": "beaker", "id": "b2", "x": 330, "fill": 0.4},
+]
+
+
+def z3d_test(exe):
+    """→ (실패 목록, 시험 수). 입체 엔진(labkit3d.js)을 넣은 HTML을 헤드리스로 열어 부품의 앞뒤 자리(z)를 읽는다."""
+    import check_render
+    from build_html import build, add3d
+    tpl = (HERE.parent / "assets" / "template.html").read_text(encoding="utf-8")
+    page = add3d(build(tpl, 'window.EXPERIMENT = {"title": "입체 앞뒤 시험", "steps": []};'), (HERE.parent / "assets" / "labkit3d.js").read_text(encoding="utf-8"))
+    post = ("<script>(function(){var d=document.createElement('div');d.style.cssText='position:fixed;left:0;top:0;width:600px;height:400px';document.body.appendChild(d);"
+            "var v=LabKit3D.open(d,{items:" + json.dumps(Z3_SCENE) + ",still:true}),z={};"
+            "v.objs.forEach(function(o){z[o.d.t+'#'+o.d.id]=o.az});v.cards.forEach(function(c){if(c.d)z[c.d.t+'#'+c.d.id]=c.pz});"
+            "var o=document.createElement('pre');o.id='lk-test';o.textContent=JSON.stringify(z);document.body.appendChild(o)})()</script>")
+    i = page.rindex("</body>")
+    page = page[:i] + post + page[i:]
+    with tempfile.TemporaryDirectory() as d:
+        f = Path(d) / "z3.html"
+        f.write_text(page, encoding="utf-8")
+        r = check_render.headless(exe, *check_render.GL_ARGS, "--dump-dom", f.resolve().as_uri(), text=True, encoding="utf-8", errors="replace")
+    m = re.search(r'<pre id="lk-test">(.*?)</pre>', r.stdout or "", re.S)
+    if not m:
+        return ["입체 앞뒤 시험: 화면을 읽지 못했어요 (WebGL)"], 3
+    z = json.loads(html.unescape(m.group(1)))
+    fails = []
+    b1, b2, th, dr = z.get("beaker#b1"), z.get("beaker#b2"), z.get("thermometer#th"), z.get("dropper#dr")
+    if None in (b1, b2) or not (35 < b1 - b2 < 45 + 8):
+        fails.append(f"입체 앞뒤: z:40인 비커가 40쯤 앞에 와야 해요 → {z}")
+    if th is None or abs(th - b1) > .01:
+        fails.append(f"입체 앞뒤: 비커 안(in)의 온도계는 비커를 따라가야 해요 → {z}")
+    if dr is None or abs(dr - b1) > .01:
+        fails.append(f"입체 앞뒤: 비커 위(over)의 스포이트는 비커를 따라가야 해요 → {z}")
+    return fails, 3
+
+
 def units3d_test():
     """→ (실패 목록, 시험 수). 헤드리스 브라우저가 없으면 None."""
     import check_render
@@ -247,7 +286,7 @@ def units3d_test():
     tpl = (HERE.parent / "assets" / "template.html").read_text(encoding="utf-8")
     page = build(tpl, 'window.EXPERIMENT = {"title": "입체 묶음 시험", "steps": []};')
     post = ("<script>(function(){var r=LabKit.scene3(" + json.dumps(U3_SCENE, ensure_ascii=False) + "),d=document.createElement('div');"
-            "d.innerHTML=r.svg;var u={};[].forEach.call(d.firstChild.children,function(g){if(g.dataset&&g.dataset.u3){(u[g.dataset.u3t]=u[g.dataset.u3t]||[]).push(g.dataset.u3)}});"
+            "var u={};r.els.forEach(function(e){if(e)(u[e.t]=u[e.t]||[]).push(String(e.u))});" # 관·화살표는 입체에서 선으로 그어 SVG 마디가 없으므로 부품 목록(els)의 묶음으로 본다
             "var m=LabKit.scene3(" + json.dumps(M3_SCENE) + ",{mesh3:" + json.dumps(M3_TYPES) + "}),d3={};m.els.forEach(function(e){if(e)d3[e.t+(e.id?'#'+e.id:'')]=e.d3});"
             "var o=document.createElement('pre');o.id='lk-test';o.textContent=JSON.stringify({units:u,labels:r.labels,d3:d3});document.body.appendChild(o)})()</script>")
     i = page.rindex("</body>")
@@ -274,7 +313,8 @@ def units3d_test():
         fails.append(f"입체 이름표: '물' 이름표가 비커 카드에 붙어야 해요 → {lab}")
     if got.get("d3") != M3_WANT:
         fails.append(f"입체로 빚는 부품: {got.get('d3')} (기대 {M3_WANT})")
-    return fails, 4
+    zf, zn = z3d_test(exe)
+    return fails + zf, 4 + zn
 
 
 def main():

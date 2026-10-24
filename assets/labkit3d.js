@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit3D v1.20.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit3D v1.21.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 장면을 입체(WebGL)로 보여 준다. 외부 라이브러리 없이 WebGL만 쓴다 (인터넷 없이 여는 한 파일 버전에도 넣을 수 있게).
    - 그릇 13종(비커·플라스크·시험관 …)은 그림 엔진의 윤곽선을 돌려 빚은 유리와, 높이·색·층이 맞는 액체로 (v1.20)
    - 자주 쓰는 기구(삼발이·알코올램프·스탠드·가열판·시험관대·저울 …)는 상자·원기둥으로 빚는다 (v1.20)
@@ -6,7 +6,7 @@
    그림 엔진이 '3D' 버튼을 누를 때 불러와 LabKit3D.open(창, { items, title, bench })을 부른다. */
 (function () {
 'use strict';
-const VERSION = '1.20.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
+const VERSION = '1.21.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
 const FONT = '"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif';
 const SVGNS = 'http://www.w3.org/2000/svg';
 const DEG = Math.PI / 180;
@@ -14,9 +14,9 @@ const FOV = 30 * DEG; // 세로 시야각
 // 시점: az(좌우로 돈 각도), el(내려다보는 각도). front는 2D 그림과 거의 같은 모습
 const VIEWS = { front: { az: 0, el: 5 }, angle: { az: -30, el: 18 }, top: { az: 0, el: 42 } };
 // 설명 부품(말풍선·화살표·글자 등)은 기구 바로 앞에 두고 늘 기구 위에 그린다 (2D처럼 가리지 않게)
-const OVERLAY = new Set(['note', 'text', 'view', 'zoom', 'label', 'mark', 'eye', 'arrow', 'ray']);
-// 입체 장면에서 카메라를 따라 돌지 않고 앞을 보는 카드: 두 기구를 잇는 관·전선, 붓는 장면 (돌리면 끝이 어긋나지 않게)
-const FIXED = new Set(['hose', 'wire', 'tubing', 'pour', 'condenser']);
+const OVERLAY = new Set(['note', 'text', 'view', 'zoom', 'label', 'mark', 'eye', 'arrow']);
+// 입체 장면에서 카메라를 따라 돌지 않고 앞을 보는 카드: 두 기구를 잇는 것(광선·냉각기), 붓는 장면 (돌리면 끝이 어긋나지 않게)
+const FIXED = new Set(['hose', 'wire', 'tubing', 'pour', 'condenser', 'ray']);
 const MAX_TEX = 2048;
 const L = [.36, .82, .45], LN = Math.hypot(...L), LIGHT = L.map(v => v / LN);
 const GLASS = '#e2effa', INK = '#56617a', METAL = '#b0b7c4', DARK = '#444b5d';
@@ -35,6 +35,8 @@ const CSS = `.v3-cv{position:absolute;inset:0;width:100%;height:100%;display:blo
 .v3-hint{position:absolute;right:14px;bottom:14px;margin:0;max-width:42%;text-align:right;font-size:12.5px;line-height:1.5;color:#7f8698;pointer-events:none}
 .v3-load{position:absolute;left:50%;top:14px;transform:translateX(-50%);padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.92);font-size:13px;font-weight:700;color:#4b5265;pointer-events:none}
 .v3-load[hidden]{display:none}
+.v3-hint[hidden]{display:none}
+.v3-inline .v3-ctl{left:8px;bottom:8px;gap:4px}.v3-inline .v3-ctl button{padding:6px 9px;font-size:12px;border-radius:8px}
 @media(max-width:700px){.v3-hint{display:none}}
 .lk3-shots{display:grid;gap:16px;padding:16px;width:max-content;background:#fff}
 .lk3-shot b{display:block;height:30px;line-height:30px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -140,6 +142,20 @@ function tube(out, M, p0, p1, r0, r1 = r0, col, seg = 16, caps = true) {
   const w = [u[1] * y[2] - u[2] * y[1], u[2] * y[0] - u[0] * y[2], u[0] * y[1] - u[1] * y[0]];
   const B = new Float32Array([u[0], u[1], u[2], 0, y[0], y[1], y[2], 0, w[0], w[1], w[2], 0, p0[0], p0[1], p0[2], 1]);
   lathe(out, mul(M, B), caps ? [[0, 0], [r0, 0], [r1, len], [0, len]] : [[r0, 0], [r1, len]], col, seg);
+}
+// 볼록한 다각형 면: center에서 바깥쪽을 보게 순서를 맞춰 부채꼴로 쌓는다 (빗면·레일 같은 기둥꼴)
+function poly(out, M, pts, col, center) {
+  const c = typeof col === 'string' ? hex(col) : col, [a, b, d] = pts, u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+  let n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  const m = pts.reduce((s, p) => [s[0] + p[0] / pts.length, s[1] + p[1] / pts.length, s[2] + p[2] / pts.length], [0, 0, 0]);
+  if (center && n[0] * (m[0] - center[0]) + n[1] * (m[1] - center[1]) + n[2] * (m[2] - center[2]) < 0) { pts = pts.slice().reverse(); n = n.map(x => -x); }
+  for (let i = 1; i < pts.length - 1; i++) [pts[0], pts[i], pts[i + 1]].forEach(p => put(out, M, p, n, c));
+}
+// 앞면 꼴(xy 평면의 볼록 다각형)을 z0~z1로 늘인 기둥
+function prism(out, M, shape, z0, z1, col) {
+  const cx = shape.reduce((s, p) => s + p[0], 0) / shape.length, cy = shape.reduce((s, p) => s + p[1], 0) / shape.length, C = [cx, cy, (z0 + z1) / 2];
+  poly(out, M, shape.map(p => [p[0], p[1], z1]), col, C); poly(out, M, shape.map(p => [p[0], p[1], z0]), col, C);
+  shape.forEach((p, i) => { const q = shape[(i + 1) % shape.length]; poly(out, M, [[p[0], p[1], z0], [q[0], q[1], z0], [q[0], q[1], z1], [p[0], p[1], z1]], col, C); });
 }
 function sphere(out, M, c, r, col, seg = 18) {
   const P = []; for (let i = 0; i <= 10; i++) { const a = i / 10 * Math.PI; P.push([r * Math.sin(a), -r * Math.cos(a)]); }
@@ -361,11 +377,102 @@ const BUILD = {
     const f = d.p.flip ? -1 : 1, red = '#e5484d', blue = '#4a7fe0';
     box(b.op, b.M, -55, 0, 0, 26, -14, 14, f > 0 ? red : blue); box(b.op, b.M, 0, 55, 0, 26, -14, 14, f > 0 ? blue : red); b.front = 14;
   },
-  stirbar(d, b) { tube(b.op, b.M, [-10, 0, 0], [10, 0, 0], 4, 4, '#fbfbfd', 12, false); sphere(b.op, b.M, [-10, 0, 0], 4, '#fbfbfd', 10); sphere(b.op, b.M, [10, 0, 0], 4, '#fbfbfd', 10); }
+  stirbar(d, b) { tube(b.op, b.M, [-10, 0, 0], [10, 0, 0], 4, 4, '#fbfbfd', 12, false); sphere(b.op, b.M, [-10, 0, 0], 4, '#fbfbfd', 10); sphere(b.op, b.M, [10, 0, 0], 4, '#fbfbfd', 10); },
+  // v1.21: 현미경 (광축은 x = 27.5)
+  microscope(d, b) {
+    const { op, M } = b, body = '#525a6e', ax = 27.5;
+    prism(op, M, [[-46, 0], [50, 0], [46, 14], [-41, 14]], -30, 30, DARK);
+    box(op, M, -34, -17, 12, 38, -9, 9, body);
+    const arm = t => { const u = 1 - t; return [u * u * u * -26 + 3 * u * u * t * -40 + 3 * u * t * t * -36 + t * t * t * -4, u * u * u * 38 + 3 * u * u * t * 80 + 3 * u * t * t * 126 + t * t * t * 150]; };
+    for (let i = 0; i < 10; i++) { const p = arm(i / 10), q = arm((i + 1) / 10); tube(op, M, [p[0], p[1], 0], [q[0], q[1], 0], 7.5, 7.5, body, 14); sphere(op, M, [q[0], q[1], 0], 7.5, body, 12); }
+    box(op, M, 17, 38, 14, 34, -10, 10, body); tube(op, M, [ax, 34, 0], [ax, 40, 0], 7, 7, '#fff2b8', 16);
+    box(op, M, -16, 50, 67, 74, -26, 26, '#323846'); box(op, M, 11, 43, 74, 77.5, -10, 10, '#cfe7f7'); box(op, M, -4, 8, 74, 77, -12, 12, METAL);
+    box(op, M, -8, 24, 144, 158, -10, 10, body);
+    tube(op, M, [ax, 112, 0], [ax, 170, 0], 7.5, 7.5, '#e8ebf1', 18); tube(op, M, [ax, 168, 0], [ax, 188, 0], 6, 6, DARK, 16);
+    tube(op, M, [ax, 112, 0], [ax, 104, 0], 12.5, 9.5, DARK, 18); tube(op, M, [ax, 104, 0], [ax, 86, 0], 4, 4, '#c3c9d3', 12);
+    [[9, 14], [-9, -14]].forEach(([a, z]) => { tube(op, M, [-22, 96, a], [-22, 96, z], 10, 10, '#323846', 18); tube(op, M, [-22, 96, z], [-22, 96, z + Math.sign(z)], 4, 4, METAL, 12); });
+    if (d.p.phone) { box(op, M, 17, 38, 186, 198, -8, 8, '#20262f'); box(op, M, 25, 30, 196, 206, -3, 3, '#20262f'); box(op, M, 6.5, 48.5, 206, 254, -3, 3, '#2b3040'); b.front = 3; }
+  },
+  // 앞면 그림을 통째로 붙이는 상자: 앞면이 부품 자리(z)에 오고 뒤로 깊다 (전선·광선이 앞면 단자·창에 닿게)
+  device(d, b) { box(b.op, b.M, -66, 66, -45, 45, -8, 0, '#2b3040'); b.front = 0; },
+  power(d, b) { box(b.op, b.M, -55, 55, 0, 62, -60, 0, '#eceff4'); b.front = 0; },
+  lightbox(d, b) { const f = d.g.dir < 0 ? -1 : 1; box(b.op, b.M, f > 0 ? -36 : -32, f > 0 ? 32 : 36, 4, 50, -40, 0, '#4a5164'); box(b.op, b.M, -30, 30, 0, 6, -36, -4, DARK); b.front = 0; },
+  table(d, b) {
+    const g = d.g, w = g.tw ?? 260, h = g.th ?? 92, c = hex(b.col(d.p.color, '#e6cfa9')), leg = mix(c, [0, 0, 0], .12), D = clamp(w * .32, 40, 110);
+    box(b.op, b.M, -w / 2, w / 2, h - 11, h, -D, D, c);
+    [[-w / 2 + 12, -w / 2 + 21], [w / 2 - 21, w / 2 - 12]].forEach(([x0, x1]) => [[D - 14, D - 5], [-D + 5, -D + 14]].forEach(([z0, z1]) => box(b.op, b.M, x0, x1, 0, h - 11, z0, z1, leg)));
+  },
+  cart(d, b) {
+    const { op, M } = b, c = b.col(d.p.color, '#6e8ff0'), n = d.g.load || 0;
+    box(op, M, -34, 34, 13, 30, -16, 16, c);
+    [-20, 20].forEach(x => [-1, 1].forEach(sd => { tube(op, M, [x, 7, sd * 16], [x, 7, sd * 21], 7, 7, DARK, 16); tube(op, M, [x, 7, sd * 21], [x, 7, sd * 22], 2.4, 2.4, METAL, 10); }));
+    for (let i = 0; i < n; i++) box(op, M, -13, 13, 30.5 + i * 9, 39 + i * 9, -10, 10, '#a5adbb');
+    b.front = 16;
+  },
+  track(d, b) {
+    const { op, M } = b, g = d.g, w = g.rw ?? 320, h = g.rh ?? 0, f = g.f || 1, A0 = [-f * w / 2, 10 + h], A1 = [f * w / 2, 10], L = Math.hypot(w, h) || 1;
+    const nx = -(A1[1] - A0[1]) / L * f, ny = (A1[0] - A0[0]) / L * f; // 레일 위쪽 방향
+    const dn = ny < 0 ? -1 : 1, off = (p, k) => [p[0] - nx * k * dn, p[1] - ny * k * dn];
+    prism(op, M, [A0, A1, off(A1, 8), off(A0, 8)], -10, 10, '#c9ced6');
+    [A0, A1].forEach(p => box(op, M, p[0] - 2, p[0] + 2, p[1] - 8, p[1] + 7, -12, 12, DARK)); // 끝 막이
+    const foot = ex => box(op, M, ex - 8, ex + 8, 0, 10, -12, 12, DARK);
+    foot(A1[0] - f * 10); if (!h) foot(A0[0] + f * 10);
+    if (h > 0 && (d.p.support ?? 'block') === 'block') box(op, M, A0[0] - 15, A0[0] + 15, 0, h + 3, -14, 14, '#ddb07a');
+  },
+  ramp(d, b) {
+    const g = d.g, w = g.rw ?? 240, h = g.rh ?? 80, f = g.f || 1;
+    prism(b.op, b.M, [[-w / 2 * f, 0], [w / 2 * f, 0], [-w / 2 * f, h]], -32, 32, b.col(d.p.color, '#ece3d3'));
+  },
+  mortar(d, b) {
+    const { op, M } = b, prof = [[0, 0], [14, 0], [16, 2], [27, 3.6], [35, 8], [39.5, 15], [41.4, 24], [42, 34]];
+    lathe(op, M, prof, '#f7f6f2', 40);
+    if (d.p.color) b.liquid(prof, [{ hi: 24, color: b.col(d.p.color), alpha: .95 }]);
+    if (d.p.pestle !== false) { const a = 28 * DEG, at = h => [(h - 32) * Math.sin(a), 32 + (h - 32) * Math.cos(a), 0]; tube(op, M, at(30), at(100), 6, 4, '#f2f1ec', 16); }
+  },
+  sepfunnel(d, b) {
+    const { M } = b, p = d.p, bulb = profileOf('M-3,-52 C-24,-66 -33,-104 -16,-124 Q-9,-131 -6,-131 L6,-131 Q9,-131 16,-124 C33,-104 24,-66 3,-52 Z', b.host);
+    b.glass(o => { lathe(o, M, bulb); lathe(o, M, [[1.4, 0], [2.2, 41]], null, 12); lathe(o, M, [[4, 41], [4, 53]], null, 16); lathe(o, M, [[6, 130], [6, 142]], null, 16); }, GLASS, .16);
+    if (p.stopper !== false) tube(b.op, M, [0, 141, 0], [0, 152, 0], 8, 8, '#c9ced8', 18);
+    const ls = Array.isArray(p.layers) && p.layers.length ? p.layers : [{ h: p.fill ?? .55, color: p.color ?? 'water' }];
+    let acc = 0; const bands = ls.map((ly, i) => { const h = +ly.h || +ly.fill || .3, bd = { lo: i ? 52 + acc * 79 : -1e9, hi: 52 + (acc + h) * 79, color: b.col(ly.color, 'water'), alpha: .85 }; acc += h; return bd; });
+    b.liquid(bulb, bands);
+  },
+  // 홈판·오목받침 유리: 판 위에 홈(테두리·액체·꼬리표)을 그린 그림을 깐다. 홈에 넣은 것은 입체 홈 자리로 옮긴다 (viewer)
+  wellplate(d, b) {
+    const g = d.g, dd = g.d; if (!dd) return;
+    const LK = { plastic: { top: '#eef5fb', front: '#d5e3f0', rim: '#fbfdff', hole: '#d9e5f0', st: INK }, white: { top: '#fbfaf6', front: '#e6e2d8', rim: '#ffffff', hole: '#ebe7de', st: '#8f8a7e' }, slide: { top: '#e3f0fa', front: '#c9dfef', rim: '#f4f9fd', hole: '#d6e7f4', st: INK } }[dd.kind] || null, L = LK || { top: '#eef5fb', front: '#d5e3f0', rim: '#fbfdff', hole: '#d9e5f0', st: INK };
+    const W = dd.Wp, Dp = dd.Dp, th = dd.th;
+    if (dd.kind === 'slide') b.glass(o => box(o, b.M, -W / 2, W / 2, 0, th, -Dp / 2, Dp / 2, [1, 1, 1]), L.top, .45, .7);
+    else box(b.op, b.M, -W / 2, W / 2, 0, th, -Dp / 2, Dp / 2, L.front, 'bfklr');
+    const wells = (b.els || []).filter(e => e && e.parentE === d.e && e.g && e.g.rc), at = (r, c) => [(c - (dd.cols - 1) / 2) * dd.px, Dp / 2 - (Dp - dd.m - (r + .5) * dd.pz)];
+    const k = Math.min(6, 2048 / Math.max(W, Dp)), cv = document.createElement('canvas'); cv.width = Math.round(W * k); cv.height = Math.round(Dp * k);
+    const x = cv.getContext('2d'); x.scale(k, k); x.fillStyle = L.top; x.fillRect(0, 0, W, Dp);
+    const byRC = new Map(wells.map(w => [w.g.rc.join(','), w]));
+    for (let r = 0; r < dd.rows; r++) for (let c = 0; c < dd.cols; c++) {
+      const [lx, lz] = at(r, c), cx = lx + W / 2, cy = lz + Dp / 2, w = byRC.get(`${r},${c}`), p = w ? w.p : {}, rr = dd.r;
+      x.beginPath(); x.arc(cx, cy, rr, 0, 7); x.fillStyle = L.rim; x.fill(); x.lineWidth = 1.1; x.strokeStyle = L.st; x.stroke();
+      x.beginPath(); x.arc(cx, cy, rr * .88, 0, 7); x.fillStyle = L.hole; x.fill();
+      const lv = p.fill != null ? clamp(+p.fill || 0, 0, 1) : p.color ? .6 : 0;
+      if (lv > 0) { x.beginPath(); x.arc(cx, cy, rr * (.6 + .26 * lv), 0, 7); x.fillStyle = b.col(p.color, 'water'); x.globalAlpha = .92; x.fill(); x.globalAlpha = 1; }
+      if (p.cloudy) { x.beginPath(); x.arc(cx, cy, rr * .7, 0, 7); x.fillStyle = 'rgba(244,242,236,.78)'; x.fill(); }
+      if (p.solid) { const R = rng(cx * 7 + cy); x.fillStyle = b.col(p.solidColor, p.solid === 'powder' || p.solid === 'precipitate' ? 'white' : 'gray'); for (let i = 0; i < 4; i++) { x.beginPath(); x.arc(cx + (R() - .5) * rr, cy + (R() - .5) * rr, rr * .16, 0, 7); x.fill(); } }
+      if (p.bubbles) { const R = rng(cx + cy * 3); x.strokeStyle = '#7aaed0'; x.lineWidth = .7; for (let i = 0; i < 4; i++) { x.beginPath(); x.arc(cx + (R() - .5) * rr, cy + (R() - .5) * rr, 1.4 + R() * 1.2, 0, 7); x.fillStyle = 'rgba(255,255,255,.8)'; x.fill(); x.stroke(); } }
+      if (p.tag) { x.font = `800 ${Math.min(9, rr * .8)}px ${FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.lineWidth = 2.4; x.strokeStyle = '#fff'; x.strokeText(p.tag, cx, cy); x.fillStyle = '#2b3040'; x.fillText(p.tag, cx, cy); }
+      if (p.strip) { const sc = b.col(p.strip === true ? 'silver' : p.strip), sw = Math.max(5, rr * .55); box(b.op, b.M, lx - sw / 2, lx + sw / 2, th, th + 34, lz - .8, lz + .8, sc); }
+    }
+    const tags = (v, def) => Array.isArray(v) ? v : d.p.tags === true ? def : null;
+    const rt = tags(d.p.rowTags, Array.from({ length: dd.rows }, (_, i) => String.fromCharCode(65 + i))), ct = tags(d.p.colTags, Array.from({ length: dd.cols }, (_, i) => String(i + 1)));
+    x.font = `800 ${Math.min(9.5, dd.m * .8)}px ${FONT}`; x.fillStyle = L.st; x.textAlign = 'center'; x.textBaseline = 'middle';
+    if (rt) for (let r = 0; r < dd.rows; r++) if (rt[r] != null) { const [lx, lz] = at(r, 0); x.fillText(rt[r], lx + W / 2 - dd.px / 2 - 1, lz + Dp / 2); }
+    if (ct) for (let c = 0; c < dd.cols; c++) if (ct[c] != null) { const [lx, lz] = at(0, c); x.fillText(ct[c], lx + W / 2, lz + Dp / 2 - dd.pz / 2 - 1); }
+    b.top = { canvas: cv, M: chain(b.M, mT(0, th + .08, 0), mS(W, 1, Dp)) };
+    b.well = (r, c) => { const [lx, lz] = at(r, c); return apply(b.M, lx, th, lz); };
+    b.wellShift = (r, c) => { const Z = Dp - dd.m - (r + .5) * dd.pz; return { dy: Z * .45 * (g.s || 1), dz: (Dp / 2 - Z) * (g.s || 1) }; }; // 2D는 뒤 줄을 위로 올려 그렸다 (깊이 비율 0.45)
+  }
 };
 BUILD.burner = BUILD.lamp; BUILD.bunsen = BUILD.gasburner;
 // 덧그림을 앞면에 붙이는 부품 (돌리면 함께 돈다): 표시판·글자·눈금
-const FRONT_DECAL = new Set(['rack', 'tuberack', 'balance', 'stirrer', 'block', 'magnet']);
+const FRONT_DECAL = new Set(['rack', 'tuberack', 'balance', 'stirrer', 'block', 'magnet', 'microscope', 'device', 'power', 'lightbox', 'cart']);
 
 // 그릇(SHAPES): 바깥 윤곽을 돌린 유리 + 안쪽 윤곽을 돌린 액체(높이·층·색) + 받침·마개·뚜껑·곁가지
 function container(d, b, S) {
@@ -436,7 +543,7 @@ function cutScene(K, items) {
     const cards = [], parts = [];
     units.forEach(un => {
       if (!split.has(un.u)) {
-        const types = [...un.types], c = card(un.top.map(n => n.cloneNode(true)), measure(un.top.map(n => n.cloneNode(true))), { u: un.u, order: un.order, types, over: types.every(t => OVERLAY.has(t)) });
+        const types = [...un.types], c = card(un.top.map(n => n.cloneNode(true)), measure(un.top.map(n => n.cloneNode(true))), { u: un.u, order: un.order, types, over: types.every(t => OVERLAY.has(t)), fixedPlane: types.every(t => FIXED.has(t)) });
         if (c) cards.push(c);
       }
     });
@@ -489,11 +596,12 @@ function viewer(stage, o = {}) {
   const tagBox = document.createElement('div'); tagBox.className = 'v3-tags'; tagBox.setAttribute('aria-hidden', 'true'); stage.appendChild(tagBox);
   const load = document.createElement('div'); load.className = 'v3-load'; load.textContent = '실험대를 꾸미는 중…'; stage.appendChild(load);
   let ctl = null;
+  if (o.inline) stage.classList.add('v3-inline');
   if (!still) {
     ctl = document.createElement('div'); ctl.className = 'v3-ctl'; ctl.setAttribute('role', 'toolbar'); ctl.setAttribute('aria-label', '시점 바꾸기');
     ctl.innerHTML = '<button type="button" data-view="front">앞에서</button><button type="button" data-view="angle">비스듬히</button><button type="button" data-view="top">위에서</button><span class="v3-sep"></span><button type="button" data-zoom="1" aria-label="가까이 보기">+</button><button type="button" data-zoom="-1" aria-label="멀리 보기">−</button>';
     stage.appendChild(ctl);
-    const hint = document.createElement('p'); hint.className = 'v3-hint';
+    const hint = document.createElement('p'); hint.className = 'v3-hint'; if (o.inline) hint.hidden = true;
     hint.textContent = '끌어서 돌리기 · 휠이나 두 손가락으로 확대 · 오른쪽 버튼(Shift+끌기)으로 옮기기. 그릇·자주 쓰는 기구는 입체로, 나머지는 2D 그림 카드로 보여 줘요.';
     stage.appendChild(hint);
   }
@@ -503,12 +611,23 @@ function viewer(stage, o = {}) {
   const S = cutScene(K, o.items), { cards, parts, labels } = S;
   const bench = o.bench !== false;
   const unitZ = new Map(); [...new Set([...cards, ...parts].sort((a, b) => a.order - b.order).map(c => String(c.u)))].forEach((u, i, a) => unitZ.set(u, (i - a.length / 2) * 4));
+  // 데이터의 z(앞 +, 뒤 −, v1.21): 2D 그림은 그대로 두고 입체에서만 앞뒤로 옮긴다. 안·위에 둔 것, 꽂힌 것, 스탠드는 그 부품을 따라간다
+  const E = S.els, zMemo = new Map(), byId = new Map(E.filter(d => d && d.id).map(d => [d.id, d.e]));
+  const zOf = e => {
+    const d = e != null && E[e]; if (!d) return 0; if (zMemo.has(e)) return zMemo.get(e); zMemo.set(e, 0);
+    let z = typeof d.p?.z === 'number' && isFinite(d.p.z) ? d.p.z : null;
+    const via = [d.inE, d.overE, d.onE, d.parentE]; if (d.t === 'stand') [].concat(d.p?.hold ?? []).forEach(h => via.push(byId.get(h)));
+    if (z == null) for (const k of via) if (k != null && E[k]) { z = zOf(k); break; }
+    z = clamp(z || 0, -110, 110); zMemo.set(e, z); return z;
+  };
+  const unitShift = new Map(); E.forEach(d => { if (d && !unitShift.has(String(d.u)) && zOf(d.e)) unitShift.set(String(d.u), zOf(d.e)); });
+  const zAt = (u, e) => (unitZ.get(String(u)) ?? 0) + (e != null ? zOf(e) : unitShift.get(String(u)) || 0);
   let overI = 0;
   cards.forEach(c => {
     c.sign = bench && c.over && c.y + 6 >= B; // 실험대 띠(실험대 선 아래)에 쓴 글자는 실험대 앞면에 붙인다
     c.ax = c.x + c.w / 2; c.ox = 0;
     c.px = c.ax - CX; c.py = c.sign ? -6 - c.h / 2 : B - (c.y + c.h);
-    c.pz = c.sign ? 122 + overI * .5 : c.over ? 10 + (overI++) * .5 : unitZ.get(String(c.u)) ?? 0;
+    c.pz = c.sign ? 122 + overI * .5 : c.over ? 10 + (overI++) * .5 + (unitShift.get(String(c.u)) || 0) : zAt(c.u, c.e);
     c.mode = c.sign || c.fixedPlane ? 'fixed' : 'bill';
     c.foot = bench && !c.over && Math.abs(c.bottom - B) < 8; // 실험대에 놓인 것 (그림자를 깐다)
   });
@@ -519,7 +638,7 @@ function viewer(stage, o = {}) {
   const halfDepth = d => { const g = d.g || {}, sh = d.shape && S.SH[d.shape]; return d.shape === 'trough' ? 55 : sh ? sh.w * (g.s || 1) / 2 : { hotplate: 44, stirrer: 44, balance: 40, rack: 22 * (g.s || 1), tuberack: 12 * (g.s || 1) }[d.t] || 0; };
   const deepAt = (x0, x1) => parts.reduce((m, d) => { const g = d.g || {}, w = (d.shape && S.SH[d.shape] ? S.SH[d.shape].w * (g.s || 1) : g.w) || 0; return d.t !== 'stand' && g.x != null && g.x + w / 2 > x0 && g.x - w / 2 < x1 && Math.abs((g.y ?? B) - B) < 8 ? Math.max(m, halfDepth(d)) : m; }, 0);
   parts.forEach(d => {
-    const g = d.g || {}, z = unitZ.get(String(d.u)) ?? 0, s = g.s || 1, tilt = (g.tilt || 0) * DEG, shape = d.shape && S.SH[d.shape];
+    const g = d.g || {}, z = zAt(d.u, d.e), s = g.s || 1, tilt = (g.tilt || 0) * DEG, shape = d.shape && S.SH[d.shape];
     const ob = { kind: 'obj', e: d.e, u: d.u, d, z, glass: [], liquids: [], caps: [], kids: [], decal: d.decal, gx: g.x ?? 240, ax: (g.x ?? 240) - CX, az: z };
     const base = mT((g.x ?? 240) - CX, B - (g.y ?? B), z);
     const bld = { op: opV, B, host: S.root, col: (c, def) => K.col(c, def) || def, front: 0, noScale: false, deepAt, els: S.els };
@@ -544,6 +663,7 @@ function viewer(stage, o = {}) {
     };
     try { if (shape) container(d, bld, shape); else BUILD[d.t](d, bld); }
     catch (e) { warn(`${d.t}을(를) 입체로 빚지 못했어요: ${e.message}`); }
+    ob.top = bld.top || null; ob.well = bld.well || null; ob.wellShift = bld.wellShift || null;
     // 크기·자리 (화면 맞추기·그림자·순서)
     const w = (shape ? shape.w * s : g.w) || 60, top = g.top ?? (g.y - (g.h || 60)), bottom = g.y ?? B;
     ob.cx = ob.ax; ob.cy = B - (top + bottom) / 2; ob.hw = w / 2; ob.y0 = B - bottom; ob.y1 = B - top;
@@ -566,7 +686,11 @@ function viewer(stage, o = {}) {
     if (it.kind !== 'obj' && it.mode === 'bill') { it.ax = h.gx; it.ox = it.x + it.w / 2 - h.gx; it.px = h.ax; } // 그릇 안의 카드는 그 그릇의 축을 따라 돈다
   });
   cards.filter(c => c.e == null).forEach(c => top.push(c));
+  const wellOf = d => { for (const k of [d.overE, d.inE]) { const w = k != null && E[k]; if (w && w.t === '_well' && w.g && w.g.rc) { const pb = objByE.get(w.parentE); if (pb && pb.wellShift) return pb.wellShift(...w.g.rc); } } return null; };
+  cards.forEach(c => { const sh = c.d && wellOf(c.d); if (sh) { c.py -= sh.dy; c.pz += sh.dz; c.foot = false; } });
   const allCards = cards.concat(objs.map(ob => ob.decal).filter(Boolean));
+  const arrows = E.filter(d => d && d.t === 'arrow' && d.g && d.g.a && d.g.b);
+  const pipes = E.filter(d => d && (d.t === 'hose' || d.t === 'tubing' || d.t === 'wire') && !d.d3 && d.g && Array.isArray(d.g.pts) && d.g.pts.length > 1);
 
   let xmin = Infinity, xmax = -Infinity, ymin = Infinity, ymax = -Infinity;
   allCards.forEach(c => { xmin = Math.min(xmin, c.px + c.ox - c.w / 2); xmax = Math.max(xmax, c.px + c.ox + c.w / 2); ymin = Math.min(ymin, c.py); ymax = Math.max(ymax, c.py + c.h); });
@@ -575,6 +699,7 @@ function viewer(stage, o = {}) {
   const tx0 = (xmin + xmax) / 2, ty0 = (Math.min(ymin, bench ? -20 : ymin) + ymax) / 2, spanX = xmax - xmin, spanY = ymax - ymin;
   // 이 시점에서 모든 것이 화면에 들어오는 거리: 카드·부품의 위아래 끝을 카메라 기준으로 재어 가장 먼 것을 고른다
   const fitPts = allCards.flatMap(c => [[c.px + c.ox, c.py, c.pz, c.w / 2], [c.px + c.ox, c.py + c.h, c.pz, c.w / 2]]).concat(objs.flatMap(ob => [[ob.cx, ob.y0, ob.az, ob.hw], [ob.cx, ob.y1, ob.az, ob.hw]]));
+  arrows.forEach(d => { if (d.fromE == null) fitPts.push([d.g.a.x - CX, B - d.g.a.y, 0, 0]); if (d.toE == null) fitPts.push([d.g.b.x - CX, B - d.g.b.y, 0, 0]); });
   if (!fitPts.length) fitPts.push([xmin, ymin, 0, 0], [xmax, ymax, 0, 0]);
   if (bench) fitPts.push([tx0, -14, 0, spanX / 2]); // 실험대 앞 모서리가 조금 보이게
   function fitDist(az, el, asp) {
@@ -601,6 +726,7 @@ function viewer(stage, o = {}) {
     ob.caps.forEach(cp => { const r = Math.max(ob.hw * 2.2, 60), v = [-r, 0, -r, r, 0, -r, r, 0, r, -r, 0, -r, r, 0, r, -r, 0, r].map((q, i) => i % 3 === 0 ? q + ob.ax : i % 3 === 1 ? cp.y : q + ob.az); cp.b = buffer(gl, v); bufs.push(cp.b); });
   });
   const shTex = texture(gl, shadowCanvas(), gl2);
+  objs.forEach(ob => { if (ob.top) ob.top.tex = texture(gl, ob.top.canvas, gl2); });
   let alive = true, frame = 0, done = 0, failed = 0;
   const ready = Promise.all(allCards.map(c => raster(c).then(img => {
     if (!alive) return;
@@ -630,7 +756,7 @@ function viewer(stage, o = {}) {
   };
 
   /* 그리기 */
-  let W = 0, H = 0, PV = null, EYE = [0, 0, 1];
+  let W = 0, H = 0, PV = null, EYE = [0, 0, 1], RIGHT = [1, 0, 0];
   function invalidate() { if (alive && !frame) frame = requestAnimationFrame(draw); }
   const surfAttr = (prog, b) => { const a = prog.at; gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.enableVertexAttribArray(a.p); gl.vertexAttribPointer(a.p, 3, gl.FLOAT, false, 36, 0); if (a.n != null && a.n >= 0) { gl.enableVertexAttribArray(a.n); gl.vertexAttribPointer(a.n, 3, gl.FLOAT, false, 36, 12); } };
   const offAttr = prog => Object.values(prog.at).forEach(i => i >= 0 && gl.disableVertexAttribArray(i));
@@ -683,7 +809,7 @@ function viewer(stage, o = {}) {
     if (cv.width !== Math.round(cw * dpr) || cv.height !== Math.round(ch * dpr)) { cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); }
     W = cw; H = ch;
     const { d, eye, tgt } = eyeOf(cw / ch), P = persp(FOV, cw / ch, d * .05, d * 12), V = lookAt(eye, tgt);
-    PV = mul(P, V); EYE = eye;
+    PV = mul(P, V); EYE = eye; RIGHT = [V[0], V[4], V[8]];
     gl.viewport(0, 0, cv.width, cv.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LEQUAL); gl.disable(gl.CULL_FACE);
     if (opB) { // 실험대와 불투명한 부품
@@ -700,19 +826,35 @@ function viewer(stage, o = {}) {
     const shade = (f, z) => { const w = (f.x2 - f.x) * 1.1 + 12, sx = (f.x + f.x2) / 2 - CX, m = new Float32Array([w, 0, 0, 0, 0, 1, 0, 0, 0, 0, clamp(w * .5, 22, 70), 0, sx, .3, z, 1]); gl.uniformMatrix4fv(P_TEX.un.m, false, mul(PV, m)); gl.drawArrays(gl.TRIANGLES, 0, 6); };
     cards.forEach(c => { if (c.foot && c.tex && c.feet) shade(c.feet, c.pz); });
     objs.forEach(ob => { if (ob.foot) shade(ob.foot, ob.az); });
+    objs.forEach(ob => { if (!ob.top || !ob.top.tex) return; gl.bindTexture(gl.TEXTURE_2D, ob.top.tex); gl.uniformMatrix4fv(P_TEX.un.m, false, mul(PV, ob.top.M)); gl.drawArrays(gl.TRIANGLES, 0, 6); }); // 홈판 윗면
     offAttr(P_TEX);
     const lean = clamp(cam.el * .3, 0, 14) * DEG; // 높이서 볼 때 카드를 조금 눕혀 덜 납작하게
     byFar(top.filter(it => !(it.kind !== 'obj' && it.over && !it.sign))).forEach(it => drawItem(it, lean));
     byFar(top.filter(it => it.kind !== 'obj' && it.over && !it.sign)).forEach(it => drawCard(it, lean)); // 설명 카드는 맨 나중에
     gl.depthMask(true);
-    placeTags();
+    lines.innerHTML = overlay() + placeTags();
   }
 
   /* 이름표: 카드(또는 입체 부품의 축) 위의 점을 화면에 비춰 글자로 띄운다 (가리지 않게 위아래로 비켜 놓는다) */
   const unitCard = new Map(cards.filter(c => c.e == null).map(c => [String(c.u), c]));
+  // 2D 점 (x, y)를 부품 e의 입체 자리로: 그 부품의 카드 → 입체 부품의 덧그림 → 입체 부품의 축 → 묶음 카드 → 실험대 가운데 평면
+  function worldAt(x, y, e) {
+    if (e != null && E[e]) {
+      const w = E[e], pb = w.t === '_well' && objByE.get(w.parentE); // 홈판의 홈: 입체 홈 자리로
+      if (pb && pb.wellShift && w.g && w.g.rc) { const sh = pb.wellShift(...w.g.rc); return [x - CX, B - y - sh.dy, pb.az + sh.dz, 1]; }
+      const ob = objByE.get(e), c = cardOfE.get(e) || (ob && ob.decal) || (!ob && unitCard.get(String(E[e].u)));
+      if (c && c.m && c.tex) return apply(c.m, (x - c.x) / c.w - .5, (c.y + c.h - y) / c.h, 0);
+      if (ob) { const th = Math.atan2(EYE[0] - ob.ax, EYE[2] - ob.az), dx = x - ob.gx; return [ob.ax + dx * Math.cos(th), B - y, ob.az - dx * Math.sin(th), 1]; }
+      return [x - CX, B - y, zAt(E[e].u, e), 1];
+    }
+    return [x - CX, B - y, 0, 1];
+  }
+  const scr = w => { const p = apply(PV, w[0], w[1], w[2]); return p[3] > 0 ? { x: (p[0] / p[3] * .5 + .5) * W, y: (.5 - p[1] / p[3] * .5) * H } : null; };
+  const pxPer = w => { const a = scr(w), b = scr([w[0] + RIGHT[0], w[1] + RIGHT[1], w[2] + RIGHT[2]]); return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 1; };
   const tags = labels.map(l => {
     let c = null, ob = null;
     if (l.e != null) { c = cardOfE.get(l.e) || null; ob = objByE.get(l.e) || null; if (!c && ob) c = ob.decal || null; } // 부품 카드 → 입체 부품의 덧그림 → 그 축
+    if (l.well && ob && ob.well) c = null; // 홈판 홈의 이름표는 입체 홈 자리에
     if (!c && !ob) c = unitCard.get(String(l.u)) || null; // 묶음 카드 (v1.19)
     const wz = !c && !ob ? unitZ.get(String(l.u)) ?? 0 : null; // 그린 것이 없는 이름표(label 부품)는 가리키는 곳 그대로
     const n = document.createElement('span'); n.className = 'v3-tag' + (l.tone === 'hot' || l.tone === 'arrow' ? ' ' + l.tone : ''); n.textContent = l.text; tagBox.appendChild(n);
@@ -720,13 +862,14 @@ function viewer(stage, o = {}) {
   }).filter(Boolean);
   function screenOf(t) {
     const { l, c, ob } = t; let p;
-    if (c) { if (!c.m || !c.tex) return null; p = apply(mul(PV, c.m), (l.x - c.x) / c.w - .5, (c.y + c.h - l.y) / c.h, 0); }
+    if (l.well && ob && ob.well) { const w = ob.well(...l.well); p = apply(PV, w[0], w[1], w[2]); }
+    else if (c) { if (!c.m || !c.tex) return null; p = apply(mul(PV, c.m), (l.x - c.x) / c.w - .5, (c.y + c.h - l.y) / c.h, 0); }
     else if (!ob) p = apply(PV, l.x - CX, B - l.y, t.wz);
     else { const th = Math.atan2(EYE[0] - ob.ax, EYE[2] - ob.az), dx = l.x - ob.gx; p = apply(PV, ob.ax + dx * Math.cos(th), B - l.y, ob.az - dx * Math.sin(th)); }
     return p[3] > 0 ? { x: (p[0] / p[3] * .5 + .5) * W, y: (.5 - p[1] / p[3] * .5) * H } : null;
   }
   function placeTags() {
-    if (!tags.length) return;
+    if (!tags.length) return '';
     const boxes = [], hit = b => boxes.some(q => b.x < q.x + q.w + 4 && b.x + b.w + 4 > q.x && b.y < q.y + q.h + 3 && b.y + b.h + 3 > q.y);
     let svg = '';
     tags.forEach(t => {
@@ -744,7 +887,56 @@ function viewer(stage, o = {}) {
       }
       boxes.push(b); t.n.style.transform = `translate(${Math.round(b.x)}px,${Math.round(b.y)}px)`;
     });
-    lines.innerHTML = svg;
+    return svg;
+  }
+  // 화살표·말풍선 지시선·눈 시선·확대 원의 선: 두 끝을 각 부품의 입체 자리에 이어 긋는다 (돌려도 가리키는 곳에 붙어 있게)
+  const mkMarker = (id, c) => `<marker id="${id}" viewBox="0 0 10 10" refX="6.5" refY="5" markerWidth="5.2" markerHeight="5.2" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="${c}"/></marker>`;
+  const f1 = v => v.toFixed(1);
+  const exitPt = (from, to, quad) => { // from(사각형 안) → to 선이 사각형을 빠져나가는 점
+    let best = 0;
+    for (let i = 0; i < 4; i++) { const a = quad[i], b = quad[(i + 1) % 4], dx = to.x - from.x, dy = to.y - from.y, ex = b.x - a.x, ey = b.y - a.y, den = dx * ey - dy * ex; if (Math.abs(den) < 1e-6) continue; const t = ((a.x - from.x) * ey - (a.y - from.y) * ex) / den, u = ((a.x - from.x) * dy - (a.y - from.y) * dx) / den; if (t > 0 && t <= 1 && u >= 0 && u <= 1) best = best ? Math.min(best, t) : t; }
+    return { x: from.x + (to.x - from.x) * best, y: from.y + (to.y - from.y) * best };
+  };
+  // 관·전선: 점마다 입체 자리로 옮기되, 두 끝은 이어진 부품에 붙이고 그 어긋남을 사이 점에 고르게 나눈다
+  const catmull = P => { let d = `M${f1(P[0].x)},${f1(P[0].y)}`; if (P.length < 3) return d + ` L${f1(P[1].x)},${f1(P[1].y)}`; for (let i = 0; i < P.length - 1; i++) { const p0 = P[i - 1] || P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] || p2; d += ` C${f1(p1.x + (p2.x - p0.x) / 6)},${f1(p1.y + (p2.y - p0.y) / 6)} ${f1(p2.x - (p3.x - p1.x) / 6)},${f1(p2.y - (p3.y - p1.y) / 6)} ${f1(p2.x)},${f1(p2.y)}`; } return d; };
+  function pipe(d) {
+    const pts = d.g.pts, n = pts.length, z = zAt(d.u, d.e), raw = pts.map(([x, y]) => [x - CX, B - y, z]);
+    const fix = (k, e) => { if (e == null) return [0, 0, 0]; const w = worldAt(pts[k][0], pts[k][1], e); return [w[0] - raw[k][0], w[1] - raw[k][1], w[2] - raw[k][2]]; };
+    const c0 = fix(0, d.fromE), c1 = fix(n - 1, d.toE); let acc = [0], L = 0;
+    for (let i = 1; i < n; i++) { L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); acc.push(L); }
+    const W3 = raw.map((r, i) => { const t = L ? acc[i] / L : i / (n - 1); return [r[0] + c0[0] + (c1[0] - c0[0]) * t, r[1] + c0[1] + (c1[1] - c0[1]) * t, r[2] + c0[2] + (c1[2] - c0[2]) * t]; });
+    const S2 = W3.map(scr); if (S2.some(v => !v)) return '';
+    const k = pxPer(W3[Math.floor(n / 2)]), p = d.p || {}, path = catmull(S2), st = (c, w) => `<path d="${path}" fill="none" stroke="${c}" stroke-width="${f1(w * k)}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    if (p.glass) return st(INK, 6.5) + st('#eaf5fc', 3.6);
+    const wc = d.t === 'wire' && p.color == null ? '#3b4253' : p.color != null ? K.col(p.color) || p.color : null;
+    if (wc) { const dk = K.shade ? K.shade(wc, -.4) : '#333'; return st(dk, 4.4) + st(wc, 2.8) + [S2[0], S2[n - 1]].map(q => `<circle cx="${f1(q.x)}" cy="${f1(q.y)}" r="${f1(3.2 * k)}" fill="${wc}" stroke="${dk}" stroke-width="${f1(1.2 * k)}"/>`).join(''); }
+    return st('#c4834a', 7.5) + st('#eab37c', 3.8);
+  }
+  function overlay() {
+    let defs = '', o = pipes.map(pipe).join('');
+    arrows.forEach((d, i) => {
+      const g = d.g, p = d.p || {}, wa = worldAt(g.a.x, g.a.y, d.fromE), wb = worldAt(g.b.x, g.b.y, d.toE), a = scr(wa), b = scr(wb); if (!a || !b) return;
+      const k = pxPer(wa), c = K.col(p.color, '#b14de0') || '#b14de0', id = `lk3m${i}`, q = p.curve && g.ctrl ? scr(worldAt(g.ctrl.x, g.ctrl.y, null)) : null;
+      defs += mkMarker(id, c);
+      const dash = p.dash ? ` stroke-dasharray="${f1(7 * k)} ${f1(6 * k)}"` : p.flow ? ` stroke-dasharray="${f1(9 * k)} ${f1(4 * k)}"` : '';
+      o += `<path d="M${f1(a.x)},${f1(a.y)} ${q ? `Q${f1(q.x)},${f1(q.y)} ` : 'L'}${f1(b.x)},${f1(b.y)}" fill="none" stroke="${c}" stroke-width="${f1((p.width ?? 3.2) * k)}" stroke-linecap="round"${dash} marker-end="url(#${id})"${p.both ? ` marker-start="url(#${id})"` : ''}/>`;
+    });
+    E.forEach(d => {
+      if (!d || !d.g) return; const g = d.g;
+      if (d.t === 'note' && g.toPt && g.box) { // 말풍선 지시선: 말풍선 가장자리에서 가리키는 곳까지
+        const bx = g.box, cen = scr(worldAt(bx.x + bx.w / 2, bx.y + bx.h / 2, d.e)), end = worldAt(g.toPt.x, g.toPt.y, d.toE), e2 = scr(end); if (!cen || !e2) return;
+        const quad = [[bx.x, bx.y], [bx.x + bx.w, bx.y], [bx.x + bx.w, bx.y + bx.h], [bx.x, bx.y + bx.h]].map(([x, y]) => scr(worldAt(x, y, d.e)));
+        const st = quad.every(Boolean) ? exitPt(cen, e2, quad) : cen, k = pxPer(end);
+        o += `<path d="M${f1(st.x)},${f1(st.y)} L${f1(e2.x)},${f1(e2.y)}" stroke="#8c95a8" stroke-width="${f1(1.3 * k)}" stroke-dasharray="${f1(3 * k)} ${f1(3 * k)}"/><circle cx="${f1(e2.x)}" cy="${f1(e2.y)}" r="${f1(2.8 * k)}" fill="#8c95a8"/>`;
+      }
+      if (d.t === 'eye' && g.toPt) { const a = scr(worldAt(g.x + 16, g.y, d.e)), w = worldAt(g.toPt.x, g.toPt.y, d.toE), b = scr(w); if (a && b) { const k = pxPer(w); o += `<path d="M${f1(a.x)},${f1(a.y)} L${f1(b.x)},${f1(b.y)}" stroke="#2c5fb3" stroke-width="${f1(1.6 * k)}" stroke-dasharray="${f1(4 * k)} ${f1(4 * k)}"/>`; } }
+      if ((d.t === 'view' || d.t === 'zoom') && g.fromPt) { // 확대 원: 들여다본 곳에서 원의 양쪽 가장자리로
+        const wf = worldAt(g.fromPt.x, g.fromPt.y, d.fromE), f = scr(wf), c = scr(worldAt(g.x, g.y, d.e)), r0 = scr(worldAt(g.x + g.r, g.y, d.e)); if (!f || !c || !r0) return;
+        const rr = Math.hypot(r0.x - c.x, r0.y - c.y), dx = c.x - f.x, dy = c.y - f.y, L = Math.hypot(dx, dy) || 1, nx = -dy / L * rr, ny = dx / L * rr, k = pxPer(wf);
+        o += `<path d="M${f1(f.x)},${f1(f.y)} L${f1(c.x + nx)},${f1(c.y + ny)} M${f1(f.x)},${f1(f.y)} L${f1(c.x - nx)},${f1(c.y - ny)}" stroke="#c99be6" stroke-width="${f1(1.4 * k)}" stroke-dasharray="${f1(4 * k)} ${f1(4 * k)}"/><circle cx="${f1(f.x)}" cy="${f1(f.y)}" r="${f1(7 * k)}" fill="none" stroke="#c99be6" stroke-width="${f1(1.6 * k)}"/>`;
+      }
+    });
+    return (defs ? `<defs>${defs}</defs>` : '') + o;
   }
 
   /* 조작: 끌어서 돌리기, 오른쪽 버튼·Shift로 옮기기, 휠·두 손가락으로 확대 */
@@ -787,7 +979,7 @@ function viewer(stage, o = {}) {
     S.host.remove(); stage.innerHTML = '';
   }
   invalidate();
-  if (!still) setTimeout(() => cv.focus({ preventScroll: true }), 0);
+  if (!still && !o.inline) setTimeout(() => cv.focus({ preventScroll: true }), 0);
   return { ready, dispose, key, draw: () => draw(), canvas: cv, cards: allCards, objs, view: goView, eyeOf };
 }
 

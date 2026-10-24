@@ -275,6 +275,11 @@ def check_part(el, where, reg, rep):
             rep.err(f"{where} ({name_of(el)})", f"{k}는 숫자여야 해요 ('{v}')")
         elif isinstance(v, (int, float)) and not (0 <= v <= (W if k == "x" else H)):
             rep.warn(f"{where} ({name_of(el)})", f"{k} = {v}이(가) 장면(x 0~{W}, y 0~{H}) 밖이에요")
+    z = el.get("z")  # 입체 보기에서만 앞뒤로 옮기는 거리 (v1.21)
+    if z is not None and (isinstance(z, bool) or not isinstance(z, (int, float))):
+        rep.err(f"{where} ({name_of(el)})", f"z는 숫자여야 해요 ('{z}')")
+    elif isinstance(z, (int, float)) and abs(z) > 110:
+        rep.warn(f"{where} ({name_of(el)})", f"z = {z}는 실험대 깊이(−110~110)를 넘어요. 입체 보기에서 실험대 밖으로 나가요")
     if el.get("t") == "wellplate" and reg and "wells" in reg:
         wp, wv = set(reg["wells"]["props"]), reg["wells"]["values"]
         for j, w in enumerate(el.get("wells") or []):

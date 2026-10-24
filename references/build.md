@@ -15,7 +15,7 @@ python scripts/extract_text.py 실험지.hwp --images 그림폴더   # hwp·hwpx
 python scripts/check_data.py experiment.json                  # 데이터 검사 (오류를 모두 고친 뒤 만든다)
 python scripts/build_html.py experiment.json 실험제목.html     # 인터넷 없이도 열리는 한 파일
 python scripts/build_html.py experiment.json 실험제목.html --light   # 가벼운 버전 (엔진을 인터넷에서 불러옴)
-python scripts/build_html.py experiment.json 실험제목.html --3d      # 입체 보기 엔진까지 넣은 한 파일 (인터넷 없이 3D까지, 약 70 KB 더)
+python scripts/build_html.py experiment.json 실험제목.html --3d      # 입체 보기 엔진까지 넣은 한 파일 (인터넷 없이 3D까지, 약 90 KB 더)
 python scripts/check_render.py 실험제목.html --shots 그림점검 --3d   # 그림 점검 (입체 보기까지)
 python scripts/extract_data.py 결과.html experiment.json      # 이미 만든 HTML에서 데이터 꺼내기
 ```
@@ -90,7 +90,7 @@ python scripts/check_render.py 결과.html --shots 그림점검 --3d
 2. `그림점검/<파일 이름>/overview.png`(모든 장면 한 장)를 **열어서 본다**. 어색한 단계는 `step-03.png`처럼 크게 본다 (결과 보기가 있으면 `step-03-result.png`도 생긴다). 원문 장치와 맞는지, 잘리거나 떠 있지 않은지, 크기 비율, 이름표·말풍선이 장치를 가리지 않는지 본다.
 3. **WARN**(`[LabKit] 겹침?`)은 그림에 빨갛게 표시된다. 실제로 가리면 x·y를 옮기고, 일부러 넣은 것이면 `in`·`on`·`over`로 이어 준다.
 4. 좌표를 고칠 때는 `--grid`(20 간격 격자)를 붙인다. 고친 뒤 같은 명령으로 다시 확인한다.
-5. `--3d`면 `3d-overview.png`(모든 단계를 비스듬히 본 입체 그림)도 생긴다. 그릇과 자주 쓰는 기구는 2D 장면의 자리·크기 그대로 입체로 빚고(유리, 액체 높이·색·층), 나머지는 2D 그림을 카드로 세운 것이라 2D가 바르면 대개 바르다. 액체 높이·색이 2D와 같은지, 그릇 안에 넣은 것(`in`)이 그릇 안에 보이는지 본다. 한 장치가 어긋나 보이면 `in`·`on`·`hold`로 이어 준다.
+5. `--3d`면 `3d-overview.png`(모든 단계를 비스듬히 본 입체 그림)도 생긴다. 그릇과 자주 쓰는 기구는 2D 장면의 자리·크기 그대로 입체로 빚고(유리, 액체 높이·색·층), 나머지는 2D 그림을 카드로 세운 것이라 2D가 바르면 대개 바르다. 액체 높이·색이 2D와 같은지, 그릇 안에 넣은 것(`in`)이 그릇 안에 보이는지 본다. 한 장치가 어긋나 보이면 `in`·`on`·`hold`로 이어 준다. 2D에서 일부러 앞뒤로 겹쳐 그린 두 장치가 입체에서 한데 붙어 보이면 한쪽에 `z`(앞 +, 뒤 −)를 준다 (2D는 그대로). 어떤 부품이 입체로 보이는지는 parts.md '입체(3D) 보기'에 있다.
 
 - 브라우저 찾기: Chrome을 먼저, 없으면 Edge를 쓴다. 특정 브라우저를 쓰려면 환경 변수 `CHECK_RENDER_BROWSER`에 실행 파일 경로를 준다. `--strict`는 경고도 실패로 친다.
 - 가벼운 버전은 스킬 폴더의 `assets/labkit.js`가 있으면 그 엔진으로 연다 (스킬과 같은 판으로 점검). 결과 줄에 `엔진 v1.19.0 내 폴더`처럼 쓴 엔진이 나온다. 인터넷 엔진 그대로 보려면 `--engine online`, 다른 엔진 파일은 `--engine 경로`.
