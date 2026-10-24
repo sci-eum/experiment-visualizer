@@ -6,7 +6,7 @@
 3. 문서·예시 데이터에 쓴 부품 이름(t)이 모두 엔진에 있다.
 4. references/scenes.md가 examples/recipes.json과, references/parts.json이 엔진과 같다.
 5. SKILL.md가 가리키는 참고 문서가 있고, SKILL.md가 너무 길지 않다.
-6. 문서의 jsDelivr @1 주소가 저장소에 있는 파일을 가리키고, 참고 문서가 모두 스킬 zip·캐시 비우기 목록에 있다.
+6. 문서의 고정 버전 jsDelivr 주소가 저장소에 있는 파일을 가리키고, 참고 문서가 모두 스킬 zip·캐시 비우기 목록에 있다.
 7. parts.md의 '입체(3D) 보기' 표가 입체 엔진(labkit3d.js)이 빚는 부품·설명 부품과 같다.
    SKILL.md는 raw main 주소를 쓰지 않는다 (지시서와 엔진의 버전이 어긋나지 않게).
 
@@ -52,6 +52,7 @@ def main():
         docs.setdefault(f'references/{f.name}', f.read_text(encoding='utf-8'))
     types, aliases = engine_types()
     known = types | aliases
+    version = re.search(r"const VERSION = '(\d+\.\d+\.\d+)'", (ROOT / 'assets/labkit.js').read_text(encoding='utf-8')).group(1)
 
     # 1. JSON 예시
     used = []
@@ -96,19 +97,29 @@ def main():
             problems.append(f'SKILL.md가 가리키는 파일이 없습니다: {ref}')
     lines = len(skill.splitlines())
     for ref in sorted(set(re.findall(r'`(references/[a-z]+\.md)`', skill))):
-        if f'experiment-visualizer@1/{ref}' not in skill:
-            problems.append(f'SKILL.md 참고 문서 표에 {ref}의 @1 주소가 없습니다')
+        if f'experiment-visualizer@{version}/{ref}' not in skill:
+            problems.append(f'SKILL.md 참고 문서 표에 {ref}의 @{version} 고정 주소가 없습니다')
     if 'raw.githubusercontent.com' in skill:
-        problems.append('SKILL.md에 raw main 주소가 있습니다. https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/… 를 쓰세요.')
+        problems.append(f'SKILL.md는 고정 버전 jsDelivr @{version} 주소를 쓰세요.')
 
-    # 6. @1 주소와 배포 목록
+    # 6. 고정 버전 주소와 배포 목록
     for name, text in docs.items():
-        for path in sorted(set(re.findall(r'experiment-visualizer@1/([A-Za-z0-9_./-]+)', text))):
+        for tag, path in sorted(set(re.findall(r'experiment-visualizer@([0-9.]+)/([A-Za-z0-9_./-]+)', text))):
+            if tag != version:
+                problems.append(f'{name}: @{tag} 주소는 엔진과 같은 @{version}으로 고정하세요')
             if path.endswith('/'):
                 continue
             local = ROOT / (path[:-len('.min.js')] + '.js' if path.endswith('.min.js') else path)
             if not local.exists():
-                problems.append(f'{name}: @1 주소가 없는 파일을 가리킵니다: {path}')
+                problems.append(f'{name}: 주소가 없는 파일을 가리킵니다: {path}')
+        if 'experiment-visualizer/main/' in text:
+            problems.append(f'{name}: 대체 다운로드 주소도 v{version} 태그로 고정하세요')
+    import check_data
+    if check_data.VERSION != version:
+        problems.append('check_data.py의 부품 목록 다운로드 버전을 엔진과 맞추세요')
+    light = (ROOT / 'assets/light.html').read_text(encoding='utf-8')
+    if f'experiment-visualizer@{version}/assets/labkit.min.js' not in light:
+        problems.append('light.html의 엔진 주소를 현재 버전으로 고정하세요')
     zip_src = (ROOT / 'scripts' / 'make_skill_zip.py').read_text(encoding='utf-8')
     release = (ROOT / '.github' / 'workflows' / 'release.yml').read_text(encoding='utf-8')
     for f in sorted((ROOT / 'references').iterdir()):

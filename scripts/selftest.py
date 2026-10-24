@@ -131,6 +131,9 @@ GOOD = {"title": "표 근거 시험", "source": "실험지", "steps": [
     {"title": "온도 순서", "text": TABLE_TEXT, "origin": {"where": "표 2", "quote": TABLE_QUOTE, "check": "ok"}, "scene": [{"t": "beaker"}]}]}
 # 원문 숫자 대조: 글 → 뽑히는 수치 (설명 쪽. 숫자 없는 단위는 수치가 아니다)
 QTY = {
+    '-7 ℃에서': ['-7℃'], '−7.5°C': ['−7.5°C'], '-7~-3 ℃': ['-7℃', '-3℃'],
+    '5-10 mL': ['5 mL', '10 mL'], '5–10 mL': ['5 mL', '10 mL'], '1e-3 M': ['1e-3 M'],
+    '전류 8 mA / 전압 8 V': ['8 mA', '8 V'], '압력 80 kPa': ['80 kPa'],
     '물 **10 mL**를 넣는다': ['10 mL'], '0.5~1 L': ['0.5 L', '1 L'], '5, 10, 15 mL씩': ['5 mL', '10 mL', '15 mL'],
     '3분의 1 정도 채운다': [], '약 15분 동안': ['15분'], '2~3방울': ['2방울', '3방울'], '0.1 M 염산 20 mL': ['0.1 M', '20 mL'],
     '40 ℃로': ['40℃'], '시험관 A에': [], '3-1. 지시약 넣기': [], '1,000 mL 비커': ['1,000 mL'], '1.5 V 전지': ['1.5 V'],
@@ -139,6 +142,11 @@ QTY = {
 }
 # (설명, 근거 문장) → 근거 문장에 없는 수치. 근거 문장은 표 머리 단위('온도 (°C)')로 맨 숫자도 읽는다
 MISS = {
+    ('7 ℃', '-7 ℃'): ['7℃'], ('-7 ℃', '7 ℃'): ['-7℃'], ('−7 ℃', '-7 ℃'): [],
+    ('8 A', '8 V'): ['8 A'], ('8 V', '8 Ω'): ['8 V'], ('8 W', '8 Hz'): ['8 W'],
+    ('8 mA', '0.008 A'): [], ('80 kPa', '80000 Pa'): [],
+    ('1e-7 M', '2e-7 M'): ['1e-7 M'], ('0 M', '1e-7 M'): ['0 M'],
+    ('1e-7 M', '0.0000001 M'): [], ('0 M', '0 M'): [],
     ('1 L를 넣는다', '1,000 mL를 넣는다'): [], ('물 10 mL', '물 5 mL'): ['10 mL'], ('약 15분', '15 분 동안 가열'): [],
     ('5방울씩 떨어뜨린다', '2~3방울 떨어뜨린다'): ['5방울'], ('30 ℃에서', '30 °C로 맞춘다'): [], ('0.1 M 염산', '1 M 염산'): ['0.1 M'],
     (TABLE_TEXT, TABLE_QUOTE): [], ('70℃에서 5분', '[표] 온도 ℃ / 시간 (초): 70 / 300'): [], ('물 2 mL', '(단위: µL) 물 2,000'): [],
@@ -371,6 +379,21 @@ def main():
     quiet = main_check(QUIET, load_registry())
     if quiet.errors or quiet.warns:
         fails.append(f'알리지 않아야 할 것에 오류·확인이 나옴: {quiet.errors + quiet.warns}')
+    strict_cases = [
+        ({"title": "누락", "steps": [{"title": "관찰", "scene": [{"t": "beaker"}]}]}, True),
+        ({"title": "불일치", "source": "가상 활동지", "steps": [{"text": "7 ℃", "origin": {"where": "1쪽", "quote": "-7 ℃", "check": "ok"}}]}, True),
+        ({"title": "다른 단계 숫자", "source": "가상 활동지", "steps": [
+            {"text": "물 12 mL", "origin": {"where": "1쪽 1", "quote": "물 12 mL", "check": "ok"}},
+            {"text": "다른 용액 12 mL", "origin": {"where": "1쪽 2", "quote": "다른 용액 6 mL", "check": "ok"}}]}, True),
+        ({"title": "판독 미확인", "source": "가상 활동지", "steps": [{"origin": {"where": "1쪽", "quote": "관찰", "check": "unsure"}}]}, True),
+        ({"title": "준비물의 다른 숫자", "source": "가상 활동지", "materials": [{"name": "물 12 mL"}], "steps": [
+            {"text": "다른 용액 12 mL", "origin": {"where": "1쪽", "quote": "다른 용액 6 mL", "check": "ok"}}]}, True),
+        (GOOD, False),
+    ]
+    for data, want_error in strict_cases:
+        result = main_check(data, load_registry(), strict_source=True)
+        if bool(result.errors) != want_error:
+            fails.append(f"엄격 원문 검사 {data['title']}: {result.errors}")
     keys = answer_key_test()
     if keys is None:
         print('헤드리스 브라우저가 없어 답 저장 이름 시험은 건너뜀')
@@ -382,7 +405,7 @@ def main():
     else:
         fails += u3[0]
     total = (len(EQ) + len(VOL) * (2 if node else 1) + len(BAD_EXPECT) + len(BAD_WARN) + len(QTY) + len(MISS) + 2
-             + (keys[1] if keys else 0) + (u3[1] if u3 else 0))
+             + len(strict_cases) + (keys[1] if keys else 0) + (u3[1] if u3 else 0))
     for f in fails:
         print('  -', f)
     print(f'{"OK" if not fails else "FAIL"}  자체 시험 {total - len(fails)}/{total}')

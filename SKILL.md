@@ -8,14 +8,14 @@ description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·
 > **이 문서를 링크로 받았다면** 이 문서가 작업 지시서다. 처음부터 끝까지 읽고 따른다.
 > 저장소: https://github.com/sci-eum/experiment-visualizer
 
-이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 배포판(`@1`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
+이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.22.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
 
 | 문서 | 언제 연다 | 주소 |
 |---|---|---|
-| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/references/parts.md |
-| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/references/data.md |
-| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/references/scenes.md |
-| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/references/build.md |
+| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.22.0/references/parts.md |
+| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.22.0/references/data.md |
+| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.22.0/references/scenes.md |
+| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.22.0/references/build.md |
 
 ## 무엇을 만드나
 
@@ -180,13 +180,15 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 
 - `title`과 `steps`는 필수. 나머지는 원문에 있을 때만.
 - 단계마다 `origin`. 사용자가 더한 팁·예상 등은 `origin.added`에 적는다.
-- 질문·예상 칸에 학생 답이 저장된다. 나중에 질문 글을 고칠 것 같으면 `id`를 준다 (`{"id": "q-acid", "text": "…"}`).
+- 새 자료에는 실험·단계·질문·표·그림 칸의 고정 `id`를 처음부터 준다. 수정할 때 그대로 유지한다. 질문은 `{"id": "q-acid", "text": "…"}`처럼 쓴다. 예상 칸은 단계 `id`로 저장된다.
 - `"_demo": true` 같은 템플릿 예시 값은 남기지 않는다.
 
 ## 6. 만들기
 
 1. 데이터를 `experiment.json`으로 저장하고 **검사한다**: `python scripts/check_data.py experiment.json` (스킬 폴더가 없으면 build.md에서 내려받기). 필수 항목, 없는 부품·속성(오타), id 중복, 가리키는 id, 부피 해석, 넣은 양 > 용량, 이어받기, 준비물 용량과 장면의 `vol`, 원문 대응 기록, **원문 숫자 대조**(설명·그림의 양·온도·시간·농도가 근거 문장에 있는지)를 본다. **오류를 모두 고친 뒤** 만든다. '원문 근거 문장에 없어요' 확인이 나오면 원문을 다시 보고 고치거나, 계산한 값·사용자가 준 값인지 확인한다.
 2. `python scripts/build_html.py experiment.json 실험제목.html` (가벼운 버전은 `--light`, 인터넷 없는 교실에서 3D까지 쓰려면 `--3d`). 스킬 폴더가 없거나 코드 실행이 안 되면 `references/build.md`의 방법 B·C를 따른다.
+
+원문을 확실히 확인한 자료는 `check_data.py experiment.json --strict-source`도 실행한다 (data.md). 사용자가 판독 불확실 상태로 진행하기를 선택했으면 일반 검사를 하고 `origin.check: "unsure"`를 유지한다.
 
 ## 7. 전달 전 검사
 

@@ -24,6 +24,10 @@ jobs:
         with:
           python-version: '3.12'
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
       - name: template.html이 labkit.js와 같은지
         run: |
           python scripts/make_template.py
@@ -45,6 +49,9 @@ jobs:
 
       - name: 예시 데이터 검사 (check_data.py)
         run: python scripts/check_data.py examples/gallery.json examples/recipes.json examples/red-cabbage/experiment.json
+
+      - name: 수업 조작·답안 백업 검사 (넓은 화면·휴대폰 너비)
+        run: python scripts/selftest_ui.py --require-browser
 
       - name: 그림 점검 (헤드리스 Chrome, 오류·겹침, 입체 보기까지, 가벼운 버전도 이 커밋의 엔진으로)
         run: python scripts/check_render.py examples/gallery.html examples/recipes.html examples/red-cabbage/red-cabbage.html examples/red-cabbage/red-cabbage-light.html --shots shots --strict --3d

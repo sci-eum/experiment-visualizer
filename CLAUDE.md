@@ -3,8 +3,8 @@
 ## 식별자 (다른 프로젝트와 헷갈리지 않게)
 - 저장소: https://github.com/sci-eum/experiment-visualizer (public, 계정 sci-eum)
 - 공개 주소: GitHub Pages https://sci-eum.github.io/experiment-visualizer/
-- 링크용 SKILL: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/SKILL.md (문서·도구·엔진 모두 `@1` 같은 배포판에서. raw main 주소를 안내하지 않는다)
-- 엔진 CDN: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/labkit.min.js (태그 v1.x.y 기준)
+- 링크용 SKILL: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/SKILL.md (진입 링크만 `@1`. 지시서 안의 문서·도구·엔진은 엔진 VERSION과 같은 정확한 버전으로 고정. 대체 주소도 같은 태그를 사용한다)
+- 엔진 CDN: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.22.0/assets/labkit.min.js (태그 v1.x.y 기준)
 - 입체(3D) 엔진 CDN: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@<그림 엔진과 같은 버전>/assets/labkit3d.min.js (예: @1.19.0, 3D 버튼을 누를 때 불러옴)
 - Supabase·Vercel: 사용하지 않음 (데이터 저장이 필요 없는 정적 자료)
 
@@ -19,6 +19,7 @@
 - 스킬 문서: `SKILL.md`(판단 규칙만, 400줄 이하), `references/parts.md`(부품 목록), `references/scenes.md`(장면 예시, 자동 생성), `references/data.md`(데이터 형식), `references/build.md`(환경별 만들기·점검). 자세한 형식·방법은 SKILL.md가 아니라 참고 문서에 쓴다. 부품을 바꾸면 parts.md와 SKILL.md의 '부품 이름 한눈에'를 같이 고친다. 참고 문서를 더하면 `make_skill_zip.py`와 release.yml의 캐시 비우기 목록에도 넣는다.
 - 장면 예시의 원본은 `examples/recipes.json`이다. 고친 뒤 `python scripts/make_scenes_doc.py`로 scenes.md를 만들고 recipes.html도 다시 그린다. scenes.md를 손으로 고치지 않는다.
 - 엔진의 부품·속성을 바꾸면 `python scripts/make_registry.py`로 `references/parts.json`을 다시 만든다 (데이터 검사기가 쓴다).
+- 수업 조작·학생 답 저장을 고치면 `python scripts/selftest_ui.py --require-browser`로 PC·휴대폰 너비에서 실제 브라우저 검사를 한다. 새 배포 버전은 SKILL.md의 참고 링크, build.md의 다운로드·가벼운 틀, light.html, check_data.py의 VERSION도 맞춘다.
 - 문서를 고친 뒤 `python scripts/check_docs.py`가 OK인지 확인한다 (JSON 문법, 엔진과 부품 목록 일치, scenes.md·parts.json 최신, SKILL.md 길이).
 - 예시 데이터는 `python scripts/check_data.py`가 오류·확인 없이 OK여야 한다. 수식·부피 읽기나 검사기를 고치면 `python scripts/selftest.py`에 사례를 더한다.
 - `dist/`(스킬 zip)는 Git에 넣지 않는다. Release와 zip 첨부, jsDelivr 캐시 비우기는 태그를 push하면 `.github/workflows/release.yml`이 한다. 손으로 `gh release create`를 하지 않는다. 릴리스 노트는 태그 메시지로 쓴다 (`git tag -a v1.x.y -F 노트.txt`, 첫 줄 제목·빈 줄·본문).

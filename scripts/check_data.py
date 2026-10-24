@@ -14,6 +14,7 @@
 부품 목록은 스크립트 옆의 ../references/parts.json을 쓰고, 없으면 저장소에서 내려받는다.
 표준 라이브러리만 쓴다.
 """
+import argparse
 import difflib
 import json
 import re
@@ -22,9 +23,10 @@ import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-# 부품 목록: 그림 엔진과 같은 배포판(@1)을 먼저, 막히면 저장소 원본
-RAW = ["https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/references/parts.json",
-       "https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/references/parts.json"]
+# 부품 목록: 그림 엔진과 같은 고정 배포판을 먼저, 막히면 같은 태그의 저장소 원본
+VERSION = "1.22.0"
+RAW = [f"https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@{VERSION}/references/parts.json",
+       f"https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v{VERSION}/references/parts.json"]
 W, H = 480, 300
 TOP = {"title", "subject", "unit", "duration", "group", "goal", "materials", "safety", "tips", "cover", "steps", "results",
        "source", "notes", "id", "_demo"}
@@ -104,10 +106,15 @@ QUNITS = {
     "몰농도": {"mM": .001, "M": 1, "mol/L": 1},
     "물질량": {"mol": 1},
     "방울": {"방울": 1},
-    "전기": {"mA": .001, "A": 1, "V": 1, "Ω": 1, "W": 1, "Hz": 1},
+    "전류": {"mA": .001, "A": 1},
+    "전압": {"mV": .001, "V": 1},
+    "저항": {"Ω": 1, "kΩ": 1000},
+    "전력": {"mW": .001, "W": 1},
+    "진동수": {"Hz": 1, "kHz": 1000},
+    "압력": {"Pa": 1, "kPa": 1000, "MPa": 1e6},
 }
 _UNIT = {u: (dim, k) for dim, us in QUNITS.items() for u, k in us.items()}
-_NUM = r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
+_NUM = r"[+−-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:[eE][+−-]?\d+)?"
 _QTY = re.compile(r"(?<![\d.,])(" + _NUM + r"(?:\s*(?:,|~|∼|〜|-|–|와|과|또는|및)\s*" + _NUM + r")*)\s*("
                   + "|".join(re.escape(u) for u in sorted(_UNIT, key=len, reverse=True)) + r")(?![A-Za-z])")
 # 표 머리처럼 숫자 없이 적힌 단위: 괄호 안 '온도 (°C)' '시간(sec)' '(단위: mL)', 또는 기호 단위 '℃' '㎖'
@@ -152,15 +159,17 @@ def quantities(text, header=False):
         if unit == "분" and text[m.end():m.end() + 1] == "의":
             continue
         dim, k = _UNIT[unit]
-        for n in re.findall(_NUM, m.group(1)):
-            out.append((dim, float(n.replace(",", "")) * k, _raw(n, unit)))
+        # '5-10'의 붙임표는 범위 구분자, '-5~-2'의 빼기표는 부호다.
+        nums = re.sub(r"(?<=\d)\s*[-–]\s*(?=\d)", "~", m.group(1))
+        for n in re.findall(_NUM, nums):
+            out.append((dim, float(n.replace(",", "").replace("−", "-")) * k, _raw(n, unit)))
     heads = head_units(text) if header else {}
     if heads:
         rest = _QTY.sub(" ", text)
         bare = [m.group() for m in re.finditer(r"(?<![\d.A-Za-z])" + _NUM, rest) if not _COUNT.match(rest, m.end())]
         for dim, (k, unit) in heads.items():
             for n in dict.fromkeys(bare):
-                out.append((dim, float(n.replace(",", "")) * k, _raw(n, unit)))
+                out.append((dim, float(n.replace(",", "").replace("−", "-")) * k, _raw(n, unit)))
     return out
 
 
@@ -168,7 +177,7 @@ def missing_quantities(text, pool):
     """text의 수치 가운데 pool(수치 목록)에 같은 종류·같은 값이 없는 것 → [(종류, 원래 글자)]."""
     miss = []
     for dim, v, raw in quantities(text):
-        if not any(d == dim and abs(v - w) <= 1e-6 * max(1, abs(v), abs(w)) for d, w, _ in pool) and (dim, raw) not in miss:
+        if not any(d == dim and abs(v - w) <= 1e-6 * max(abs(v), abs(w)) for d, w, _ in pool) and (dim, raw) not in miss:
             miss.append((dim, raw))
     return miss
 
@@ -195,14 +204,18 @@ def scene_text(scene):
 
 # ---------------------------------------------------------------- 검사
 class Report:
-    def __init__(self):
+    def __init__(self, strict_source=False):
         self.errors, self.warns = [], []
+        self.strict_source = strict_source
 
     def err(self, where, msg):
         self.errors.append(f"{where}: {msg}")
 
     def warn(self, where, msg):
         self.warns.append(f"{where}: {msg}")
+
+    def source(self, where, msg):
+        (self.err if self.strict_source else self.warn)(where, msg)
 
 
 def load_registry():
@@ -430,8 +443,8 @@ def check_refs(items, ids, where, rep):
                     rep.err(f"{where} ({name_of(el)})", f"{k}: '{r}' → {name_of(ids[m.group(1)])}에는 (+)·(−) 단자가 없어요 (power·geltank·coil·회로 낱개 부품, meter kind {'·'.join(sorted(METER_PORTS))}에 있어요)")
 
 
-def main_check(data, reg):
-    rep = Report()
+def main_check(data, reg, strict_source=False):
+    rep = Report(strict_source)
     if not isinstance(data, dict):
         rep.err("데이터", "맨 바깥은 객체({ … })여야 해요")
         return rep
@@ -442,6 +455,8 @@ def main_check(data, reg):
         rep.err("맨 바깥", "템플릿 예시 표시 _demo가 남아 있어요")
     if not isinstance(data.get("title"), str) or not data.get("title", "").strip():
         rep.err("title", "실험 제목(title)이 필요해요")
+    if strict_source and not str(data.get("source") or "").strip():
+        rep.err("source", "엄격 원문 검사에는 원문 이름(source)이 필요해요")
     steps = data.get("steps")
     if not isinstance(steps, list) or not steps:
         rep.err("steps", "단계(steps)가 한 개 이상 필요해요")
@@ -607,9 +622,11 @@ def main_check(data, reg):
                 if not isinstance(added, list) or any(a not in ADDED for a in added):
                     rep.err(f"{where}.origin.added", f"원문에 없이 더한 항목 이름의 배열이어야 해요 ({', '.join(sorted(ADDED))})")
                 if og.get("check") == "unsure":
-                    rep.warn(where, f"원문 확인 필요: {og.get('unsure') or og.get('quote') or '판독 불확실'} — 만들기 전에 사용자에게 확인했나요?")
-                if not og.get("where") and not og.get("quote"):
-                    rep.warn(f"{where}.origin", "원문 위치(where)나 근거 문장(quote)을 적어 주세요")
+                    rep.source(where, f"원문 확인 필요: {og.get('unsure') or og.get('quote') or '판독 불확실'} — 만들기 전에 사용자에게 확인했나요?")
+                if not og.get("where") or not og.get("quote"):
+                    rep.source(f"{where}.origin", "원문 위치(where)와 근거 문장(quote)을 모두 적어 주세요")
+                if strict_source and og.get("check") != "ok" and og.get("check") != "unsure":
+                    rep.err(f"{where}.origin.check", "엄격 원문 검사에는 판독 상태 check가 필요해요")
         rv = st.get("reveal")
         if rv is not None:
             if isinstance(rv, dict):
@@ -630,30 +647,32 @@ def main_check(data, reg):
     # 원문 숫자 대조: 설명·그림의 수치가 근거 문장(origin.quote)에 있는지. 준비물·앞 단계 근거 문장의 수치도 근거로 친다.
     # 근거 문장이 표라서 단위가 머리에만 있으면('온도 (°C)') 칸의 맨 숫자를 그 단위로 읽는다
     mats = data.get("materials") if isinstance(data.get("materials"), list) else []
-    pool = quantities(" ".join(f"{m.get('name', '')} {m.get('qty', '')}" for m in mats if isinstance(m, dict)))
+    material_pool = quantities(" ".join(f"{m.get('name', '')} {m.get('qty', '')}" for m in mats if isinstance(m, dict)))
+    pool = list(material_pool)
     for i, st in enumerate(steps):
         og = st.get("origin") if isinstance(st, dict) else None
         if not isinstance(og, dict) or not isinstance(og.get("quote"), str):
             continue
         where, added, own = f"steps[{i}] ({i + 1}단계)", og.get("added") or [], quantities(og["quote"], header=True)
+        evidence = own if strict_source else own + pool
         if og.get("check") != "unsure":  # 판독 불확실은 이미 알렸다
             fields = [("title", "제목", st.get("title"))] + [(k, n, st.get(k)) for k, n in (("text", "설명"), ("time", "시간")) if k not in added]
             for k, name, v in fields:
-                for dim, raw in missing_quantities(flat_text(v), own + pool):
+                for dim, raw in missing_quantities(flat_text(v), evidence):
                     same = sorted({r for d, _, r in own if d == dim})
                     hint = f" (근거 문장에는 {', '.join(same)})" if same else ""
-                    rep.warn(f"{where}.{k}", f"{name}의 '{raw}'가 원문 근거 문장에 없어요{hint} — 원문과 맞는지 확인해 주세요")
+                    rep.source(f"{where}.{k}", f"{name}의 '{raw}'가 원문 근거 문장에 없어요{hint} — 원문과 맞는지 확인해 주세요")
             if "scene" not in added:
                 said = quantities(" ".join(flat_text(st.get(k)) for k in ("title", "text", "time")))
-                for _, raw in missing_quantities(scene_text(st.get("scene")), own + pool + said):
-                    rep.warn(f"{where}.scene", f"그림의 '{raw}'가 원문 근거 문장·설명·준비물에 없어요 — 원문과 맞는지 확인해 주세요")
+                for _, raw in missing_quantities(scene_text(st.get("scene")), evidence + said):
+                    rep.source(f"{where}.scene", f"그림의 '{raw}'가 원문 근거 문장·설명·준비물에 없어요 — 원문과 맞는지 확인해 주세요")
         pool += own
 
     # 원문에서 만든 자료(source가 있음)는 단계마다 원문 대응 기록(origin)을 남긴다
-    if data.get("source") and steps:
+    if (data.get("source") or strict_source) and steps:
         miss = [str(i + 1) for i, st in enumerate(steps) if isinstance(st, dict) and not isinstance(st.get("origin"), dict)]
         if miss:
-            rep.warn("steps", f"원문 대응 기록(origin)이 없는 단계: {', '.join(miss)} (원문 위치와 근거 문장을 남겨 주세요)")
+            rep.source("steps", f"원문 대응 기록(origin)이 없는 단계: {', '.join(miss)} (원문 위치와 근거 문장을 남겨 주세요)")
     sids = [str(st["id"]) for st in steps if isinstance(st, dict) and st.get("id") not in (None, "")]
     for d in sorted({i for i in sids if sids.count(i) > 1}):
         rep.err("steps", f"단계 id '{d}'가 여러 번 나와요 (예상 칸의 학생 답이 엇갈려요)")
@@ -719,21 +738,22 @@ def main():
             s.reconfigure(encoding="utf-8")
         except Exception:
             pass
-    if len(sys.argv) < 2:
-        print(__doc__)
-        return 1
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("files", nargs="+", help="검사할 JSON 또는 HTML")
+    ap.add_argument("--strict-source", action="store_true", help="핵심 수치 불일치·원문 근거 누락·미확인을 오류로 처리 (앞 단계 숫자로 대신 통과하지 않음)")
+    args = ap.parse_args()
     reg = load_registry()
     if reg is None:
         print("주의: 부품 목록(parts.json)을 찾지 못해 부품·속성 이름은 검사하지 않았어요.")
     bad = 0
-    for path in sys.argv[1:]:
+    for path in args.files:
         try:
             data = load(path)
         except Exception as e:
             print(f"오류  {path}: 읽지 못했어요 ({e})")
             bad += 1
             continue
-        rep = main_check(data, reg)
+        rep = main_check(data, reg, strict_source=args.strict_source)
         status = "오류" if rep.errors else "확인" if rep.warns else "OK"
         print(f"{status}  {path}  (오류 {len(rep.errors)}, 확인 {len(rep.warns)})")
         for m in rep.errors:
