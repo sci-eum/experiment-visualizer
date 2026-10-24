@@ -54,7 +54,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.19.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.20.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -225,7 +225,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.19.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.20.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -443,6 +443,13 @@ function liquid(el, g) {
   if (el.bubbles) o += bubbles(g, el.bubbles === true ? 7 : +el.bubbles, c);
   return o;
 }
+function liquidBits(el, g) {
+  if (Array.isArray(el.layers) && el.layers.length || !(g.fill > 0)) return '';
+  const c = col(el.color, 'water'), L = g.L; let o = '';
+  if (el.solid === 'ice' || el.ice) { const n = +el.ice || 2; for (let i = 0; i < n; i++) { const ix = r2((i - (n - 1) / 2) * 20), iy = r2(L - 6 + (i % 2) * 3); o += `<rect x="${ix - 8}" y="${iy}" width="16" height="15" rx="3.5" fill="#eef9ff" stroke="#8dbbd8" stroke-width="1.2" transform="rotate(${i % 2 ? 12 : -10} ${ix} ${r2(iy + 7)})"/><path d="M${ix - 4},${r2(iy + 4)} l4,0" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`; } }
+  if (el.bubbles) o += bubbles(g, el.bubbles === true ? 7 : +el.bubbles, c);
+  return o;
+}
 function stirbarSvg(B) {
   return `<g transform="translate(0,${B - 4})"><g>${A('<animateTransform attributeName="transform" type="scale" values="1 1;.18 1;1 1" dur=".45s" repeatCount="indefinite"/>')}<rect x="-12" y="-3.2" width="24" height="6.4" rx="3.2" fill="#fbfbfd" stroke="#6b7488" stroke-width="1.2"/></g></g>`;
 }
@@ -493,28 +500,29 @@ function snapCap(sn, closed) {
     : `<path d="${sn.openStrap}" fill="none" stroke="${INK}" stroke-width="1.2"/><g transform="rotate(100 ${hx} ${hy})">${cap}</g>`;
 }
 function holderSvg(S) { const y = r2(-S.h * 0.8); return `<path d="M-16,${y} L-98,${y - 9}" stroke="#c98d55" stroke-width="7" stroke-linecap="round"/><path d="M-30,${y - 1.5} L-96,${y - 9}" stroke="#a8713f" stroke-width="1.6" stroke-linecap="round" opacity=".7"/><rect x="-16" y="${y - 6}" width="32" height="12" rx="4" fill="none" stroke="#7a5230" stroke-width="3"/>`; }
-function drawC(el, g, cx) {
+// d3: 입체 보기의 덧그림만 (유리·액체·테두리·받침·마개·뚜껑·곁가지는 labkit3d.js가 입체로 빚는다)
+function drawC(el, g, cx, d3) {
   const S = g.S, s = g.s, k = uid('k'), paper = el.t === 'cup' && el.paper;
   let o = `<g transform="translate(${r2(g.x)},${r2(g.y)}) rotate(${r2(g.tilt)},0,${r2(-S.h * s / 2)}) scale(${s})">`;
-  if (S.under && !g.tilt && el.ring !== false) o += S.under;
+  if (S.under && !g.tilt && el.ring !== false && !d3) o += S.under;
   o += `<defs><clipPath id="${k}"><path d="${S.clip}"/></clipPath></defs>`;
-  o += `<path d="${S.clip}" fill="${el.brown ? '#d6a066' : S.membrane ? '#efe7d2' : GLASS}" opacity="${S.membrane ? .7 : .62}"/>`;
-  o += `<g clip-path="url(#${k})">${el.gas ? `<path d="${S.clip}" fill="${col(el.gas)}" opacity=".32"/>` : ''}<g transform="rotate(${r2(-g.tilt)},0,${r2(-S.h / 2)})">${liquid(el, g)}</g>${solids(el, S, g)}${el.stirbar ? stirbarSvg(S.inner.bottom) : ''}</g>`;
-  if (paper) o += `<path d="${S.clip}" fill="#fdfcf9"/><path d="M-29.4,-70 L29.4,-70 L28,-56 L-28,-56 Z" fill="${col(el.band, '#f1c6e9')}"/>${g.fill > 0 && !g.tilt ? `<ellipse cx="0" cy="-84" rx="29" ry="3.5" fill="${col(el.color, 'water')}"/>` : ''}`;
-  if (S.membrane) o += `<path d="${S.clip}" fill="#efe7d2" opacity=".28"/>`;
-  if (el.arm) { const d = el.arm === 'left' ? -1 : 1, y0 = -S.h + 22, ex = d * (S.half + 34), ey = -S.h + 38; o += `<path d="M${d * S.half},${y0} L${ex},${ey}" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M${d * (S.half - 1)},${y0} L${ex},${ey}" stroke="#eef6fc" stroke-width="4" stroke-linecap="round"/>`; }
-  o += `<path d="${S.outline}" fill="none" stroke="${S.membrane ? '#9c9178' : INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-  if (S.foot) o += S.foot;
+  if (!d3) o += `<path d="${S.clip}" fill="${el.brown ? '#d6a066' : S.membrane ? '#efe7d2' : GLASS}" opacity="${S.membrane ? .7 : .62}"/>`;
+  o += `<g clip-path="url(#${k})">${el.gas && !d3 ? `<path d="${S.clip}" fill="${col(el.gas)}" opacity=".32"/>` : ''}<g transform="rotate(${r2(-g.tilt)},0,${r2(-S.h / 2)})">${d3 ? liquidBits(el, g) : liquid(el, g)}</g>${solids(el, S, g)}${el.stirbar ? stirbarSvg(S.inner.bottom) : ''}</g>`;
+  if (paper) o += `${d3 ? '' : `<path d="${S.clip}" fill="#fdfcf9"/>`}<path d="M-29.4,-70 L29.4,-70 L28,-56 L-28,-56 Z" fill="${col(el.band, '#f1c6e9')}"/>${g.fill > 0 && !g.tilt && !d3 ? `<ellipse cx="0" cy="-84" rx="29" ry="3.5" fill="${col(el.color, 'water')}"/>` : ''}`;
+  if (S.membrane && !d3) o += `<path d="${S.clip}" fill="#efe7d2" opacity=".28"/>`;
+  if (el.arm && !d3) { const d = el.arm === 'left' ? -1 : 1, y0 = -S.h + 22, ex = d * (S.half + 34), ey = -S.h + 38; o += `<path d="M${d * S.half},${y0} L${ex},${ey}" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M${d * (S.half - 1)},${y0} L${ex},${ey}" stroke="#eef6fc" stroke-width="4" stroke-linecap="round"/>`; }
+  if (!d3) o += `<path d="${S.outline}" fill="none" stroke="${S.membrane ? '#9c9178' : INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  if (S.foot && !d3) o += S.foot;
   if (el.foam) o += foamSvg(el, S); // 넘치는 거품 (v1.14)
-  if (el.lid && !S.snap) o += `<rect x="${-S.half - 9}" y="${-S.h - 4}" width="${2 * S.half + 18}" height="4" rx="1" fill="#eaf5fc" stroke="${INK}" stroke-width="1.2"/>`;
+  if (el.lid && !S.snap && !d3) o += `<rect x="${-S.half - 9}" y="${-S.h - 4}" width="${2 * S.half + 18}" height="4" rx="1" fill="#eaf5fc" stroke="${INK}" stroke-width="1.2"/>`;
   const vm = el.vol != null ? volMarks(el, s) : null;
-  if (!paper) o += `<path d="${S.hl}" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".75"/>` + (vm && vm.grad ? '' : (S.extra || ''));
+  if (!paper) o += (d3 ? '' : `<path d="${S.hl}" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".75"/>`) + (vm && vm.grad ? '' : (S.extra || ''));
   if (vm) o += vm.svg;
   if (S.membrane && el.adapter !== false) o += `<rect x="-5.5" y="${-S.h - 16}" width="11" height="30" rx="2" fill="#f6f6f4" stroke="${INK}" stroke-width="1.3"/><rect x="-16" y="${-S.h + 5}" width="32" height="5.5" rx="2.5" fill="#3b4253"/><rect x="13" y="${-S.h + 3}" width="7" height="9" rx="1.5" fill="#3b4253"/>`;
-  if (S.cap && el.cap !== false && !el.stopper) o += S.cap;
+  if (S.cap && el.cap !== false && !el.stopper && !d3) o += S.cap;
   if (S.snap) o += snapCap(S.snap, el.lid !== false);
   if (el.t === 'bottle' && el.text) o += `<rect x="-19" y="-52" width="38" height="24" rx="3" fill="#fff" opacity=".95" stroke="#d5d9e1" stroke-width=".8"/><text x="0" y="-36.5" text-anchor="middle" font-size="${r2(Math.min(10, 34 / Math.max(1, tw(String(el.text).slice(0, 8), 1))))}" font-weight="700" fill="#3b4253">${esc(String(el.text).slice(0, 8))}</text>`;
-  if (el.stopper) o += stopperSvg(S, el.stopper);
+  if (el.stopper && !d3) o += stopperSvg(S, el.stopper);
   if (el.holder) o += holderSvg(S);
   o += '</g>';
   if (el.steam) o += steam(g.mouthTop.x, g.mouthTop.y, s);
@@ -609,7 +617,7 @@ function partBody(name, on, o = {}) {
 
 /* ---------- type registry ---------- */
 const T = {};
-Object.keys(SHAPES).forEach(k => { T[k] = { geo: (el, R) => cplace(SHAPES[k], el, R), draw: drawC }; });
+Object.keys(SHAPES).forEach(k => { T[k] = { geo: (el, R) => cplace(SHAPES[k], el, R), draw: drawC, decal3: (el, g, cx) => drawC(el, g, cx, true) }; });
 const anchorOf = (g, w, h) => ({ x: g.x + w * g.s / 2, y: g.y - h * g.s / 2 });
 const RACKS = { rack: 'tube', tuberack: 'microtube' }; // tubes를 꽂는 부품과 t를 생략한 튜브의 종류
 
@@ -2206,7 +2214,19 @@ function build(items, o = {}) {
   all.forEach(el => R(el));
   if (o.lint) lint(all, byId, o.label);
   const grp = groups(all, byId), U3 = o.u3 ? units3(all, byId) : null;
-  const wrap3 = (el, s) => U3 && s ? `<g data-u3="${U3(el)}" data-u3t="${esc(el.t)}">${s}</g>` : s;
+  // 입체 보기(v1.20): 부품마다 번호(_e3)를 붙이고, 입체로 빚을 수 있는 부품(o.mesh3)은 _3d로 표시한다.
+  // 꽂힌 튜브는 꽂은 부품이, 그릇 안(in)에 든 것은 그 그릇이 입체일 때만 입체로 (평면 그림 속에 입체가 떠 있지 않게)
+  const every = f => all.forEach(el => { f(el); if (RACKS[el.t]) (el.tubes || []).forEach(tb => { if (tb && typeof tb === 'object') f(tb); }); });
+  if (U3) { let k = 0; every(el => { el._e3 = k++; }); }
+  if (U3 && o.mesh3) {
+    const M3 = new Set(o.mesh3), memo = new Map();
+    const ok = el => { if (memo.has(el)) return memo.get(el); memo.set(el, false); let r = M3.has(el.t);
+      if (r && el._parent) r = ok(el._parent);
+      if (r && typeof el.in === 'string' && byId[el.in]) r = ok(byId[el.in]);
+      memo.set(el, r); return r; };
+    every(el => { if (ok(el)) el._3d = true; });
+  }
+  const wrap3 = (el, s) => U3 && s ? `<g data-u3="${U3(el)}" data-u3t="${esc(el.t)}" data-e3="${el._e3}">${s}</g>` : s;
   const tag = (el, g, s) => {
     if (el._parent || OV_SKIP.has(el.t) || !T[el.t]) return s;
     const b = g.box ? ` data-lk-box="${[g.box.x, g.box.y, g.box.w, g.box.h].map(r2).join(',')}"` : '';
@@ -2215,8 +2235,8 @@ function build(items, o = {}) {
   const P = uid('s'), cx = { front: [], labels: [], defs: [], R, sh: P + 'sh' };
   const behindOf = el => { const id = el.in || (el.t === 'funnel' ? el.over : null); return id && byId[id] ? id : null; };
   const behind = {}; all.forEach(el => { const id = behindOf(el); if (id) (behind[id] ||= []).push(el); });
-  const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }, f0 = cx.front.length, l0 = cx.labels.length; g._sh = cx.sh; let s = ''; try { s = Tp.draw(el, g, cx) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true;
-    if (U3) { for (let k = f0; k < cx.front.length; k++) cx.front[k] = wrap3(el, cx.front[k]); for (let k = l0; k < cx.labels.length; k++) cx.labels[k].u ??= U3(el); } // 앞 층·이름표도 그 부품의 카드로
+  const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }, f0 = cx.front.length, l0 = cx.labels.length; g._sh = cx.sh; let s = ''; try { s = (el._3d ? Tp.decal3 && Tp.decal3(el, g, cx) : Tp.draw(el, g, cx)) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true;
+    if (U3) { for (let k = f0; k < cx.front.length; k++) cx.front[k] = wrap3(el, cx.front[k]); for (let k = l0; k < cx.labels.length; k++) { cx.labels[k].u ??= U3(el); cx.labels[k].e ??= el._e3; } } // 앞 층·이름표도 그 부품의 카드로
     return wrap3(el, tag(el, g, s)); };
   // 그릇 안의 그릇(수조 속 시험관 등)은 바깥 그릇 앞에 그리고, 잠긴 부분에 물빛을 다시 덮는다.
   // 액체·얼음물이 든 그릇이면 in으로 넣은 온도계·유리 막대·센서 같은 부품도 같이 앞에 그린다 (뒤에 그리면 유리와 액체에 가려
@@ -2229,13 +2249,13 @@ function build(items, o = {}) {
     const front = SHAPES[el.t] ? kids.filter(b => SHAPES[b.t] || (wet && b.in === el.id)) : cov || (T[el.t] || {}).kidsFront ? kids : []; // kidsFront: 위에서 본 배지처럼 넣은 것이 늘 앞
     kids.forEach(b => { if (!front.includes(b) && !b._done) s += emit(b); });
     s += drawOne(el);
-    if (front.length) { front.forEach(b => { if (!b._done) s += emit(b); }); s += wrap3(el, veil(el, R(el)) + cov); }
+    if (front.length) { front.forEach(b => { if (!b._done) s += emit(b); }); s += wrap3(el, (el._3d ? '' : veil(el, R(el))) + cov); }
     return s;
   };
   cx.emit = emit;
   let body = ''; all.forEach(el => { if (!behindOf(el)) body += emit(el); });
   all.forEach(el => { if (!el._done) body += drawOne(el); });
-  return { body, cx, P };
+  return { body, cx, P, all, U3 };
 }
 function scene(items, o = {}) {
   const { body, cx, P } = build(items, { ...o, lint: true });
@@ -2243,15 +2263,62 @@ function scene(items, o = {}) {
   return `<svg class="scene" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label || '실험 장면')}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="${P}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#faf6ff"/></linearGradient><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs><rect width="${W}" height="${H}" fill="url(#${P}bg)"/>${bench ? `<rect y="${BENCH}" width="${W}" height="${H - BENCH}" fill="#f2ecf9"/><rect y="${BENCH}" width="${W}" height="2" fill="#e4d9f1"/>` : ''}${body}${cx.front.join('')}${layoutLabels(cx.labels, cx.sh)}${o.grid ? grid() : ''}</svg>`;
 }
 const GUESS = [['분광기','spectroscope'],['방전관','discharge'],['고전압','discharge'],['적외선 온도계','meter:ir'],['비접촉 온도계','meter:ir'],['점화기','lighter'],['라이터','lighter'],['커터','knife'],['실험용 칼','knife'],['해부용 칼','knife'],['칼','knife:1'],['거치대','microscope:phone'],['감자','piece:potato'],['생간','piece:liver'],['간 조각','piece:liver'],['양파','piece:onion'],['무 조각','piece:radish'],['두부','piece:tofu'],['바나나','piece:banana'],['사과','piece:apple'],['설탕물','bottle'],['소금물','bottle'],['석회수','bottle'],['수용액','bottle'],['용액','bottle'],['스마트폰','device'],['휴대폰','device'],['휴대 전화','device'],['휴대전화','device'],['향','splint:1'],['불씨','splint'],['면봉','swab'],['모세관','capillary'],['눈금 피펫','glasspipette'],['메스 피펫','glasspipette'],['홀 피펫','glasspipette:volumetric'],['부피 피펫','glasspipette:volumetric'],['피펫 필러','filler'],['피펫필러','filler'],['한천 배지','agar'],['고체 배지','agar'],['배지','agar'],['종이 디스크','paper:disk'],['항생제 디스크','paper:disk'],['TLC','tlc'],['박층 크로마토그래피','tlc'],['크로마토그래피 종이','tlc:paper'],['항온기','appliance:incubator'],['배양기','appliance:incubator'],['인큐베이터','appliance:incubator'],['전자레인지','appliance:microwave'],['전기 포트','appliance:kettle'],['전기포트','appliance:kettle'],['검류계','meter:galvano'],['9 V 건전지','battery:9v'],['9V 건전지','battery:9v'],['9볼트 건전지','battery:9v'],['사각 건전지','battery:9v'],['건전지 끼우개','battery:holder'],['건전지 홀더','battery:holder'],['전지 끼우개','battery:holder'],['코일','coil'],['솔레노이드','coil'],['탄소 막대','electrode:rod'],['탄소 전극','electrode:rod'],['전극','electrode'],['금속판','electrode'],['저마찰 트랙','track'],['역학 트랙','track'],['역학 레일','track'],['포토게이트','photogate'],['광게이트','photogate'],['광 게이트','photogate'],['속력 측정기','photogate'],['도르래','pulley'],['추걸이','weight:hanger'],['삼각대','camera'],['카메라','camera'],['책상','table'],['오목받침 유리','wellplate:slide'],['오목 받침 유리','wellplate:slide'],['오목받침유리','wellplate:slide'],['홈판','wellplate'],['웰 플레이트','wellplate'],['웰플레이트','wellplate'],['pH 미터','meter:ph'],['pH미터','meter:ph'],['pH 측정기','meter:ph'],['디지털 온도계','meter:temp'],['탐침 온도계','meter:temp'],['멀티미터','meter:multi'],['멀티 미터','meter:multi'],['멀티테스터','meter:multi'],['멀티 테스터','meter:multi'],['디지털 전압계','meter:multi'],['디지털 전류계','meter:multi'],['전기 전도계','meter:conduct'],['전도계','meter:conduct'],['마이크로피펫','micropipette'],['마이크로 피펫','micropipette'],['튜브 꽂이','tuberack'],['튜브꽂이','tuberack'],['튜브 랙','tuberack'],['튜브랙','tuberack'],['마이크로튜브','microtube'],['마이크로 튜브','microtube'],['E-tube','microtube'],['에펜도르프','microtube'],['PCR 튜브','pcrtube'],['PCR튜브','pcrtube'],['스핀 컬럼','spincolumn'],['스핀컬럼','spincolumn'],['스핀 칼럼','spincolumn'],['바인딩 컬럼','spincolumn'],['Binding Column','spincolumn'],['원심분리기','centrifuge'],['원심 분리기','centrifuge'],['PCR 기기','thermocycler'],['PCR기기','thermocycler'],['써멀 사이클러','thermocycler'],['써멀사이클러','thermocycler'],['열 순환기','thermocycler'],['열순환기','thermocycler'],['전기 영동','geltank'],['전기영동','geltank'],['UV 램프','uvlamp'],['UV램프','uvlamp'],['자외선 램프','uvlamp'],['자외선램프','uvlamp'],['UV 조명','uvlamp'],['자외선 조명','uvlamp'],['트랜스일루미네이터','uvlamp'],['냉동고','freezer'],['냉장고','freezer'],['가지 달린','roundflask:arm'],['가지달린','roundflask:arm'],['뷰렛','burette'],['집기병','gasjar'],['분별 깔때기','sepfunnel'],['분별깔때기','sepfunnel'],['냉각기','condenser'],['리비히','condenser'],['가스 버너','gasburner'],['분젠','gasburner'],['오목 거울','mirror:concave'],['오목거울','mirror:concave'],['볼록 거울','mirror:convex'],['볼록거울','mirror:convex'],['오목 렌즈','lens:concave'],['오목렌즈','lens:concave'],['거울','mirror'],['렌즈','lens'],['프리즘','prism'],['광원','lightbox'],['스크린','screen'],['전원 장치','power'],['전원장치','power'],['직류 전원','power'],['소리굽쇠','tuningfork'],['조흔판','streak'],['지층','strata'],['지구본','globe'],['지구의','globe'],['화강암','rock:granite'],['현무암','rock:basalt'],['사암','rock:sandstone'],['석회암','rock:limestone'],['셰일','rock:shale'],['역암','rock:conglomerate'],['편마암','rock:gneiss'],['대리암','rock:marble'],['석영','rock:quartz'],['방해석','rock:calcite'],['암석','rock'],['광물','rock:quartz'],['부피 플라스크','volumetric'],['부피플라스크','volumetric'],['압력 센서','sensor:pressure'],['온도 센서','sensor:temp'],['pH 센서','sensor:ph'],['이산화 탄소 센서','sensor:co2'],['이산화탄소 센서','sensor:co2'],['CO2 센서','sensor:co2'],['CO₂ 센서','sensor:co2'],['산소 센서','sensor:o2'],['조도 센서','sensor:light'],['빛 센서','sensor:light'],['힘 센서','sensor:force'],['센서','sensor'],['스마트기기','device'],['스마트 기기','device'],['태블릿','device'],['교반기','stirrer'],['마그네틱','stirbar'],['반투막','bag'],['셀로판','bag'],['케이블타이','cabletie'],['케이블 타이','cabletie'],['핀셋','tweezers'],['약포지','powder:paper'],['눈금실린더','cylinder'],['눈금 실린더','cylinder'],['메스실린더','cylinder'],['둥근바닥','roundflask'],['플라스크','flask'],['비커','beaker'],['시험관대','rack'],['시험관 꽂이','rack'],['시험관','tube'],['스포이트','dropper'],['피펫','dropper'],['알코올램프','lamp'],['알코올 램프','lamp'],['가스버너','gasburner'],['핫플레이트','hotplate'],['가열 장치','hotplate'],['가열장치','hotplate'],['온도계','thermometer'],['유리 막대','rod'],['유리막대','rod'],['약숟가락','spatula'],['약수저','spatula'],['깔때기','funnel'],['거름종이','paper:filter'],['여과지','paper:filter'],['리트머스','paper'],['시험지','paper'],['스탠드','stand'],['삼발이','tripod'],['쇠그물','tripod'],['저울','balance'],['초시계','stopwatch'],['스톱워치','stopwatch'],['타이머','stopwatch'],['페트리','dish'],['증발 접시','evapdish'],['증발접시','evapdish'],['시계 접시','watchglass'],['시계접시','watchglass'],['시약병','bottle'],['현미경','microscope'],['받침 유리','slide'],['받침유리','slide'],['덮개 유리','slide'],['슬라이드','slide'],['돋보기','magnifier'],['자석','magnet'],['나침반','compass'],['건전지','battery'],['전지','battery'],['전구','bulb'],['스위치','switch'],['전류계','ammeter'],['전압계','voltmeter'],['저항','resistor'],['전동기','motor'],['모터','motor'],['발광 다이오드','led'],['LED','led'],['전선','wire'],['용수철저울','springscale'],['용수철 저울','springscale'],['용수철','spring'],['나무 도막','block'],['나무도막','block'],['수레','cart'],['양초','candle'],['성냥','match'],['보안경','goggles'],['장갑','gloves'],['얼음','ice'],['종이컵','cup:paper'],['컵','cup'],['수조','trough'],['막자사발','mortar'],['막자','mortar'],['주사기','syringe'],['고무관','hose'],['식물','plant'],['화분','plant'],['잎','leaf'],['가루','powder'],['소금','powder'],['설탕','powder'],['증류수','bottle'],['구슬','ball'],['공','ball'],['빗면','ramp'],['자','ruler:1'],['추','weight:1'],['초','candle:1']];
+/* ---------- 입체 보기의 덧그림 (decal3, v1.20): 몸통은 labkit3d.js가 입체로 빚고, 여기서는 불꽃·김·표시판·글자처럼 얹히는 것만 그린다.
+   decal3이 없는 입체 부품(삼발이·스탠드·공 …)은 덧그림이 없다. 그릇(SHAPES)은 drawC(…, true) ---------- */
+T.lamp.decal3 = (el, g) => el.lit !== false ? flame(g.x, g.y - 52 * g.s, g.s) : '';
+T.gasburner.decal3 = (el, g) => el.lit !== false ? (el.flame === 'yellow' ? flame : blueFlame)(g.x, g.y - 64 * g.s, g.s) : '';
+T.candle.decal3 = (el, g) => el.lit === false ? '' : flame(g.x, g.y - (g.ch + 5) * g.s, .72 * g.s);
+T.hotplate.decal3 = (el, g) => el.on !== false && el.heat !== false ? `<g transform="${tfm(g)}"><path d="M-30,-40 q4,-5 0,-10 q-4,-5 0,-10 M0,-40 q4,-5 0,-10 q-4,-5 0,-10 M30,-40 q4,-5 0,-10 q-4,-5 0,-10" stroke="#f3a07d" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/></g>` : '';
+T.stirrer.decal3 = (el, g) => `<g transform="${tfm(g)}"><circle cy="-15" r="7.5" fill="none" stroke="${el.on !== false ? '#b14de0' : INK2}" stroke-width="1.8" stroke-dasharray="10 4"/></g>`;
+T.balance.decal3 = (el, g) => `<g transform="${tfm(g)}"><rect x="-36" y="-20" width="50" height="14" rx="3" fill="#24303d"/><text x="-11" y="-9.6" text-anchor="middle" font-size="10" font-weight="700" fill="#8dffbf">${esc(el.reading ?? '0.00 g')}</text><circle cx="26" cy="-13" r="3.6" fill="#e5484d"/><circle cx="38" cy="-13" r="3.6" fill="${INK2}"/></g>`;
+T.rack.decal3 = (el, g, cx) => {
+  const s = g.s, ws = shade(col(el.color, '#e6cfa9'), -.3); let o = '';
+  (el.tubes || []).forEach(tb => { o += cx.emit(tb); });
+  (el.tubes || []).forEach((tb, i) => { if (tb && tb.tag) o += `<circle cx="${r2(g.slots[i])}" cy="${r2(g.y - 60.5 * s)}" r="${r2(8.5 * s)}" fill="#fff" stroke="${ws}" stroke-width="1"/><text x="${r2(g.slots[i])}" y="${r2(g.y - 56.6 * s)}" font-size="${r2(11 * s)}" font-weight="800" text-anchor="middle" fill="#5a3d1c">${esc(tb.tag)}</text>`; });
+  return o;
+};
+T.tuberack.decal3 = (el, g, cx) => {
+  const s = g.s, c = col(el.color, '#a9d4f2'); let o = '';
+  (el.tubes || []).forEach(tb => { o += cx.emit(tb); });
+  (el.tubes || []).forEach((tb, i) => { if (tb && tb.tag) o += `<text x="${r2(g.slots[i])}" y="${r2(g.y - 2.4 * s)}" font-size="${r2(7.5 * s)}" font-weight="800" text-anchor="middle" fill="${shade(c, -.62)}">${esc(tb.tag)}</text>`; });
+  return o;
+};
+T.funnel.decal3 = (el, g) => el.drip && g.to != null ? dropAnim(g.x + 1.5, g.y, g.to, col(el.dripColor, el.paper !== false ? 'water' : el.color || 'water'), 2, 1.1) : '';
+T.evapdish.decal3 = (el, g) => el.steam ? steam(g.x, g.y - 30 * g.s, g.s) : '';
+T.block.decal3 = (el, g) => { const w = g.bw ?? 56, h = g.bh ?? 34, c = col(el.color, '#ddb07a'); return `<g transform="${tfm(g)}">${el.color ? '' : `<path d="M${-w / 2 + 6},${-h * .65} q${w * .25},-5 ${w * .5},0 t${w * .35},0 M${-w / 2 + 10},${-h * .3} q${w * .2},4 ${w * .45},0" stroke="${shade(c, -.18)}" stroke-width="1.2" fill="none"/>`}${el.text ? `<text y="${-h / 2 + 4}" font-size="11" font-weight="800" text-anchor="middle" fill="#2d3343">${esc(el.text)}</text>` : ''}</g>`; };
+T.magnet.decal3 = (el, g) => {
+  const f = el.flip ? -1 : 1; let o = '';
+  if (el.field) [16, 30, 46].forEach((h, i) => { o += `<path d="M${-50 * f},-14 C${-50 * f},${-14 - h * 1.4} ${50 * f},${-14 - h * 1.4} ${50 * f},-14" fill="none" stroke="${INK2}" stroke-width="1.3" stroke-dasharray="4 4" opacity="${.9 - i * .2}"/>`; });
+  return `<g transform="${tfm(g)}">${o}<text x="${-27 * f}" y="-8" font-size="15" font-weight="800" text-anchor="middle" fill="#fff">N</text><text x="${27 * f}" y="-8" font-size="15" font-weight="800" text-anchor="middle" fill="#fff">S</text></g>`;
+};
+
 /* ---------- 입체(3D) 보기: 그리는 일은 labkit3d.js가 하고, 이 엔진은 장면을 카드 묶음으로 나눠 넘긴다 ---------- */
-// 배경·실험대 띠 없이 그린 SVG (카드 묶음마다 <g data-u3>)와 이름표 목록. 이름표는 입체 화면에서 글자로 띄운다
+// 데이터로 넘길 값만 (함수·그릇 모양 객체·밑줄 이름 빼고)
+const plain3 = (v, d = 0) => v == null || typeof v === 'number' || typeof v === 'string' || typeof v === 'boolean' ? v
+  : d > 3 ? undefined : Array.isArray(v) ? v.map(x => plain3(x, d + 1))
+  : typeof v === 'object' && Object.getPrototypeOf(v) === Object.prototype ? Object.fromEntries(Object.entries(v).filter(([k, x]) => k[0] !== '_' && k !== 'S' && k !== 'tubes' && k !== 'wells' && typeof x !== 'function').map(([k, x]) => [k, plain3(x, d + 1)])) : undefined;
+// 배경·실험대 띠 없이 그린 SVG (부품마다 <g data-u3 data-e3>)와 이름표·부품 목록. 이름표는 입체 화면에서 글자로 띄운다.
+// o.mesh3: 입체로 빚을 부품 이름 목록 (labkit3d.js가 정한다). 그 부품은 덧그림만 그리고, els[e].g에 자리·크기를 넘긴다
 function scene3(items, o = {}) {
   const prev = ANIM; ANIM = false;
   try {
-    const { body, cx } = build(items, { ...o, u3: true });
-    const labels = cx.labels.filter(l => l.text != null && l.text !== '' && l.u != null).map(l => { const p = l.a || l; return { u: l.u, x: r2(p.x), y: r2(p.y), text: String(l.text), pin: !!l.a, tone: l.tone || '' }; });
-    return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}"><defs><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs>${body}${cx.front.join('')}</svg>`, labels };
+    const { body, cx, all, U3 } = build(items, { ...o, u3: true });
+    const labels = cx.labels.filter(l => l.text != null && l.text !== '' && l.u != null).map(l => { const p = l.a || l; return { u: l.u, e: l.e, x: r2(p.x), y: r2(p.y), text: String(l.text), pin: !!l.a, tone: l.tone || '' }; });
+    const els = [], list = [], byId = {}, idx = el => el && el._e3 != null ? el._e3 : null;
+    all.forEach(el => { list.push(el); if (RACKS[el.t]) (el.tubes || []).forEach(tb => { if (tb && typeof tb === 'object') list.push(tb); }); });
+    list.forEach(el => { if (el.id) byId[el.id] = el; });
+    const ref = v => typeof v === 'string' ? idx(byId[v.replace(/:[+\-−]$/, '')]) : null;
+    list.forEach(el => { if (el._e3 == null) return; const g = el._g || {}; els[el._e3] = { e: el._e3, u: String(U3(el)), t: el.t, id: el.id ?? null, d3: !!el._3d, inE: ref(el.in), overE: ref(el.over), onE: ref(el.on), parentE: idx(el._parent), shape: g.S ? Object.keys(SHAPES).find(k => SHAPES[k] === g.S) || null : null, g: plain3(g), p: plain3(el) }; });
+    return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}"><defs><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs>${body}${cx.front.join('')}</svg>`, labels, els };
   } finally { ANIM = prev; }
+}
+// 그릇 모양 (입체 보기가 윤곽선을 돌려 유리·액체를 빚는다): 바깥 윤곽(outline), 안쪽(clip), 받침(foot)·코르크 고리(under)·병마개(cap)
+function shapes3() {
+  const d = m => (/ d="([^"]+)"/.exec(m || '') || [])[1] || null, fill = m => (/ fill="([^"]+)"/.exec(m || '') || [])[1] || null;
+  return Object.fromEntries(Object.entries(SHAPES).map(([k, S]) => {
+    const c = /<rect x="([-\d.]+)" y="([-\d.]+)" width="([\d.]+)" height="([\d.]+)"/.exec(S.cap || '');
+    return [k, { w: S.w, h: S.h, half: S.half, outline: S.outline, clip: S.clip, inner: { ...S.inner }, foot: d(S.foot), footFill: fill(S.foot), under: d(S.under), underFill: fill(S.under), cap: c ? { x: +c[1], y: +c[2], w: +c[3], h: +c[4], fill: fill(S.cap) } : null, snap: !!S.snap, membrane: !!S.membrane }];
+  }));
 }
 // labkit3d.js는 누를 때만 이 엔진과 같은 버전을 불러온다 (--3d로 만든 한 파일 버전에는 이미 들어 있다). window.LK3D.src로 바꿀 수 있다 (점검용)
 let L3 = null;
@@ -2302,7 +2369,7 @@ function icon(spec, name) {
   return out;
 }
 function fit(root) { (root || document).querySelectorAll('svg[data-fit]').forEach(svg => { const g = svg.querySelector('.fit'); try { const b = g.getBBox(); if (b.width && b.height) { const p = Math.max(b.width, b.height) * .08 + 2; svg.setAttribute('viewBox', `${r2(b.x - p)} ${r2(b.y - p)} ${r2(b.width + 2 * p)} ${r2(b.height + 2 * p)}`); svg.removeAttribute('data-fit'); } } catch (e) { } }); }
-return { version: VERSION, scene, scene3, load3d, view3d, icon, fit, overlaps, layout, esc, col, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
+return { version: VERSION, scene, scene3, shapes3, load3d, view3d, icon, fit, overlaps, layout, esc, col, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
 })();
 window.LabKit = LabKit;
 function lkStart() {

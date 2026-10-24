@@ -222,6 +222,13 @@ U3_SCENE = [
     {"t": "note", "x": 380, "y": 50, "text": "관찰"}, {"t": "arrow", "from": [200, 60], "to": [260, 60]},
 ]
 U3_SAME = [["tripod", "lamp", "beaker", "thermometer", "stand"], ["flask", "trough", "hose"], ["note"], ["arrow"]]
+# 입체로 빚는 부품(v1.20): 입체 부품에 꽂히거나 든 것만 입체로. 평면 카드(원심분리기) 속 튜브는 카드로, 가는 온도계는 카드로
+M3_SCENE = [
+    {"t": "rack", "x": 120, "tubes": [{"id": "A", "fill": 0.4}, {"id": "B"}]}, {"t": "beaker", "id": "b", "x": 260, "fill": 0.5},
+    {"t": "thermometer", "id": "th", "in": "b"}, {"t": "centrifuge", "id": "cf", "x": 390}, {"t": "microtube", "id": "m1", "in": "cf"},
+]
+M3_TYPES = ["rack", "tube", "beaker", "microtube"]
+M3_WANT = {"rack": True, "tube#A": True, "tube#B": True, "beaker#b": True, "thermometer#th": False, "centrifuge#cf": False, "microtube#m1": False}
 
 
 def units3d_test():
@@ -241,7 +248,8 @@ def units3d_test():
     page = build(tpl, 'window.EXPERIMENT = {"title": "입체 묶음 시험", "steps": []};')
     post = ("<script>(function(){var r=LabKit.scene3(" + json.dumps(U3_SCENE, ensure_ascii=False) + "),d=document.createElement('div');"
             "d.innerHTML=r.svg;var u={};[].forEach.call(d.firstChild.children,function(g){if(g.dataset&&g.dataset.u3){(u[g.dataset.u3t]=u[g.dataset.u3t]||[]).push(g.dataset.u3)}});"
-            "var o=document.createElement('pre');o.id='lk-test';o.textContent=JSON.stringify({units:u,labels:r.labels});document.body.appendChild(o)})()</script>")
+            "var m=LabKit.scene3(" + json.dumps(M3_SCENE) + ",{mesh3:" + json.dumps(M3_TYPES) + "}),d3={};m.els.forEach(function(e){if(e)d3[e.t+(e.id?'#'+e.id:'')]=e.d3});"
+            "var o=document.createElement('pre');o.id='lk-test';o.textContent=JSON.stringify({units:u,labels:r.labels,d3:d3});document.body.appendChild(o)})()</script>")
     i = page.rindex("</body>")
     page = page[:i] + post + page[i:]
     with tempfile.TemporaryDirectory() as d:
@@ -250,7 +258,7 @@ def units3d_test():
         r = check_render.headless(exe, "--dump-dom", f.resolve().as_uri(), text=True, encoding="utf-8", errors="replace")
     m = re.search(r'<pre id="lk-test">(.*?)</pre>', r.stdout or "", re.S)
     if not m:
-        return fails + ["입체 묶음 시험: 화면을 읽지 못했어요"], 3
+        return fails + ["입체 묶음 시험: 화면을 읽지 못했어요"], 4
     got = json.loads(html.unescape(m.group(1)))
     unit = {t: set(v) for t, v in got["units"].items()}
     groups = []
@@ -264,7 +272,9 @@ def units3d_test():
     lab = [l for l in got["labels"] if l["text"] == "물"]
     if not lab or str(lab[0]["u"]) not in unit.get("beaker", set()):
         fails.append(f"입체 이름표: '물' 이름표가 비커 카드에 붙어야 해요 → {lab}")
-    return fails, 3
+    if got.get("d3") != M3_WANT:
+        fails.append(f"입체로 빚는 부품: {got.get('d3')} (기대 {M3_WANT})")
+    return fails, 4
 
 
 def main():

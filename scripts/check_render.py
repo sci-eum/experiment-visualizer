@@ -11,7 +11,8 @@
                 auto(기본): 스크립트 옆 ../assets/labkit.js가 있으면 그것으로, 없으면 인터넷(@1)으로
                 local: 내 폴더의 엔진으로 (공개 전에 고친 엔진을 시험할 때) · online: 인터넷 엔진 그대로 · 파일 경로
                 한 파일 버전은 HTML 안의 엔진을 그대로 쓴다. 결과 줄에 쓴 엔진 버전이 나온다.
-  --3d          입체 보기도 점검한다: 모든 단계를 입체로 그려 오류·그림 카드 실패·화면 밖으로 나간 묶음을 찾는다.
+  --3d          입체 보기도 점검한다: 모든 단계를 입체로 그려 오류·그림 카드 실패·화면 밖으로 나간 부품을 찾는다.
+                결과 줄에 입체로 빚은 부품(그릇·자주 쓰는 기구) 수와 2D 그림 카드 수가 나온다.
                 --shots와 함께 주면 3d-overview.png, 3d-step-01.png …도 만든다.
                 입체 엔진: HTML 안에 있으면 그것, 없으면 ../assets/labkit3d.js (--engine online이면 인터넷 @버전)
 결과: OK / WARN(겹침 의심만 있음, 종료 코드 0 — PNG로 실제로 가리는지 확인) / FAIL(오류·빈 화면, 종료 코드 1)
@@ -239,8 +240,8 @@ def check_one3d(f, path, exe, a, tmp, n, steps, reveals):
         errs.append(report['fail'])
     errs += [f"{r.get('title', '')}: {r['error']}" for r in scenes if r.get('error')]
     status = 'FAIL' if errs or report is None else 'WARN' if outs else 'OK'
-    cards = sum(r.get('units', 0) for r in scenes)
-    print(f'3D {status}  {f}  (장면 {len(scenes)}개, 그림 카드 {cards}장, 입체 엔진 v{ver} {src})')
+    cards, meshes = sum(r.get('units', 0) for r in scenes), sum(r.get('meshes', 0) for r in scenes)
+    print(f'3D {status}  {f}  (장면 {len(scenes)}개, 입체 부품 {meshes}개, 그림 카드 {cards}장, 입체 엔진 v{ver} {src})')
     for m in dict.fromkeys(errs + outs):
         print('   ', m)
     if report is None and not errs:
