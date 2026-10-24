@@ -54,7 +54,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.18.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.19.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -207,15 +207,25 @@ section{margin:40px 0}
 .pmenu button:hover,.pmenu button:focus-visible{background:var(--primary-50);outline:none}
 .pmenu b{font-size:15px}.pmenu span{font-size:13px;color:var(--ink-3);line-height:1.45}
 .pname{display:none}
+.v3-btn{position:absolute;right:10px;bottom:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:0;border-radius:999px;background:rgba(255,255,255,.94);color:var(--primary-ink);font:inherit;font-size:13px;font-weight:800;line-height:1.2;box-shadow:var(--sh-sm);cursor:pointer;transition:all .2s ease}
+.v3-btn svg{width:15px;height:15px}
+.v3-btn:hover{background:var(--primary-50);transform:translateY(-1px);box-shadow:var(--sh-md)}
+.v3-btn:focus-visible{outline:3px solid #e6b8fd;outline-offset:2px}
+.v3{position:fixed;inset:0;z-index:80;background:var(--bg);display:flex;flex-direction:column}
+.v3-top{display:flex;align-items:center;gap:12px;padding:12px 16px}
+.v3-title{flex:1;min-width:0;font-weight:800;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v3-chip{display:inline-block;margin-right:8px;padding:2px 8px;border-radius:8px;background:var(--primary);color:#fff;font-size:12px;vertical-align:2px}
+.v3-stage{position:relative;flex:1;min-height:0;margin:0 16px 16px;border-radius:20px;overflow:hidden;background:linear-gradient(#ffffff,#f4eefc);box-shadow:var(--sh-md)}
+.v3-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;margin:0;color:var(--ink-2);font-weight:600}
 @media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.dr-row{grid-template-columns:1fr}}
 @media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
-@media print{body{background:#fff}.dr-tools{display:none!important}.toolbar,.zoom-hint,.deck,.demo,.rv-btn,.save-note,.tm{display:none!important}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl th,.tbl td{border:1px solid #cfd4dd}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
+@media print{body{background:#fff}.dr-tools{display:none!important}.toolbar,.zoom-hint,.v3-btn,.v3,.deck,.demo,.rv-btn,.save-note,.tm{display:none!important}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl th,.tbl td{border:1px solid #cfd4dd}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
 if (!document.getElementById('lk-css')) { const st = document.createElement('style'); st.id = 'lk-css'; st.textContent = CSS; document.head.appendChild(st); }
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.18.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.19.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -2059,6 +2069,19 @@ function groups(all, byId) {
   const ids = new Map();
   return el => { const r = find(el); if (!ids.has(r)) ids.set(r, ids.size + 1); return ids.get(r); };
 }
+// 입체 보기(v1.19)의 그림 카드 묶음: 겹침 점검의 한 장치에 스탠드가 잡은 것, 관·전선(from·to), link로 이은 것까지 더한다
+const CONNECT = new Set(['hose', 'wire', 'tubing']);
+function units3(all, byId) {
+  const base = groups(all, byId), up = new Map(), find = k => { while (up.has(k)) k = up.get(k); return k; };
+  const ref = v => typeof v === 'string' ? byId[v.replace(/:[+\-−]$/, '')] : null;
+  const join = (a, b) => { if (a && b) { const ra = find(base(a._parent || a)), rb = find(base(b._parent || b)); if (ra !== rb) up.set(ra, rb); } };
+  all.forEach(el => {
+    if (el.t === 'stand') [].concat(el.hold ?? []).forEach(h => join(el, ref(h)));
+    if (el.link) join(el, ref(el.link));
+    if (CONNECT.has(el.t)) ['from', 'to'].forEach(k => join(el, ref(el[k])));
+  });
+  return el => find(base(el._parent || el));
+}
 const STEP = 3;
 // 한 부품에 대해 "이 점(장면 좌표)이 칠해진 곳인가"를 답하는 함수
 function painter(n, box) {
@@ -2182,7 +2205,8 @@ function build(items, o = {}) {
   const R = ref => { const el = typeof ref === 'string' ? byId[ref] : ref; if (!el || typeof el !== 'object') return null; if (el._g) return el._g; if (busy.has(el)) return null; busy.add(el); const Tp = T[el.t] || T._unknown; try { el._g = Tp.geo(el, R); } catch (e) { console.warn('[LabKit] 배치 오류', el, e); el._g = { x: el.x ?? 240, y: el.y ?? BENCH, s: 1 }; } busy.delete(el); return el._g; };
   all.forEach(el => R(el));
   if (o.lint) lint(all, byId, o.label);
-  const grp = groups(all, byId);
+  const grp = groups(all, byId), U3 = o.u3 ? units3(all, byId) : null;
+  const wrap3 = (el, s) => U3 && s ? `<g data-u3="${U3(el)}" data-u3t="${esc(el.t)}">${s}</g>` : s;
   const tag = (el, g, s) => {
     if (el._parent || OV_SKIP.has(el.t) || !T[el.t]) return s;
     const b = g.box ? ` data-lk-box="${[g.box.x, g.box.y, g.box.w, g.box.h].map(r2).join(',')}"` : '';
@@ -2191,7 +2215,9 @@ function build(items, o = {}) {
   const P = uid('s'), cx = { front: [], labels: [], defs: [], R, sh: P + 'sh' };
   const behindOf = el => { const id = el.in || (el.t === 'funnel' ? el.over : null); return id && byId[id] ? id : null; };
   const behind = {}; all.forEach(el => { const id = behindOf(el); if (id) (behind[id] ||= []).push(el); });
-  const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }; g._sh = cx.sh; let s = ''; try { s = Tp.draw(el, g, cx) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true; return tag(el, g, s); };
+  const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }, f0 = cx.front.length, l0 = cx.labels.length; g._sh = cx.sh; let s = ''; try { s = Tp.draw(el, g, cx) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true;
+    if (U3) { for (let k = f0; k < cx.front.length; k++) cx.front[k] = wrap3(el, cx.front[k]); for (let k = l0; k < cx.labels.length; k++) cx.labels[k].u ??= U3(el); } // 앞 층·이름표도 그 부품의 카드로
+    return wrap3(el, tag(el, g, s)); };
   // 그릇 안의 그릇(수조 속 시험관 등)은 바깥 그릇 앞에 그리고, 잠긴 부분에 물빛을 다시 덮는다.
   // 액체·얼음물이 든 그릇이면 in으로 넣은 온도계·유리 막대·센서 같은 부품도 같이 앞에 그린다 (뒤에 그리면 유리와 액체에 가려
   // 빨간 기둥이 안 보이고, 그릇 속 그릇이 함께 있으면 물빛이 한 번 더 덮여 더 흐려진다). 빈 그릇이면 예전처럼 뒤에 그린다.
@@ -2203,7 +2229,7 @@ function build(items, o = {}) {
     const front = SHAPES[el.t] ? kids.filter(b => SHAPES[b.t] || (wet && b.in === el.id)) : cov || (T[el.t] || {}).kidsFront ? kids : []; // kidsFront: 위에서 본 배지처럼 넣은 것이 늘 앞
     kids.forEach(b => { if (!front.includes(b) && !b._done) s += emit(b); });
     s += drawOne(el);
-    if (front.length) { front.forEach(b => { if (!b._done) s += emit(b); }); s += veil(el, R(el)) + cov; }
+    if (front.length) { front.forEach(b => { if (!b._done) s += emit(b); }); s += wrap3(el, veil(el, R(el)) + cov); }
     return s;
   };
   cx.emit = emit;
@@ -2217,6 +2243,49 @@ function scene(items, o = {}) {
   return `<svg class="scene" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.label || '실험 장면')}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="${P}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#faf6ff"/></linearGradient><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs><rect width="${W}" height="${H}" fill="url(#${P}bg)"/>${bench ? `<rect y="${BENCH}" width="${W}" height="${H - BENCH}" fill="#f2ecf9"/><rect y="${BENCH}" width="${W}" height="2" fill="#e4d9f1"/>` : ''}${body}${cx.front.join('')}${layoutLabels(cx.labels, cx.sh)}${o.grid ? grid() : ''}</svg>`;
 }
 const GUESS = [['분광기','spectroscope'],['방전관','discharge'],['고전압','discharge'],['적외선 온도계','meter:ir'],['비접촉 온도계','meter:ir'],['점화기','lighter'],['라이터','lighter'],['커터','knife'],['실험용 칼','knife'],['해부용 칼','knife'],['칼','knife:1'],['거치대','microscope:phone'],['감자','piece:potato'],['생간','piece:liver'],['간 조각','piece:liver'],['양파','piece:onion'],['무 조각','piece:radish'],['두부','piece:tofu'],['바나나','piece:banana'],['사과','piece:apple'],['설탕물','bottle'],['소금물','bottle'],['석회수','bottle'],['수용액','bottle'],['용액','bottle'],['스마트폰','device'],['휴대폰','device'],['휴대 전화','device'],['휴대전화','device'],['향','splint:1'],['불씨','splint'],['면봉','swab'],['모세관','capillary'],['눈금 피펫','glasspipette'],['메스 피펫','glasspipette'],['홀 피펫','glasspipette:volumetric'],['부피 피펫','glasspipette:volumetric'],['피펫 필러','filler'],['피펫필러','filler'],['한천 배지','agar'],['고체 배지','agar'],['배지','agar'],['종이 디스크','paper:disk'],['항생제 디스크','paper:disk'],['TLC','tlc'],['박층 크로마토그래피','tlc'],['크로마토그래피 종이','tlc:paper'],['항온기','appliance:incubator'],['배양기','appliance:incubator'],['인큐베이터','appliance:incubator'],['전자레인지','appliance:microwave'],['전기 포트','appliance:kettle'],['전기포트','appliance:kettle'],['검류계','meter:galvano'],['9 V 건전지','battery:9v'],['9V 건전지','battery:9v'],['9볼트 건전지','battery:9v'],['사각 건전지','battery:9v'],['건전지 끼우개','battery:holder'],['건전지 홀더','battery:holder'],['전지 끼우개','battery:holder'],['코일','coil'],['솔레노이드','coil'],['탄소 막대','electrode:rod'],['탄소 전극','electrode:rod'],['전극','electrode'],['금속판','electrode'],['저마찰 트랙','track'],['역학 트랙','track'],['역학 레일','track'],['포토게이트','photogate'],['광게이트','photogate'],['광 게이트','photogate'],['속력 측정기','photogate'],['도르래','pulley'],['추걸이','weight:hanger'],['삼각대','camera'],['카메라','camera'],['책상','table'],['오목받침 유리','wellplate:slide'],['오목 받침 유리','wellplate:slide'],['오목받침유리','wellplate:slide'],['홈판','wellplate'],['웰 플레이트','wellplate'],['웰플레이트','wellplate'],['pH 미터','meter:ph'],['pH미터','meter:ph'],['pH 측정기','meter:ph'],['디지털 온도계','meter:temp'],['탐침 온도계','meter:temp'],['멀티미터','meter:multi'],['멀티 미터','meter:multi'],['멀티테스터','meter:multi'],['멀티 테스터','meter:multi'],['디지털 전압계','meter:multi'],['디지털 전류계','meter:multi'],['전기 전도계','meter:conduct'],['전도계','meter:conduct'],['마이크로피펫','micropipette'],['마이크로 피펫','micropipette'],['튜브 꽂이','tuberack'],['튜브꽂이','tuberack'],['튜브 랙','tuberack'],['튜브랙','tuberack'],['마이크로튜브','microtube'],['마이크로 튜브','microtube'],['E-tube','microtube'],['에펜도르프','microtube'],['PCR 튜브','pcrtube'],['PCR튜브','pcrtube'],['스핀 컬럼','spincolumn'],['스핀컬럼','spincolumn'],['스핀 칼럼','spincolumn'],['바인딩 컬럼','spincolumn'],['Binding Column','spincolumn'],['원심분리기','centrifuge'],['원심 분리기','centrifuge'],['PCR 기기','thermocycler'],['PCR기기','thermocycler'],['써멀 사이클러','thermocycler'],['써멀사이클러','thermocycler'],['열 순환기','thermocycler'],['열순환기','thermocycler'],['전기 영동','geltank'],['전기영동','geltank'],['UV 램프','uvlamp'],['UV램프','uvlamp'],['자외선 램프','uvlamp'],['자외선램프','uvlamp'],['UV 조명','uvlamp'],['자외선 조명','uvlamp'],['트랜스일루미네이터','uvlamp'],['냉동고','freezer'],['냉장고','freezer'],['가지 달린','roundflask:arm'],['가지달린','roundflask:arm'],['뷰렛','burette'],['집기병','gasjar'],['분별 깔때기','sepfunnel'],['분별깔때기','sepfunnel'],['냉각기','condenser'],['리비히','condenser'],['가스 버너','gasburner'],['분젠','gasburner'],['오목 거울','mirror:concave'],['오목거울','mirror:concave'],['볼록 거울','mirror:convex'],['볼록거울','mirror:convex'],['오목 렌즈','lens:concave'],['오목렌즈','lens:concave'],['거울','mirror'],['렌즈','lens'],['프리즘','prism'],['광원','lightbox'],['스크린','screen'],['전원 장치','power'],['전원장치','power'],['직류 전원','power'],['소리굽쇠','tuningfork'],['조흔판','streak'],['지층','strata'],['지구본','globe'],['지구의','globe'],['화강암','rock:granite'],['현무암','rock:basalt'],['사암','rock:sandstone'],['석회암','rock:limestone'],['셰일','rock:shale'],['역암','rock:conglomerate'],['편마암','rock:gneiss'],['대리암','rock:marble'],['석영','rock:quartz'],['방해석','rock:calcite'],['암석','rock'],['광물','rock:quartz'],['부피 플라스크','volumetric'],['부피플라스크','volumetric'],['압력 센서','sensor:pressure'],['온도 센서','sensor:temp'],['pH 센서','sensor:ph'],['이산화 탄소 센서','sensor:co2'],['이산화탄소 센서','sensor:co2'],['CO2 센서','sensor:co2'],['CO₂ 센서','sensor:co2'],['산소 센서','sensor:o2'],['조도 센서','sensor:light'],['빛 센서','sensor:light'],['힘 센서','sensor:force'],['센서','sensor'],['스마트기기','device'],['스마트 기기','device'],['태블릿','device'],['교반기','stirrer'],['마그네틱','stirbar'],['반투막','bag'],['셀로판','bag'],['케이블타이','cabletie'],['케이블 타이','cabletie'],['핀셋','tweezers'],['약포지','powder:paper'],['눈금실린더','cylinder'],['눈금 실린더','cylinder'],['메스실린더','cylinder'],['둥근바닥','roundflask'],['플라스크','flask'],['비커','beaker'],['시험관대','rack'],['시험관 꽂이','rack'],['시험관','tube'],['스포이트','dropper'],['피펫','dropper'],['알코올램프','lamp'],['알코올 램프','lamp'],['가스버너','gasburner'],['핫플레이트','hotplate'],['가열 장치','hotplate'],['가열장치','hotplate'],['온도계','thermometer'],['유리 막대','rod'],['유리막대','rod'],['약숟가락','spatula'],['약수저','spatula'],['깔때기','funnel'],['거름종이','paper:filter'],['여과지','paper:filter'],['리트머스','paper'],['시험지','paper'],['스탠드','stand'],['삼발이','tripod'],['쇠그물','tripod'],['저울','balance'],['초시계','stopwatch'],['스톱워치','stopwatch'],['타이머','stopwatch'],['페트리','dish'],['증발 접시','evapdish'],['증발접시','evapdish'],['시계 접시','watchglass'],['시계접시','watchglass'],['시약병','bottle'],['현미경','microscope'],['받침 유리','slide'],['받침유리','slide'],['덮개 유리','slide'],['슬라이드','slide'],['돋보기','magnifier'],['자석','magnet'],['나침반','compass'],['건전지','battery'],['전지','battery'],['전구','bulb'],['스위치','switch'],['전류계','ammeter'],['전압계','voltmeter'],['저항','resistor'],['전동기','motor'],['모터','motor'],['발광 다이오드','led'],['LED','led'],['전선','wire'],['용수철저울','springscale'],['용수철 저울','springscale'],['용수철','spring'],['나무 도막','block'],['나무도막','block'],['수레','cart'],['양초','candle'],['성냥','match'],['보안경','goggles'],['장갑','gloves'],['얼음','ice'],['종이컵','cup:paper'],['컵','cup'],['수조','trough'],['막자사발','mortar'],['막자','mortar'],['주사기','syringe'],['고무관','hose'],['식물','plant'],['화분','plant'],['잎','leaf'],['가루','powder'],['소금','powder'],['설탕','powder'],['증류수','bottle'],['구슬','ball'],['공','ball'],['빗면','ramp'],['자','ruler:1'],['추','weight:1'],['초','candle:1']];
+/* ---------- 입체(3D) 보기: 그리는 일은 labkit3d.js가 하고, 이 엔진은 장면을 카드 묶음으로 나눠 넘긴다 ---------- */
+// 배경·실험대 띠 없이 그린 SVG (카드 묶음마다 <g data-u3>)와 이름표 목록. 이름표는 입체 화면에서 글자로 띄운다
+function scene3(items, o = {}) {
+  const prev = ANIM; ANIM = false;
+  try {
+    const { body, cx } = build(items, { ...o, u3: true });
+    const labels = cx.labels.filter(l => l.text != null && l.text !== '' && l.u != null).map(l => { const p = l.a || l; return { u: l.u, x: r2(p.x), y: r2(p.y), text: String(l.text), pin: !!l.a, tone: l.tone || '' }; });
+    return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}"><defs><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs>${body}${cx.front.join('')}</svg>`, labels };
+  } finally { ANIM = prev; }
+}
+// labkit3d.js는 누를 때만 이 엔진과 같은 버전을 불러온다 (--3d로 만든 한 파일 버전에는 이미 들어 있다). window.LK3D.src로 바꿀 수 있다 (점검용)
+let L3 = null;
+function load3d() {
+  if (window.LabKit3D) return Promise.resolve(window.LabKit3D);
+  if (L3) return L3;
+  const src = (window.LK3D && window.LK3D.src) || `https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@${VERSION}/assets/labkit3d.min.js`;
+  L3 = new Promise((ok, no) => {
+    const s = document.createElement('script'); s.src = src; s.async = true;
+    s.onload = () => window.LabKit3D ? ok(window.LabKit3D) : no(new Error('입체 엔진이 비어 있어요'));
+    s.onerror = () => no(new Error('입체 엔진을 불러오지 못했어요: ' + src));
+    document.head.appendChild(s);
+  });
+  L3.catch(() => { L3 = null; }); // 다음에 누르면 다시 해 본다
+  return L3;
+}
+// 입체 보기 창: 틀(제목·닫기)은 바로 띄우고, 그림은 엔진을 불러온 뒤 채운다. { items, title, bench } → { close }
+function view3d(o = {}) {
+  const host = document.fullscreenElement || document.body, last = document.activeElement, box = document.createElement('div');
+  box.className = 'v3'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', `${o.title || '실험 장면'} 입체로 보기`);
+  box.innerHTML = `<div class="v3-top"><div class="v3-title"><span class="v3-chip">3D</span>${esc(o.title || '실험 장면')}</div><button class="btn icon" type="button" data-v3x aria-label="닫기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="v3-stage"><p class="v3-msg">입체 그림을 준비하는 중이에요…</p></div>`;
+  host.appendChild(box);
+  let inst = null, closed = false;
+  const stage = box.querySelector('.v3-stage'), fail = msg => { stage.innerHTML = `<p class="v3-msg">${esc(msg)}</p>`; };
+  const key = ev => { if (ev.key === 'Escape') { ev.preventDefault(); close(); } else if (inst && inst.key) inst.key(ev); ev.stopPropagation(); }; // 수업 모드의 화살표·Esc로 넘어가지 않게
+  const close = () => { if (closed) return; closed = true; document.removeEventListener('keydown', key, true); try { if (inst) inst.dispose(); } catch (e) { } box.remove(); if (last && last.focus) last.focus(); };
+  document.addEventListener('keydown', key, true);
+  box.addEventListener('click', ev => { if (ev.target.closest('[data-v3x]')) close(); });
+  box.querySelector('[data-v3x]').focus();
+  load3d().then(K => { if (closed) return; if (K.version !== VERSION) warn(`입체 엔진(v${K.version})과 그림 엔진(v${VERSION})의 버전이 달라요`); stage.innerHTML = ''; inst = K.open(stage, o); },
+    err => { if (closed) return; console.warn('[LabKit] ' + err.message); fail('입체 그림을 불러오지 못했어요. 인터넷에 연결되어 있는지 확인해 주세요. 2D 그림은 그대로 볼 수 있어요.'); })
+    .catch(err => { if (closed) return; console.warn('[LabKit] 입체 보기 오류', err); fail(err && err.code === 'nogl' ? '이 기기(브라우저)에서는 입체 그림을 열 수 없어요. 그래픽 가속(WebGL)이 꺼져 있을 수 있어요. 2D 그림으로 보세요.' : '입체 그림을 그리지 못했어요. 2D 그림으로 보세요.'); });
+  return { close };
+}
 function guess(name) {
   const n = String(name || '').replace(/\(.*?\)/g, '').trim();
   for (const [k, v] of GUESS) { const [t, flag] = v.split(':'); if (flag === '1') { if (n === k || n.startsWith(k + ' ')) return { t }; continue; } if (n.includes(k)) return flag === 'phone' ? { t, phone: true } : flag === 'filter' ? { t, kind: 'filter' } : flag === 'paper' ? { t, paper: true } : flag === 'arm' ? { t, arm: true } : flag ? { t, kind: flag } : t === 'bottle' ? { t, text: n.replace(/^[\d.,%\s~M]+/, '').slice(0, 5), fill: .55 } : { t }; }
@@ -2233,7 +2302,7 @@ function icon(spec, name) {
   return out;
 }
 function fit(root) { (root || document).querySelectorAll('svg[data-fit]').forEach(svg => { const g = svg.querySelector('.fit'); try { const b = g.getBBox(); if (b.width && b.height) { const p = Math.max(b.width, b.height) * .08 + 2; svg.setAttribute('viewBox', `${r2(b.x - p)} ${r2(b.y - p)} ${r2(b.width + 2 * p)} ${r2(b.height + 2 * p)}`); svg.removeAttribute('data-fit'); } } catch (e) { } }); }
-return { version: VERSION, scene, icon, fit, overlaps, layout, esc, col, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
+return { version: VERSION, scene, scene3, load3d, view3d, icon, fit, overlaps, layout, esc, col, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
 })();
 window.LabKit = LabKit;
 function lkStart() {
@@ -2256,7 +2325,8 @@ const IC = {
   right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
   star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>',
   eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
-  full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'
+  full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+  cube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 2.8l8.2 4.6v9.2L12 21.2l-8.2-4.6V7.4z"/><path d="M3.8 7.4L12 12l8.2-4.6M12 12v9.2"/></svg>'
 };
 const md = s => e(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
 const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
@@ -2399,14 +2469,24 @@ const writeBox = (id, ph, cls) => `<div class="write${cls ? ' ' + cls : ''}" con
 const predictBox = (st, i) => arr(st.predict).filter(Boolean).map((q, k) => `<div class="box pred"><span class="bi">예상</span><div>${md(q)}${writeBox(ak(`p${i}.${k}`), '내 예상을 적어요')}</div></div>`).join('');
 // 결과 보기: reveal은 글자 하나, 또는 { text, scene } / { text, change, add, remove } (그 단계 장면을 이어받아 바꾼다)
 const revealOf = st => !st.reveal ? null : typeof st.reveal === 'string' ? { text: st.reveal } : st.reveal;
-function revealScene(st, i) {
-  const r = revealOf(st); if (!r || !(r.scene || r.change || r.add || r.remove)) return '';
+function revealItems(st, i) {
+  const r = revealOf(st); if (!r || !(r.scene || r.change || r.add || r.remove)) return null;
   const where = `${i + 1}단계 결과: ${st.title || ''}`;
-  try { return LabKit.scene(r.scene ? resolveScene(r.scene, i, where, [i]) : resolveScene({ from: 'self', remove: r.remove, change: r.change, add: r.add }, i, where, []), { grid: GRID, bench: st.bench, label: where }); } catch (err) { console.error(err); return ''; }
+  return r.scene ? resolveScene(r.scene, i, where, [i]) : resolveScene({ from: 'self', remove: r.remove, change: r.change, add: r.add }, i, where, []);
+}
+function revealScene(st, i) {
+  try { const it = revealItems(st, i); return it ? LabKit.scene(it, { grid: GRID, bench: st.bench, label: `${i + 1}단계 결과: ${st.title || ''}` }) : ''; } catch (err) { console.error(err); return ''; }
+}
+// 입체로 보기: 지금 보이는 장면(결과 보기를 눌렀으면 결과 장면)을 연다
+function open3d(i) {
+  const st = steps[i]; if (!st) return;
+  let rv = null; try { rv = rvOn.has(i) ? revealItems(st, i) : null; } catch (err) { console.error(err); }
+  LabKit.view3d({ items: rv || sceneItems(i), bench: st.bench, title: `${i + 1}단계: ${st.title || ''}${rv ? ' — 결과' : ''}` });
 }
 const rvOn = new Set(), rvKey = k => /^\d+$/.test(k) ? +k : k;
 const revealUi = (st, i) => { const r = revealOf(st); return r ? `<button class="btn sm rv-btn" type="button" data-rv="${i}" aria-pressed="${rvOn.has(i)}">${IC.eye}<span class="rv-l">${rvOn.has(i) ? '과정 보기' : '결과 보기'}</span></button>${r.text ? `<div class="rv-text">${box('res', '결과', r.text)}</div>` : ''}` : ''; };
-const sceneBlock = (st, i) => { const rs = revealScene(st, i); return `<div class="scene-box"><div class="sc-main">${sceneOf(st, i)}</div>${rs ? `<div class="sc-rv" data-rvi="${i}">${rs}</div>` : ''}</div>`; };
+const has3d = i => { try { return sceneItems(i).length > 0; } catch (err) { return false; } };
+const sceneBlock = (st, i) => { const rs = revealScene(st, i); return `<div class="scene-box"><div class="sc-main">${sceneOf(st, i)}</div>${rs ? `<div class="sc-rv" data-rvi="${i}">${rs}</div>` : ''}${has3d(i) ? `<button class="v3-btn" type="button" data-v3="${i}" aria-label="${i + 1}단계 그림을 입체(3D)로 보기" title="입체(3D)로 보기">${IC.cube}3D</button>` : ''}</div>`; };
 // 원문 대응 기록 (교사용): 원문 위치·근거 문장·판독 상태·원문에 없이 더한 것. 화면에서는 '원문 대조 보기'로, 교사용 인쇄에는 늘 보인다
 const ADDED = { tip: '팁', warn: '주의', point: '강조', predict: '예상', observe: '관찰', reveal: '결과 보기', scene: '그림', text: '설명', time: '시간' };
 const hasOrigin = steps.some(st => st.origin && typeof st.origin === 'object');
@@ -2520,7 +2600,7 @@ function openDeck(i) {
   deck.hidden = false; document.body.style.overflow = 'hidden'; showSlide(i); deck.querySelector('[data-next]').focus();
 }
 function closeDeck() { deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(app); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
-deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
+deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.v3 != null) return open3d(+b.dataset.v3); if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
 document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].res && (res.expect || res.conclusion)) toggleReveal('res'); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
 let tx = null; deck.addEventListener('touchstart', ev => { tx = ev.touches[0].clientX; }, { passive: true }); deck.addEventListener('touchend', ev => { if (tx == null) return; const dx = ev.changedTouches[0].clientX - tx; if (Math.abs(dx) > 60) showSlide(cur + (dx < 0 ? 1 : -1)); tx = null; });
 
@@ -2530,6 +2610,17 @@ function afterFonts(f) {
   if (!document.fonts || !document.fonts.load) return f();
   const txt = [...document.querySelectorAll('svg text')].map(t => t.textContent).join('') || '가A1';
   Promise.all(['500', '600', '700', '800'].map(w => document.fonts.load(`${w} 12px "Pretendard Variable"`, txt))).catch(() => { }).then(() => document.fonts.ready).then(f, f);
+}
+// 입체 그림 점검 화면 (check_render.py --3d): ?shot3d=3 은 3단계(3r은 결과) 하나를 크게, ?shot3d=all 은 모든 단계를 한 장에.
+// &view=front·angle·top 으로 시점을 고른다. 다 그리면 <html data-lk3d>에 결과를 적는다 (점검기가 읽는다)
+if (Q.has('shot3d')) {
+  const v = Q.get('shot3d'), all = v === 'all';
+  const list = all ? steps.flatMap((st, i) => { let r = null; try { r = revealItems(st, i); } catch (err) { } return r ? [i, `${i}r`] : [i]; }) : [/r$/.test(v) ? `${(parseInt(v) || 1) - 1}r` : (+v || 1) - 1];
+  const scenes = list.map(k => { const r = typeof k === 'string', i = parseInt(k), st = steps[i] || {}; let items = []; try { items = (r ? revealItems(st, i) : sceneItems(i)) || []; } catch (err) { console.error(err); } return { title: `${i + 1}. ${st.title || ''}${r ? ' — 결과' : ''}`, items, bench: st.bench }; });
+  app.removeAttribute('aria-busy'); app.innerHTML = '';
+  LabKit.load3d().then(K => K.shot(app, scenes, { view: Q.get('view') || 'angle', size: all ? [480, 300] : [960, 600] }))
+    .catch(err => { console.error('[LabKit] 입체 점검 실패: ' + (err && err.message)); document.documentElement.dataset.lk3d = JSON.stringify({ fail: String(err && err.message) }); });
+  return;
 }
 // 그림 점검용 촬영 화면 (check_render.py --shots): ?shot=3 은 3단계 장면 하나를 크게, ?shot=all 은 모든 장면을 한 장에
 if (Q.has('shot')) {
@@ -2559,6 +2650,7 @@ app.addEventListener('click', ev => {
   if (t.closest('.pbtn')) return setMenu(pmenu.hidden);
   const pm = t.closest('[data-pmode]'); if (pm) { setMenu(false); return printAs(pm.dataset.pmode); }
   const rv = t.closest('[data-rv]'); if (rv) return toggleReveal(rvKey(rv.dataset.rv));
+  const v3 = t.closest('[data-v3]'); if (v3) return open3d(+v3.dataset.v3);
   if (t.closest('[data-clear]')) return clearWrites();
   const ob = t.closest('[data-origin]'); if (ob) { const on = document.documentElement.classList.toggle('lk-origin'); ob.setAttribute('aria-pressed', on); ob.textContent = on ? '원문 대조 감추기' : '원문 대조 보기'; return; }
   if (t.closest('[data-w], [data-skg]')) return; // 적는 칸·그림 칸을 누르면 수업 모드를 열지 않는다

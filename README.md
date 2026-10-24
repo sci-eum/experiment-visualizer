@@ -21,6 +21,7 @@
 
 - 단계 카드를 누르거나 **수업 모드로 보기**를 누르면 한 단계씩 크게 보입니다. ← → 키(또는 화면 밀기)로 넘기고 전체 화면으로 띄울 수 있습니다.
 - 거품, 김, 불꽃, 떨어지는 방울, 젓는 유리 막대가 살짝 움직여 동작을 보여 줍니다.
+- 장면 그림 오른쪽 아래의 **3D**를 누르면 그 단계를 실험대 위에 세워 **입체로 돌려 볼 수 있습니다** (끌어서 돌리기, 휠·두 손가락으로 확대, 앞에서·비스듬히·위에서 시점). 지금은 기구를 2D 그림 카드로 세워 보여 줍니다. 입체 엔진은 처음 누를 때 인터넷에서 불러오고, `--3d`로 만들면 파일 안에 들어가 인터넷 없이도 됩니다.
 - 결과 기록표의 빈칸, 생각해 보기 질문의 답, **예상하기** 칸에 화면에서 바로 적을 수 있습니다 (그 기기의 브라우저에만 저장). 자료를 고쳐 단계·질문을 끼워 넣어도 적은 답이 제 질문을 따라갑니다.
 - 실험지가 관찰한 모습을 그리게 하면 **그림 칸**(현미경 시야 원, 빈 네모, 극좌표 원)이 생겨 손가락·마우스·펜으로 그릴 수 있습니다 (그 기기의 브라우저에 저장, 인쇄에도 나옴).
 - 실험지에 결과가 있으면 **결과 보기**를 눌러야 결과 그림이 나옵니다. 탐구 전에는 결과를 미리 보여 주지 않습니다.
@@ -103,6 +104,7 @@ AI는 그림 코드를 직접 짜지 않습니다. 실험지를 읽어 **데이�
 - 부품에 없는 기구는 다른 기구로 바꿔 그리지 않고, 같은 일을 하는 부품에 이름표를 붙이거나 간단한 도형으로 대신합니다. [부품 카탈로그](https://sci-eum.github.io/experiment-visualizer/examples/gallery.html)를 참고하세요.
 - AI가 원문을 잘못 읽을 수 있습니다. 수업에 쓰기 전에 **양·농도·순서를 꼭 확인**하세요.
 - 코드 실행이 안 되는 AI는 "가벼운 HTML"을 만드는데, 이 파일은 열 때 인터넷이 필요합니다 (그림 엔진을 jsDelivr에서 불러옴). 코드 실행이 되면 인터넷 없이 열리는 한 파일로 만듭니다.
+- 입체(3D) 보기는 WebGL이 되는 브라우저에서만 됩니다. 안 되는 기기에서는 안내 글이 나오고 2D 그림은 그대로 씁니다. 지금은 기구 모양을 입체로 빚지 않고 2D 그림을 카드로 세워 보여 줍니다.
 
 ## 파일 구조
 
@@ -114,13 +116,14 @@ references/parts.md     부품 목록 (장면을 쓸 때 AI가 연다)
 references/scenes.md    장면 예시 (examples/recipes.json으로 자동 생성)
 references/parts.json   부품마다 쓰는 속성·정해진 값 목록, 준비물 이름 짐작표 (엔진에서 자동 생성, 데이터 검사에 쓴다)
 assets/labkit.js        그림 엔진 + 화면 (원본)
+assets/labkit3d.js      입체(3D) 보기 엔진 (원본, WebGL만 씀. 3D 버튼을 누를 때 불러오고 --3d면 파일 안에)
 assets/template.html    엔진을 품은 한 파일짜리 틀 (labkit.js로 자동 생성)
 assets/light.html       엔진을 CDN에서 불러오는 가벼운 틀
-scripts/build_html.py   데이터(JSON) + 틀 → 완성 HTML (전에 만든 HTML을 넣으면 최신 엔진으로 다시 만듦)
+scripts/build_html.py   데이터(JSON) + 틀 → 완성 HTML (전에 만든 HTML을 넣으면 최신 엔진으로 다시 만듦, --3d면 입체 엔진까지)
 scripts/extract_data.py 전에 만든 HTML에서 데이터(JSON) 꺼내기 (다시 고칠 때)
 scripts/check_data.py   만들기 전에 데이터 검사 (오타·없는 부품·정해진 값·id 중복·부피·용량 초과·원문 숫자 대조·준비물 아이콘 짐작·긴 타이머)
 scripts/extract_text.py hwp·hwpx·docx·pptx·pdf에서 글자 꺼내기 (표준 라이브러리만 사용)
-scripts/check_render.py 헤드리스 Chrome·Edge로 열어 오류·겹침 확인, 장면을 PNG로 찍기
+scripts/check_render.py 헤드리스 Chrome·Edge로 열어 오류·겹침 확인, 장면을 PNG로 찍기 (--3d면 입체 보기도)
 examples/               예시 실험지와 결과물, 장면 예시, 부품 카탈로그
 ```
 
@@ -134,23 +137,24 @@ python scripts/build_html.py examples/recipes.json examples/recipes.html
 python scripts/make_registry.py                                  # labkit.js → references/parts.json (부품 속성 목록)
 python scripts/check_docs.py                                     # 문서와 엔진이 맞는지 (JSON 문법, 부품 목록, 참고 문서 주소, SKILL.md 길이)
 python scripts/check_data.py examples/gallery.json               # 데이터 검사
-python scripts/selftest.py                                       # 수식·부피 읽기, 검사기, 원문 숫자 대조, 학생 답 저장 이름(헤드리스 브라우저) 자체 시험
-python scripts/check_render.py examples/gallery.html --shots shots  # 헤드리스 Chrome/Edge로 열어 오류·겹침 확인, 장면 PNG를 shots/에 (가벼운 버전도 내 폴더 엔진으로)
+python scripts/selftest.py                                       # 수식·부피 읽기, 검사기, 원문 숫자 대조, 학생 답 저장 이름·입체 카드 묶음(헤드리스 브라우저) 자체 시험
+python scripts/check_render.py examples/gallery.html --shots shots --3d  # 헤드리스 Chrome/Edge로 열어 오류·겹침·입체 보기 확인, 장면 PNG(3d-*.png 포함)를 shots/에 (가벼운 버전도 내 폴더 엔진으로)
 python scripts/make_skill_zip.py                                 # dist/experiment-visualizer.zip
 ```
 
 가벼운 HTML은 `https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/assets/labkit.min.js`를 불러오고, 링크로 쓰는 SKILL.md와 참고 문서·도구도 같은 `@1`에서 나갑니다.
+입체 엔진은 그림 엔진과 **같은 버전** 주소(`@1.19.0/assets/labkit3d.min.js`처럼)에서 불러오므로, 한 파일로 만든 HTML도 그때 엔진과 맞는 입체 엔진을 씁니다.
 엔진을 고친 뒤에는 `v1.x.y` 태그를 붙여 push해야 jsDelivr에 반영됩니다. 그림 데이터 형식을 바꾸는 큰 변경은 `v2`로 올립니다.
-버전을 올릴 때는 `labkit.js` 첫 줄 머리말과 `const VERSION`도 같은 번호로 고칩니다 (다르면 `make_template.py`가 멈춥니다).
+버전을 올릴 때는 `labkit.js`와 `labkit3d.js`의 첫 줄 머리말과 `const VERSION`을 모두 같은 번호로 고칩니다 (다르면 `make_template.py`가 멈춥니다).
 
 **자동 점검과 배포 (GitHub Actions)**
 
-- `main`에 push하면 [점검](.github/workflows/check.yml)이 돕니다: template.html·예시 HTML이 최신인지(다시 만들어 비교), 문서 점검, 헤드리스 Chrome 그림 점검(겹침 의심도 실패). 장면 그림 PNG는 실행 결과의 Artifact `shots`에서 내려받습니다.
+- `main`에 push하면 [점검](.github/workflows/check.yml)이 돕니다: template.html·예시 HTML이 최신인지(다시 만들어 비교), 문서 점검, 헤드리스 Chrome 그림 점검(겹침 의심도 실패, 입체 보기까지). 장면 그림 PNG는 실행 결과의 Artifact `shots`에서 내려받습니다.
 - 태그를 push하면 [배포](.github/workflows/release.yml)가 점검을 다시 돌린 뒤, 태그와 엔진 버전이 같은지 보고 Release를 만들어 스킬 zip을 붙이고 jsDelivr `@1` 캐시(엔진·문서·도구)를 비웁니다. 릴리스 노트는 태그 메시지로 씁니다.
 
 ```bash
-git tag -a v1.18.0 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
-git push origin v1.18.0
+git tag -a v1.19.0 -F 노트.txt   # 노트.txt: 첫 줄은 제목, 빈 줄, 그다음 본문
+git push origin v1.19.0
 ```
 
 ## 라이선스

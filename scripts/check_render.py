@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """만든 HTML을 헤드리스 브라우저(Edge/Chrome)로 열어 자바스크립트 오류와 [LabKit] 경고를 찾고, 장면 그림을 PNG로 찍는다.
 
-사용법:  python scripts/check_render.py 결과1.html [결과2.html ...] [--shots 폴더] [--grid] [--strict] [--engine auto]
+사용법:  python scripts/check_render.py 결과1.html [결과2.html ...] [--shots 폴더] [--grid] [--strict] [--engine auto] [--3d]
   --shots 폴더  장면 그림(PNG)을 만든다: 폴더/<파일 이름>/overview.png(모든 장면 한 장), step-01.png …(단계마다 크게),
                 결과 보기(reveal)가 있는 단계는 step-03-result.png 처럼 결과 장면도 따로
                 겹쳐 보이는 부품은 빨간 점선 상자로 표시된다. AI가 이 그림을 직접 열어 보고 고친다.
@@ -11,9 +11,14 @@
                 auto(기본): 스크립트 옆 ../assets/labkit.js가 있으면 그것으로, 없으면 인터넷(@1)으로
                 local: 내 폴더의 엔진으로 (공개 전에 고친 엔진을 시험할 때) · online: 인터넷 엔진 그대로 · 파일 경로
                 한 파일 버전은 HTML 안의 엔진을 그대로 쓴다. 결과 줄에 쓴 엔진 버전이 나온다.
+  --3d          입체 보기도 점검한다: 모든 단계를 입체로 그려 오류·그림 카드 실패·화면 밖으로 나간 묶음을 찾는다.
+                --shots와 함께 주면 3d-overview.png, 3d-step-01.png …도 만든다.
+                입체 엔진: HTML 안에 있으면 그것, 없으면 ../assets/labkit3d.js (--engine online이면 인터넷 @버전)
 결과: OK / WARN(겹침 의심만 있음, 종료 코드 0 — PNG로 실제로 가리는지 확인) / FAIL(오류·빈 화면, 종료 코드 1)
 """
 import argparse
+import html as htmllib
+import json
 import math
 import os
 import pathlib
@@ -34,6 +39,10 @@ CANDIDATES = [
 # 가벼운 버전이 엔진을 불러오는 주소 (@1, @1.9.1 …)
 ENGINE_SRC = re.compile(r'src="https://cdn\.jsdelivr\.net/gh/sci-eum/experiment-visualizer@[^/"]+/assets/labkit(?:\.min)?\.js"')
 LOCAL_ENGINE = pathlib.Path(__file__).resolve().parent.parent / 'assets' / 'labkit.js'
+LOCAL_ENGINE3D = LOCAL_ENGINE.parent / 'labkit3d.js'
+LK3D_TAG = '<script id="lk3d">'  # build_html.py --3d가 넣는 입체 엔진
+# 입체 점검: GPU가 없는 곳(CI)에서도 WebGL을 소프트웨어(SwiftShader)로 그린다
+GL_ARGS = ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']
 # 엔진의 촬영 화면(?shot=)과 같은 크기: 여백 16, 제목 30, 장면 480×300(한 장에 2열) 또는 960×600(단계마다)
 ONE = (992, 662)
 
@@ -124,6 +133,58 @@ def shots(path, exe, steps, reveals, out_dir, grid):
     return out, made, len(jobs)
 
 
+def prepare3d(path, engine, tmp, n):
+    """입체 점검용 사본: HTML 안에 입체 엔진이 없으면 내 폴더의 labkit3d.js를 넣는다 (이름은 같게).
+    → (열 경로, 입체 엔진 출처)"""
+    text = pathlib.Path(path).read_text(encoding='utf-8', errors='replace')
+    if LK3D_TAG in text:
+        return path, '파일 안'
+    if engine == 'online' or not LOCAL_ENGINE3D.exists():
+        return path, '인터넷'
+    js = LOCAL_ENGINE3D.read_text(encoding='utf-8')
+    k = text.rfind('</body>')
+    copy = pathlib.Path(tmp) / f'{n}-3d' / pathlib.Path(path).name
+    copy.parent.mkdir(parents=True, exist_ok=True)
+    copy.write_text(text[:k] + LK3D_TAG + '\n' + js + '\n</script>\n' + text[k:], encoding='utf-8')
+    return str(copy), '내 폴더'
+
+
+def check3d(path, exe):
+    """모든 단계를 입체로 그려(?shot3d=all) 엔진이 남긴 결과(<html data-lk3d>)와 콘솔 오류를 읽는다."""
+    url = pathlib.Path(path).resolve().as_uri() + '?shot3d=all'
+    r = headless(exe, *GL_ARGS, '--enable-logging=stderr', '--v=0', '--dump-dom', url, text=True, encoding='utf-8', errors='replace')
+    logs = [message(l) for l in r.stderr.splitlines()
+            if 'CONSOLE' in l and re.search(r'Uncaught|\[LabKit\]|Error', l) and 'Tracking Prevention' not in l]
+    m = re.search(r'<html[^>]*\sdata-lk3d="([^"]*)"', r.stdout)
+    v = re.search(r'<html[^>]*\sdata-lk3d-v="([^"]*)"', r.stdout)
+    try:
+        report = json.loads(htmllib.unescape(m.group(1))) if m else None
+    except ValueError:
+        report = None
+    return logs, report, v.group(1) if v else '?'
+
+
+def shots3d(path, name, exe, steps, reveals, out_dir):
+    out = pathlib.Path(out_dir).resolve() / name
+    out.mkdir(parents=True, exist_ok=True)
+    for old in out.glob('3d-*.png'):
+        old.unlink()
+    base = pathlib.Path(path).resolve().as_uri() + '?shot3d='
+    n = steps + len(reveals)
+    rows = math.ceil(n / 2) if n > 1 else 1
+    jobs = [(out / '3d-overview.png', base + 'all', (1008, 32 + rows * 330 + (rows - 1) * 16) if n > 1 else ONE)]
+    jobs += [(out / f'3d-step-{i:02d}.png', base + str(i), ONE) for i in range(1, steps + 1)]
+    jobs += [(out / f'3d-step-{i + 1:02d}-result.png', base + f'{i + 1}r', ONE) for i in reveals]
+
+    def run(job):
+        png, url, (w, h) = job
+        headless(exe, *GL_ARGS, f'--window-size={w},{h}', f'--screenshot={png}', url)
+        return png.exists()
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        made = sum(pool.map(run, jobs))
+    return out, made, len(jobs)
+
+
 def main():
     for s in (sys.stdout, sys.stderr):
         try:
@@ -136,6 +197,7 @@ def main():
     ap.add_argument('--grid', action='store_true', help='PNG에 좌표 격자를 그린다')
     ap.add_argument('--strict', action='store_true', help='WARN(겹침 의심)도 실패로 친다')
     ap.add_argument('--engine', default='auto', metavar='auto|local|online|경로', help='가벼운 버전을 열 엔진')
+    ap.add_argument('--3d', dest='three', action='store_true', help='입체 보기도 점검한다')
     a = ap.parse_args()
     exe, bad = browser(), 0
     with tempfile.TemporaryDirectory() as tmp:
@@ -160,6 +222,32 @@ def check_one(f, exe, a, tmp, n):
         print(f'    그림: {out} (overview.png + step-01~{steps:02d}.png{extra}, {made}/{total}장)')
         if made < total:
             print('    일부 그림을 만들지 못했습니다. 브라우저가 실행되는지 확인하세요.')
+    bad = status == 'FAIL' or (a.strict and status == 'WARN')
+    if a.three and not blank:
+        bad = check_one3d(f, path, exe, a, tmp, n, steps, reveals) or bad
+    return bad
+
+
+def check_one3d(f, path, exe, a, tmp, n, steps, reveals):
+    """입체 보기를 점검한다. 실패(또는 --strict에서 WARN)면 True."""
+    path3, src = prepare3d(path, a.engine, tmp, n)
+    logs, report, ver = check3d(path3, exe)
+    outs = [m for m in logs if '화면 밖' in m]
+    errs = [m for m in logs if m not in outs]
+    scenes = report if isinstance(report, list) else []
+    if isinstance(report, dict) and report.get('fail'):
+        errs.append(report['fail'])
+    errs += [f"{r.get('title', '')}: {r['error']}" for r in scenes if r.get('error')]
+    status = 'FAIL' if errs or report is None else 'WARN' if outs else 'OK'
+    cards = sum(r.get('units', 0) for r in scenes)
+    print(f'3D {status}  {f}  (장면 {len(scenes)}개, 그림 카드 {cards}장, 입체 엔진 v{ver} {src})')
+    for m in dict.fromkeys(errs + outs):
+        print('   ', m)
+    if report is None and not errs:
+        print('    입체 그림이 끝까지 그려지지 않았습니다 (WebGL을 쓸 수 없거나 입체 엔진을 불러오지 못함).')
+    if a.shots and report is not None:
+        out, made, total = shots3d(path3, pathlib.Path(f).stem, exe, steps, reveals, a.shots)
+        print(f'    입체 그림: {out} (3d-overview.png + 3d-step-NN.png, {made}/{total}장)')
     return status == 'FAIL' or (a.strict and status == 'WARN')
 
 

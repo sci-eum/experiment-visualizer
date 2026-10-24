@@ -214,6 +214,59 @@ def answer_key_test():
     return fails, 3
 
 
+# 입체 보기(v1.19): 한 장치는 한 장의 그림 카드로 묶인다 (스탠드가 잡은 것, 관으로 이은 것까지). 설명 부품은 따로
+U3_SCENE = [
+    {"t": "tripod", "id": "tr", "x": 120}, {"t": "lamp", "x": 120}, {"t": "beaker", "id": "b", "on": "tr", "fill": 0.5, "label": "물"},
+    {"t": "thermometer", "id": "th", "in": "b"}, {"t": "stand", "hold": "th", "x": 50},
+    {"t": "flask", "id": "f", "x": 290, "fill": 0.3}, {"t": "trough", "id": "tg", "x": 400, "fill": 0.6}, {"t": "hose", "from": "f", "to": "tg"},
+    {"t": "note", "x": 380, "y": 50, "text": "관찰"}, {"t": "arrow", "from": [200, 60], "to": [260, 60]},
+]
+U3_SAME = [["tripod", "lamp", "beaker", "thermometer", "stand"], ["flask", "trough", "hose"], ["note"], ["arrow"]]
+
+
+def units3d_test():
+    """→ (실패 목록, 시험 수). 헤드리스 브라우저가 없으면 None."""
+    import check_render
+    from build_html import build, add3d, LK3D_TAG
+    fails = []
+    once = add3d(add3d("<html><body>\n</body></html>", "/* a */"), "/* b */")  # 두 번 넣으면 새 것 하나만
+    if once.count(LK3D_TAG) != 1 or "/* b */" not in once or "/* a */" in once:
+        fails.append("build_html.add3d: 입체 엔진을 두 번 넣으면 새 것 하나만 남아야 해요")
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            exe = check_render.browser()
+    except SystemExit:
+        return None
+    tpl = (HERE.parent / "assets" / "template.html").read_text(encoding="utf-8")
+    page = build(tpl, 'window.EXPERIMENT = {"title": "입체 묶음 시험", "steps": []};')
+    post = ("<script>(function(){var r=LabKit.scene3(" + json.dumps(U3_SCENE, ensure_ascii=False) + "),d=document.createElement('div');"
+            "d.innerHTML=r.svg;var u={};[].forEach.call(d.firstChild.children,function(g){if(g.dataset&&g.dataset.u3){(u[g.dataset.u3t]=u[g.dataset.u3t]||[]).push(g.dataset.u3)}});"
+            "var o=document.createElement('pre');o.id='lk-test';o.textContent=JSON.stringify({units:u,labels:r.labels});document.body.appendChild(o)})()</script>")
+    i = page.rindex("</body>")
+    page = page[:i] + post + page[i:]
+    with tempfile.TemporaryDirectory() as d:
+        f = Path(d) / "u3.html"
+        f.write_text(page, encoding="utf-8")
+        r = check_render.headless(exe, "--dump-dom", f.resolve().as_uri(), text=True, encoding="utf-8", errors="replace")
+    m = re.search(r'<pre id="lk-test">(.*?)</pre>', r.stdout or "", re.S)
+    if not m:
+        return fails + ["입체 묶음 시험: 화면을 읽지 못했어요"], 3
+    got = json.loads(html.unescape(m.group(1)))
+    unit = {t: set(v) for t, v in got["units"].items()}
+    groups = []
+    for names in U3_SAME:
+        ids = set().union(*(unit.get(t, {f"없음:{t}"}) for t in names))
+        if len(ids) != 1:
+            fails.append(f"입체 묶음: {names}가 한 카드여야 해요 → {ids}")
+        groups.append(ids)
+    if len(set().union(*groups)) != len(U3_SAME):
+        fails.append(f"입체 묶음: 장치마다 다른 카드여야 해요 → {groups}")
+    lab = [l for l in got["labels"] if l["text"] == "물"]
+    if not lab or str(lab[0]["u"]) not in unit.get("beaker", set()):
+        fails.append(f"입체 이름표: '물' 이름표가 비커 카드에 붙어야 해요 → {lab}")
+    return fails, 3
+
+
 def main():
     for s in (sys.stdout, sys.stderr):
         try:
@@ -273,8 +326,13 @@ def main():
         print('헤드리스 브라우저가 없어 답 저장 이름 시험은 건너뜀')
     else:
         fails += keys[0]
+    u3 = units3d_test()
+    if u3 is None:
+        print('헤드리스 브라우저가 없어 입체 묶음 시험은 건너뜀')
+    else:
+        fails += u3[0]
     total = (len(EQ) + len(VOL) * (2 if node else 1) + len(BAD_EXPECT) + len(BAD_WARN) + len(QTY) + len(MISS) + 2
-             + (keys[1] if keys else 0))
+             + (keys[1] if keys else 0) + (u3[1] if u3 else 0))
     for f in fails:
         print('  -', f)
     print(f'{"OK" if not fails else "FAIL"}  자체 시험 {total - len(fails)}/{total}')

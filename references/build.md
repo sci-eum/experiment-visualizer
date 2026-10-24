@@ -15,7 +15,8 @@ python scripts/extract_text.py 실험지.hwp --images 그림폴더   # hwp·hwpx
 python scripts/check_data.py experiment.json                  # 데이터 검사 (오류를 모두 고친 뒤 만든다)
 python scripts/build_html.py experiment.json 실험제목.html     # 인터넷 없이도 열리는 한 파일
 python scripts/build_html.py experiment.json 실험제목.html --light   # 가벼운 버전 (엔진을 인터넷에서 불러옴)
-python scripts/check_render.py 실험제목.html --shots 그림점검   # 그림 점검
+python scripts/build_html.py experiment.json 실험제목.html --3d      # 입체 보기 엔진까지 넣은 한 파일 (인터넷 없이 3D까지, 약 33 KB 더)
+python scripts/check_render.py 실험제목.html --shots 그림점검 --3d   # 그림 점검 (입체 보기까지)
 python scripts/extract_data.py 결과.html experiment.json      # 이미 만든 HTML에서 데이터 꺼내기
 ```
 
@@ -28,7 +29,7 @@ import pathlib, urllib.request
 BASES = ["https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/",            # 이 문서와 같은 배포판
          "https://raw.githubusercontent.com/sci-eum/experiment-visualizer/main/"]  # 막히면 저장소 원본
 FILES = ["scripts/build_html.py", "scripts/check_data.py", "scripts/extract_text.py", "scripts/extract_data.py",
-         "scripts/check_render.py", "assets/template.html", "assets/light.html", "references/parts.json"]
+         "scripts/check_render.py", "assets/template.html", "assets/light.html", "assets/labkit3d.js", "references/parts.json"]
 for f in FILES:
     for base in BASES:
         try:
@@ -44,6 +45,7 @@ print("ev 폴더 준비 완료")
 ```
 
 - `build_html.py`가 만든 한 파일 버전은 그림 엔진이 HTML 안에 들어가 **인터넷 없이도** 열린다.
+- 장면의 **3D** 버튼(입체 보기)은 누를 때 입체 엔진(`labkit3d.js`)을 그림 엔진과 같은 버전 주소에서 불러온다. 인터넷이 없는 교실에서 3D까지 쓰려면 `--3d`로 만든다 (가벼운 버전에는 쓰지 않는다). `--3d`로 만든 HTML을 다시 넣으면 3D를 넣은 채로 다시 만든다.
 - 데이터를 고치지 않고 엔진만 새로 하려면 결과 HTML을 그대로 넣는다: `python scripts/build_html.py 옛결과.html 새결과.html` (가벼운 버전은 가벼운 버전으로 만든다).
 
 ## 방법 C — 가벼운 HTML 틀
@@ -81,16 +83,17 @@ window.EXPERIMENT = { /* 여기에 데이터 */ };
 Edge나 Chrome이 있는 환경(Claude Code 등)에서는 반드시 실행한다.
 
 ```bash
-python scripts/check_render.py 결과.html --shots 그림점검
+python scripts/check_render.py 결과.html --shots 그림점검 --3d
 ```
 
-1. **FAIL**(스크립트 오류·빈 화면)과 `[LabKit]` 경고를 고친다. 경고는 단계 번호와 함께 없는 id, 장면 밖 좌표, 위쪽 잘림, 읽지 못한 부피, 넣은 양 > 용량, `vol` 그릇들의 제각각인 `s`, 남은 `_demo`, 알 수 없는 부품, 잘못된 이어받기를 알려 준다.
+1. **FAIL**(스크립트 오류·빈 화면)과 `[LabKit]` 경고를 고친다. 경고는 단계 번호와 함께 없는 id, 장면 밖 좌표, 위쪽 잘림, 읽지 못한 부피, 넣은 양 > 용량, `vol` 그릇들의 제각각인 `s`, 남은 `_demo`, 알 수 없는 부품, 잘못된 이어받기를 알려 준다. `--3d`를 붙이면 `3D OK/WARN/FAIL` 줄이 더 나온다 (입체 오류·그림 카드 실패·화면 밖으로 나간 묶음).
 2. `그림점검/<파일 이름>/overview.png`(모든 장면 한 장)를 **열어서 본다**. 어색한 단계는 `step-03.png`처럼 크게 본다 (결과 보기가 있으면 `step-03-result.png`도 생긴다). 원문 장치와 맞는지, 잘리거나 떠 있지 않은지, 크기 비율, 이름표·말풍선이 장치를 가리지 않는지 본다.
 3. **WARN**(`[LabKit] 겹침?`)은 그림에 빨갛게 표시된다. 실제로 가리면 x·y를 옮기고, 일부러 넣은 것이면 `in`·`on`·`over`로 이어 준다.
 4. 좌표를 고칠 때는 `--grid`(20 간격 격자)를 붙인다. 고친 뒤 같은 명령으로 다시 확인한다.
+5. `--3d`면 `3d-overview.png`(모든 단계를 비스듬히 본 입체 그림)도 생긴다. 2D 장면을 실험대 위에 그림 카드로 세운 것이라 2D가 바르면 대개 바르다. 한 장치가 여러 카드로 갈라져 어긋나 보이면 `in`·`on`·`hold`로 이어 준다 (한 장치로 이은 부품은 한 카드가 된다).
 
 - 브라우저 찾기: Chrome을 먼저, 없으면 Edge를 쓴다. 특정 브라우저를 쓰려면 환경 변수 `CHECK_RENDER_BROWSER`에 실행 파일 경로를 준다. `--strict`는 경고도 실패로 친다.
-- 가벼운 버전은 스킬 폴더의 `assets/labkit.js`가 있으면 그 엔진으로 연다 (스킬과 같은 판으로 점검). 결과 줄에 `엔진 v1.18.0 내 폴더`처럼 쓴 엔진이 나온다. 인터넷 엔진 그대로 보려면 `--engine online`, 다른 엔진 파일은 `--engine 경로`.
+- 가벼운 버전은 스킬 폴더의 `assets/labkit.js`가 있으면 그 엔진으로 연다 (스킬과 같은 판으로 점검). 결과 줄에 `엔진 v1.19.0 내 폴더`처럼 쓴 엔진이 나온다. 인터넷 엔진 그대로 보려면 `--engine online`, 다른 엔진 파일은 `--engine 경로`.
 - 브라우저로만 열 수 있으면 주소 끝에 `?check`(겹침 표시)·`?grid`(격자)를 붙이고 콘솔의 `[LabKit]` 경고를 본다. 코드 실행도 브라우저도 없으면 SKILL.md 7장 목록을 데이터로 꼼꼼히 확인한다.
 - `그림점검` 폴더는 확인용이라 사용자에게 건네지 않는다.
 
