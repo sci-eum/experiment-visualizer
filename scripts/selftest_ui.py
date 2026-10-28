@@ -137,7 +137,12 @@ window.addEventListener('load', async () => {
     still().click();check('움직임 다시 켜기',localStorage.getItem('lk-pref:still')==='0' && !!$('#deck .sc-main animate'));
     const cv3=()=>$('#deck .v3-cv'), fr=()=>(cv3()||{})._frames||0;
     $('#deck [data-v3deck]').click();check('3D 반복 움직임 켜짐',await until(()=>cv3() && cv3().dataset.motion==='on',250));
-    let f0=fr();await sleep(500);check('3D 움직임 그리기',fr()>f0+4);
+    let f0=fr();check('3D 움직임 그리기',await until(()=>fr()>f0+4,75));
+    $('#deck .dot[aria-label="3단계"]').click();await sleep(100);check('3D 뒤로 넘기면 시연 없음',!!cv3() && !cv3().dataset.tw);
+    $('#deck [data-rv]').click();$('#deck [data-rv]').click();check('3D 결과 시연',await until(()=>cv3() && cv3().dataset.tw==='run',100));
+    check('3D 결과 시연 끝',await until(()=>cv3() && !cv3().dataset.tw,250));
+    $('#deck [data-next]').click();check('3D 단계 시연',await until(()=>cv3() && cv3().dataset.tw==='run',100));
+    check('3D 시연 끝·이름표 다시',await until(()=>cv3() && !cv3().dataset.tw,250) && $('#deck .v3-tags').style.visibility==='');
     still().click();check('3D 움직임 끄기',await until(()=>cv3() && cv3().dataset.motion==='off',250));
     await sleep(200);f0=fr();await sleep(400);check('3D 멈춘 그림',fr()-f0<=1);
     still().click();$('#deck [data-v3deck]').click();

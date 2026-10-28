@@ -501,7 +501,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.25.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.26.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -676,7 +676,7 @@ section{margin:40px 0}
 .v3-btn svg{width:15px;height:15px}
 .play-btn{position:absolute;right:10px;top:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:0;border-radius:999px;background:rgba(255,255,255,.94);color:var(--primary-ink);font:inherit;font-size:13px;font-weight:800;line-height:1.2;box-shadow:var(--sh-sm);cursor:pointer;transition:all .2s ease}
 .play-btn svg{width:13px;height:13px}.play-btn:hover{background:var(--primary-50);transform:translateY(-1px);box-shadow:var(--sh-md)}.play-btn:focus-visible{outline:3px solid #e6b8fd;outline-offset:2px}
-.play-btn[data-pk=r],.lk-still .play-btn,.v3-on>.play-btn,.rv-on .has-rv>.play-btn[data-pk=s]{display:none}.rv-on .play-btn[data-pk=r]{display:inline-flex}.lk-still .rv-on .play-btn[data-pk=r]{display:none}
+.play-btn[data-pk=r],.lk-still .play-btn,.rv-on .has-rv>.play-btn[data-pk=s]{display:none}.rv-on .play-btn[data-pk=r]{display:inline-flex}.lk-still .rv-on .play-btn[data-pk=r]{display:none}
 [data-tw]>.play-btn{opacity:.5;pointer-events:none}
 @media(max-width:520px){.play-btn{padding:7px}.play-btn span{display:none}}
 .v3-btn:hover{background:var(--primary-50);transform:translateY(-1px);box-shadow:var(--sh-md)}
@@ -699,7 +699,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.25.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.26.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -2796,10 +2796,10 @@ function scene3(items, o = {}) {
     const { body, cx, all, U3 } = build(items, { ...o, u3: true });
     const labels = cx.labels.filter(l => l.text != null && l.text !== '' && l.u != null).map(l => { const p = l.a || l; return { u: l.u, e: l.e, x: r2(p.x), y: r2(p.y), text: String(l.text), pin: !!l.a, tone: l.tone || '', well: l.well ?? null }; });
     const els = [], list = [], byId = {}, idx = el => el && el._e3 != null ? el._e3 : null;
-    all.forEach(el => { list.push(el); (RACKS[el.t] ? el.tubes || [] : el.t === 'wellplate' ? el.wells || [] : []).forEach(k => { if (k && typeof k === 'object') list.push(k); }); });
+    all.forEach(el => { list.push(el); (RACKS[el.t] ? el.tubes || [] : el.t === 'wellplate' ? el.wells || [] : []).forEach((k, j) => { if (k && typeof k === 'object') { if (el._k != null) k._kk = `${el._k}/${j}`; list.push(k); } }); });
     list.forEach(el => { if (el.id) byId[el.id] = el; });
     const ref = v => typeof v === 'string' ? idx(byId[v.replace(/:[+\-−]$/, '')]) : null;
-    list.forEach(el => { if (el._e3 == null) return; const g = el._g || {}; els[el._e3] = { e: el._e3, u: String(U3(el)), t: el.t, id: el.id ?? null, d3: !!el._3d, inE: ref(el.in), overE: ref(el.over), onE: ref(el.on), toE: ref(el.to), fromE: ref(el.from), parentE: idx(el._parent), shape: g.S ? Object.keys(SHAPES).find(k => SHAPES[k] === g.S) || null : null, g: plain3(g), p: plain3(el) }; });
+    list.forEach(el => { if (el._e3 == null) return; const g = el._g || {}; els[el._e3] = { e: el._e3, u: String(U3(el)), t: el.t, id: el.id ?? null, k: el._k != null ? String(el._k) : el._kk ?? null, d3: !!el._3d, inE: ref(el.in), overE: ref(el.over), onE: ref(el.on), toE: ref(el.to), fromE: ref(el.from), parentE: idx(el._parent), shape: g.S ? Object.keys(SHAPES).find(k => SHAPES[k] === g.S) || null : null, g: plain3(g), p: plain3(el) }; });
     return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}"><defs><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs>${body}${cx.front.join('')}</svg>`, labels, els };
   } finally { ANIM = prev; }
 }
@@ -3208,7 +3208,12 @@ const twOpt = (i, rv) => ({ grid: GRID, bench: steps[i].bench, label: `${i + 1}�
 function playStep(host, i) { if (motionOn(steps[i])) playTween(host, stepPlan(i), twOpt(i)); }
 function playReveal(host, i) { if (motionOn(steps[i])) playTween(host, revealPlan(i), twOpt(i, true)); }
 // ▶ 시연: 결과를 열어 결과 그림이 보이면 결과 시연, 아니면 단계 시연
-function playBtn(b) { const i = +b.dataset.play, box = b.closest('.scene-box'); if (!box) return; if (rvOn.has(i) && box.classList.contains('has-rv')) playReveal(box.querySelector('.sc-rv'), i); else playStep(box.querySelector('.sc-main'), i); }
+function playBtn(b) {
+  const i = +b.dataset.play, box = b.closest('.scene-box'); if (!box) return;
+  const rv = rvOn.has(i) && box.classList.contains('has-rv');
+  if (box.classList.contains('v3-on')) { if (motionOn(steps[i])) mountInline(rv ? sceneItems(i) : twFrom(i)); return; } // 수업 모드의 입체
+  if (rv) playReveal(box.querySelector('.sc-rv'), i); else playStep(box.querySelector('.sc-main'), i);
+}
 // 원문 대응 기록 (교사용): 원문 위치·근거 문장·판독 상태·원문에 없이 더한 것. 화면에서는 '원문 대조 보기'로, 교사용 인쇄에는 늘 보인다
 const ADDED = { tip: '팁', warn: '주의', point: '강조', predict: '예상', answer: '예상의 정답', observe: '관찰', reveal: '결과 보기', scene: '그림', text: '설명', time: '시간' };
 const hasOrigin = steps.some(st => st.origin && typeof st.origin === 'object');
@@ -3238,7 +3243,7 @@ function toggleReveal(i) {
     const root = deck.hidden ? app : deck, host = root.querySelector(`[data-rvs="${i}"] .sc-rv`);
     if (rvOn.has(i) && host && !(deck3d && !deck.hidden)) playReveal(host, i);
   }
-  if (deck3d && !deck.hidden && (slides[cur] || {}).step === i) mountInline();
+  if (deck3d && !deck.hidden && (slides[cur] || {}).step === i) mountInline(rvOn.has(i) && motionOn(steps[i]) && revealPlan(i) ? sceneItems(i) : null); // 입체로 보는 중이면 결과 시연도 입체로
 }
 // 타이머 (수업 모드): time의 '15분', '30초', '1분마다'를 읽는다. timer: 초(숫자)로 직접 정하거나 false로 끈다
 const timerOf = st => { if (!st || st.timer === false) return null; if (+st.timer > 0) return { sec: Math.round(+st.timer), every: false }; const s = String(st.time || ''); let sec = 0; s.replace(/(\d+(?:\.\d+)?)\s*(시간|분|초)/g, (m, n, u) => { sec += +n * (u === '시간' ? 3600 : u === '분' ? 60 : 1); return m; }); return sec > 0 ? { sec: Math.round(sec), every: /마다/.test(s) } : null; };
@@ -3324,7 +3329,7 @@ const mk = (id, cls) => { let n = document.getElementById(id); if (!n) { n = doc
 const deck = mk('deck', 'deck'); deck.hidden = true; deck.setAttribute('role', 'dialog'); deck.setAttribute('aria-modal', 'true'); deck.setAttribute('aria-label', '수업 모드');
 let cur = 0, lastFocus = null, deck3d = false, inl = null;
 // 수업 모드의 3D 단추를 켜면 단계마다 장면 칸에 입체를 바로 띄운다 (넘기면 다음 단계도 입체로)
-function mountInline() {
+function mountInline(from) { // from: 시연의 시작 장면 (입체 보기가 끝 장면으로 바뀌는 모습을 보여 준다)
   if (inl) { inl.dispose(); inl = null; }
   const st = steps[(slides[cur] || {}).step], box = deck.querySelector('.deck-stage .scene-box');
   if (!box) return;
@@ -3332,7 +3337,7 @@ function mountInline() {
   if (!deck3d || !st) return;
   const i = slides[cur].step; let rv = null; try { rv = rvOn.has(i) ? revealItems(st, i) : null; } catch (err) { console.error(err); }
   const host = document.createElement('div'); host.className = 'v3-stage v3-inline'; box.appendChild(host);
-  const h = LabKit.mount3d(host, { items: rv || sceneItems(i), bench: st.bench, title: `${i + 1}단계: ${st.title || ''}${rv ? ' — 결과' : ''}`, onError(text) {
+  const h = LabKit.mount3d(host, { items: rv || sceneItems(i), from: from ? LabKit.layout(from) : null, bench: st.bench, title: `${i + 1}단계: ${st.title || ''}${rv ? ' — 결과' : ''}`, onError(text) {
     deck3d = false; if (inl) { inl.dispose(); inl = null; }
     deck.querySelector('[data-v3deck]').setAttribute('aria-pressed', 'false');
     const n = document.createElement('p'); n.className = 'v3-fallback'; n.setAttribute('role', 'status'); n.textContent = text; box.appendChild(n);
@@ -3345,14 +3350,14 @@ function showSlide(i) {
   cur = Math.max(0, Math.min(slides.length - 1, i));
   if (inl) { inl.dispose(); inl = null; }
   deck.querySelector('.deck-stage').innerHTML = slides[cur].html();
-  mountInline();
+  const k = slides[cur].step, auto = fwd && cur !== from && k != null && motionOn(steps[k]) && !(rvOn.has(k) && revealItems(steps[k], k));
+  mountInline(auto && deck3d && stepPlan(k) ? twFrom(k) : null); // 앞으로 넘기면 그 단계의 시연 (입체로 보는 중이면 입체로)
   deck.querySelector('.deck-count').textContent = `${cur + 1} / ${slides.length}`;
   deck.querySelectorAll('.dot').forEach((d, k) => { d.classList.toggle('on', k === cur); d.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
   deck.querySelector('[data-prev]').disabled = cur === 0; deck.querySelector('[data-next]').disabled = cur === slides.length - 1;
   LabKit.fit(deck); initSketches(deck); if (Q.has('check')) afterFonts(() => LabKit.overlaps(deck, { mark: true }));
   if (tm) tmRender();
-  const k = slides[cur].step;
-  if (fwd && cur !== from && k != null && !deck3d && !(rvOn.has(k) && deck.querySelector('.deck-stage .has-rv'))) playStep(deck.querySelector('.deck-stage .sc-main'), k);
+  if (auto && !deck3d) playStep(deck.querySelector('.deck-stage .sc-main'), k);
 }
 function openDeck(i) {
   lastFocus = document.activeElement;

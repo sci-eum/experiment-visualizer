@@ -8,14 +8,14 @@ description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·
 > **이 문서를 링크로 받았다면** 이 문서가 작업 지시서다. 처음부터 끝까지 읽고 따른다.
 > 저장소: https://github.com/sci-eum/experiment-visualizer
 
-이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.25.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
+이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.26.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
 
 | 문서 | 언제 연다 | 주소 |
 |---|---|---|
-| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.25.0/references/parts.md |
-| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.25.0/references/data.md |
-| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.25.0/references/scenes.md |
-| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.25.0/references/build.md |
+| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.26.0/references/parts.md |
+| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.26.0/references/data.md |
+| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.26.0/references/scenes.md |
+| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.26.0/references/build.md |
 
 ## 무엇을 만드나
 
