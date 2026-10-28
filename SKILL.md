@@ -8,14 +8,14 @@ description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·
 > **이 문서를 링크로 받았다면** 이 문서가 작업 지시서다. 처음부터 끝까지 읽고 따른다.
 > 저장소: https://github.com/sci-eum/experiment-visualizer
 
-이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.22.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
+이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.23.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
 
 | 문서 | 언제 연다 | 주소 |
 |---|---|---|
-| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.22.0/references/parts.md |
-| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.22.0/references/data.md |
-| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.22.0/references/scenes.md |
-| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.22.0/references/build.md |
+| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.23.0/references/parts.md |
+| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.23.0/references/data.md |
+| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.23.0/references/scenes.md |
+| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.23.0/references/build.md |
 
 ## 무엇을 만드나
 
@@ -88,7 +88,7 @@ description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·
 - **단계마다 원문 대응 기록 `origin`을 남긴다**: 원문 위치 `where`, 근거 문장 `quote`(원문 그대로), 판독 상태 `check`("ok" / "unsure"), 원문에 없이 더한 항목 `added`(예: 사용자가 준 `tip`). 교사가 "이 50 mL는 어디서 나왔지?"를 바로 확인할 수 있게 한다.
 - 원문에 있는 주의·팁(※, "주의한다")은 그 단계의 `warn`·`tip`으로 그대로 넣는다. **원문에 없는 팁·주의·강조·예상 물음은 지어 넣지 않는다.** 필요해 보이면 3장에서 **제안**으로만 보이고 사용자가 고른 것만 넣는다 (넣으면 `origin.added`에 적는다).
 - **결과를 미리 보여 주지 않는다.** 원문이 단계 안에서 결과를 알려 주지 않으면 과정 그림·표지에 결과(색이 변한 뒤 등)를 그리지 않고 "무슨 색으로 변하는지 관찰해요" 같은 `observe`로 둔다. 원문이 결과를 알려 주면 그 단계의 `reveal`(결과 보기)에 넣는다. 예상 결과·결론(`results.expect`·`results.conclusion`)도 '결과 보기'를 눌러야 보인다.
-- 원문에 "예상해 보자"·가설 물음이 있으면 그 단계의 `predict`(예상 칸)로 넣는다.
+- 원문에 "예상해 보자"·가설 물음이 있으면 그 단계의 `predict`(예상 칸)로 넣는다. 원문이 보기(①·②, '같다/다르다', ○×)를 주면 **고르는 예상** `{ text, choices, answer, why }`로 넣고 결과(`reveal`)가 나오는 단계에 둔다 (고르기 전에는 결과 보기가 잠기고, 맞히면 도장). **보기·정답·까닭은 원문(교사용 답 포함)이나 사용자가 준 것만** 쓰고, 정답을 모르면 `answer`를 뺀다. 보기가 없는 물음에 보기를 지어내지 않는다.
 - 준비물 목록에 없는데 과정에 나오는 기구(예: 전자 저울)는 준비물에 넣되 `qty`에 `"과정에 사용"`이라 쓰고 알린다.
 - 학생 이름·번호 같은 개인정보는 넣지 않는다.
 
@@ -128,7 +128,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 - 멈춤 조건에 걸린 것은 '원문 확인이 필요한 곳'에 넣고 답을 받아야 만든다. 없는 기구를 대신 그린 것도 여기에 적는다.
 - **설계형**이면 단계 표 대신 ①(선생님 과정을 받아 실험형으로)·②(설계 안내판) 중 무엇으로 할지 묻고 멈춘다. ①이면 과정을 받은 뒤 이 계획을 보인다.
 - 제안은 0~4개, 원문과 실험 원리에 근거한 것만.
-- 답을 넣는 곳: 팁 → `tip`, 주의 → `warn`, 강조 → `point`, 예상 → `predict` (그 단계). 전체 주의 → `safety`, 전체 팁·강조 → 최상위 `tips`. 뜻은 바꾸지 않고 맞춤법·말투만 다듬는다.
+- 답을 넣는 곳: 팁 → `tip`, 주의 → `warn`, 강조 → `point`, 예상 → `predict` (그 단계. 사용자가 보기를 주면 고르는 예상, 알려 준 정답은 `origin.added`에 `answer`). 전체 주의 → `safety`, 전체 팁·강조 → 최상위 `tips`. 뜻은 바꾸지 않고 맞춤법·말투만 다듬는다.
 
 ## 4. 장면 설계
 
@@ -206,7 +206,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 ## 8. 전달
 
 - 파일 이름은 실험 제목으로 (`물의_끓는점_측정.html`). claude.ai에서는 `/mnt/user-data/outputs/`에 저장해 건넨다. `그림점검` 폴더는 건네지 않는다.
-- 답변은 짧게: 만든 단계 수, 받은 팁을 넣은 곳, 원문 확인이 필요한 곳, 사용법 한두 줄 ("단계 카드나 '수업 모드로 보기'를 누르면 한 단계씩 크게 보여요" + 쓴 기능만: 결과 보기, 타이머, 학생용·교사용 인쇄, 원문 대조 보기, "그림 오른쪽 아래 3D를 누르면 입체로 돌려 볼 수 있어요").
+- 답변은 짧게: 만든 단계 수, 받은 팁을 넣은 곳, 원문 확인이 필요한 곳, 사용법 한두 줄 ("단계 카드나 '수업 모드로 보기'를 누르면 한 단계씩 크게 보여요" + 쓴 기능만: 결과 보기, 예상 고르기와 도장, 타이머, 학생용·교사용 인쇄, 원문 대조 보기, "그림 오른쪽 아래 3D를 누르면 입체로 돌려 볼 수 있어요").
 - 채팅 미리보기에서 그림이 안 보이면 파일을 내려받아 크롬·엣지로 열라고 안내한다.
 
 ## 9. 이미 만든 HTML을 고칠 때

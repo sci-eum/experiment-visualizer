@@ -501,7 +501,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.22.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.23.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -620,6 +620,24 @@ section{margin:40px 0}
 .dot.on{background:var(--primary);width:26px}
 .box.pred{background:#fff7e3;color:#5c4300}.box.pred .bi{color:#a87400}
 .box.res{background:var(--tip-bg);color:#0e4d33}.box.res .bi{color:var(--tip)}
+.pc{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pc-o{appearance:none;font:inherit;font-size:.95em;font-weight:600;line-height:1.4;text-align:left;color:#5c4300;background:#fff;border:1.5px solid #ecd9a2;border-radius:12px;padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .15s ease}
+.pc-o::before{content:'';flex:none;width:14px;height:14px;box-sizing:border-box;border-radius:999px;border:2px solid #d9bd6a;background:#fff}
+.pc-o:hover{border-color:#c99a1c}.pc-o:focus-visible{outline:3px solid #f3d27a;outline-offset:2px}
+.pc-o[aria-pressed=true]{background:#ffe9a8;border-color:#a87400;color:#3d2c00;font-weight:800}.pc-o[aria-pressed=true]::before{border:4px solid #a87400}
+.pc-done .pc-o{cursor:default}.pc-done .pc-o[aria-pressed=false]{opacity:.55}
+.rv-on .pc-o.ok{opacity:1;border-color:var(--tip);background:#e3f6ec;color:#0e4d33}.rv-on .pc-o.ok::after{content:'정답';font-size:12px;font-weight:800;color:#fff;background:var(--tip);padding:1px 7px;border-radius:999px}
+.rv-on .pc-o.no{border-color:#e5a3a3;background:#fdf0f0;color:#8c2f2f}
+.pc-fb,.pc-key{display:none}
+.rv-on .pc-fb:not(:empty){display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff;color:var(--ink)}
+.pc-fb p{margin:0;line-height:1.55}
+.pc-stamp{flex:none;width:64px;height:64px;transform:rotate(-12deg);animation:pcs .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pcs{from{opacity:0;transform:rotate(-12deg) scale(1.8)}to{opacity:1;transform:rotate(-12deg) scale(1)}}
+.rv-lock{display:none;margin:14px 0 0 10px;font-size:13.5px;font-weight:700;color:#8a6500}
+.pc-wait .rv-lock{display:inline-block}.pc-wait .rv-btn{opacity:.55;cursor:not-allowed}.rv-lock.pulse{animation:tmf .5s ease 2}
+.pc-sum{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 16px;font-size:14.5px;font-weight:700;color:var(--ink-2)}
+.pc-sum b{color:#b42318;margin-right:4px}
+.ps{display:inline-block;width:22px;height:22px;border-radius:999px;border:2px dashed #d5c8a3}.ps.ok{border:3px double #d93a3a;background:#fde8e8}.ps.no{border:2px solid #c3c9d4;background:#f1f3f6}
 .box>div{flex:1;min-width:0}
 .write{margin-top:8px;min-height:46px;padding:8px 12px;border-radius:12px;background:#fff;border:1.5px dashed #e2c46f;font-size:15px;line-height:1.6;color:var(--ink);outline:none;cursor:text;white-space:pre-wrap;overflow-wrap:anywhere}
 .write:focus{border-style:solid;border-color:var(--primary)}
@@ -632,8 +650,8 @@ section{margin:40px 0}
 .rv-btn{margin-top:14px}
 .scene-box{position:relative}
 .sc-rv,.rv-text{display:none}
-.rv-on .sc-main{display:none}.rv-on .sc-rv,.rv-on .rv-text{display:block}
-.rv-on .scene-box::after{content:'결과';position:absolute;top:10px;left:10px;font-size:12.5px;font-weight:800;color:#fff;background:var(--tip);padding:3px 10px;border-radius:999px}
+.rv-on .has-rv>.sc-main{display:none}.rv-on .sc-rv,.rv-on .rv-text{display:block}
+.rv-on .scene-box.has-rv::after{content:'결과';position:absolute;top:10px;left:10px;font-size:12.5px;font-weight:800;color:#fff;background:var(--tip);padding:3px 10px;border-radius:999px}
 .lk-check .sc-rv{display:block}
 .origin{display:none;margin-top:12px;padding:10px 12px;border-radius:12px;background:#f4f5f8;color:var(--ink-2);font-size:13.5px;line-height:1.55;border-left:3px solid #c3c9d4}.lk-origin .origin{display:block}
 .unsure-chip{display:inline-block;margin:8px 0 2px;font-size:13px;font-weight:700;color:#8a4b00;background:#fff1d6;padding:4px 10px;border-radius:999px}
@@ -671,12 +689,12 @@ section{margin:40px 0}
 @media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.dr-row{grid-template-columns:1fr}}
 @media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
-@media print{body{background:#fff}.dr-tools{display:none!important}.toolbar,.zoom-hint,.v3-btn,.v3,.deck,.demo,.rv-btn,.save-note,.tm{display:none!important}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl th,.tbl td{border:1px solid #cfd4dd}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
+@media print{body{background:#fff}.dr-tools{display:none!important}.toolbar,.zoom-hint,.v3-btn,.v3,.deck,.demo,.rv-btn,.save-note,.tm,.rv-lock,.pc-fb,.pc-sum{display:none!important}.pc-o{opacity:1!important}[data-print=teacher] .pc-key{display:block!important;margin-top:8px;font-size:13.5px;font-weight:700;color:#0e4d33}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.pcw:empty::before{content:attr(data-ph);color:#7f8698}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl th,.tbl td{border:1px solid #cfd4dd}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
 if (!document.getElementById('lk-css')) { const st = document.createElement('style'); st.id = 'lk-css'; st.textContent = CSS; document.head.appendChild(st); }
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.22.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.23.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -3013,9 +3031,58 @@ document.addEventListener('click', ev => {
   g.querySelectorAll('canvas[data-sk]').forEach(c => { delete saved[c.dataset.sk]; c.getContext('2d').clearRect(0, 0, c.width, c.height); }); persist();
 });
 const writeBox = (id, ph, cls) => `<div class="write${cls ? ' ' + cls : ''}" contenteditable="true" role="textbox" aria-multiline="true" aria-label="${e(ph)}" data-w="${e(id)}" data-ph="${e(ph)}">${wtext(id)}</div>`;
-const predictBox = (st, i) => arr(st.predict).filter(Boolean).map((q, k) => `<div class="box pred"><span class="bi">예상</span><div>${md(q)}${writeBox(ak(`p${i}.${k}`), '내 예상을 적어요')}</div></div>`).join('');
-// 결과 보기: reveal은 글자 하나, 또는 { text, scene } / { text, change, add, remove } (그 단계 장면을 이어받아 바꾼다)
-const revealOf = st => !st.reveal ? null : typeof st.reveal === 'string' ? { text: st.reveal } : st.reveal;
+// 고르는 예상 (v1.23): predict에 { text, choices, answer, why, write }를 주면 보기 중에서 고른다.
+// 그 단계의 예상을 다 고르기 전에는 '결과 보기'가 잠기고, 결과를 열면 고른 답이 굳는다(저장 이름 + ':done'). answer와 같으면 도장을 찍는다
+const pcOf = q => q && typeof q === 'object' && Array.isArray(q.choices) && q.choices.length ? q : null;
+const pcList = (st, i) => arr(st && st.predict).filter(Boolean).map((q, k) => ({ q, key: ak(`p${i}.${k}`) })).filter(x => pcOf(x.q));
+const pcAll = steps.flatMap(pcList), pcByKey = new Map(pcAll.map(x => [x.key, x]));
+const pcAns = q => arr(q.answer).map(String);
+const pcPick = (q, key) => q.choices.map(String).includes(saved[key]) ? saved[key] : null;
+const pcDone = (q, key) => !!pcPick(q, key) && saved[key + ':done'] === '1';
+const pcWait = i => pcList(steps[i], i).some(x => !pcPick(x.q, x.key));
+const PC_STAMP = '<svg class="pc-stamp" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="rgba(253,232,232,.6)" stroke="#d93a3a" stroke-width="3"/><circle cx="32" cy="32" r="24" fill="none" stroke="#d93a3a" stroke-width="1.2"/><text x="32" y="29" text-anchor="middle" font-size="13" font-weight="800" fill="#d93a3a">참</text><text x="32" y="42" text-anchor="middle" font-size="10" font-weight="800" fill="#d93a3a">잘했어요</text></svg>';
+function pcFeedback(q, key) {
+  const pick = pcPick(q, key), ans = pcAns(q); if (!pick) return '';
+  const ok = ans.length ? ans.includes(pick) : null, why = q.why ? `<br>${md(q.why)}` : '';
+  if (ok) return `${PC_STAMP}<p><b>예상이 맞았어요!</b>${why}</p>`;
+  return ok === false ? `<p>내 예상: <b>${e(pick)}</b> · 정답: <b>${ans.map(e).join(', ')}</b><br>예상과 다른 까닭을 생각해 봐요.${why}</p>` : `<p>내 예상: <b>${e(pick)}</b> — 결과와 비교해 봐요.${why}</p>`;
+}
+const pcOpts = (q, key) => { const pick = pcPick(q, key), done = pcDone(q, key), ans = pcAns(q);
+  return q.choices.map(String).map((c, k) => `<button type="button" class="pc-o${done && ans.includes(c) ? ' ok' : ''}${done && pick === c && ans.length && !ans.includes(c) ? ' no' : ''}" data-pc="${e(key)}" data-v="${k}" aria-pressed="${pick === c}"${done ? ' aria-disabled="true"' : ''}>${md(c)}</button>`).join(''); };
+const pcBox = (q, key) => `<div class="pc${pcDone(q, key) ? ' pc-done' : ''}" role="group" aria-label="예상 고르기" data-pcg="${e(key)}">${pcOpts(q, key)}</div><div class="pc-fb" data-pcf="${e(key)}">${pcFeedback(q, key)}</div>${pcAns(q).length || q.why ? `<div class="pc-key">정답: ${pcAns(q).map(md).join(', ') || '—'}${q.why ? ` · ${md(q.why)}` : ''}</div>` : ''}${q.write ? writeBox(key + ':w', q.write, 'pcw') : ''}`;
+const predictBox = (st, i) => arr(st.predict).filter(Boolean).map((q, k) => { const key = ak(`p${i}.${k}`);
+  return `<div class="box pred"><span class="bi">예상</span><div>${pcOf(q) ? md(q.text || '') + pcBox(q, key) : md(qText(q)) + writeBox(key, '내 예상을 적어요')}</div></div>`; }).join('');
+// 예상 도장: answer가 있는 고르는 예상마다 하나 (결과를 열어야 찍힌다)
+const pcScored = pcAll.filter(x => pcAns(x.q).length);
+function stampSum() {
+  let seen = 0, hit = 0;
+  const dots = pcScored.map(({ q, key }) => { if (!pcDone(q, key)) return '<i class="ps"></i>'; seen++; if (pcAns(q).includes(pcPick(q, key))) { hit++; return '<i class="ps ok"></i>'; } return '<i class="ps no"></i>'; }).join('');
+  return `<b>예상 도장</b>${dots}<span>${seen ? `결과를 본 ${seen}개 중 ${hit}개를 맞혔어요` : '예상을 고르고 결과를 보면 도장이 찍혀요'}</span>`;
+}
+const sumBox = () => pcScored.length ? `<p class="pc-sum" data-pcsum>${stampSum()}</p>` : '';
+function refreshPc() {
+  document.querySelectorAll('[data-pcg]').forEach(g => {
+    const x = pcByKey.get(g.dataset.pcg); if (!x) return;
+    const f = g.contains(document.activeElement) ? document.activeElement.dataset.v : null;
+    g.innerHTML = pcOpts(x.q, x.key); g.classList.toggle('pc-done', pcDone(x.q, x.key));
+    if (f != null) { const b = g.querySelector(`[data-v="${f}"]`); if (b) b.focus(); }
+  });
+  document.querySelectorAll('[data-pcf]').forEach(n => { const x = pcByKey.get(n.dataset.pcf); if (x) n.innerHTML = pcFeedback(x.q, x.key); });
+  document.querySelectorAll('[data-rvs]').forEach(n => { if (n.dataset.rvs !== 'res') n.classList.toggle('pc-wait', pcWait(+n.dataset.rvs)); });
+  document.querySelectorAll('[data-pcsum]').forEach(n => { n.innerHTML = stampSum(); });
+}
+document.addEventListener('click', ev => {
+  const b = ev.target.closest && ev.target.closest('[data-pc]'); if (!b) return;
+  const x = pcByKey.get(b.dataset.pc); if (!x || pcDone(x.q, x.key)) return;
+  const c = String(x.q.choices[+b.dataset.v]); if (saved[x.key] === c) return;
+  saved[x.key] = c; persist(); refreshPc();
+});
+// 결과 보기: reveal은 글자 하나, 또는 { text, scene } / { text, change, add, remove } (그 단계 장면을 이어받아 바꾼다).
+// reveal이 없어도 고르는 예상에 answer·why가 있으면 '정답 보기'가 생긴다
+const revealOf = st => st.reveal ? (typeof st.reveal === 'string' ? { text: st.reveal } : st.reveal) : arr(st.predict).some(q => pcOf(q) && (q.answer != null || q.why)) ? {} : null;
+const rvKeyOnly = st => !st.reveal && !!revealOf(st);
+const rvCls = (st, i) => `${rvOn.has(i) ? ' rv-on' : ''}${pcWait(i) ? ' pc-wait' : ''}`;
+const rvLabel = i => i === 'res' ? (rvOn.has(i) ? '감추기' : '결과 보기') : rvKeyOnly(steps[i]) ? (rvOn.has(i) ? '정답 감추기' : '정답 보기') : rvOn.has(i) ? '과정 보기' : '결과 보기';
 function revealItems(st, i) {
   const r = revealOf(st); if (!r || !(r.scene || r.change || r.add || r.remove)) return null;
   const where = `${i + 1}단계 결과: ${st.title || ''}`;
@@ -3031,11 +3098,11 @@ function open3d(i) {
   LabKit.view3d({ items: rv || sceneItems(i), bench: st.bench, title: `${i + 1}단계: ${st.title || ''}${rv ? ' — 결과' : ''}` });
 }
 const rvOn = new Set(), rvKey = k => /^\d+$/.test(k) ? +k : k;
-const revealUi = (st, i) => { const r = revealOf(st); return r ? `<button class="btn sm rv-btn" type="button" data-rv="${i}" aria-pressed="${rvOn.has(i)}">${IC.eye}<span class="rv-l">${rvOn.has(i) ? '과정 보기' : '결과 보기'}</span></button>${r.text ? `<div class="rv-text">${box('res', '결과', r.text)}</div>` : ''}` : ''; };
+const revealUi = (st, i) => { const r = revealOf(st); return r ? `<button class="btn sm rv-btn" type="button" data-rv="${i}" aria-pressed="${rvOn.has(i)}">${IC.eye}<span class="rv-l">${rvLabel(i)}</span></button>${pcList(st, i).length ? '<span class="rv-lock">예상을 고르면 열려요</span>' : ''}${r.text ? `<div class="rv-text">${box('res', '결과', r.text)}</div>` : ''}` : ''; };
 const has3d = i => { try { return sceneItems(i).length > 0; } catch (err) { return false; } };
-const sceneBlock = (st, i) => { const rs = revealScene(st, i); return `<div class="scene-box"><div class="sc-main">${sceneOf(st, i)}</div>${rs ? `<div class="sc-rv" data-rvi="${i}">${rs}</div>` : ''}${has3d(i) ? `<button class="v3-btn" type="button" data-v3="${i}" aria-label="${i + 1}단계 그림을 입체(3D)로 보기" title="입체(3D)로 보기">${IC.cube}3D</button>` : ''}</div>`; };
+const sceneBlock = (st, i) => { const rs = revealScene(st, i); return `<div class="scene-box${rs ? ' has-rv' : ''}"><div class="sc-main">${sceneOf(st, i)}</div>${rs ? `<div class="sc-rv" data-rvi="${i}">${rs}</div>` : ''}${has3d(i) ? `<button class="v3-btn" type="button" data-v3="${i}" aria-label="${i + 1}단계 그림을 입체(3D)로 보기" title="입체(3D)로 보기">${IC.cube}3D</button>` : ''}</div>`; };
 // 원문 대응 기록 (교사용): 원문 위치·근거 문장·판독 상태·원문에 없이 더한 것. 화면에서는 '원문 대조 보기'로, 교사용 인쇄에는 늘 보인다
-const ADDED = { tip: '팁', warn: '주의', point: '강조', predict: '예상', observe: '관찰', reveal: '결과 보기', scene: '그림', text: '설명', time: '시간' };
+const ADDED = { tip: '팁', warn: '주의', point: '강조', predict: '예상', answer: '예상의 정답', observe: '관찰', reveal: '결과 보기', scene: '그림', text: '설명', time: '시간' };
 const hasOrigin = steps.some(st => st.origin && typeof st.origin === 'object');
 function originBox(st) {
   const o = st.origin; if (!o || typeof o !== 'object') return '';
@@ -3045,8 +3112,17 @@ function originBox(st) {
 }
 const stepBoxes = (st, i) => `${originBox(st)}${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${predictBox(st, i)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}${revealUi(st, i)}`;
 function toggleReveal(i) {
+  if (i !== 'res' && !rvOn.has(i) && pcWait(i)) { // 예상을 다 고르기 전에는 열지 않고 안내 글을 깜빡인다
+    document.querySelectorAll(`[data-rvs="${i}"] .rv-lock`).forEach(n => { n.classList.remove('pulse'); void n.offsetWidth; n.classList.add('pulse'); });
+    return;
+  }
   if (rvOn.has(i)) rvOn.delete(i); else rvOn.add(i);
-  const label = rvOn.has(i) ? (i === 'res' ? '감추기' : '과정 보기') : '결과 보기';
+  if (rvOn.has(i) && i !== 'res') { // 결과를 열면 고른 예상이 굳는다
+    const open = pcList(steps[i], i).filter(x => saved[x.key + ':done'] !== '1');
+    open.forEach(x => { saved[x.key + ':done'] = '1'; }); if (open.length) persist();
+    refreshPc();
+  }
+  const label = rvLabel(i);
   document.querySelectorAll(`[data-rvs="${i}"]`).forEach(n => { n.classList.toggle('rv-on', rvOn.has(i)); n.querySelectorAll('.rv-btn').forEach(b => { b.setAttribute('aria-pressed', rvOn.has(i)); b.querySelector('.rv-l').textContent = label; }); });
   if (deck3d && !deck.hidden && (slides[cur] || {}).step === i) mountInline();
 }
@@ -3113,9 +3189,9 @@ function page() {
   if (safety.length) h.push(`<section><div class="sec-head"><span class="eyebrow">안전</span><h2>안전 수칙</h2></div>${safeList()}</section>`);
   if (tips.length) h.push(`<section><div class="sec-head"><span class="eyebrow">팁</span><h2>실험 전에 알아 두기</h2></div>${tipList()}</section>`);
   h.push(`<section><div class="sec-head"><span class="eyebrow">과정</span><h2>실험 과정</h2></div>`);
-  h.push(steps.length ? `<div class="steps">${steps.map((st, i) => `${st.section && st.section !== (steps[i - 1] || {}).section ? `<div class="step-sec">${e(st.section)}</div>` : ''}<article class="step" tabindex="0" data-step="${i}" data-rvs="${i}" aria-label="${i + 1}단계 크게 보기">${sceneBlock(st, i)}<div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h3>${e(st.title || `${i + 1}단계`)}</h3>${stepBoxes(st, i)}</div>${sketchBox(st)}<span class="zoom-hint">${IC.zoom}크게 보기</span></article>`).join('')}</div>` : emptyState);
-  h.push(`${hasRes ? '' : saveNote()}</section>`);
-  if (hasRes) h.push(`<section><div class="sec-head"><span class="eyebrow">정리</span><h2>결과 정리</h2></div><div class="res-grid">${resCards()}</div>${saveNote()}</section>`);
+  h.push(steps.length ? `<div class="steps">${steps.map((st, i) => `${st.section && st.section !== (steps[i - 1] || {}).section ? `<div class="step-sec">${e(st.section)}</div>` : ''}<article class="step${rvCls(st, i)}" tabindex="0" data-step="${i}" data-rvs="${i}" aria-label="${i + 1}단계 크게 보기">${sceneBlock(st, i)}<div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h3>${e(st.title || `${i + 1}단계`)}</h3>${stepBoxes(st, i)}</div>${sketchBox(st)}<span class="zoom-hint">${IC.zoom}크게 보기</span></article>`).join('')}</div>` : emptyState);
+  h.push(`${hasRes ? '' : sumBox() + saveNote()}</section>`);
+  if (hasRes) h.push(`<section><div class="sec-head"><span class="eyebrow">정리</span><h2>결과 정리</h2></div>${sumBox()}<div class="res-grid">${resCards()}</div>${saveNote()}</section>`);
   h.push(`<footer class="foot">${D.source ? `원문: ${e(D.source)}<br>` : ''}${D.notes ? `<span class="notes">${md(D.notes)}<br></span>` : ''}${hasOrigin ? '<button class="btn sm o-btn" type="button" data-origin aria-pressed="false">원문 대조 보기</button><br>' : ''}그림은 이해를 돕기 위한 모식도로, 실제 기구의 모양·크기와 다를 수 있어요. 실험은 반드시 선생님의 안내에 따라 진행하세요.<br>만든 도구: <a href="https://github.com/sci-eum/experiment-visualizer" target="_blank" rel="noopener">experiment-visualizer</a> v${LabKit.version}</footer></main>`);
   return h.join('');
 }
@@ -3127,8 +3203,8 @@ if (mats.length) slides.push({ name: '준비물', html: () => `<div class="slide
 if (safety.length) slides.push({ name: '안전 수칙', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">안전</span><h2 style="margin:0">안전 수칙</h2></div>${safeList()}</div></div>` });
 if (tips.length) slides.push({ name: '실험 팁', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">팁</span><h2 style="margin:0">실험 전에 알아 두기</h2></div>${tipList()}</div></div>` });
 const stepStart = slides.length;
-steps.forEach((st, i) => slides.push({ name: `${i + 1}단계`, step: i, html: () => `<div class="slide${rvOn.has(i) ? ' rv-on' : ''}" data-rvs="${i}">${sceneBlock(st, i)}<div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.section ? `<span class="sec-chip">${e(st.section)}</span>` : ''}${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h2>${e(st.title || `${i + 1}단계`)}</h2>${stepBoxes(st, i)}${sketchBox(st)}${timerUi(st, i)}${st.predict || st.sketch ? saveNote() : ''}</div></div>` }));
-if (hasRes) slides.push({ name: '결과 정리', res: true, html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">정리</span><h2 style="margin:0">결과 정리</h2></div><div class="res-grid">${resCards()}</div>${saveNote()}</div></div>` });
+steps.forEach((st, i) => slides.push({ name: `${i + 1}단계`, step: i, html: () => `<div class="slide${rvCls(st, i)}" data-rvs="${i}">${sceneBlock(st, i)}<div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.section ? `<span class="sec-chip">${e(st.section)}</span>` : ''}${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h2>${e(st.title || `${i + 1}단계`)}</h2>${stepBoxes(st, i)}${sketchBox(st)}${timerUi(st, i)}${st.predict || st.sketch ? saveNote() : ''}</div></div>` }));
+if (hasRes) slides.push({ name: '결과 정리', res: true, html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">정리</span><h2 style="margin:0">결과 정리</h2></div>${sumBox()}<div class="res-grid">${resCards()}</div>${saveNote()}</div></div>` });
 
 const mk = (id, cls) => { let n = document.getElementById(id); if (!n) { n = document.createElement('div'); n.id = id; if (cls) n.className = cls; document.body.appendChild(n); } return n; };
 const deck = mk('deck', 'deck'); deck.hidden = true; deck.setAttribute('role', 'dialog'); deck.setAttribute('aria-modal', 'true'); deck.setAttribute('aria-label', '수업 모드');
@@ -3165,9 +3241,9 @@ function openDeck(i) {
   deck.innerHTML = `<div class="deck-top"><div class="deck-title">${e(D.title || '실험 과정')}</div><span class="tm-mini" hidden></span><span class="deck-count"></span><button class="btn icon" type="button" data-v3deck aria-pressed="${deck3d}" aria-label="장면을 입체(3D)로 보기" title="장면을 입체(3D)로 보기">${IC.cube}</button><button class="btn icon" data-full aria-label="전체 화면">${IC.full}</button><button class="btn icon" data-close aria-label="닫기">${IC.x}</button></div><div class="deck-stage"></div><div class="deck-nav"><button class="btn" data-prev>${IC.left}이전</button><div class="dots">${slides.map((s, k) => `<button class="dot" data-go="${k}" aria-label="${e(s.name)}"></button>`).join('')}</div><button class="btn primary" data-next>다음${IC.right}</button></div>`;
   deck.hidden = false; document.body.style.overflow = 'hidden'; showSlide(i); deck.querySelector('[data-next]').focus();
 }
-function closeDeck() { if (inl) { inl.dispose(); inl = null; } deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(app); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
+function closeDeck() { if (inl) { inl.dispose(); inl = null; } deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(app); refreshPc(); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
 deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.v3 != null) return open3d(+b.dataset.v3); if (b.hasAttribute('data-v3deck')) { deck3d = !deck3d; b.setAttribute('aria-pressed', deck3d); return mountInline(); } if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
-document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (!deck.hidden && inl && ev.target.closest && ev.target.closest('.v3-inline')) { inl.key(ev); if (ev.defaultPrevented) return; } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].res && (res.expect || res.conclusion)) toggleReveal('res'); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
+document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if ((ev.key === ' ' || ev.key === 'Enter') && ev.target.closest && ev.target.closest('[data-pc]')) return; if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (!deck.hidden && inl && ev.target.closest && ev.target.closest('.v3-inline')) { inl.key(ev); if (ev.defaultPrevented) return; } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].res && (res.expect || res.conclusion)) toggleReveal('res'); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
 let tx = null;
 // 입체 그림·답안·그림 칸·단추를 조작할 때는 단계를 넘기지 않는다.
 const noSwipe = target => target.closest && target.closest('.v3-inline,.v3-cv,[data-w],[data-skg],button,input,textarea,select');
@@ -3209,8 +3285,10 @@ if (Q.has('shot')) {
 }
 if (CHECK) document.documentElement.classList.add('lk-check'); // 점검 화면은 결과 장면도 함께 보인다
 app.innerHTML = page(); app.removeAttribute('aria-busy'); LabKit.fit(app); initSketches(app); if (CHECK) afterFonts(() => LabKit.overlaps(app, { mark: true }));
-function clearWrites() { if (!confirm('이 기기에 적은 내용을 모두 지울까요?')) return; saved = {}; persist(); document.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = ''; }); initSketches(document); }
-function syncAnswers() { document.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(document); updateSaveStatus(); }
+function clearWrites() { if (!confirm('이 기기에 적은 내용을 모두 지울까요?')) return; saved = {}; persist(); document.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = ''; }); initSketches(document); pcReset(); }
+// 고른 예상이 지워지거나 바뀌면, 다시 잠긴 단계의 결과 보기를 닫는다
+function pcReset() { refreshPc(); [...rvOn].forEach(i => { if (i !== 'res' && pcWait(i)) { rvOn.delete(i); document.querySelectorAll(`[data-rvs="${i}"]`).forEach(n => { n.classList.remove('rv-on'); n.querySelectorAll('.rv-btn').forEach(b => { b.setAttribute('aria-pressed', false); b.querySelector('.rv-l').textContent = rvLabel(i); }); }); } }); if (deck3d && !deck.hidden) mountInline(); }
+function syncAnswers() { document.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(document); pcReset(); updateSaveStatus(); }
 function importStatus(text, error = false) { document.querySelectorAll('[data-import-status]').forEach(n => { n.textContent = text; n.dataset.state = error ? 'error' : 'ok'; }); }
 function exportAnswers() {
   const data = { format: 'experiment-visualizer-answers', version: 1, experiment: KEY, title: D.title || '', answers: saved };
@@ -3253,7 +3331,7 @@ app.addEventListener('click', ev => {
   if (t.closest('[data-answer-export],[data-answer-import],[data-answer-file]')) return;
   if (t.closest('[data-clear]')) return clearWrites();
   const ob = t.closest('[data-origin]'); if (ob) { const on = document.documentElement.classList.toggle('lk-origin'); ob.setAttribute('aria-pressed', on); ob.textContent = on ? '원문 대조 감추기' : '원문 대조 보기'; return; }
-  if (t.closest('[data-w], [data-skg]')) return; // 적는 칸·그림 칸을 누르면 수업 모드를 열지 않는다
+  if (t.closest('[data-w], [data-skg], [data-pc]')) return; // 적는 칸·그림 칸·예상 보기를 누르면 수업 모드를 열지 않는다
   const o = t.closest('[data-open]'); if (o) return openDeck(+o.dataset.open);
   const st = t.closest('.step'); if (st) openDeck(stepStart + +st.dataset.step);
 });

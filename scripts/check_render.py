@@ -106,7 +106,7 @@ def check(path, exe):
     overlaps = [m for m in logs if '[LabKit] 겹침' in m]
     errs = [m for m in logs if m not in overlaps]
     dom = r.stdout.split('<script')[0]  # 화면 부분만 (스크립트 본문 제외)
-    steps = len(re.findall(r'<article class="step"', dom))
+    steps = len(re.findall(r'<article class="step[ "]', dom))
     reveals = sorted({int(n) for n in re.findall(r'data-rvi="(\d+)"', dom)})  # 결과 장면이 있는 단계 (0부터)
     blank = 'aria-busy="true"' in dom or steps == 0
     ver = re.search(r'experiment-visualizer</a>\s*v(\d+\.\d+\.\d+)', dom)

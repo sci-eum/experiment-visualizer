@@ -24,6 +24,10 @@ DATA = {
          "scene": [{"t": "beaker", "id": "b", "x": 240, "fill": .4}],
          "reveal": {"text": "관찰을 마쳤어요.", "change": {"b": {"color": "blue"}}}},
         {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4}]},
+        {"id": "guess", "title": "고르는 예상", "scene": [{"t": "beaker", "id": "g", "x": 240, "fill": .4}],
+         "predict": [{"text": "가상 물음 1?", "choices": ["가", "나"], "answer": "가", "why": "가상 까닭"},
+                     {"text": "가상 물음 2?", "choices": ["다", "라", "마"], "answer": ["라"]}],
+         "reveal": {"text": "가상 결과", "change": {"g": {"color": "blue"}}}},
     ], "results": {"questions": [{"id": "q", "text": "관찰한 점은?"}]},
 }
 
@@ -105,7 +109,27 @@ window.addEventListener('load', async () => {
     const nativeOpen=LabKit3D.open;LabKit3D.open=()=>{throw new Error('test WebGL unavailable');};
     $('#deck [data-v3deck]').click();await until(()=>$('#deck .v3-fallback'));
     check('3D 실패 시 2D 복귀',!$('#deck .scene-box').classList.contains('v3-on') && $('#deck [data-v3deck]').getAttribute('aria-pressed')==='false');LabKit3D.open=nativeOpen;
+    const store=()=>JSON.parse(localStorage.getItem('lk:selftest-interactions')||'{}'), slide=()=>$('#deck .slide'), pc=(k,v)=>$(`#deck [data-pc="p:guess:${k}"][data-v="${v}"]`);
+    $('#deck .dot[aria-label="3단계"]').click(); const c3=count();
+    check('예상 전 결과 잠금',slide().classList.contains('pc-wait'));
+    $('#deck [data-rv]').click();check('잠긴 결과 보기',!slide().classList.contains('rv-on'));
+    document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'r',bubbles:true}));check('R 키도 잠금',!slide().classList.contains('rv-on'));
+    pc(0,0).click();check('예상 고르기 저장',store()['p:guess:0']==='가' && pc(0,0).getAttribute('aria-pressed')==='true');
+    check('하나만 고르면 잠금 유지',slide().classList.contains('pc-wait'));
+    pc(0,1).click();check('결과 전 바꾸기',store()['p:guess:0']==='나' && pc(0,0).getAttribute('aria-pressed')==='false');
+    pc(0,0).click();
+    const sp=new KeyboardEvent('keydown',{key:' ',bubbles:true,cancelable:true});pc(1,0).focus();pc(1,0).dispatchEvent(sp);check('보기에서 Space는 단계 유지',count()===c3);
+    pc(1,2).click();check('다 고르면 잠금 풀림',!slide().classList.contains('pc-wait'));
+    $('#deck [data-rv]').click();check('예상 뒤 결과 보기',slide().classList.contains('rv-on'));
+    check('맞힌 예상 도장',!!$('#deck [data-pcf="p:guess:0"] .pc-stamp'));
+    check('틀린 예상 표시',!$('#deck [data-pcf="p:guess:1"] .pc-stamp') && pc(1,2).classList.contains('no') && pc(1,1).classList.contains('ok'));
+    check('결과 뒤 예상 굳음',store()['p:guess:0:done']==='1' && store()['p:guess:1:done']==='1');
+    pc(0,1).click();check('굳은 예상 유지',store()['p:guess:0']==='가');
+    $('#deck [data-next]').click();check('예상 도장 모음',/2개 중 1개/.test($('#deck [data-pcsum]').textContent) && !!$('#deck [data-pcsum] .ps.ok'));
     $('#deck [data-close]').click();check('닫은 뒤 답안 유지',$('#app [data-w]').textContent==='복원한 가상 답안');
+    check('닫은 뒤 고른 예상 유지',!!$('#app [data-pc="p:guess:0"][aria-pressed="true"]') && $('#app [data-pcg="p:guess:0"]').classList.contains('pc-done'));
+    window.confirm=()=>true;$('#app [data-clear]').click();window.confirm=nativeConfirm;
+    check('지우면 예상 잠금 다시',$('#app [data-rvs="2"]').classList.contains('pc-wait') && !$('#app [data-rvs="2"]').classList.contains('rv-on') && !$('#app [data-pcg="p:guess:0"]').classList.contains('pc-done'));
   } catch(err) { errors.push(String(err.stack||err)); }
   const out=document.createElement('pre');out.id='lk-ui-test';out.textContent=JSON.stringify({count:results.length,errors});document.body.appendChild(out);
 });

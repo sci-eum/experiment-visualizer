@@ -30,7 +30,11 @@ async function run(exe, url, width) {
       if (closed || i >= 200) throw new Error('브라우저 디버깅 포트를 열지 못했습니다.');
       await sleep(50);
     }
-    const port = Number(fs.readFileSync(portFile, 'utf8').split('\n')[0]);
+    let port = 0; // Windows에서는 브라우저가 파일을 다 쓰기 전에 열면 EBUSY가 나거나 비어 있다
+    for (let i = 0; !port; i++) {
+      try { port = Number(fs.readFileSync(portFile, 'utf8').split('\n')[0]); } catch (err) { if (err.code !== 'EBUSY') throw err; }
+      if (!port) { if (i >= 40) throw new Error('브라우저 디버깅 포트를 읽지 못했습니다.'); await sleep(50); }
+    }
     const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
     const target = targets.find(t => t.type === 'page');
     if (!target) throw new Error('브라우저 탭을 찾지 못했습니다.');

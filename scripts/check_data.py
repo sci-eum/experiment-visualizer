@@ -24,7 +24,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 # 부품 목록: 그림 엔진과 같은 고정 배포판을 먼저, 막히면 같은 태그의 저장소 원본
-VERSION = "1.22.0"
+VERSION = "1.23.0"
 RAW = [f"https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@{VERSION}/references/parts.json",
        f"https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v{VERSION}/references/parts.json"]
 W, H = 480, 300
@@ -32,7 +32,8 @@ TOP = {"title", "subject", "unit", "duration", "group", "goal", "materials", "sa
        "source", "notes", "id", "_demo"}
 STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin", "sketch"}
 ORIGIN = {"where", "quote", "check", "unsure", "added"}
-ADDED = {"tip", "warn", "point", "predict", "observe", "reveal", "scene", "text", "time"}
+ADDED = {"tip", "warn", "point", "predict", "answer", "observe", "reveal", "scene", "text", "time"}
+PREDICT = {"text", "choices", "answer", "why", "write"}  # 고르는 예상 (보기 2~6개, 정답, 까닭, 까닭 적는 칸)
 RESULTS = {"expect", "conclusion", "table", "tables", "questions", "sketches"}
 SKETCH = {"id", "title", "shape", "n", "labels", "write", "note", "range"}  # 그림 칸 (range: 스펙트럼 띠의 파장 범위)
 SKETCH_SHAPES = ("circle", "box", "polar", "spectrum")
@@ -48,7 +49,7 @@ RACKS = {"rack": "tube", "tuberack": "microtube"}  # tubes를 꽂는 부품과 t
 PORTS = {"power", "geltank", "electrophoresis", "meter", "coil", "battery", "bulb", "switch", "ammeter", "voltmeter", "resistor", "motor", "led"}  # 'id:+'·'id:-' 단자가 있는 부품
 METER_PORTS = {"multi", "galvano", "ammeter", "voltmeter"}  # 단자가 있는 meter kind
 KIDS = {"rack": "tubes", "tuberack": "tubes", "wellplate": "wells"}  # 안에 든 것(시험관·튜브·홈)에도 id를 주어 가리킨다
-TEXT_FIELDS = ["text", "point", "observe", "tip", "warn", "predict"]
+TEXT_FIELDS = ["text", "point", "observe", "tip", "warn"]
 # 준비물 이름 → 부품 (용량 확인용)
 NAME_T = [("눈금실린더", "cylinder"), ("눈금 실린더", "cylinder"), ("메스실린더", "cylinder"), ("부피 플라스크", "volumetric"),
           ("부피플라스크", "volumetric"), ("둥근바닥", "roundflask"), ("삼각 플라스크", "flask"), ("삼각플라스크", "flask"),
@@ -411,6 +412,43 @@ def check_sketches(v, where, rep):
     return keys
 
 
+def check_predict(v, where, rep, has_reveal):
+    """예상 칸: 글자, 고르는 예상 { text, choices, answer, why, write }, 또는 그 배열."""
+    many = isinstance(v, list)
+    for k, q in enumerate(v if many else [v]):
+        w = f"{where}[{k}]" if many else where
+        if isinstance(q, str):
+            continue
+        if not isinstance(q, dict) or "choices" not in q:
+            rep.err(w, "글자(적는 예상) 또는 { text, choices, answer, why } 객체(고르는 예상)여야 해요")
+            continue
+        for key in q:
+            if key not in PREDICT:
+                rep.err(w, f"알 수 없는 항목 '{key}'{suggest(key, PREDICT)}")
+        if not (isinstance(q.get("text"), str) and q["text"].strip()):
+            rep.err(f"{w}.text", "물음 글이 필요해요")
+        for key in ("why", "write"):
+            if key in q and not isinstance(q[key], str):
+                rep.err(f"{w}.{key}", "글자여야 해요")
+        ch = q["choices"]
+        if not (isinstance(ch, list) and 2 <= len(ch) <= 6 and all(isinstance(c, str) and c.strip() for c in ch)):
+            rep.err(f"{w}.choices", "보기 글자 2~6개의 배열이어야 해요")
+            ch = None
+        elif len(set(ch)) < len(ch):
+            rep.err(f"{w}.choices", "같은 보기가 여러 번 나와요")
+        ans = q.get("answer")
+        if ans is not None:
+            al = ans if isinstance(ans, list) else [ans]
+            if not al or not all(isinstance(a, str) for a in al):
+                rep.err(f"{w}.answer", "보기 글자 하나 또는 그 배열이어야 해요")
+            elif ch:
+                for a in al:
+                    if a not in ch:
+                        rep.err(f"{w}.answer", f"'{a}'가 보기(choices)에 없어요{suggest(a, ch)}")
+        if not has_reveal and ans is None and not q.get("why"):
+            rep.warn(w, "고른 예상을 확인할 곳이 없어요. 결과 보기(reveal)가 있는 단계에 넣거나 answer·why를 주세요")
+
+
 def scene_ids(items, where, rep):
     ids = {}
     for el in items:
@@ -582,6 +620,8 @@ def main_check(data, reg, strict_source=False):
         for k in TEXT_FIELDS:
             if k in st and not is_text(st[k]):
                 rep.err(f"{where}.{k}", "글자 또는 글자 배열이어야 해요")
+        if "predict" in st:
+            check_predict(st["predict"], f"{where}.predict", rep, st.get("reveal") is not None)
         if "sketch" in st:
             sk_keys += check_sketches(st["sketch"], f"{where}.sketch", rep)
         if "bench" in st and not isinstance(st["bench"], bool):
