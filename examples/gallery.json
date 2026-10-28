@@ -475,11 +475,16 @@
   { "title": "수업 기능: 고르는 예상 (predict choices)", "text": "보기를 고르기 전에는 결과 보기가 잠기고, 결과를 열면 고른 답이 굳어요. answer와 같으면 도장이 찍혀요.",
     "predict": [{"text": "두 그릇에 같은 양의 뜨거운 물을 담았어요. 어느 쪽 물이 먼저 식을까요?", "choices": ["가 (넓은 그릇)", "나 (좁은 그릇)", "같다"],
                  "answer": "가 (넓은 그릇)", "why": "넓은 그릇은 공기와 닿는 물 표면이 넓어 열을 빨리 잃어요.", "write": "그렇게 생각한 까닭"}],
-    "reveal": { "text": "넓은 그릇(가)의 물이 먼저 식었어요." },
+    "reveal": { "text": "넓은 그릇(가)의 물이 먼저 식었어요.", "change": { "ta": { "reading": "45 ℃" }, "tb": { "reading": "60 ℃" }, "a": { "steam": false } } },
     "scene": [
       {"t":"beaker","id":"a","x":170,"s":1.2,"fill":0.3,"color":"water","steam":true,"label":"가"},
-      {"t":"cylinder","id":"b","x":320,"fill":0.55,"color":"water","steam":true,"label":"나"}
-    ] }
+      {"t":"cylinder","id":"b","x":320,"fill":0.55,"color":"water","steam":true,"label":"나"},
+      {"t":"thermometer","id":"ta","in":"a","reading":"80 ℃"},
+      {"t":"thermometer","id":"tb","in":"b","reading":"80 ℃"}
+    ] },
+  { "title": "수업 기능: 움직이는 시연 (scene from · change · add)", "text": "이어받은 장면은 수업 모드에서 넘길 때 바뀌는 모습이 움직여요. 결과 보기의 change도 결과로 바뀌는 모습을 보여 줘요. ▶ 시연으로 다시 보고, motion:false면 끕니다.",
+    "scene": { "from": "prev", "change": { "a": { "fill": 0.6 }, "ta": { "reading": "50 ℃" } },
+               "add": [ {"t":"pour","into":"a","color":"water"} ] } }
   ],
   "results": {
     "sketches": [

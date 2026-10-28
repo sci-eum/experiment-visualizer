@@ -28,6 +28,7 @@ DATA = {
          "predict": [{"text": "가상 물음 1?", "choices": ["가", "나"], "answer": "가", "why": "가상 까닭"},
                      {"text": "가상 물음 2?", "choices": ["다", "라", "마"], "answer": ["라"]}],
          "reveal": {"text": "가상 결과", "change": {"g": {"color": "blue"}}}},
+        {"id": "fill", "title": "이어받아 채우기", "scene": {"from": "prev", "change": {"g": {"fill": .8}}, "add": [{"t": "dropper", "over": "g"}]}},
     ], "results": {"questions": [{"id": "q", "text": "관찰한 점은?"}]},
 }
 
@@ -36,7 +37,7 @@ window.addEventListener('load', async () => {
   const results = [], errors = [], $ = s => document.querySelector(s);
   const check = (name, ok) => { results.push(name); document.documentElement.dataset.uiStage=name; if (!ok) errors.push(name); };
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-  const until = async fn => { for (let i=0;i<100;i++) { if (fn()) return true; await sleep(20); } return false; };
+  const until = async (fn,n=100) => { for (let i=0;i<n;i++) { if (fn()) return true; await sleep(20); } return false; };
   const count = () => $('.deck-count').textContent;
   const touch = (target, type, xs, ended=[]) => {
     const ev = new Event(type, {bubbles:true});
@@ -125,7 +126,15 @@ window.addEventListener('load', async () => {
     check('틀린 예상 표시',!$('#deck [data-pcf="p:guess:1"] .pc-stamp') && pc(1,2).classList.contains('no') && pc(1,1).classList.contains('ok'));
     check('결과 뒤 예상 굳음',store()['p:guess:0:done']==='1' && store()['p:guess:1:done']==='1');
     pc(0,1).click();check('굳은 예상 유지',store()['p:guess:0']==='가');
-    $('#deck [data-next]').click();check('예상 도장 모음',/2개 중 1개/.test($('#deck [data-pcsum]').textContent) && !!$('#deck [data-pcsum] .ps.ok'));
+    $('#deck .dot[aria-label="결과 정리"]').click();check('예상 도장 모음',/2개 중 1개/.test($('#deck [data-pcsum]').textContent) && !!$('#deck [data-pcsum] .ps.ok'));
+    const tw=()=>!!$('#deck .scene-box[data-tw]'), still=()=>$('#deck [data-still]');
+    $('#deck .dot[aria-label="3단계"]').click();$('#deck [data-next]').click();check('앞으로 넘기면 시연',tw());
+    check('시연이 끝나면 정지 그림',await until(()=>!tw(),200) && $('#deck .sc-main animate')!==null);
+    $('#deck [data-prev]').click();check('뒤로 넘기면 시연 없음',!tw());
+    $('#deck .play-btn').click();check('결과 시연 다시 보기',tw() && $('#deck .sc-rv svg')!==null);
+    still().click();check('움직임 끄기',still().getAttribute('aria-pressed')==='true' && localStorage.getItem('lk-pref:still')==='1' && !tw() && !$('#deck .scene-box animate') && getComputedStyle($('#deck .play-btn')).display==='none');
+    $('#deck [data-next]').click();check('움직임 끄면 시연 없음',!tw() && !$('#deck .sc-main animate'));
+    still().click();check('움직임 다시 켜기',localStorage.getItem('lk-pref:still')==='0' && !!$('#deck .sc-main animate'));
     $('#deck [data-close]').click();check('닫은 뒤 답안 유지',$('#app [data-w]').textContent==='복원한 가상 답안');
     check('닫은 뒤 고른 예상 유지',!!$('#app [data-pc="p:guess:0"][aria-pressed="true"]') && $('#app [data-pcg="p:guess:0"]').classList.contains('pc-done'));
     window.confirm=()=>true;$('#app [data-clear]').click();window.confirm=nativeConfirm;

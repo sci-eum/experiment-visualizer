@@ -65,6 +65,7 @@ BAD = {
          "scene": [{"t": "piece", "kind": "carrot"}, {"t": "tweezers", "piece": "steak"}, {"t": "meter", "kind": "ir", "dir": "up"}, {"t": "tube", "solid": "potatoes"}]},
         {"title": "공 놓기", "scene": [{"t": "table", "id": "tb"}, {"t": "ball", "id": "b1", "on": "tb", "at": 0.2}]},
         {"title": "공 또 놓기", "scene": {"from": "prev", "add": [{"t": "ball", "on": "tb", "at": 0.8}]}},
+        {"title": "시연 끄기", "motion": "off", "scene": [{"t": "beaker"}]},
         {"title": "고르는 예상", "scene": [{"t": "beaker"}],
          "predict": [{"text": "어느 쪽?", "choices": ["가"], "answr": "가"}, {"text": "", "choices": ["위", "위"], "answer": "옆"},
                      {"text": "확인할 곳 없음", "choices": ["예", "아니요"]}, {"text": "글만 있는 객체"}, {"text": "정답 자료형", "choices": ["예", "아니요"], "answer": 1}]},
@@ -86,7 +87,7 @@ BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "z는 숫자여야 �
               "span는 1 이상의 정수", "머리 칸에 없는 항목 'colour'", "표 칸에 없는 항목 'txt'",
               "range는 [작은 값, 큰 값]", "kind 'carrot'", "piece 'steak'", "dir 'up'", "solid 'potatoes'",
               "알 수 없는 항목 'answr'", "보기 글자 2~6개", "같은 보기가 여러 번", "'옆'가 보기(choices)에 없어요", "물음 글이 필요해요",
-              "객체(고르는 예상)여야 해요", "보기 글자 하나 또는 그 배열"]
+              "객체(고르는 예상)여야 해요", "보기 글자 하나 또는 그 배열", "motion: false(이 단계의 시연 끄기)"]
 BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문장에는 5 mL)", "그림의 '7 mL'",
             "'피펫'의 아이콘이 이름 짐작으로 스포이트", "'레이저 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
             "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[4].icon: 글자가 없으면", "24시간짜리 타이머", "'설탕 녹인 물'의 아이콘이 이름 짐작으로 가루 더미", "svg에 y가 없어요",
@@ -134,7 +135,8 @@ QUIET["steps"] += [
      "predict": [{"text": "어느 쪽이 먼저 식을까?", "choices": ["가", "나", "같다"], "answer": "가", "why": "까닭 글", "write": "그렇게 생각한 까닭"}, "글로 적는 예상?"],
      "origin": {"where": "1쪽", "quote": "어느 쪽이 먼저 식을까?", "check": "ok", "added": ["answer"]}},
     {"title": "정답만", "scene": [{"t": "beaker"}], "predict": {"text": "뜰까?", "choices": ["뜬다", "가라앉는다"], "answer": ["뜬다"]}},
-    {"title": "결과 보기로 확인", "scene": [{"t": "beaker"}], "reveal": {"text": "결과"}, "predict": {"text": "변할까?", "choices": ["예", "아니요"]}}]
+    {"title": "결과 보기로 확인", "scene": [{"t": "beaker"}], "reveal": {"text": "결과"}, "predict": {"text": "변할까?", "choices": ["예", "아니요"]}},
+    {"title": "시연 없이", "motion": False, "scene": {"from": "prev", "change": {}}}]
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다
 TABLE_TEXT = '80°C 120초 → (60°C 30초 · 40°C 50초) 10회 → 25°C 90초'
 TABLE_QUOTE = '[표] 단계 / 온도 (°C) / 시간(sec) / 반복: 데우기 80 / 120 / 1, 식히기 60 / 30 / 10, 기다리기 40 / 50 / 10, 마무리 25 / 90 / 1'

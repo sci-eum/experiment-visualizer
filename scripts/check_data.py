@@ -24,13 +24,13 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 # 부품 목록: 그림 엔진과 같은 고정 배포판을 먼저, 막히면 같은 태그의 저장소 원본
-VERSION = "1.23.0"
+VERSION = "1.24.0"
 RAW = [f"https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@{VERSION}/references/parts.json",
        f"https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v{VERSION}/references/parts.json"]
 W, H = 480, 300
 TOP = {"title", "subject", "unit", "duration", "group", "goal", "materials", "safety", "tips", "cover", "steps", "results",
        "source", "notes", "id", "_demo"}
-STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin", "sketch"}
+STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin", "sketch", "motion"}
 ORIGIN = {"where", "quote", "check", "unsure", "added"}
 ADDED = {"tip", "warn", "point", "predict", "answer", "observe", "reveal", "scene", "text", "time"}
 PREDICT = {"text", "choices", "answer", "why", "write"}  # 고르는 예상 (보기 2~6개, 정답, 까닭, 까닭 적는 칸)
@@ -626,6 +626,8 @@ def main_check(data, reg, strict_source=False):
             sk_keys += check_sketches(st["sketch"], f"{where}.sketch", rep)
         if "bench" in st and not isinstance(st["bench"], bool):
             rep.err(f"{where}.bench", "true 또는 false여야 해요")
+        if "motion" in st and not isinstance(st["motion"], bool):
+            rep.err(f"{where}.motion", "false(이 단계의 시연 끄기) 또는 true여야 해요")
         if "timer" in st and not (st["timer"] is False or (isinstance(st["timer"], (int, float)) and not isinstance(st["timer"], bool) and st["timer"] > 0)):
             rep.err(f"{where}.timer", "초(양수) 또는 false여야 해요")
         if "timer" not in st and isinstance(st.get("time"), str):  # 엔진 timerOf와 같은 규칙으로 타이머 길이를 읽는다

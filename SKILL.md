@@ -8,14 +8,14 @@ description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·
 > **이 문서를 링크로 받았다면** 이 문서가 작업 지시서다. 처음부터 끝까지 읽고 따른다.
 > 저장소: https://github.com/sci-eum/experiment-visualizer
 
-이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.23.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
+이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.24.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
 
 | 문서 | 언제 연다 | 주소 |
 |---|---|---|
-| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.23.0/references/parts.md |
-| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.23.0/references/data.md |
-| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.23.0/references/scenes.md |
-| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.23.0/references/build.md |
+| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.24.0/references/parts.md |
+| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.24.0/references/data.md |
+| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.24.0/references/scenes.md |
+| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.24.0/references/build.md |
 
 ## 무엇을 만드나
 
@@ -139,7 +139,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 - **한 단계 = 한 장면 = 핵심 동작 하나.** 그림만 보고도 "무엇을, 어디에, 어떻게" 알 수 있게. 주인공 기구는 가운데(x 180~300)에 크게, 기구는 2~5개.
 - **용량이 적힌 기구는 그 기구가 나오는 모든 장면과 준비물 아이콘에 `vol`을 준다** (실험의 스케일이 중요하다). 넣는 양은 `amount`, 붓는 그릇은 `pour`의 `fromVol`. 값은 원문 글자 그대로 (`"1,000 mL"`, `"0.5~1 L"`). 용량이 적혀 있지 않으면 `vol`을 지어내지 않는다. 주사기 `syringe`·수조 `trough`도 `vol`을 준다. `vol`이 없는 기구(parts.md)는 용량을 `label`에 쓴다. `vol`을 준 그릇에는 `s`를 주지 않는다 (꼭 필요하면 그 장면 그릇들에 같은 `s`).
 - **동작은 부품으로**: 붓기 `pour`, 떨어뜨리기 `dropper`+`over`(홈판은 홈 `id`), 마이크로피펫으로 넣기·빨아올리기 `micropipette`+`over`/`in`, 젓기 `rod`+`stir`, 가루 넣기 `spatula`+`over`, 거르기 `funnel`+`over`, 가열 `lamp`·`gasburner`·`hotplate`, 순서 `arrow`, 관찰 `note`·`view`·`eye`. **상태는 속성으로**: `color`, `fill`, `bubbles`, `steam`, `solid:'precipitate'`, `cloudy`, `layers`.
-- **단계 사이를 잇는다.** 같은 기구는 같은 x·색·양을 유지하다 바뀌는 단계에서만 바꾼다. 장치가 같으면 장면 이어받기(`"scene": {"from": "prev", …}`, data.md)로 바뀐 것만 쓴다. 앞 단계의 공·스포이트 같은 동작 부품도 이어지므로, 이번 단계에 없으면 `remove`로 빼고 자리만 바뀌면 `change`로 옮긴다.
+- **단계 사이를 잇는다.** 같은 기구는 같은 x·색·양을 유지하다 바뀌는 단계에서만 바꾼다. 장치가 같으면 장면 이어받기(`"scene": {"from": "prev", …}`, data.md)로 바뀐 것만 쓴다. 앞 단계의 공·스포이트 같은 동작 부품도 이어지므로, 이번 단계에 없으면 `remove`로 빼고 자리만 바뀌면 `change`로 옮긴다. 이어받은 장면과 결과 보기의 `change`는 수업 모드에서 **바뀌는 모습(시연)**으로 저절로 움직이니, 같은 기구는 새로 `add`하지 말고 `id`로 `change`한다. 빠르게 움직이면 어색한 단계(하룻밤·며칠 뒤)는 `"motion": false`.
 - 이름표 `label`은 장면마다 1~3개, 핵심 물질과 양만 (`"물 100 mL"`). 잘못된 방법은 `mark`(`kind:'no'`) + `warn`. 목록에 없는 기구는 parts.md **없는 기구 그리는 법**대로 (다른 기구로 바꿔 그리지 않는다).
 - **센서 실험**은 `sensor`와 `device`(`link`로 연결)를 함께, 그래프는 `"graph":"live"` (원문이 모양을 말할 때만 그 모양). 표지(`cover`)는 대표 장치 장면 (`{"from": 7}`).
 
@@ -206,7 +206,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 ## 8. 전달
 
 - 파일 이름은 실험 제목으로 (`물의_끓는점_측정.html`). claude.ai에서는 `/mnt/user-data/outputs/`에 저장해 건넨다. `그림점검` 폴더는 건네지 않는다.
-- 답변은 짧게: 만든 단계 수, 받은 팁을 넣은 곳, 원문 확인이 필요한 곳, 사용법 한두 줄 ("단계 카드나 '수업 모드로 보기'를 누르면 한 단계씩 크게 보여요" + 쓴 기능만: 결과 보기, 예상 고르기와 도장, 타이머, 학생용·교사용 인쇄, 원문 대조 보기, "그림 오른쪽 아래 3D를 누르면 입체로 돌려 볼 수 있어요").
+- 답변은 짧게: 만든 단계 수, 받은 팁을 넣은 곳, 원문 확인이 필요한 곳, 사용법 한두 줄 ("단계 카드나 '수업 모드로 보기'를 누르면 한 단계씩 크게 보여요" + 쓴 기능만: 결과 보기, 예상 고르기와 도장, 바뀌는 모습 시연(▶·움직임 끄기), 타이머, 학생용·교사용 인쇄, 원문 대조 보기, "그림 오른쪽 아래 3D를 누르면 입체로 돌려 볼 수 있어요").
 - 채팅 미리보기에서 그림이 안 보이면 파일을 내려받아 크롬·엣지로 열라고 안내한다.
 
 ## 9. 이미 만든 HTML을 고칠 때
