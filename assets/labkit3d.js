@@ -1,12 +1,13 @@
-/*! experiment-visualizer LabKit3D v1.24.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit3D v1.25.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 장면을 입체(WebGL)로 보여 준다. 외부 라이브러리 없이 WebGL만 쓴다 (인터넷 없이 여는 한 파일 버전에도 넣을 수 있게).
    - 그릇 13종(비커·플라스크·시험관 …)은 그림 엔진의 윤곽선을 돌려 빚은 유리와, 높이·색·층이 맞는 액체로 (v1.20)
    - 자주 쓰는 기구(삼발이·알코올램프·스탠드·가열판·시험관대·저울 …)는 상자·원기둥으로 빚는다 (v1.20)
    - 나머지 기구는 2D 그림을 카드로 세운다. 불꽃·눈금·거품처럼 얹히는 것은 그 부품의 덧그림 카드로 (v1.19)
+   - 방울·기포·김·불꽃·젓기는 2D 정지 그림의 표시(data-fx)로 떼어 낸 조각 카드를 2D와 같은 규칙으로 움직이고, 흔드는 그릇은 통째로 돌린다 (v1.25)
    그림 엔진이 '3D' 버튼을 누를 때 불러와 LabKit3D.open(창, { items, title, bench })을 부른다. */
 (function () {
 'use strict';
-const VERSION = '1.24.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
+const VERSION = '1.25.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
 const FONT = '"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif';
 const SVGNS = 'http://www.w3.org/2000/svg';
 const DEG = Math.PI / 180;
@@ -52,6 +53,30 @@ const warn = msg => console.warn('[LabKit] 입체: ' + msg);
 const hex = h => { const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(h || '').trim()); if (!m) return [.8, .8, .8]; let v = m[1]; if (v.length === 3) v = v.split('').map(c => c + c).join(''); return [0, 2, 4].map(i => parseInt(v.slice(i, i + 2), 16) / 255); };
 const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
 // 그림 엔진과 같은 난수 (접시 속 씨앗·결정을 2D와 같은 자리에)
+/* ---------- 움직이는 조각 (v1.25) ---------- */
+// 2D 아핀 [a,b,c,d,e,f]: x' = a x + c y + e, y' = b x + d y + f (SVG matrix와 같은 순서)
+const aMul = (P, Q) => [P[0] * Q[0] + P[2] * Q[1], P[1] * Q[0] + P[3] * Q[1], P[0] * Q[2] + P[2] * Q[3], P[1] * Q[2] + P[3] * Q[3], P[0] * Q[4] + P[2] * Q[5] + P[4], P[1] * Q[4] + P[3] * Q[5] + P[5]];
+const aInv = P => { const k = P[0] * P[3] - P[1] * P[2] || 1e-9; return [P[3] / k, -P[1] / k, -P[2] / k, P[0] / k, (P[2] * P[5] - P[3] * P[4]) / k, (P[1] * P[4] - P[0] * P[5]) / k]; };
+const aT = (x, y) => [1, 0, 0, 1, x, y], aS = (x, y) => [x, 0, 0, y, 0, 0], aR = deg => { const r = deg * Math.PI / 180, c = Math.cos(r), s = Math.sin(r); return [c, s, -s, c, 0, 0]; };
+const A1 = [1, 0, 0, 1, 0, 0];
+const frac = v => v - Math.floor(v);
+const keys = (p, ks) => { for (let i = 1; i < ks.length; i++) if (p <= ks[i][0]) { const [t0, v0] = ks[i - 1], [t1, v1] = ks[i]; return v0 + (v1 - v0) * (p - t0) / ((t1 - t0) || 1); } return ks[ks.length - 1][1]; };
+// 조각의 t초 모습: 조각 자기 좌표에서의 움직임(A)과 불투명도(a). labkit.js의 SMIL 움직임과 같은 값을 쓴다 (data-fx-d)
+function fxAt(f, t) {
+  const d = f.fd;
+  switch (f.fk) {
+    case 'rise': case 'fall': { // 기포(cy가 오름)·방울과 가루(떨어짐): [시작 y, 끝 y, 주기, 시작 시각, 정지 그림의 y, 흐려지기]
+      const p = frac((t - (d[3] || 0)) / (d[2] || 1)), al = !d[5] ? 1 : f.fk === 'rise' ? keys(p, [[0, 0], [.15, 1], [.8, 1], [1, 0]]) : keys(p, [[0, 1], [.85, 1], [1, 0]]);
+      return { A: aT(0, d[0] + (d[1] - d[0]) * p - d[4]), a: f.a0 * al };
+    }
+    case 'steam': { const p = frac((t - (d[1] || 0)) / (d[0] || 2.4)); return { A: aT(0, 6 - 16 * p), a: keys(p, [[0, 0], [.5, .85], [1, 0]]) }; } // 김: 오르며 나타났다 사라짐
+    case 'flame': { const p = frac(t / (d[0] || .9)); return { A: aS(keys(p, [[0, 1], [1 / 3, d[1]], [2 / 3, d[3]], [1, 1]]), keys(p, [[0, 1], [1 / 3, d[2]], [2 / 3, d[4]], [1, 1]])), a: f.a0 }; } // 불꽃: 아래 끝을 축으로
+    case 'spin': { const p = frac(t / (d[0] || .45)); return { A: aS(keys(p, [[0, 1], [.5, .18], [1, 1]]), 1), a: f.a0 }; } // 젓개: 도는 모습
+    case 'stir': { const p = frac(t / (d[2] || 1.2)), g = keys(p, [[0, -d[3]], [.5, d[3]], [1, -d[3]]]); return { A: aMul(aT(d[0], d[1]), aMul(aR(g), aT(-d[0], -d[1]))), a: f.a0 }; } // 젓는 막대
+    case 'glow': { const p = frac(t / (d[0] || 1.4)); return { A: A1, a: keys(p, [[0, d[1]], [.5, d[2]], [1, d[1]]]) }; } // 불씨의 빛
+  }
+  return { A: A1, a: f.a0 };
+}
 function rng(seed) { let s = Math.abs(Math.floor(seed)) % 2147483646 + 1; return () => (s = s * 16807 % 2147483647) / 2147483647; }
 
 /* ---------- 행렬 (열 우선, WebGL과 같은 순서) ---------- */
@@ -517,19 +542,35 @@ function cutScene(K, items) {
   host.style.cssText = 'position:fixed;left:-20000px;top:0;width:480px;height:300px;opacity:0;pointer-events:none;font-family:' + FONT;
   host.innerHTML = svg; document.body.appendChild(host);
   const root = host.firstElementChild, ser = new XMLSerializer();
+  try { const RI = root.getScreenCTM().inverse(); root.querySelectorAll('[data-fx]').forEach(n => { const m = RI.multiply(n.getScreenCTM()); n.setAttribute('data-fx-m', [m.a, m.b, m.c, m.d, m.e, m.f].map(v => Math.round(v * 1e4) / 1e4).join(',')); }); } catch (e) { }
   const defs = root.querySelector(':scope > defs'), defsXml = defs ? ser.serializeToString(defs) : '';
   const measure = nodes => { // 여러 마디를 함께 잰 상자 (화면 밖 SVG에 잠깐 붙여서)
     const mg = document.createElementNS(SVGNS, 'g'); nodes.forEach(n => mg.appendChild(n)); root.appendChild(mg);
     let b = null; try { const r = mg.getBBox(); if (r.width + r.height > 0) b = { x: r.x, y: r.y, x2: r.x + r.width, y2: r.y + r.height }; } catch (e) { }
     mg.remove(); return b;
   };
-  const card = (nodes, box, extra) => {
+  // 움직이는 조각(data-fx)을 카드에서 떼어 낸다: 조각마다 자기 좌표 → 장면 좌표 행렬(L)로 감싸 따로 카드로 만든다. 카드 상자는 떼기 전 그대로 (자리가 바뀌지 않게)
+  const takeFx = nodes => {
+    const out = [];
+    nodes.forEach(n => (n.matches && n.matches('[data-fx]') ? [n] : [...n.querySelectorAll('[data-fx]')]).forEach(f => {
+      if (f !== n && f.parentElement && f.parentElement.closest('[data-fx]')) return;
+      const L = (f.getAttribute('data-fx-m') || '1,0,0,1,0,0').split(',').map(Number), c = f.cloneNode(true);
+      c.removeAttribute('transform'); const a0 = c.hasAttribute('opacity') ? +c.getAttribute('opacity') : 1; c.removeAttribute('opacity');
+      const w = document.createElementNS(SVGNS, 'g'); w.setAttribute('transform', `matrix(${L.join(' ')})`); w.appendChild(c);
+      const fc = card([w], measure([w.cloneNode(true)]), { fk: f.getAttribute('data-fx'), fd: (f.getAttribute('data-fx-d') || '').split(',').filter(v => v !== '').map(Number), L, a0, types: ['fx'] }, true);
+      if (fc) out.push(fc);
+      if (f !== n) f.remove(); else n.dataset.fxTaken = '1';
+    }));
+    return out;
+  };
+  const card = (nodes, box, extra, raw) => {
     if (!box) return null;
+    const fx = raw ? [] : takeFx(nodes); if (!raw) nodes = nodes.filter(n => !(n.dataset && n.dataset.fxTaken));
     const pad = 6 + .02 * Math.max(box.x2 - box.x, box.y2 - box.y); // 선 굵기·그림자가 상자 밖으로 나온다
     const x = box.x - pad, y = box.y - pad, w = box.x2 - box.x + 2 * pad, h = box.y2 - box.y + 2 * pad;
     const k = Math.min(3, MAX_TEX / Math.max(w, h)), cw = Math.max(2, Math.round(w * k)), ch = Math.max(2, Math.round(h * k));
     const xml = `<svg xmlns="${SVGNS}" width="${cw}" height="${ch}" viewBox="${x} ${y} ${w} ${h}" font-family='${FONT}'>${defsXml}${nodes.map(n => ser.serializeToString(n)).join('')}</svg>`;
-    return { kind: 'card', x, y, w, h, cw, ch, xml, bottom: box.y2, ...extra };
+    return { kind: 'card', x, y, w, h, cw, ch, xml, bottom: box.y2, ...extra, fx: fx.length ? fx : null };
   };
   try {
     // 묶음(한 장치) 정리: 위층 마디의 순서가 앞뒤 순서 (그린 것이 없는 부품만 있는 묶음은 맨 뒤)
@@ -689,6 +730,9 @@ function viewer(stage, o = {}) {
   const wellOf = d => { for (const k of [d.overE, d.inE]) { const w = k != null && E[k]; if (w && w.t === '_well' && w.g && w.g.rc) { const pb = objByE.get(w.parentE); if (pb && pb.wellShift) return pb.wellShift(...w.g.rc); } } return null; };
   cards.forEach(c => { const sh = c.d && wellOf(c.d); if (sh) { c.py -= sh.dy; c.pz += sh.dz; c.foot = false; } });
   const allCards = cards.concat(objs.map(ob => ob.decal).filter(Boolean));
+  // 움직임 (v1.25): 떼어 낸 조각 카드와 흔드는 그릇. o.motion은 그림 엔진의 움직임 상태 (움직임 끄기·동작 줄이기)
+  const fxAll = allCards.flatMap(c => c.fx || []);
+  objs.forEach(ob => { const g = ob.d.g || {}; if (ob.d.p && ob.d.p.shake && g.hold) ob.shake = [g.hold.x - CX, B - g.hold.y, ob.az]; });
   const arrows = E.filter(d => d && d.t === 'arrow' && d.g && d.g.a && d.g.b);
   const pipes = E.filter(d => d && (d.t === 'hose' || d.t === 'tubing' || d.t === 'wire') && !d.d3 && d.g && Array.isArray(d.g.pts) && d.g.pts.length > 1);
 
@@ -728,10 +772,10 @@ function viewer(stage, o = {}) {
   const shTex = texture(gl, shadowCanvas(), gl2);
   objs.forEach(ob => { if (ob.top) ob.top.tex = texture(gl, ob.top.canvas, gl2); });
   let alive = true, frame = 0, done = 0, failed = 0;
-  const ready = Promise.all(allCards.map(c => raster(c).then(img => {
+  const ready = Promise.all(allCards.concat(fxAll).map(c => raster(c).then(img => {
     if (!alive) return;
     try { c.tex = texture(gl, img, gl2); } catch (e) { failed++; warn('그림 카드를 올리지 못했어요 (' + c.types.join(',') + '): ' + e.message); }
-    done++; load.textContent = `실험대를 꾸미는 중… ${done}/${allCards.length}`; invalidate();
+    done++; load.textContent = `실험대를 꾸미는 중… ${done}/${allCards.length + fxAll.length}`; invalidate();
   }, e => { failed++; done++; warn(e.message); invalidate(); }))).then(() => { load.hidden = true; invalidate(); return { units: cards.length, meshes: objs.length, failed }; });
   if (!allCards.length) load.hidden = true;
 
@@ -740,6 +784,9 @@ function viewer(stage, o = {}) {
   const cam = { az: v0.az, el: v0.el, zoom: 1, panX: 0, panY: 0, faz: v0.az, fel: v0.el }; // faz·fel: 거리를 맞춘 시점 (끌어 돌릴 때는 그대로 둔다)
   let anim = null, view = VIEWS[o.view] ? o.view : 'angle';
   const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const moving = !still && (o.motion ?? !reduce) && (fxAll.length > 0 || objs.some(ob => ob.shake));
+  cv.dataset.motion = moving ? 'on' : 'off';
+  const T0 = performance.now(); let tNow = 0, MOD = null, lastSig = '', tick = 0; // MOD: 흔드는 그릇을 그릴 때 곱하는 행렬
   const setPressed = () => { if (ctl) ctl.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view)); };
   setPressed();
   function goView(name) {
@@ -764,26 +811,36 @@ function viewer(stage, o = {}) {
     if (!c.tex) return;
     const th = c.mode === 'fixed' ? 0 : Math.atan2(EYE[0] - c.px, EYE[2] - c.pz);
     c.m = cardMat(c.px, c.py, c.pz, th, c.mode === 'fixed' || c.e != null ? 0 : lean, c.w, c.h, c.ox); // 입체 부품 곁의 카드는 곧게 (유리와 어긋나지 않게)
+    const M = MOD ? mul(MOD, c.m) : c.m;
     gl.useProgram(P_TEX.p); gl.disable(gl.CULL_FACE); gl.bindBuffer(gl.ARRAY_BUFFER, quad);
     const at = P_TEX.at; gl.enableVertexAttribArray(at.p); gl.vertexAttribPointer(at.p, 3, gl.FLOAT, false, 20, 0); gl.enableVertexAttribArray(at.q); gl.vertexAttribPointer(at.q, 2, gl.FLOAT, false, 20, 12);
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, c.tex); gl.uniform1i(P_TEX.un.t, 0); gl.uniform1f(P_TEX.un.a, 1);
-    gl.uniformMatrix4fv(P_TEX.un.m, false, mul(PV, c.m)); gl.drawArrays(gl.TRIANGLES, 0, 6); offAttr(P_TEX);
+    gl.uniformMatrix4fv(P_TEX.un.m, false, mul(PV, M)); gl.drawArrays(gl.TRIANGLES, 0, 6);
+    // 떼어 낸 조각: 조각 사각형 → (조각 좌표에서 움직인 만큼) 장면 좌표 → 이 카드의 단위 사각형 → 카드 자리
+    if (c.fx) c.fx.forEach(f => {
+      if (!f.tex) return;
+      const st = moving ? fxAt(f, tNow) : { A: A1, a: f.a0 }; if (st.a <= .003) return;
+      const S2 = aMul(f.L, aMul(st.A, aInv(f.L))), R = [f.w, 0, 0, -f.h, f.x + f.w / 2, f.y + f.h], U = [1 / c.w, 0, 0, -1 / c.h, -c.x / c.w - .5, (c.y + c.h) / c.h];
+      const Q = aMul(U, aMul(S2, R)), Q4 = new Float32Array([Q[0], Q[1], 0, 0, Q[2], Q[3], 0, 0, 0, 0, 1, 0, Q[4], Q[5], 0, 1]);
+      gl.bindTexture(gl.TEXTURE_2D, f.tex); gl.uniform1f(P_TEX.un.a, Math.min(1, st.a)); gl.uniformMatrix4fv(P_TEX.un.m, false, mul(PV, mul(M, Q4))); gl.drawArrays(gl.TRIANGLES, 0, 6);
+    });
+    offAttr(P_TEX);
   }
   function drawGlass(ob, face) {
     if (!ob.glass.length) return;
     gl.useProgram(P_GLASS.p); gl.enable(gl.CULL_FACE); gl.cullFace(face);
-    gl.uniformMatrix4fv(P_GLASS.un.m, false, PV); gl.uniform3fv(P_GLASS.un.E, EYE); gl.uniform3fv(P_GLASS.un.L, LIGHT);
+    gl.uniformMatrix4fv(P_GLASS.un.m, false, MOD ? mul(PV, MOD) : PV); gl.uniform3fv(P_GLASS.un.E, EYE); gl.uniform3fv(P_GLASS.un.L, LIGHT);
     ob.glass.forEach(gp => { gl.uniform3fv(P_GLASS.un.T, gp.tint); gl.uniform1f(P_GLASS.un.A, gp.alpha); gl.uniform1f(P_GLASS.un.K, gp.edge); surfAttr(P_GLASS, gp.b); gl.drawArrays(gl.TRIANGLES, 0, gp.n); });
     offAttr(P_GLASS); gl.disable(gl.CULL_FACE);
   }
   function drawLiquid(ob) {
     if (ob.liquids.length) {
-      gl.useProgram(P_LIQ.p); gl.enable(gl.CULL_FACE); gl.uniformMatrix4fv(P_LIQ.un.m, false, PV); gl.uniform3fv(P_LIQ.un.L, LIGHT);
+      gl.useProgram(P_LIQ.p); gl.enable(gl.CULL_FACE); gl.uniformMatrix4fv(P_LIQ.un.m, false, MOD ? mul(PV, MOD) : PV); gl.uniform3fv(P_LIQ.un.L, LIGHT);
       [gl.FRONT, gl.BACK].forEach(face => { gl.cullFace(face); ob.liquids.forEach(lq => { gl.uniform3fv(P_LIQ.un.C, lq.color); gl.uniform1f(P_LIQ.un.A, lq.alpha); gl.uniform1f(P_LIQ.un.lo, lq.lo); gl.uniform1f(P_LIQ.un.hi, lq.hi); surfAttr(P_LIQ, lq.b); gl.drawArrays(gl.TRIANGLES, 0, lq.n); }); });
       offAttr(P_LIQ); gl.disable(gl.CULL_FACE);
     }
     if (ob.caps.length) {
-      gl.useProgram(P_CAP.p); gl.uniformMatrix4fv(P_CAP.un.m, false, PV);
+      gl.useProgram(P_CAP.p); gl.uniformMatrix4fv(P_CAP.un.m, false, MOD ? mul(PV, MOD) : PV);
       ob.caps.forEach(cp => {
         gl.uniformMatrix4fv(P_CAP.un.IM, false, cp.IM); gl.uniform1fv(P_CAP.un.R, cp.R); gl.uniform1f(P_CAP.un.h0, cp.h0); gl.uniform1f(P_CAP.un.h1, cp.h1);
         gl.uniform1f(P_CAP.un.bx, cp.bx); gl.uniform2fv(P_CAP.un.hb, cp.hb || [0, 0]); gl.uniform3fv(P_CAP.un.C, cp.color); gl.uniform1f(P_CAP.un.A, cp.alpha);
@@ -796,14 +853,21 @@ function viewer(stage, o = {}) {
   const byFar = list => list.map(it => [distOf(it), it]).sort((a, b) => b[0] - a[0] || (a[1].order ?? 0) - (b[1].order ?? 0)).map(x => x[1]);
   function drawItem(it, lean) {
     if (it.kind !== 'obj') return drawCard(it, lean);
+    const prev = MOD;
+    if (moving && it.shake) { // 흔드는 그릇: 잡는 곳을 축으로 -7°~7° (2D와 같은 0.75초)
+      const p = it.shake, R = chain(mT(p[0], p[1], p[2]), mRz(-keys(frac(tNow / .75), [[0, -7], [.5, 7], [1, -7]]) * DEG), mT(-p[0], -p[1], -p[2]));
+      MOD = MOD ? mul(MOD, R) : R;
+    }
     drawGlass(it, gl.FRONT);                       // 유리 뒷면
     byFar(it.kids).forEach(k => drawItem(k, lean)); // 그릇 안의 것
     drawLiquid(it);                                 // 액체와 수면
     drawGlass(it, gl.BACK);                        // 유리 앞면
     if (it.decal) drawCard(it.decal, lean);         // 눈금·거품·불꽃 같은 덧그림
+    MOD = prev;
   }
   function draw(now) {
     frame = 0; if (!alive) return;
+    tNow = ((now || performance.now()) - T0) / 1000; cv._frames = (cv._frames || 0) + 1;
     if (anim) { const k = clamp(((now || performance.now()) - anim.t0) / anim.dur, 0, 1), e = k < .5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2; Object.keys(anim.to).forEach(p => { cam[p] = anim.from[p] + (anim.to[p] - anim.from[p]) * e; }); if (k >= 1) anim = null; else invalidate(); }
     const dpr = Math.min(window.devicePixelRatio || 1, 2), cw = (o.size && o.size[0]) || stage.clientWidth || 960, ch = (o.size && o.size[1]) || stage.clientHeight || 600;
     if (cv.width !== Math.round(cw * dpr) || cv.height !== Math.round(ch * dpr)) { cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); }
@@ -832,7 +896,10 @@ function viewer(stage, o = {}) {
     byFar(top.filter(it => !(it.kind !== 'obj' && it.over && !it.sign))).forEach(it => drawItem(it, lean));
     byFar(top.filter(it => it.kind !== 'obj' && it.over && !it.sign)).forEach(it => drawCard(it, lean)); // 설명 카드는 맨 나중에
     gl.depthMask(true);
-    lines.innerHTML = overlay() + placeTags();
+    // 선·이름표는 시점·크기·카드가 바뀔 때만 다시 놓는다 (움직임만 있는 장면은 그대로)
+    const sig = [cam.az, cam.el, cam.zoom, cam.panX, cam.panY, W, H, done].join();
+    if (!moving || sig !== lastSig) { lines.innerHTML = overlay() + placeTags(); lastSig = sig; }
+    if (moving && !tick) tick = setTimeout(() => { tick = 0; invalidate(); }, 30); // 움직임만 있으면 1초에 30장쯤
   }
 
   /* 이름표: 카드(또는 입체 부품의 축) 위의 점을 화면에 비춰 글자로 띄운다 (가리지 않게 위아래로 비켜 놓는다) */
@@ -973,9 +1040,9 @@ function viewer(stage, o = {}) {
     if (act) { ev.preventDefault(); act(); touched(); } else if (pre) { ev.preventDefault(); goView(pre); }
   }
   function dispose() {
-    alive = false; if (frame) cancelAnimationFrame(frame);
+    alive = false; if (frame) cancelAnimationFrame(frame); clearTimeout(tick);
     offs.forEach(f => f());
-    try { allCards.forEach(c => c.tex && gl.deleteTexture(c.tex)); gl.deleteTexture(shTex); [quad, flat, opB, ...bufs].forEach(b => b && gl.deleteBuffer(b)); [P_TEX, P_COL, P_GLASS, P_LIQ, P_CAP].forEach(p => gl.deleteProgram(p.p)); const lc = gl.getExtension('WEBGL_lose_context'); if (lc) lc.loseContext(); } catch (e) { }
+    try { allCards.concat(fxAll).forEach(c => c.tex && gl.deleteTexture(c.tex)); gl.deleteTexture(shTex); [quad, flat, opB, ...bufs].forEach(b => b && gl.deleteBuffer(b)); [P_TEX, P_COL, P_GLASS, P_LIQ, P_CAP].forEach(p => gl.deleteProgram(p.p)); const lc = gl.getExtension('WEBGL_lose_context'); if (lc) lc.loseContext(); } catch (e) { }
     S.host.remove(); stage.innerHTML = '';
   }
   invalidate();

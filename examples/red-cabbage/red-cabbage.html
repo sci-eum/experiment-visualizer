@@ -501,7 +501,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.24.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.25.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -699,7 +699,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.24.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.25.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -709,6 +709,8 @@ const uid = p => p + (++SEQ).toString(36);
 const r2 = v => Math.round(v * 100) / 100;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const A = s => (ANIM ? s : '');
+// 움직이는 조각 표시 (정지 그림에만): data-fx = 종류, data-fx-d = 2D 움직임과 같은 값. 입체 보기가 읽는다 (labkit3d.js fxAt)
+const FX = (kind, d) => ANIM ? '' : ` data-fx="${kind}"${d != null ? ` data-fx-d="${d}"` : ''}`;
 // 데이터로 들어오는 SVG 조각에서 스크립트·이벤트 속성·외부 문서 삽입을 걷어 낸다.
 const safeMarkup = s => String(s || '')
   .replace(/<\s*(script|style|foreignObject|iframe|object|embed)\b[\s\S]*?<\s*\/\s*\1\s*>/gi, '')
@@ -888,7 +890,7 @@ function bubbles(g, n, c) {
   for (let i = 0; i < n; i++) {
     const bx = r2(-bh + R() * 2 * bh), r = r2(1.6 + R() * 2.2), dur = r2(1.3 + R() * 1.7), b = r2(-R() * dur);
     o += ANIM ? `<circle cx="${bx}" cy="${y0}" r="${r}" fill="#fff" fill-opacity=".75" stroke="${shade(c, -.3)}" stroke-width=".7"><animate attributeName="cy" values="${r2(y0)};${r2(y1)}" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/></circle>`
-      : `<circle cx="${bx}" cy="${r2(y1 + (y0 - y1) * R())}" r="${r}" fill="#fff" fill-opacity=".75" stroke="${shade(c, -.3)}" stroke-width=".7"/>`;
+      : (cy => `<circle${FX('rise', `${r2(y0)},${r2(y1)},${dur},${b},${cy},1`)} cx="${bx}" cy="${cy}" r="${r}" fill="#fff" fill-opacity=".75" stroke="${shade(c, -.3)}" stroke-width=".7"/>`)(r2(y1 + (y0 - y1) * R()));
   }
   return o;
 }
@@ -925,7 +927,7 @@ function liquidBits(el, g) {
   return o;
 }
 function stirbarSvg(B) {
-  return `<g transform="translate(0,${B - 4})"><g>${A('<animateTransform attributeName="transform" type="scale" values="1 1;.18 1;1 1" dur=".45s" repeatCount="indefinite"/>')}<rect x="-12" y="-3.2" width="24" height="6.4" rx="3.2" fill="#fbfbfd" stroke="#6b7488" stroke-width="1.2"/></g></g>`;
+  return `<g transform="translate(0,${B - 4})"><g${FX('spin', '.45')}>${A('<animateTransform attributeName="transform" type="scale" values="1 1;.18 1;1 1" dur=".45s" repeatCount="indefinite"/>')}<rect x="-12" y="-3.2" width="24" height="6.4" rx="3.2" fill="#fbfbfd" stroke="#6b7488" stroke-width="1.2"/></g></g>`;
 }
 function solids(el, S, g, frontOnly) {
   const k = el.solid; if (!k || k === 'ice') return '';
@@ -957,7 +959,7 @@ function steam(x, y, s = 1) {
   let o = '';
   [-10, 1, 11].forEach((dx, i) => {
     const d = `M${r2(x + dx * s)},${r2(y - 4)} c${r2(-6 * s)},${r2(-8 * s)} ${r2(6 * s)},${r2(-14 * s)} 0,${r2(-22 * s)} c${r2(-6 * s)},${r2(-8 * s)} ${r2(6 * s)},${r2(-14 * s)} 0,${r2(-22 * s)}`;
-    o += `<path d="${d}" fill="none" stroke="#b9c3d3" stroke-width="2.6" stroke-linecap="round" opacity="${ANIM ? 0 : .7}">${A(`<animate attributeName="opacity" values="0;.85;0" dur="2.4s" begin="${-i * .8}s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 6;0 -10" dur="2.4s" begin="${-i * .8}s" repeatCount="indefinite"/>`)}</path>`;
+    o += `<path${FX('steam', `2.4,${-i * .8}`)} d="${d}" fill="none" stroke="#b9c3d3" stroke-width="2.6" stroke-linecap="round" opacity="${ANIM ? 0 : .7}">${A(`<animate attributeName="opacity" values="0;.85;0" dur="2.4s" begin="${-i * .8}s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0 6;0 -10" dur="2.4s" begin="${-i * .8}s" repeatCount="indefinite"/>`)}</path>`;
   });
   return o;
 }
@@ -1042,7 +1044,7 @@ function tipPlace(el, R) {
   return { x: el.x ?? 240, y: el.y ?? 150, s, tilt: el.tilt ?? 0, to: el.to ?? null };
 }
 function flame(x, y, k = 1) {
-  return `<g transform="translate(${r2(x)},${r2(y)}) scale(${k})"><circle cy="-16" r="20" fill="#ffb347" opacity=".16"/><g>${A('<animateTransform attributeName="transform" type="scale" values="1 1;.92 1.08;1.05 .95;1 1" dur=".9s" repeatCount="indefinite"/>')}<path d="M0,-38 C9,-25 12,-10 0,0 C-12,-10 -9,-25 0,-38Z" fill="#ffad2e"/><path d="M0,-28 C6,-19 8,-8 0,0 C-8,-8 -6,-19 0,-28Z" fill="#ffd84d"/><path d="M0,-14 C3,-9 4,-3 0,0 C-4,-3 -3,-9 0,-14Z" fill="#6ea9ff" opacity=".85"/></g></g>`;
+  return `<g transform="translate(${r2(x)},${r2(y)}) scale(${k})"><circle cy="-16" r="20" fill="#ffb347" opacity=".16"/><g${FX('flame', '.9,.92,1.08,1.05,.95')}>${A('<animateTransform attributeName="transform" type="scale" values="1 1;.92 1.08;1.05 .95;1 1" dur=".9s" repeatCount="indefinite"/>')}<path d="M0,-38 C9,-25 12,-10 0,0 C-12,-10 -9,-25 0,-38Z" fill="#ffad2e"/><path d="M0,-28 C6,-19 8,-8 0,0 C-8,-8 -6,-19 0,-28Z" fill="#ffd84d"/><path d="M0,-14 C3,-9 4,-3 0,0 C-4,-3 -3,-9 0,-14Z" fill="#6ea9ff" opacity=".85"/></g></g>`;
 }
 function dropAnim(x, y0, y1, c, n = 2, dur = 1) {
   if (y1 == null || y1 <= y0) return '';
@@ -1050,7 +1052,7 @@ function dropAnim(x, y0, y1, c, n = 2, dur = 1) {
   for (let i = 0; i < n; i++) {
     const dp = `<path d="M0,-4.5 C2.6,-1.2 3.3,1.6 0,3.4 C-3.3,1.6 -2.6,-1.2 0,-4.5Z" fill="${c}" stroke="${st}" stroke-width=".8"/>`;
     o += ANIM ? `<g opacity="0">${dp}<animateTransform attributeName="transform" type="translate" values="${r2(x)} ${r2(y0 + 4)};${r2(x)} ${r2(y1 - 3)}" dur="${dur}s" begin="${r2(-i * dur / n)}s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;1;0" keyTimes="0;.85;1" dur="${dur}s" begin="${r2(-i * dur / n)}s" repeatCount="indefinite"/></g>`
-      : `<g transform="translate(${r2(x)},${r2(y0 + 6 + (y1 - y0 - 10) * (i + .5) / n)})">${dp}</g>`;
+      : (ys => `<g${FX('fall', `${r2(y0 + 4)},${r2(y1 - 3)},${dur},${r2(-i * dur / n)},${ys},1`)} transform="translate(${r2(x)},${ys})">${dp}</g>`)(r2(y0 + 6 + (y1 - y0 - 10) * (i + .5) / n));
   }
   return o;
 }
@@ -1273,14 +1275,14 @@ T.rod = {
   draw(el, g, cx) {
     const { B, Tp } = g;
     if (el.stir && el.in) { const t = cx.R(el.in); if (t && t.fill > 0) { const rx = Math.min((t.half || 10) * .62, 20), y = t.surfaceY + 9, mid = marker(cx, '#b14de0'); cx.front.push(`<path d="M${r2(B.x - rx)},${r2(y)} A${r2(rx)},5.5 0 1,0 ${r2(B.x + rx)},${r2(y - 1)}" fill="none" stroke="#b14de0" stroke-width="2.2" marker-end="url(#${mid})" opacity=".9"/>`); } }
-    return `<g>${el.stir ? A(`<animateTransform attributeName="transform" type="rotate" values="-5 ${r2(B.x)} ${r2(B.y)};5 ${r2(B.x)} ${r2(B.y)};-5 ${r2(B.x)} ${r2(B.y)}" dur="1.2s" repeatCount="indefinite"/>`) : ''}<line x1="${r2(B.x)}" y1="${r2(B.y)}" x2="${r2(Tp.x)}" y2="${r2(Tp.y)}" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><line x1="${r2(B.x)}" y1="${r2(B.y)}" x2="${r2(Tp.x)}" y2="${r2(Tp.y)}" stroke="#eef7fd" stroke-width="4.2" stroke-linecap="round"/></g>`;
+    return `<g${el.stir ? FX('stir', `${r2(B.x)},${r2(B.y)},1.2,5`) : ''}>${el.stir ? A(`<animateTransform attributeName="transform" type="rotate" values="-5 ${r2(B.x)} ${r2(B.y)};5 ${r2(B.x)} ${r2(B.y)};-5 ${r2(B.x)} ${r2(B.y)}" dur="1.2s" repeatCount="indefinite"/>`) : ''}<line x1="${r2(B.x)}" y1="${r2(B.y)}" x2="${r2(Tp.x)}" y2="${r2(Tp.y)}" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><line x1="${r2(B.x)}" y1="${r2(B.y)}" x2="${r2(Tp.x)}" y2="${r2(Tp.y)}" stroke="#eef7fd" stroke-width="4.2" stroke-linecap="round"/></g>`;
   }
 };
 T.spatula = {
   geo(el, R) { const g = tipPlace(el, R); if (el.over) { g.y -= 4; g.x -= 3; if (el.tilt == null) g.tilt = 36; } else if (el.tilt == null) g.tilt = 60; g.w = 30; g.h = 120 * g.s; g.top = g.y - 100 * g.s; g.anchor = { x: g.x + 8, y: g.y - 8 }; return g; },
   draw(el, g) {
     const pc = el.color || el.powder ? col(el.color ?? el.powder, 'white') : null;
-    let fall = ''; if (pc && el.over && g.to != null) { const R = rng(g.x + g.y); for (let i = 0; i < 6; i++) { const x = r2(g.x + 2 + R() * 6 - 3), d = r2(.8 + R() * .6), b = r2(-R() * d); fall += ANIM ? `<circle cx="${x}" cy="${r2(g.y)}" r="1.7" fill="${pc}" stroke="${shade(pc, -.3)}" stroke-width=".5"><animate attributeName="cy" values="${r2(g.y + 2)};${r2(g.to - 2)}" dur="${d}s" begin="${b}s" repeatCount="indefinite"/></circle>` : `<circle cx="${x}" cy="${r2(g.y + 6 + R() * (g.to - g.y - 10))}" r="1.7" fill="${pc}" stroke="${shade(pc, -.3)}" stroke-width=".5"/>`; } }
+    let fall = ''; if (pc && el.over && g.to != null) { const R = rng(g.x + g.y); for (let i = 0; i < 6; i++) { const x = r2(g.x + 2 + R() * 6 - 3), d = r2(.8 + R() * .6), b = r2(-R() * d); fall += ANIM ? `<circle cx="${x}" cy="${r2(g.y)}" r="1.7" fill="${pc}" stroke="${shade(pc, -.3)}" stroke-width=".5"><animate attributeName="cy" values="${r2(g.y + 2)};${r2(g.to - 2)}" dur="${d}s" begin="${b}s" repeatCount="indefinite"/></circle>` : (cy => `<circle${FX('fall', `${r2(g.y + 2)},${r2(g.to - 2)},${d},${b},${cy},0`)} cx="${x}" cy="${cy}" r="1.7" fill="${pc}" stroke="${shade(pc, -.3)}" stroke-width=".5"/>`)(r2(g.y + 6 + R() * (g.to - g.y - 10))); } }
     return `<g transform="${tfm(g)}"><path d="M-1.6,-6 L-2.2,-118 Q0,-122 2.2,-118 L1.6,-6 Z" fill="${METAL}" stroke="${INK}" stroke-width="1.2"/><path d="M-8,-6 Q-9,5 0,6 Q9,5 8,-6 Z" fill="#c9cfd9" stroke="${INK}" stroke-width="1.5"/>${pc ? `<path d="M-7.5,-6 Q0,-13 7.5,-6 Z" fill="${pc}" stroke="${shade(pc, -.3)}" stroke-width=".8"/>` : ''}</g>${fall}`;
   }
 };
@@ -1678,7 +1680,7 @@ T.hose = {
       const P = g.pts, ends = [[P[0], P[1]], [P[P.length - 1], P[P.length - 2]]].filter((_, i) => el.clip === true || el.clip === (i ? 'to' : 'from'));
       ends.forEach(([e, q]) => { const a = Math.atan2(e[1] - q[1], e[0] - q[0]) * 180 / Math.PI; o += `<g transform="translate(${r2(e[0])},${r2(e[1])}) rotate(${r2(a)})"><rect x="-24" y="-4" width="11" height="8" rx="2.5" fill="${wc}" stroke="${shade(wc, -.45)}" stroke-width="1"/><path d="M-14,-3.6 L0,-1.2 L0,1.2 L-14,3.6 Z" fill="${METAL}" stroke="${INK}" stroke-width="1"/><path d="M-11,0 H-2" stroke="${INK}" stroke-width=".8"/></g>`; });
     }
-    if (el.bubbles) { const [lx, ly] = g.pts[g.pts.length - 1], R = rng(lx + ly); let bo = ''; for (let i = 0; i < 5; i++) { const r = r2(2 + R() * 2.4), dur = r2(1.2 + R()), b = r2(-R() * dur), bx = r2(lx + R() * 8 - 4), top = ly - (el.rise ?? 50); bo += ANIM ? `<circle cx="${bx}" cy="${ly}" r="${r}" fill="#fff" fill-opacity=".8" stroke="#7aaed0" stroke-width=".8"><animate attributeName="cy" values="${r2(ly - 2)};${r2(top)}" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/></circle>` : `<circle cx="${bx}" cy="${r2(ly - 4 - R() * (ly - top))}" r="${r}" fill="#fff" fill-opacity=".8" stroke="#7aaed0" stroke-width=".8"/>`; } cx.front.push(bo); }
+    if (el.bubbles) { const [lx, ly] = g.pts[g.pts.length - 1], R = rng(lx + ly); let bo = ''; for (let i = 0; i < 5; i++) { const r = r2(2 + R() * 2.4), dur = r2(1.2 + R()), b = r2(-R() * dur), bx = r2(lx + R() * 8 - 4), top = ly - (el.rise ?? 50); bo += ANIM ? `<circle cx="${bx}" cy="${ly}" r="${r}" fill="#fff" fill-opacity=".8" stroke="#7aaed0" stroke-width=".8"><animate attributeName="cy" values="${r2(ly - 2)};${r2(top)}" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/></circle>` : (cy => `<circle${FX('rise', `${r2(ly - 2)},${r2(top)},${dur},${b},${cy},0`)} cx="${bx}" cy="${cy}" r="${r}" fill="#fff" fill-opacity=".8" stroke="#7aaed0" stroke-width=".8"/>`)(r2(ly - 4 - R() * (ly - top))); } cx.front.push(bo); }
     return o;
   }
 };
@@ -1896,7 +1898,7 @@ T.splint = {
   },
   draw(el, g) {
     const lit = !!el.lit, ember = !lit && el.ember !== false;
-    const tip = ember ? `<circle cy="-2" r="6" fill="#ff8a3d" opacity=".3">${A('<animate attributeName="opacity" values=".15;.45;.15" dur="1.4s" repeatCount="indefinite"/>')}</circle><path d="M-2.4,-7 Q0,3 2.4,-7 Z" fill="#e5484d"/><circle cy="-3" r="1.5" fill="#ffd84d"/>` : `<path d="M-2.4,-6 Q0,2 2.4,-6 Z" fill="#3a3a3a"/>`;
+    const tip = ember ? `<circle${FX('glow', '1.4,.15,.45')} cy="-2" r="6" fill="#ff8a3d" opacity=".3">${A('<animate attributeName="opacity" values=".15;.45;.15" dur="1.4s" repeatCount="indefinite"/>')}</circle><path d="M-2.4,-7 Q0,3 2.4,-7 Z" fill="#e5484d"/><circle cy="-3" r="1.5" fill="#ffd84d"/>` : `<path d="M-2.4,-6 Q0,2 2.4,-6 Z" fill="#3a3a3a"/>`;
     return `<g transform="${tfm(g)}"><rect x="-2.2" y="-92" width="4.4" height="86" rx="1.5" fill="#c99a5b" stroke="#8a6534" stroke-width=".8"/>${tip}</g>${lit ? flame(g.x, g.y, .42 * g.s) : ''}`;
   }
 };
@@ -2075,7 +2077,7 @@ T.svg = {
 /* ---------- 부품 보강 (v1.5): 화학 ---------- */
 // 가스버너(분젠 버너): 기본은 파란 불꽃(완전 연소), flame:'yellow'면 노란 불꽃(공기 부족)
 function blueFlame(x, y, k = 1) {
-  return `<g transform="translate(${r2(x)},${r2(y)}) scale(${k})"><circle cy="-14" r="17" fill="#8fb0ff" opacity=".14"/><g>${A('<animateTransform attributeName="transform" type="scale" values="1 1;.95 1.06;1.03 .96;1 1" dur=".7s" repeatCount="indefinite"/>')}<path d="M0,-36 C8,-24 9,-8 0,0 C-9,-8 -8,-24 0,-36Z" fill="#a9c2ff" opacity=".85"/><path d="M0,-21 C4.5,-14 5,-5 0,0 C-5,-5 -4.5,-14 0,-21Z" fill="#3f6fe0" opacity=".9"/></g></g>`;
+  return `<g transform="translate(${r2(x)},${r2(y)}) scale(${k})"><circle cy="-14" r="17" fill="#8fb0ff" opacity=".14"/><g${FX('flame', '.7,.95,1.06,1.03,.96')}>${A('<animateTransform attributeName="transform" type="scale" values="1 1;.95 1.06;1.03 .96;1 1" dur=".7s" repeatCount="indefinite"/>')}<path d="M0,-36 C8,-24 9,-8 0,0 C-9,-8 -8,-24 0,-36Z" fill="#a9c2ff" opacity=".85"/><path d="M0,-21 C4.5,-14 5,-5 0,0 C-5,-5 -4.5,-14 0,-21Z" fill="#3f6fe0" opacity=".9"/></g></g>`;
 }
 T.gasburner = {
   geo(el, R) { const g = bplace(el, R), lit = el.lit !== false; g.w = 60 * g.s; g.h = (lit ? 100 : 64) * g.s; g.top = g.y - g.h; g.anchor = { x: g.x + 30 * g.s, y: g.y - 34 * g.s }; return g; },
@@ -2837,7 +2839,7 @@ function view3d(o = {}) {
   document.addEventListener('keydown', key, true);
   box.addEventListener('click', ev => { if (ev.target.closest('[data-v3x]')) close(); });
   box.querySelector('[data-v3x]').focus();
-  load3d().then(K => { if (closed) return; if (K.version !== VERSION) warn(`입체 엔진(v${K.version})과 그림 엔진(v${VERSION})의 버전이 달라요`); stage.innerHTML = ''; inst = K.open(stage, o); },
+  load3d().then(K => { if (closed) return; if (K.version !== VERSION) warn(`입체 엔진(v${K.version})과 그림 엔진(v${VERSION})의 버전이 달라요`); stage.innerHTML = ''; inst = K.open(stage, { ...o, motion: ANIM }); },
     err => { if (closed) return; console.warn('[LabKit] ' + err.message); fail('입체 그림을 불러오지 못했어요. 인터넷에 연결되어 있는지 확인해 주세요. 2D 그림은 그대로 볼 수 있어요.'); })
     .catch(err => { if (closed) return; console.warn('[LabKit] 입체 보기 오류', err); fail(err && err.code === 'nogl' ? '이 기기(브라우저)에서는 입체 그림을 열 수 없어요. 그래픽 가속(WebGL)이 꺼져 있을 수 있어요. 2D 그림으로 보세요.' : '입체 그림을 그리지 못했어요. 2D 그림으로 보세요.'); });
   return { close };
@@ -2848,7 +2850,7 @@ function mount3d(box, o = {}) {
   const msg = t => { if (!gone) box.innerHTML = `<p class="v3-msg">${esc(t)}</p>`; };
   const fail = t => { if (gone) return; msg(t); if (o.onError) o.onError(t); };
   msg('입체 그림을 준비하는 중이에요…');
-  load3d().then(K => { if (gone) return; box.innerHTML = ''; inst = K.open(box, { ...o, inline: true }); },
+  load3d().then(K => { if (gone) return; box.innerHTML = ''; inst = K.open(box, { ...o, inline: true, motion: ANIM }); },
     err => { console.warn('[LabKit] ' + err.message); fail('입체 그림을 불러오지 못해 2D 그림으로 돌아왔어요.'); })
     .catch(err => { console.warn('[LabKit] 입체 보기 오류', err); fail('입체 그림을 그리지 못해 2D 그림으로 돌아왔어요.'); });
   return { key(ev) { if (inst && inst.key) inst.key(ev); }, dispose() { gone = true; try { if (inst) inst.dispose(); } catch (e) { } } };

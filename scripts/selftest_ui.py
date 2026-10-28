@@ -135,6 +135,12 @@ window.addEventListener('load', async () => {
     still().click();check('움직임 끄기',still().getAttribute('aria-pressed')==='true' && localStorage.getItem('lk-pref:still')==='1' && !tw() && !$('#deck .scene-box animate') && getComputedStyle($('#deck .play-btn')).display==='none');
     $('#deck [data-next]').click();check('움직임 끄면 시연 없음',!tw() && !$('#deck .sc-main animate'));
     still().click();check('움직임 다시 켜기',localStorage.getItem('lk-pref:still')==='0' && !!$('#deck .sc-main animate'));
+    const cv3=()=>$('#deck .v3-cv'), fr=()=>(cv3()||{})._frames||0;
+    $('#deck [data-v3deck]').click();check('3D 반복 움직임 켜짐',await until(()=>cv3() && cv3().dataset.motion==='on',250));
+    let f0=fr();await sleep(500);check('3D 움직임 그리기',fr()>f0+4);
+    still().click();check('3D 움직임 끄기',await until(()=>cv3() && cv3().dataset.motion==='off',250));
+    await sleep(200);f0=fr();await sleep(400);check('3D 멈춘 그림',fr()-f0<=1);
+    still().click();$('#deck [data-v3deck]').click();
     $('#deck [data-close]').click();check('닫은 뒤 답안 유지',$('#app [data-w]').textContent==='복원한 가상 답안');
     check('닫은 뒤 고른 예상 유지',!!$('#app [data-pc="p:guess:0"][aria-pressed="true"]') && $('#app [data-pcg="p:guess:0"]').classList.contains('pc-done'));
     window.confirm=()=>true;$('#app [data-clear]').click();window.confirm=nativeConfirm;
