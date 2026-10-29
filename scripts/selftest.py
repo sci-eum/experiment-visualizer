@@ -142,6 +142,8 @@ QUIET["steps"] += [
     {"title": "부품 설명", "scene": [{"t": "beaker", "info": "가상 설명", "label": "가"}, {"t": "rack", "tubes": [{"info": ["한 줄", "두 줄"]}]}],
      "origin": {"where": "1쪽", "quote": "가상 문장", "check": "ok", "added": ["info"]}}]
 QUIET["materials"].append({"name": "가상 지시약", "info": "가상 설명"})
+QUIET["materials"].append({"name": "가상 비커", "info": False})
+QUIET["steps"][-1]["scene"].append({"t": "flask", "info": False})
 BAD["materials"].append({"name": "가상 준비물", "info": 2})
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다
 TABLE_TEXT = '80°C 120초 → (60°C 30초 · 40°C 50초) 10회 → 25°C 90초'

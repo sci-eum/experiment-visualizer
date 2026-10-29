@@ -24,7 +24,7 @@ DATA = {
          "sketch": {"id": "view", "shape": "box"},
          "scene": [{"t": "beaker", "id": "b", "x": 240, "fill": .4, "label": "가", "info": "가상 원문 설명"}],
          "reveal": {"text": "관찰을 마쳤어요.", "change": {"b": {"color": "blue"}}}},
-        {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4}]},
+        {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4, "info": False}]},
         {"id": "guess", "title": "고르는 예상", "scene": [{"t": "beaker", "id": "g", "x": 240, "fill": .4}],
          "predict": [{"text": "가상 물음 1?", "choices": ["가", "나"], "answer": "가", "why": "가상 까닭"},
                      {"text": "가상 물음 2?", "choices": ["다", "라", "마"], "answer": ["라"]}],
@@ -64,12 +64,15 @@ window.addEventListener('load', async () => {
     check('부품 누르면 카드',!pk().hidden && /비커/.test(pkText()) && $('#deck .pk-h b').textContent==='가');
     check('부품 빛남',!!$('#deck .sc-main .pk-on'));
     check('카드: 설명·안전 수칙·준비물',/가상 원문 설명/.test(pkText()) && /가상 비커는 조심/.test(pkText()) && /가상 비커 1개/.test(pkText()));
+    check('카드: 기구 기본 설명',!!$('#deck .pk-card .pk-base') && /액체를 담거나 섞고 데울 때/.test(pkText()));
     clickSvg($('#deck .sc-main svg [data-lk-k="#0"]'));check('다시 누르면 닫기',pk().hidden && !$('#deck .sc-main .pk-on'));
     clickSvg($('#deck .sc-main svg [data-lk-t="label"][data-lk-k="#0"]'));check('이름표를 눌러도 카드',!pk().hidden);
     document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));check('Esc는 카드부터 닫기',pk().hidden && !$('#deck').hidden);
     $('#deck [data-pklist]').click();check('부품 살펴보기 목록',!$('#deck .pk-list').hidden && document.querySelectorAll('#deck .pk-list [data-pkk]').length===1);
     $('#deck .pk-list [data-pkk]').click();check('목록에서 고르기',!pk().hidden && $('#deck .pk-list [data-pkk]').getAttribute('aria-pressed')==='true' && !!$('#deck .sc-main .pk-on'));
     $('#deck [data-pkx]').click();check('카드 닫기 단추',pk().hidden);$('#deck [data-pklist]').click();
+    $('#deck [data-next]').click();clickSvg($('#deck .sc-main svg [data-lk-k="#0"]'));
+    check('info:false면 기본 설명 없음',!pk().hidden && !$('#deck .pk-card .pk-base'));$('#deck [data-prev]').click();
     $('#deck [data-next]').click(); check('다음 단추',count()!==first);
     $('#deck [data-prev]').click();
     swipe($('#deck .deck-stage')); check('밀어서 다음 단계',count()!==first);
@@ -160,7 +163,7 @@ window.addEventListener('load', async () => {
     still().click();$('#deck [data-v3deck]').click();
     $('#deck [data-close]').click();check('닫은 뒤 답안 유지',$('#app [data-w]').textContent==='복원한 가상 답안');
     $('#app [data-pkm="0"]').click();const mc=$('#app .pk-card[data-pkmat]');
-    check('준비물 누르면 카드',!mc.hidden && /가상 비커/.test(mc.textContent) && /가상 비커는 조심/.test(mc.textContent));
+    check('준비물 누르면 카드',!mc.hidden && /가상 비커/.test(mc.textContent) && /가상 비커는 조심/.test(mc.textContent) && /액체를 담거나/.test(mc.textContent));
     $('#app [data-pkm="0"]').click();check('준비물 다시 누르면 닫기',mc.hidden);
     check('닫은 뒤 고른 예상 유지',!!$('#app [data-pc="p:guess:0"][aria-pressed="true"]') && $('#app [data-pcg="p:guess:0"]').classList.contains('pc-done'));
     window.confirm=()=>true;$('#app [data-clear]').click();window.confirm=nativeConfirm;

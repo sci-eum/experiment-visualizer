@@ -24,7 +24,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 # 부품 목록: 그림 엔진과 같은 고정 배포판을 먼저, 막히면 같은 태그의 저장소 원본
-VERSION = "1.27.0"
+VERSION = "1.28.0"
 RAW = [f"https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@{VERSION}/references/parts.json",
        f"https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v{VERSION}/references/parts.json"]
 W, H = 480, 300
@@ -272,8 +272,8 @@ def check_part(el, where, reg, rep):
             if isinstance(v, str) and v not in opts:
                 more = " — 그 밖의 센서는 kind 'other'에 text로 이름을 적으세요 (예: 'CO₂')" if real == "sensor" and k == "kind" else ""
                 rep.err(f"{where} ({name_of(el)})", f"'{t}'의 {k} '{v}'는 정해진 값이 아니에요 ({', '.join(opts)}){suggest(v, opts)}{more}")
-        if "info" in el and not is_text(el["info"]):
-            rep.err(f"{where} ({name_of(el)})", "info(부품 설명)는 글자 또는 글자 배열이어야 해요")
+        if "info" in el and not (el["info"] is False or is_text(el["info"])):
+            rep.err(f"{where} ({name_of(el)})", "info(부품 설명)는 글자 또는 글자 배열이나 false(기구 기본 설명 끄기)여야 해요")
         if real == "svg" and el.get("y") is None and not where.endswith(".icon") and not any(el.get(k) for k in ("on", "in", "over")):  # 준비물 아이콘은 위치와 상관없다
             rep.warn(f"{where} ({name_of(el)})", "svg에 y가 없어요. 실험대 위에 세우려면 y: 268 (markup은 0,0에서 위쪽(음수 y)으로 그린다)")
         if el.get("vol") is not None and real not in reg["vol"] and real in types and "vol" in types[real]:
@@ -517,8 +517,8 @@ def main_check(data, reg, strict_source=False):
         if not isinstance(m, dict) or not m.get("name"):
             rep.err(where, "준비물에는 name이 필요해요")
             continue
-        if "info" in m and not is_text(m["info"]):
-            rep.err(f"{where}.info", "준비물 설명 info는 글자 또는 글자 배열이어야 해요")
+        if "info" in m and not (m["info"] is False or is_text(m["info"])):
+            rep.err(f"{where}.info", "준비물 설명 info는 글자 또는 글자 배열이나 false여야 해요")
         icon = m.get("icon")
         if isinstance(icon, dict) and icon.get("t") == "generic":
             for k in icon:

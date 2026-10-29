@@ -153,6 +153,11 @@ def main():
     for t, n in sorted(ko.items()):
         if not t.startswith('_') and n not in parts:
             problems.append(f"labkit.js KO의 '{t}' 이름 '{n}'이 references/parts.md에 없습니다 (문서의 이름과 맞추세요)")
+    # 9. 기구 기본 설명(INFO) 표의 부품 이름이 엔진에 있다 ('meter:ph'처럼 kind를 붙인 것 포함)
+    info = re.search(r'const INFO = \{(.*?)\n\};', js, re.S)
+    for k in re.findall(r"^  '?([a-z]+(?::[a-z0-9]+)?)'?: \[", info.group(1) if info else '', re.M):
+        if k.split(':')[0] not in types or k.split(':')[0] not in ko:
+            problems.append(f"labkit.js INFO(기구 기본 설명)에 엔진에 없는 부품: {k}")
     if lines > MAX_SKILL_LINES:
         problems.append(f'SKILL.md가 {lines}줄입니다 ({MAX_SKILL_LINES}줄 이하로 줄이고 자세한 내용은 references로).')
 
