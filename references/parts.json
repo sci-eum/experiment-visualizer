@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.26.0",
+ "engine": "1.27.0",
  "common": [
   "t",
   "id",
@@ -19,7 +19,8 @@
   "dy",
   "stand",
   "reach",
-  "z"
+  "z",
+  "info"
  ],
  "vol": [
   "beaker",

@@ -20,7 +20,8 @@ window.EXPERIMENT = {
   "materials": [
     {
       "name": "비커",
-      "icon": "beaker"
+      "icon": "beaker",
+      "info": "(예시) 준비물의 info는 이 아이콘을 누르면 보여요."
     },
     {
       "name": "삼각 플라스크",
@@ -3154,7 +3155,8 @@ window.EXPERIMENT = {
           "fill": 0.3,
           "color": "water",
           "steam": true,
-          "label": "가"
+          "label": "가",
+          "info": "(예시) 실험지에 기구·물질 설명이 있으면 info로 넣어요. 수업 모드에서 이 비커를 누르면 보여요."
         },
         {
           "t": "cylinder",
@@ -3294,7 +3296,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.26.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.27.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -3467,6 +3469,20 @@ section{margin:40px 0}
 .pname{display:none}
 .v3-btn{position:absolute;right:10px;bottom:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:0;border-radius:999px;background:rgba(255,255,255,.94);color:var(--primary-ink);font:inherit;font-size:13px;font-weight:800;line-height:1.2;box-shadow:var(--sh-sm);cursor:pointer;transition:all .2s ease}
 .v3-btn svg{width:15px;height:15px}
+.deck .scene-box svg [data-lk-k]{cursor:pointer}
+.pk-on{filter:drop-shadow(0 0 2px #b14de0) drop-shadow(0 0 7px rgba(177,77,224,.75))}
+.pk{margin:2px 0 12px}
+.pk-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.pk-list[hidden]{display:none}
+.pk-chip{appearance:none;border:1.5px solid #e4d9f1;background:#fff;color:var(--ink-2);border-radius:999px;padding:5px 11px;font:inherit;font-size:13.5px;font-weight:600;line-height:1.3;cursor:pointer}
+.pk-chip:hover{border-color:#c9a6e6}.pk-chip:focus-visible{outline:3px solid #e6b8fd;outline-offset:2px}.pk-chip[aria-pressed=true]{border-color:var(--primary);background:var(--primary-50);color:var(--primary-ink)}
+.pk-card{margin-top:10px;padding:12px 14px;border-radius:16px;background:#fff;box-shadow:var(--sh-md);border-left:4px solid var(--primary);font-size:15px;line-height:1.55;color:var(--ink)}.pk-card[hidden]{display:none}
+.pk-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.pk-h b{font-size:17px}.pk-h span{display:block;font-size:13px;font-weight:600;color:var(--ink-3)}
+.pk-x{appearance:none;border:0;background:none;cursor:pointer;color:var(--ink-3);width:30px;height:30px;padding:5px;flex:none}.pk-x svg{width:18px;height:18px}
+.pk-card dl{margin:8px 0 0;display:grid;gap:6px}.pk-card dl>div{display:grid;grid-template-columns:72px 1fr;gap:8px}.pk-card dt{font-weight:800;font-size:13px;color:var(--ink-3);padding-top:2px}.pk-card dd{margin:0}
+.pk-q{font-size:13px;color:var(--ink-3)}.pk-none{margin:8px 0 0;font-size:14px;color:var(--ink-3)}
+.pk-safe{margin-top:10px;padding:8px 10px;border-radius:12px;background:#fff1f1;color:#7a1f1f}.pk-safe b{display:flex;align-items:center;gap:6px;font-size:13px}.pk-safe svg{width:15px;height:15px}.pk-safe ul{margin:4px 0 0;padding-left:18px}
+button.mat{font:inherit;color:inherit;border:0;cursor:pointer;width:100%;display:block}.mat .nm,.mat .qty{display:block}.mat:hover{transform:translateY(-2px)}.mat:focus-visible{outline:3px solid #e6b8fd;outline-offset:2px}.mat[aria-pressed=true]{box-shadow:0 0 0 3px var(--primary),var(--sh-sm)}
+.mat-grid>.pk-card{grid-column:1/-1;margin-top:0}
 .play-btn{position:absolute;right:10px;top:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:0;border-radius:999px;background:rgba(255,255,255,.94);color:var(--primary-ink);font:inherit;font-size:13px;font-weight:800;line-height:1.2;box-shadow:var(--sh-sm);cursor:pointer;transition:all .2s ease}
 .play-btn svg{width:13px;height:13px}.play-btn:hover{background:var(--primary-50);transform:translateY(-1px);box-shadow:var(--sh-md)}.play-btn:focus-visible{outline:3px solid #e6b8fd;outline-offset:2px}
 .play-btn[data-pk=r],.lk-still .play-btn,.rv-on .has-rv>.play-btn[data-pk=s]{display:none}.rv-on .play-btn[data-pk=r]{display:inline-flex}.lk-still .rv-on .play-btn[data-pk=r]{display:none}
@@ -3484,15 +3500,15 @@ section{margin:40px 0}
 .scene-box>.v3-inline{position:absolute;inset:0;margin:0;border-radius:inherit;box-shadow:none}
 .v3-on>.v3-btn{display:none}
 .deck-top .btn[aria-pressed=true]{background:var(--primary);color:#fff}
-@media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.dr-row{grid-template-columns:1fr}}
+@media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;grid-auto-rows:max-content;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.dr-row{grid-template-columns:1fr}}
 @media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
-@media print{body{background:#fff}.dr-tools{display:none!important}.toolbar,.zoom-hint,.v3-btn,.play-btn,.v3,.deck,.demo,.rv-btn,.save-note,.tm,.rv-lock,.pc-fb,.pc-sum{display:none!important}.pc-o{opacity:1!important}[data-print=teacher] .pc-key{display:block!important;margin-top:8px;font-size:13.5px;font-weight:700;color:#0e4d33}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.pcw:empty::before{content:attr(data-ph);color:#7f8698}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl th,.tbl td{border:1px solid #cfd4dd}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
+@media print{body{background:#fff}.dr-tools{display:none!important}.pk,.pk-card,.toolbar,.zoom-hint,.v3-btn,.play-btn,.v3,.deck,.demo,.rv-btn,.save-note,.tm,.rv-lock,.pc-fb,.pc-sum{display:none!important}.pc-o{opacity:1!important}[data-print=teacher] .pc-key{display:block!important;margin-top:8px;font-size:13.5px;font-weight:700;color:#0e4d33}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.pcw:empty::before{content:attr(data-ph);color:#7f8698}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl th,.tbl td{border:1px solid #cfd4dd}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
 if (!document.getElementById('lk-css')) { const st = document.createElement('style'); st.id = 'lk-css'; st.textContent = CSS; document.head.appendChild(st); }
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.26.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.27.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -5278,8 +5294,8 @@ function layoutLabels(list, sh) {
   const hit = b => boxes.some(o => b.x < o.x + o.w + 3 && b.x + b.w + 3 > o.x && b.y < o.y + o.h + 2 && b.y + b.h + 2 > o.y);
   const tone = t => t === 'hot' ? { bg: '#ffedef', fg: '#c7323f' } : t === 'arrow' ? { bg: '#fbf4ff', fg: '#7d2ba6' } : { bg: '#fff', fg: '#2b3040' };
   // 이름표도 겹침 점검에 넣는다 (말풍선처럼 어떤 기구도 가리면 안 된다)
-  const tagL = (b, text, svg) => `<g data-lk="o" data-lk-c="0" data-lk-t="label" data-lk-n="${esc(`label("${String(text).slice(0, 10)}")`)}" data-lk-box="${[b.x, b.y, b.w, b.h].map(r2).join(',')}">${svg}</g>`;
-  list.filter(l => l.fixed).forEach(l => { const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11; const b = { x: Math.max(3, Math.min(W - w - 3, l.x - w / 2)), y: Math.max(3, Math.min(H - h - 3, l.y - h / 2)), w, h }; boxes.push(b); const tn = tone(l.tone); out.push(tagL(b, l.text, pillSvg(b.x + w / 2, b.y + h / 2, l.text, { bg: tn.bg, fg: l.fg || tn.fg, sh }).svg)); });
+  const tagL = (b, text, svg, pk) => `<g data-lk="o" data-lk-c="0" data-lk-t="label" data-lk-n="${esc(`label("${String(text).slice(0, 10)}")`)}" data-lk-box="${[b.x, b.y, b.w, b.h].map(r2).join(',')}"${pk ? ` data-lk-k="${pk}"` : ''}>${svg}</g>`;
+  list.filter(l => l.fixed).forEach(l => { const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11; const b = { x: Math.max(3, Math.min(W - w - 3, l.x - w / 2)), y: Math.max(3, Math.min(H - h - 3, l.y - h / 2)), w, h }; boxes.push(b); const tn = tone(l.tone); out.push(tagL(b, l.text, pillSvg(b.x + w / 2, b.y + h / 2, l.text, { bg: tn.bg, fg: l.fg || tn.fg, sh }).svg, l.pk)); });
   list.filter(l => !l.fixed && l.a && l.text).forEach(l => {
     const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11, a = l.a;
     let side = l.side || (a.x > W - 150 ? 'left' : 'right'); let b;
@@ -5293,7 +5309,7 @@ function layoutLabels(list, sh) {
     }
     boxes.push(b);
     const ex = b.x + w / 2 < a.x ? b.x + w : b.x, ey = b.y + h / 2, tn = tone(l.tone);
-    out.push(`<path d="M${r2(a.x)},${r2(a.y)} L${r2(ex)},${r2(ey)}" stroke="#9aa2b4" stroke-width="1.3"/><circle cx="${r2(a.x)}" cy="${r2(a.y)}" r="2.8" fill="#fff" stroke="#7f889c" stroke-width="1.4"/>` + tagL(b, l.text, pillSvg(b.x + w / 2, ey, l.text, { bg: tn.bg, fg: tn.fg, sh }).svg));
+    out.push(`<path d="M${r2(a.x)},${r2(a.y)} L${r2(ex)},${r2(ey)}" stroke="#9aa2b4" stroke-width="1.3"/><circle cx="${r2(a.x)}" cy="${r2(a.y)}" r="2.8" fill="#fff" stroke="#7f889c" stroke-width="1.4"/>` + tagL(b, l.text, pillSvg(b.x + w / 2, ey, l.text, { bg: tn.bg, fg: tn.fg, sh }).svg, l.pk));
   });
   return out.join('');
 }
@@ -5333,6 +5349,33 @@ function lint(all, byId, where) {
 
 /* ---------- 겹침 점검 (?check, ?shot): 부품마다 <g data-lk>로 감싸 두고, 화면에 그린 뒤
    두 부품의 상자가 겹치는 곳을 3 간격으로 찍어 보며 둘 다 실제로 칠해진 점을 센다 (기울어진 시험관도 정확하게) ---------- */
+// 부품 이름 (v1.27, 부품 눌러 알아보기의 카드·목록). 설명 부품(말풍선·화살표 …)은 없다. 이름은 references/parts.md에 그대로 있어야 한다 (check_docs.py)
+const KO = { agar: '한천 배지', ammeter: '전류계', appliance: '기기 상자', bag: '반투막 튜브', balance: '전자저울', ball: '공', battery: '건전지', beaker: '비커', block: '나무 도막', bottle: '시약병',
+  bulb: '전구', burette: '뷰렛', cabletie: '케이블 타이', camera: '촬영용 스마트폰', candle: '양초', capillary: '모세관', cart: '역학 수레', centrifuge: '원심분리기', circuit: '회로', coil: '코일',
+  compass: '나침반', condenser: '리비히 냉각기', cup: '컵', cylinder: '눈금실린더', device: '스마트기기', discharge: '기체 방전관', dish: '페트리 접시', dropper: '스포이트', electrode: '전극', evapdish: '증발 접시',
+  filler: '피펫 필러', flask: '삼각 플라스크', freezer: '냉동고', funnel: '깔때기', gasburner: '가스버너', gasjar: '집기병', geltank: '전기 영동 장치', glasspipette: '눈금 피펫', globe: '지구본', gloves: '실험용 장갑',
+  goggles: '보안경', hose: '고무관', hotplate: '가열판', ice: '얼음', knife: '칼', lamp: '알코올램프', leaf: '잎', led: 'LED', lens: '렌즈', lightbox: '광원 장치', lighter: '점화기', magnet: '막대자석', magnifier: '돋보기',
+  match: '성냥', meter: '디지털 측정기', micropipette: '마이크로피펫', microscope: '현미경', microtube: '마이크로튜브', mirror: '거울', mortar: '막자사발', motor: '전동기', paper: '거름종이', pcrtube: 'PCR 튜브',
+  photogate: '포토게이트', piece: '재료 조각', plant: '화분 식물', pour: '붓기', powder: '가루', power: '전원 장치', prism: '프리즘', pulley: '도르래', rack: '시험관대', ramp: '빗면', resistor: '저항',
+  rock: '암석·광물 표본', rod: '유리 막대', roundflask: '둥근바닥 플라스크', ruler: '자', screen: '스크린', sensor: '무선 센서', sepfunnel: '분별 깔때기', slide: '받침·덮개 유리', spatula: '약숟가락', spectroscope: '분광기',
+  spincolumn: '스핀 컬럼', splint: '향 불씨', spring: '용수철', springscale: '용수철저울', stand: '스탠드', stirbar: '마그네틱 바', stirrer: '자석 교반기', stopwatch: '초시계', strata: '지층 모형', streak: '조흔판',
+  swab: '면봉', switch: '스위치', syringe: '주사기', table: '책상', thermocycler: 'PCR 기기', thermometer: '온도계', tlc: 'TLC 판', track: '저마찰 트랙', tripod: '삼발이', trough: '수조', tube: '시험관',
+  tuberack: '튜브 꽂이', tuningfork: '소리굽쇠', tweezers: '핀셋', uvlamp: 'UV 램프', voltmeter: '전압계', volumetric: '부피 플라스크', watchglass: '시계 접시', weight: '추', wellplate: '홈판', wire: '전선', _well: '홈' };
+const KO_KIND = { meter: { ph: 'pH 미터', temp: '디지털 온도계', conduct: '전기 전도계', multi: '멀티미터', galvano: '검류계', ammeter: '전류계', voltmeter: '전압계', ir: '적외선 온도계' },
+  sensor: { temp: '온도 센서', pressure: '압력 센서', ph: 'pH 센서', co2: 'CO₂ 센서', o2: 'O₂ 센서', light: '조도 센서', force: '힘 센서' }, wellplate: { slide: '오목받침 유리' },
+  glasspipette: { volumetric: '홀 피펫' }, battery: { holder: '건전지 끼우개', '9v': '9 V 건전지' }, lens: { convex: '볼록 렌즈', concave: '오목 렌즈' }, paper: { disk: '종이 디스크' },
+  appliance: { incubator: '항온기', microwave: '전자레인지', kettle: '전기 포트' } };
+const baseType = t => KO[t] ? t : (T[t] && Object.keys(KO).find(k => T[k] === T[t])) || t; // 별칭(pipette → dropper …)을 본래 이름으로
+function nameOf(el) {
+  if (!el || typeof el !== 'object') return null;
+  const t = baseType(el.t), k = KO_KIND[t] && KO_KIND[t][el.kind];
+  if (t === 'sensor' && el.kind === 'other' && el.text) return `${el.text} 센서`;
+  if (t === 'hose' && el.glass) return '유리관';
+  return k || KO[t] || null;
+}
+const PK_SKIP = new Set(['note', 'text', 'arrow', 'mark', 'eye', 'label', 'view', 'zoom', 'svg', 'ray', 'generic']); // 누를 수 없는 설명 부품
+// 그림 속 부품의 자리 이름: 장면 목록에서 몇 번째인지 ('#2', 꽂힌 시험관·홈은 '#2/1'). 누른 부품을 장면 데이터에서 찾는다
+const pkOf = el => PK_SKIP.has(el.t) ? null : el._i != null ? '#' + el._i : el._parent && el._parent._i != null && (el._slot ?? el._wi) != null ? `#${el._parent._i}/${el._slot ?? el._wi}` : null;
 const OV_SKIP = new Set(['arrow', 'ray', 'hose', 'tubing', 'label', 'mark', 'eye', 'svg', 'stand', 'generic', 'wire']); // 원래 다른 부품 위를 지나가는 것
 const OV_TOP = new Set(['note', 'view', 'zoom', 'text']); // 설명 부품: 어떤 기구도 가리면 안 된다
 const HEATERS = new Set(['lamp', 'burner', 'candle', 'gasburner', 'bunsen']);
@@ -5470,7 +5513,7 @@ function layout(items) { const els = JSON.parse(JSON.stringify(Array.isArray(ite
 
 /* ---------- scene ---------- */
 function build(items, o = {}) {
-  const els = JSON.parse(JSON.stringify(Array.isArray(items) ? items : [])).filter(e => e && typeof e === 'object');
+  const els = JSON.parse(JSON.stringify(Array.isArray(items) ? items : [])).map((e, i) => { if (e && typeof e === 'object') e._i = i; return e; }).filter(e => e && typeof e === 'object'); // _i: 장면 목록의 자리 (부품 눌러 알아보기)
   const pre = [];
   els.forEach(el => { if (el.stand === true && el.t !== 'stand') { el.id = el.id || uid('auto'); pre.push({ t: 'stand', hold: [el.id], reach: el.reach }); } });
   const all = [...pre, ...els], byId = {};
@@ -5478,7 +5521,7 @@ function build(items, o = {}) {
   const dup = new Set(), reg = el => { if (!el.id) return; if (byId[el.id]) dup.add(el.id); byId[el.id] = el; };
   all.forEach(el => {
     if (RACKS[el.t]) (el.tubes || []).forEach((tb, i) => { if (!tb || typeof tb !== 'object') return; tb.t = tb.t || RACKS[el.t]; tb._parent = el; tb._slot = i; reg(tb); });
-    if (el.t === 'wellplate') (el.wells || []).forEach(w => { if (!w || typeof w !== 'object') return; w.t = '_well'; w._parent = el; reg(w); }); // 홈판의 홈
+    if (el.t === 'wellplate') (el.wells || []).forEach((w, j) => { if (!w || typeof w !== 'object') return; w.t = '_well'; w._parent = el; w._wi = j; reg(w); }); // 홈판의 홈
     reg(el);
   });
   if (o.lint) dup.forEach(id => warn(`${o.label ? o.label + ' — ' : ''}id '${id}'가 이 장면에 두 번 이상 있어요. 부품마다 다른 id를 주세요`));
@@ -5510,6 +5553,8 @@ function build(items, o = {}) {
   const behindOf = el => { const id = el.in || (el.t === 'funnel' ? el.over : null); return id && byId[id] ? id : null; };
   const behind = {}; all.forEach(el => { const id = behindOf(el); if (id) (behind[id] ||= []).push(el); });
   const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }, f0 = cx.front.length, l0 = cx.labels.length; g._sh = cx.sh; let s = ''; try { s = (el._3d ? Tp.decal3 && Tp.decal3(el, g, cx) : Tp.draw(el, g, cx)) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true;
+    const pk = pkOf(el); // 부품 눌러 알아보기: 누른 곳에서 부품을 찾는 표시 (그 부품의 이름표에도)
+    if (pk) { s = `<g data-lk-k="${pk}">${s}</g>`; for (let q = l0; q < cx.labels.length; q++) cx.labels[q].pk ??= pk; }
     if (el._fade != null || el._lift) { const fx = x => `<g${el._fade != null ? ` opacity="${r2(el._fade)}"` : ''}${el._lift ? ` transform="translate(0,${r2(el._lift)})"` : ''}>${x}</g>`; s = fx(s); for (let k = f0; k < cx.front.length; k++) cx.front[k] = fx(cx.front[k]); } // 움직이는 시연: 나타나고 사라지는 부품
     if (U3) { for (let k = f0; k < cx.front.length; k++) cx.front[k] = wrap3(el, cx.front[k]); for (let k = l0; k < cx.labels.length; k++) { cx.labels[k].u ??= U3(el); cx.labels[k].e ??= el._e3; } } // 앞 층·이름표도 그 부품의 카드로
     return wrap3(el, tag(el, g, s)); };
@@ -5664,7 +5709,7 @@ function icon(spec, name) {
   return out;
 }
 function fit(root) { (root || document).querySelectorAll('svg[data-fit]').forEach(svg => { const g = svg.querySelector('.fit'); try { const b = g.getBBox(); if (b.width && b.height) { const p = Math.max(b.width, b.height) * .08 + 2; svg.setAttribute('viewBox', `${r2(b.x - p)} ${r2(b.y - p)} ${r2(b.width + 2 * p)} ${r2(b.height + 2 * p)}`); svg.removeAttribute('data-fit'); } } catch (e) { } }); }
-return { version: VERSION, scene, scene3, shapes3, load3d, view3d, mount3d, icon, fit, overlaps, layout, esc, col, shade, warn, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
+return { version: VERSION, scene, scene3, shapes3, load3d, view3d, mount3d, icon, fit, overlaps, layout, esc, col, shade, warn, nameOf, baseType, guessType: n => guess(n).t, KO, PK_SKIP, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
 })();
 window.LabKit = LabKit;
 function lkStart() {
@@ -6000,6 +6045,115 @@ document.documentElement.classList.toggle('lk-still', still || !ANIM0);
 const twOpt = (i, rv) => ({ grid: GRID, bench: steps[i].bench, label: `${i + 1}단계${rv ? ' 결과' : ''}: ${steps[i].title || ''}` });
 function playStep(host, i) { if (motionOn(steps[i])) playTween(host, stepPlan(i), twOpt(i)); }
 function playReveal(host, i) { if (motionOn(steps[i])) playTween(host, revealPlan(i), twOpt(i, true)); }
+/* ----- 부품 눌러 알아보기 (v1.27) ----- */
+// 수업 모드의 장면에서 부품(또는 그 이름표)을 누르거나 '부품 살펴보기' 목록에서 고르면 그 부품이 빛나고 정보 카드가 뜬다.
+// 카드는 이 실험의 내용만 쓴다: 이름(이름표·기구 이름·용량), 담긴 것·읽은 값, 준비물, 안전 수칙 중 그 이름이 든 문장(원문 그대로), 원문 설명(info).
+// 준비물 아이콘을 눌러도 같은 카드가 뜬다. 지금 보이는 장면(결과를 열었으면 결과 장면)의 모습만 쓴다
+const PK_SKIP = LabKit.PK_SKIP; // 누를 수 없는 설명 부품 (엔진과 같은 목록)
+const KO_COLOR = { water: '물', clear: '투명한', blue: '파란색', navy: '남색', skyblue: '하늘색', red: '빨간색', pink: '분홍색', purple: '보라색', violet: '보라색', yellow: '노란색', orange: '주황색', green: '초록색', lime: '연두색', brown: '갈색', black: '검은색', white: '흰색', milky: '뿌연', gray: '회색', oil: '기름', iodine: '청람색', brick: '벽돌색', gold: '금색', copper: '구리색', silver: '은색' };
+const KO_SOLID = { powder: '가루', precipitate: '앙금', crystals: '결정', chips: '조각', zinc: '아연 조각', magnesium: '마그네슘 리본', nail: '못', block: '덩어리', leaf: '잎', egg: '달걀', potato: '감자 조각', liver: '생간 조각', ice: '얼음', icebath: '얼음물' };
+const PK_LIQ = new Set([...Object.keys(LabKit.shapes3()), 'dropper', 'glasspipette', 'micropipette', 'syringe', 'pour', 'burette', 'sepfunnel']);
+const squash = v => String(v || '').replace(/\s+/g, '');
+const liquidKo = c => { const k = c == null ? 'water' : String(c); return k === 'water' ? '물' : k === 'oil' ? '기름' : k === 'clear' ? '투명한 액체' : KO_COLOR[k] ? `${KO_COLOR[k]} 액체` : '액체'; };
+const stemOf = n => String(n || '').replace(/\(.*?\)/g, '').replace(/[\d.,]+\s*(%|mL|ml|L|μL|µL|g|mg|kg|M|℃|°C|개|mm|cm|m|켤레|벌|장|대|병)?/g, ' ').replace(/\s+/g, ' ').trim(); // 준비물 이름에서 양·농도를 뺀 것
+const matType = m => { const ic = m.icon, t = typeof ic === 'string' ? ic : ic && typeof ic === 'object' ? ic.t : LabKit.guessType(m.name); return t && t !== 'generic' ? LabKit.baseType(t) : null; };
+function pkFind(items, k) { // '#2' 또는 '#2/1'(꽂힌 시험관·홈)
+  const m = /^#(\d+)(?:\/(\d+))?$/.exec(k || ''); if (!m) return null;
+  const el = arr(items)[+m[1]]; if (!el || typeof el !== 'object') return null; if (m[2] == null) return el;
+  const kid = arr(el.tubes || el.wells)[+m[2]]; if (!kid || typeof kid !== 'object') return null;
+  return { ...kid, t: kid.t || (el.t === 'wellplate' ? '_well' : el.t === 'tuberack' ? 'microtube' : 'tube') };
+}
+const pkWords = el => [el.label, typeof el.text === 'string' && el.text.length <= 16 ? el.text : null].filter(v => typeof v === 'string' && squash(v).length >= 1);
+function pkMats(el) { // 준비물 연결: 이름표·글자가 든 준비물과 같은 기구
+  const words = pkWords(el), t = LabKit.baseType(el.t), named = mats.filter(m => words.some(w => squash(w).length >= 2 && squash(m.name).includes(squash(w))));
+  return [...new Set([...named, ...mats.filter(m => matType(m) === t)])].slice(0, 4);
+}
+function pkSafety(words, i) { // 안전 수칙·이 단계의 주의 중 그 이름이 든 문장 (원문 그대로)
+  const keys = [...new Set(words.map(squash).filter(w => w.length >= 2))];
+  const pool = [...arr(safety), ...(i != null && steps[i] ? arr(steps[i].warn) : [])].filter(v => typeof v === 'string');
+  return [...new Set(pool.filter(line => keys.some(k => squash(line).includes(k))))].slice(0, 4);
+}
+function pkRows(el) { // 담긴 것·읽은 값
+  const t = LabKit.baseType(el.t), rows = [], has = [];
+  if (Array.isArray(el.layers) && el.layers.length) has.push(`${el.layers.length}층으로 나뉜 액체 (아래부터 ${el.layers.map(l => liquidKo(l && l.color)).join(', ')})`);
+  else if (PK_LIQ.has(t) && (el.amount != null || +el.fill > 0 || (el.color != null && el.fill !== 0))) has.push(`${liquidKo(el.color)}${el.amount != null ? ' ' + el.amount : ''}`);
+  if (el.solid && KO_SOLID[el.solid]) has.push(KO_SOLID[el.solid]);
+  if (el.gas) has.push(`${KO_COLOR[el.gas] ? KO_COLOR[el.gas] + ' ' : ''}기체`);
+  if (el.bubbles) has.push('기포가 생겨요'); if (el.steam) has.push('김이 나요'); if (el.cloudy) has.push('뿌옇게 흐려요'); if (el.foam) has.push('거품이 넘쳐요');
+  if (has.length) rows.push(['담긴 것', has.map(e).join(' · ')]);
+  if (typeof el.reading === 'string' && el.reading) rows.push(['읽은 값', e(el.reading)]);
+  if (typeof el.value === 'string' && el.value) rows.push(['화면', e(el.value)]);
+  return rows;
+}
+function pkCardHtml({ title, sub, rows, info, safe, mats: ms }) {
+  const dl = rows.concat(ms.length ? [['준비물', ms.map(m => `${e(m.name)}${m.qty ? ` <span class="pk-q">${e(m.qty)}</span>` : ''}`).join('<br>')]] : [])
+    .concat(arr(info).filter(v => typeof v === 'string' && v).length ? [['설명', arr(info).filter(v => typeof v === 'string' && v).map(md).join('<br>')]] : []);
+  return `<div class="pk-h"><div><b>${e(title)}</b>${sub ? `<span>${e(sub)}</span>` : ''}</div><button class="pk-x" type="button" data-pkx aria-label="닫기">${IC.x}</button></div>`
+    + (dl.length ? `<dl>${dl.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>` : '')
+    + (safe.length ? `<div class="pk-safe"><b>${IC.alert}이 실험의 안전 수칙</b><ul>${safe.map(v => `<li>${md(v)}</li>`).join('')}</ul></div>` : '')
+    + (!dl.length && !safe.length ? '<p class="pk-none">이 실험 자료에는 따로 적힌 내용이 없어요.</p>' : '');
+}
+function pkPart(el, i) {
+  const kname = LabKit.nameOf(el), ms = pkMats(el), words = pkWords(el), tag = typeof el.tag === 'string' && el.tag ? el.tag : null;
+  const title = words[0] || (tag && kname ? `${kname} ${tag}` : kname) || (ms[0] && ms[0].name) || '부품';
+  const sub = [words[0] && kname ? kname : null, el.vol ? `${el.vol}` : null].filter(Boolean).join(' · ');
+  return pkCardHtml({ title, sub, rows: pkRows(el), info: el.info, safe: pkSafety([...words, kname, ...ms.map(m => stemOf(m.name))], i), mats: ms });
+}
+function pkMatCard(m) {
+  const t = matType(m), kname = t ? LabKit.nameOf({ t }) : null, stem = stemOf(m.name);
+  return pkCardHtml({ title: m.name, sub: [kname && squash(kname) !== squash(stem) ? kname : null, m.qty].filter(Boolean).join(' · '), rows: [], info: m.info, safe: pkSafety([stem, kname], null), mats: [] });
+}
+// 지금 보이는 장면의 부품들 (결과를 열었고 결과 그림이 있으면 결과 장면)
+const pkRv = i => rvOn.has(i) && pkItems(i, true).length > 0;
+const pkItems = (i, rv) => { try { return (rv ? revealItems(steps[i], i) : sceneItems(i)) || []; } catch (err) { return []; } };
+function pkList(i, rv) {
+  const out = [];
+  pkItems(i, rv).forEach((el, j) => {
+    if (!el || typeof el !== 'object' || PK_SKIP.has(el.t)) return;
+    out.push({ k: '#' + j, el });
+    arr(el.tubes || el.wells).forEach((kid, q) => { if (kid && typeof kid === 'object') out.push({ k: `#${j}/${q}`, el: pkFind([el], `#0/${q}`) }); });
+  });
+  return out.filter(x => x.el && LabKit.nameOf(x.el) != null || (x.el && pkWords(x.el).length));
+}
+const pkName = el => { const w = pkWords(el)[0], k = LabKit.nameOf(el) || '부품'; return w ? `${w} (${k})` : el.tag ? `${k} ${el.tag}` : k; };
+const pkUi = i => pkList(i, false).length ? `<div class="pk" data-pk="${i}"><button class="btn sm pk-btn" type="button" data-pklist aria-expanded="false">${IC.zoom}부품 살펴보기</button><div class="pk-list" role="group" aria-label="부품 목록" hidden></div><div class="pk-card" role="region" aria-label="부품 정보" aria-live="polite" hidden></div></div>` : '';
+let pkOn = null; // { i, k, rv }
+function pkClose() {
+  pkOn = null;
+  deck.querySelectorAll('.pk-on').forEach(n => n.classList.remove('pk-on'));
+  deck.querySelectorAll('.pk-card').forEach(n => { n.hidden = true; n.innerHTML = ''; });
+  deck.querySelectorAll('.pk-list [aria-pressed]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+}
+function pkShow(i, k, rv) {
+  const box = deck.querySelector(`.pk[data-pk="${i}"]`), el = pkFind(pkItems(i, rv), k); if (!box || !el) return;
+  pkClose(); pkOn = { i, k, rv };
+  const card = box.querySelector('.pk-card'); card.innerHTML = pkPart(el, i); card.hidden = false;
+  deck.querySelectorAll(`.deck-stage ${rv ? '.sc-rv' : '.sc-main'} [data-lk-k="${k}"]`).forEach(n => n.classList.add('pk-on'));
+  box.querySelectorAll('.pk-list [data-pkk]').forEach(b => b.setAttribute('aria-pressed', b.dataset.pkk === k));
+}
+function pkToggleList(b) {
+  const box = b.closest('.pk'), list = box.querySelector('.pk-list'), i = +box.dataset.pk, open = list.hidden;
+  if (open) list.innerHTML = pkList(i, pkRv(i)).map(x => `<button class="pk-chip" type="button" data-pkk="${x.k}" aria-pressed="${!!(pkOn && pkOn.i === i && pkOn.k === x.k)}">${e(pkName(x.el))}</button>`).join('');
+  list.hidden = !open; b.setAttribute('aria-expanded', open);
+}
+// 장면에서 누름: 같은 부품을 다시 누르면 닫는다
+function pkClick(n) {
+  const i = (slides[cur] || {}).step; if (i == null) return;
+  const k = n.getAttribute('data-lk-k'), rv = !!n.closest('.sc-rv');
+  if (pkOn && pkOn.i === i && pkOn.k === k && pkOn.rv === rv) return pkClose();
+  pkShow(i, k, rv);
+}
+// 준비물 아이콘: 그 준비물 칸 아래(같은 묶음)의 카드에
+function pkMatClose(card) { const wrap = card.closest('section, .slide'); card.hidden = true; card.innerHTML = ''; if (wrap) wrap.querySelectorAll('[data-pkm]').forEach(x => x.setAttribute('aria-pressed', 'false')); }
+function pkMat(b) {
+  const m = mats[+b.dataset.pkm], wrap = b.closest('section, .slide'), card = wrap && wrap.querySelector('.pk-card[data-pkmat]'); if (!m || !card) return;
+  const again = b.getAttribute('aria-pressed') === 'true';
+  wrap.querySelectorAll('[data-pkm]').forEach(x => x.setAttribute('aria-pressed', 'false'));
+  card.hidden = true; card.innerHTML = ''; if (again) return;
+  // 누른 칸이 있는 줄 바로 아래에 펼친다 (준비물이 많아도 누른 칸 가까이)
+  let last = b; b.parentElement.querySelectorAll('[data-pkm]').forEach(x => { if (x.offsetTop === b.offsetTop) last = x; }); last.after(card);
+  card.innerHTML = pkMatCard(m); card.hidden = false; b.setAttribute('aria-pressed', 'true');
+}
 // ▶ 시연: 결과를 열어 결과 그림이 보이면 결과 시연, 아니면 단계 시연
 function playBtn(b) {
   const i = +b.dataset.play, box = b.closest('.scene-box'); if (!box) return;
@@ -6028,6 +6182,7 @@ function toggleReveal(i) {
     open.forEach(x => { saved[x.key + ':done'] = '1'; }); if (open.length) persist();
     refreshPc();
   }
+  if (i !== 'res') { if (pkOn && pkOn.i === i) pkClose(); deck.querySelectorAll(`.pk[data-pk="${i}"] .pk-list`).forEach(n => { n.hidden = true; const b = n.parentElement.querySelector('[data-pklist]'); if (b) b.setAttribute('aria-expanded', 'false'); }); }
   const label = rvLabel(i);
   document.querySelectorAll(`[data-rvs="${i}"]`).forEach(n => { n.classList.toggle('rv-on', rvOn.has(i)); n.querySelectorAll('.rv-btn').forEach(b => { b.setAttribute('aria-pressed', rvOn.has(i)); b.querySelector('.rv-l').textContent = label; }); });
   if (i !== 'res') { // 결과 시연 (수업 모드가 열려 있으면 그 화면에서, 3D로 보는 중이면 하지 않는다)
@@ -6075,7 +6230,7 @@ function tmAction(act, i) {
 }
 const coverItems = D.cover ? resolveScene(D.cover, -1, '표지', []) : [{ t: 'flask', x: 150, fill: .5, color: 'violet', bubbles: 5 }, { t: 'beaker', id: 'cb', x: 262, fill: .4, color: 'water' }, { t: 'rack', x: 382, tubes: [{ fill: .45, color: 'pink' }, { fill: .45, color: 'yellow' }, { fill: .45, color: 'green' }] }, { t: 'dropper', over: 'cb', dy: 18, color: 'violet' }];
 const chips = () => [D.subject && `<span class="chip primary">${e(D.subject)}</span>`, D.unit && `<span class="chip">${IC.book}${e(D.unit)}</span>`, D.duration && `<span class="chip">${IC.clock}${e(D.duration)}</span>`, D.group && `<span class="chip">${IC.users}${e(D.group)}</span>`].filter(Boolean).join('');
-const matGrid = () => `<div class="mat-grid">${mats.map(m => `<div class="mat">${LabKit.icon(m.icon, m.name)}<div class="nm">${e(m.name)}</div>${m.qty ? `<div class="qty">${e(m.qty)}</div>` : ''}</div>`).join('')}</div>`;
+const matGrid = () => `<div class="mat-grid">${mats.map((m, k) => `<button class="mat" type="button" data-pkm="${k}" aria-pressed="false">${LabKit.icon(m.icon, m.name)}<span class="nm">${e(m.name)}</span>${m.qty ? `<span class="qty">${e(m.qty)}</span>` : ''}</button>`).join('')}</div><div class="pk-card" data-pkmat role="region" aria-label="준비물 정보" aria-live="polite" hidden></div>`;
 const tipList = () => `<div class="safety">${tips.map(s => `<div class="safe tipl"><span class="ic">${IC.star}</span><div>${md(s)}</div></div>`).join('')}</div>`;
 const safeList = () => `<div class="safety">${safety.map(s => `<div class="safe"><span class="ic">${IC.alert}</span><div>${md(s)}</div></div>`).join('')}</div>`;
 const tableHtml = (t, ti) => {
@@ -6115,7 +6270,7 @@ if (mats.length) slides.push({ name: '준비물', html: () => `<div class="slide
 if (safety.length) slides.push({ name: '안전 수칙', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">안전</span><h2 style="margin:0">안전 수칙</h2></div>${safeList()}</div></div>` });
 if (tips.length) slides.push({ name: '실험 팁', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">팁</span><h2 style="margin:0">실험 전에 알아 두기</h2></div>${tipList()}</div></div>` });
 const stepStart = slides.length;
-steps.forEach((st, i) => slides.push({ name: `${i + 1}단계`, step: i, html: () => `<div class="slide${rvCls(st, i)}" data-rvs="${i}">${sceneBlock(st, i)}<div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.section ? `<span class="sec-chip">${e(st.section)}</span>` : ''}${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h2>${e(st.title || `${i + 1}단계`)}</h2>${stepBoxes(st, i)}${sketchBox(st)}${timerUi(st, i)}${st.predict || st.sketch ? saveNote() : ''}</div></div>` }));
+steps.forEach((st, i) => slides.push({ name: `${i + 1}단계`, step: i, html: () => `<div class="slide${rvCls(st, i)}" data-rvs="${i}">${sceneBlock(st, i)}<div><div class="meta"><span class="num">${e(st.no ?? i + 1)}</span>${st.section ? `<span class="sec-chip">${e(st.section)}</span>` : ''}${st.time ? `<span class="time">${IC.clock}${e(st.time)}</span>` : ''}</div><h2>${e(st.title || `${i + 1}단계`)}</h2>${pkUi(i)}${stepBoxes(st, i)}${sketchBox(st)}${timerUi(st, i)}${st.predict || st.sketch ? saveNote() : ''}</div></div>` }));
 if (hasRes) slides.push({ name: '결과 정리', res: true, html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">정리</span><h2 style="margin:0">결과 정리</h2></div>${sumBox()}<div class="res-grid">${resCards()}</div>${saveNote()}</div></div>` });
 
 const mk = (id, cls) => { let n = document.getElementById(id); if (!n) { n = document.createElement('div'); n.id = id; if (cls) n.className = cls; document.body.appendChild(n); } return n; };
@@ -6158,8 +6313,12 @@ function openDeck(i) {
   deck.hidden = false; document.body.style.overflow = 'hidden'; deckLive = false; showSlide(i); deckLive = true; deck.querySelector('[data-next]').focus();
 }
 function closeDeck() { if (inl) { inl.dispose(); inl = null; } deckLive = false; deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(app); refreshPc(); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
-deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.play != null) return playBtn(b); if (b.hasAttribute('data-still')) return setStill(!still); if (b.dataset.v3 != null) return open3d(+b.dataset.v3); if (b.hasAttribute('data-v3deck')) { deck3d = !deck3d; b.setAttribute('aria-pressed', deck3d); return mountInline(); } if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
-document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if ((ev.key === ' ' || ev.key === 'Enter') && ev.target.closest && ev.target.closest('[data-pc]')) return; if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (!deck.hidden && inl && ev.target.closest && ev.target.closest('.v3-inline')) { inl.key(ev); if (ev.defaultPrevented) return; } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].res && (res.expect || res.conclusion)) toggleReveal('res'); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
+deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) { const n = ev.target.closest && ev.target.closest('.scene-box svg [data-lk-k]'); if (n) pkClick(n); return; } if (b.dataset.play != null) return playBtn(b);
+  if (b.hasAttribute('data-pklist')) return pkToggleList(b); if (b.hasAttribute('data-pkm')) return pkMat(b);
+  if (b.dataset.pkk) { const i = +b.closest('.pk').dataset.pk; return pkOn && pkOn.i === i && pkOn.k === b.dataset.pkk ? pkClose() : pkShow(i, b.dataset.pkk, pkRv(i)); }
+  if (b.hasAttribute('data-pkx')) { const c = b.closest('[data-pkmat]'); return c ? pkMatClose(c) : pkClose(); } if (b.hasAttribute('data-still')) return setStill(!still); if (b.dataset.v3 != null) return open3d(+b.dataset.v3); if (b.hasAttribute('data-v3deck')) { deck3d = !deck3d; b.setAttribute('aria-pressed', deck3d); return mountInline(); } if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
+document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if ((ev.key === ' ' || ev.key === 'Enter') && ev.target.closest && ev.target.closest('[data-pc],.pk,[data-pkm],[data-pkmat]')) return;
+  if (ev.key === 'Escape' && !deck.hidden) { const mc = deck.querySelector('.pk-card[data-pkmat]:not([hidden])'); if (pkOn || mc) { ev.preventDefault(); if (mc) pkMatClose(mc); pkClose(); return; } } if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (!deck.hidden && inl && ev.target.closest && ev.target.closest('.v3-inline')) { inl.key(ev); if (ev.defaultPrevented) return; } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].res && (res.expect || res.conclusion)) toggleReveal('res'); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
 let tx = null;
 // 입체 그림·답안·그림 칸·단추를 조작할 때는 단계를 넘기지 않는다.
 const noSwipe = target => target.closest && target.closest('.v3-inline,.v3-cv,[data-w],[data-skg],button,input,textarea,select');
@@ -6245,6 +6404,8 @@ app.addEventListener('click', ev => {
   const rv = t.closest('[data-rv]'); if (rv) return toggleReveal(rvKey(rv.dataset.rv));
   const v3 = t.closest('[data-v3]'); if (v3) return open3d(+v3.dataset.v3);
   const pl = t.closest('[data-play]'); if (pl) return playBtn(pl);
+  const pkm = t.closest('[data-pkm]'); if (pkm) return pkMat(pkm);
+  const px = t.closest('[data-pkx]'); if (px) { const c = px.closest('[data-pkmat]'); if (c) pkMatClose(c); return; }
   if (t.closest('[data-still]')) return setStill(!still);
   if (t.closest('[data-answer-export],[data-answer-import],[data-answer-file]')) return;
   if (t.closest('[data-clear]')) return clearWrites();

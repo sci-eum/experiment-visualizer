@@ -144,6 +144,15 @@ def main():
         unknown = got - known
         if unknown:
             problems.append(f"parts.md '입체(3D) 보기' 표에 엔진에 없는 부품: {sorted(unknown)}")
+    # 8. 부품 이름(부품 눌러 알아보기 카드): 엔진의 KO 표가 설명 부품을 뺀 모든 부품을 갖고, 이름이 parts.md에 그대로 있다
+    ko = dict(re.findall(r"(\w+): '([^']+)'", re.search(r'const KO = \{(.*?)\};', js, re.S).group(1)))
+    skip = set(re.findall(r"'([a-z]+)'", re.search(r'const PK_SKIP = new Set\(\[(.*?)\]\)', js).group(1)))
+    missing = sorted(t for t in types if t not in ko and t not in skip)
+    if missing:
+        problems.append(f'labkit.js KO(부품 이름) 표에 없는 부품: {missing}')
+    for t, n in sorted(ko.items()):
+        if not t.startswith('_') and n not in parts:
+            problems.append(f"labkit.js KO의 '{t}' 이름 '{n}'이 references/parts.md에 없습니다 (문서의 이름과 맞추세요)")
     if lines > MAX_SKILL_LINES:
         problems.append(f'SKILL.md가 {lines}줄입니다 ({MAX_SKILL_LINES}줄 이하로 줄이고 자세한 내용은 references로).')
 

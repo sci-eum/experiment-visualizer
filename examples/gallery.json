@@ -3,7 +3,7 @@
   "subject": "experiment-visualizer",
   "unit": "모든 부품 한눈에 보기",
   "goal": "SKILL이 쓸 수 있는 실험 기구·표시 부품을 장면별로 모아 보여 준다. 각 그림 아래 글자는 부품 이름(t 값)이다.",
-  "materials": [{"name":"비커","icon":"beaker"},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"12홈판"},{"name":"pH 미터"},{"name":"멀티미터"},{"name":"이산화 탄소 센서"},{"name":"저마찰 트랙"},{"name":"포토게이트"},{"name":"도르래"},{"name":"추걸이"},{"name":"용수철"},{"name":"삼각대"},{"name":"코일"},{"name":"검류계"},{"name":"건전지 끼우개"},{"name":"9 V 건전지"},{"name":"탄소 막대"},{"name":"향"},{"name":"면봉"},{"name":"홀 피펫"},{"name":"피펫 필러"},{"name":"한천 배지"},{"name":"TLC 판"},{"name":"항온기"},{"name":"분광기"},{"name":"적외선 온도계"},{"name":"점화기"},{"name":"칼"},{"name":"감자 조각"},{"name":"이름 모를 기구"}],
+  "materials": [{"name":"비커","icon":"beaker","info":"(예시) 준비물의 info는 이 아이콘을 누르면 보여요."},{"name":"삼각 플라스크","icon":"flask"},{"name":"시험관","icon":"tube"},{"name":"눈금실린더","icon":"cylinder"},{"name":"스포이트","icon":"dropper"},{"name":"알코올램프","icon":"lamp"},{"name":"거름종이"},{"name":"묽은 염산"},{"name":"전자저울"},{"name":"건전지"},{"name":"현미경"},{"name":"12홈판"},{"name":"pH 미터"},{"name":"멀티미터"},{"name":"이산화 탄소 센서"},{"name":"저마찰 트랙"},{"name":"포토게이트"},{"name":"도르래"},{"name":"추걸이"},{"name":"용수철"},{"name":"삼각대"},{"name":"코일"},{"name":"검류계"},{"name":"건전지 끼우개"},{"name":"9 V 건전지"},{"name":"탄소 막대"},{"name":"향"},{"name":"면봉"},{"name":"홀 피펫"},{"name":"피펫 필러"},{"name":"한천 배지"},{"name":"TLC 판"},{"name":"항온기"},{"name":"분광기"},{"name":"적외선 온도계"},{"name":"점화기"},{"name":"칼"},{"name":"감자 조각"},{"name":"이름 모를 기구"}],
   "tips": ["부품 이름(t)과 속성은 references/parts.md(부품 목록)를 보세요.","그림에 없는 기구는 svg 부품으로 직접 그릴 수 있어요."],
   "steps": [
   { "title": "유리 기구 (그릇)", "text": "beaker · flask · roundflask · tube · cylinder · bottle", 
@@ -477,7 +477,7 @@
                  "answer": "가 (넓은 그릇)", "why": "넓은 그릇은 공기와 닿는 물 표면이 넓어 열을 빨리 잃어요.", "write": "그렇게 생각한 까닭"}],
     "reveal": { "text": "넓은 그릇(가)의 물이 먼저 식었어요.", "change": { "ta": { "reading": "45 ℃" }, "tb": { "reading": "60 ℃" }, "a": { "steam": false } } },
     "scene": [
-      {"t":"beaker","id":"a","x":170,"s":1.2,"fill":0.3,"color":"water","steam":true,"label":"가"},
+      {"t":"beaker","id":"a","x":170,"s":1.2,"fill":0.3,"color":"water","steam":true,"label":"가","info":"(예시) 실험지에 기구·물질 설명이 있으면 info로 넣어요. 수업 모드에서 이 비커를 누르면 보여요."},
       {"t":"cylinder","id":"b","x":320,"fill":0.55,"color":"water","steam":true,"label":"나"},
       {"t":"thermometer","id":"ta","in":"a","reading":"80 ℃"},
       {"t":"thermometer","id":"tb","in":"b","reading":"80 ℃"}
