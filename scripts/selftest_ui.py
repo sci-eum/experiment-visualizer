@@ -119,6 +119,14 @@ window.addEventListener('load', async () => {
     swipe(cv);check('3D 조작 중 단계 유지',count()===first);
     cv.focus(); const key=new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true});cv.dispatchEvent(key);
     check('3D 방향키 분리',key.defaultPrevented && count()===first);
+    const tap3=async k=>{let s=null;for(let n=0;n<100&&!s;n++){s=cv._spot&&cv._spot(k);if(!s)await sleep(20);}if(!s)return false;
+      const r=cv.getBoundingClientRect(),o={bubbles:true,pointerId:9,button:0,isPrimary:true,pointerType:'mouse',clientX:r.left+s.x,clientY:r.top+s.y};
+      cv.dispatchEvent(new PointerEvent('pointerdown',o));cv.dispatchEvent(new PointerEvent('pointerup',o));return true;};
+    check('3D 부품 누르면 카드',await tap3('#0') && !pk().hidden && $('#deck .pk-h b').textContent==='가' && cv.dataset.pick==='#0');
+    check('3D 고른 부품 틀',await until(()=>!!$('#deck .v3-lines .v3-pk')));
+    await sleep(400);await tap3('#0');check('3D 다시 누르면 닫기',pk().hidden && cv.dataset.pick==='');
+    $('#deck [data-pklist]').click();$('#deck .pk-list [data-pkk]').click();check('목록에서 고르면 3D 틀',cv.dataset.pick==='#0' && await until(()=>!!$('#deck .v3-lines .v3-pk')));
+    $('#deck [data-pkx]').click();$('#deck [data-pklist]').click();check('카드 닫으면 3D 틀 없음',cv.dataset.pick==='' && await until(()=>!$('#deck .v3-lines .v3-pk')));
     $('#deck [data-rv]').click();check('3D 결과 보기',await until(()=>$('#deck .v3-cv')) && $('#deck .slide').classList.contains('rv-on'));
     $('#deck [data-next]').click();check('다음 단계 3D 유지',await until(()=>$('#deck .v3-cv')) && count()!==first);
     $('#deck [data-v3deck]').click();check('2D 복귀',!$('#deck .v3-cv')&&!$('#deck .scene-box').classList.contains('v3-on'));

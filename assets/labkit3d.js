@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit3D v1.28.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit3D v1.29.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 장면을 입체(WebGL)로 보여 준다. 외부 라이브러리 없이 WebGL만 쓴다 (인터넷 없이 여는 한 파일 버전에도 넣을 수 있게).
    - 그릇 13종(비커·플라스크·시험관 …)은 그림 엔진의 윤곽선을 돌려 빚은 유리와, 높이·색·층이 맞는 액체로 (v1.20)
    - 자주 쓰는 기구(삼발이·알코올램프·스탠드·가열판·시험관대·저울 …)는 상자·원기둥으로 빚는다 (v1.20)
@@ -8,7 +8,7 @@
    그림 엔진이 '3D' 버튼을 누를 때 불러와 LabKit3D.open(창, { items, title, bench })을 부른다. */
 (function () {
 'use strict';
-const VERSION = '1.28.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
+const VERSION = '1.29.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
 const FONT = '"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif';
 const SVGNS = 'http://www.w3.org/2000/svg';
 const DEG = Math.PI / 180;
@@ -29,6 +29,7 @@ const CSS = `.v3-cv{position:absolute;inset:0;width:100%;height:100%;display:blo
 .v3-tags{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .v3-tag{position:absolute;left:0;top:0;white-space:nowrap;padding:4px 10px;border-radius:999px;background:#fff;color:#2b3040;font-size:13px;font-weight:700;line-height:1.3;box-shadow:0 1px 2px rgba(29,33,48,.08),0 4px 10px -4px rgba(29,33,48,.2)}
 .v3-tag.hot{background:#ffedef;color:#c7323f}.v3-tag.arrow{background:#fbf4ff;color:#7d2ba6}
+.v3-pk{filter:drop-shadow(0 0 5px rgba(177,77,224,.55))}
 .v3-ctl{position:absolute;left:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:calc(100% - 24px)}
 .v3-ctl button{appearance:none;border:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;line-height:1.2;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.95);color:#1d2130;box-shadow:0 1px 2px rgba(29,33,48,.06),0 2px 8px rgba(29,33,48,.1)}
 .v3-ctl button[aria-pressed=true]{background:#d070fb;color:#fff}
@@ -547,6 +548,17 @@ function cutScene(K, items) {
   host.innerHTML = svg; document.body.appendChild(host);
   const root = host.firstElementChild, ser = new XMLSerializer();
   try { const RI = root.getScreenCTM().inverse(); root.querySelectorAll('[data-fx]').forEach(n => { const m = RI.multiply(n.getScreenCTM()); n.setAttribute('data-fx-m', [m.a, m.b, m.c, m.d, m.e, m.f].map(v => Math.round(v * 1e4) / 1e4).join(',')); }); } catch (e) { }
+  // 부품 눌러 알아보기 (v1.29): 그림 엔진이 부품마다 붙인 data-lk-k 묶음의 상자 (장면 좌표). 입체에서 누른 곳의 부품을 찾는다
+  const pkBoxes = [];
+  try {
+    const RI = root.getScreenCTM().inverse();
+    root.querySelectorAll('[data-lk-k]').forEach(n => {
+      const b = n.getBBox(); if (!(b.width + b.height > 0)) return;
+      const m = RI.multiply(n.getScreenCTM()), xs = [], ys = [], w3 = n.closest('[data-e3]');
+      [[b.x, b.y], [b.x + b.width, b.y], [b.x, b.y + b.height], [b.x + b.width, b.y + b.height]].forEach(([x, y]) => { xs.push(m.a * x + m.c * y + m.e); ys.push(m.b * x + m.d * y + m.f); });
+      pkBoxes.push({ k: n.getAttribute('data-lk-k'), e: w3 ? +w3.getAttribute('data-e3') : null, u: w3 ? w3.getAttribute('data-u3') : null, x: Math.min(...xs), y: Math.min(...ys), x2: Math.max(...xs), y2: Math.max(...ys) });
+    });
+  } catch (e) { }
   const defs = root.querySelector(':scope > defs'), defsXml = defs ? ser.serializeToString(defs) : '';
   const measure = nodes => { // 여러 마디를 함께 잰 상자 (화면 밖 SVG에 잠깐 붙여서)
     const mg = document.createElementNS(SVGNS, 'g'); nodes.forEach(n => mg.appendChild(n)); root.appendChild(mg);
@@ -600,7 +612,7 @@ function cutScene(K, items) {
       if (d.d3) parts.push({ ...d, u, order: base.order, decal: card(nodes, box, { ...base, decal: true }) });
       else { const c = card(nodes, box, base); if (c) { c.fixedPlane = FIXED.has(d.t); c.d = d; cards.push(c); } }
     });
-    return { cards, parts, labels, els, SH, host, root };
+    return { cards, parts, labels, els, SH, host, root, pkBoxes };
   } catch (e) { host.remove(); throw e; }
 }
 // 실험대 선 바로 위 12만큼의 줄에서 칠해진 곳의 왼쪽·오른쪽 끝 (그림자를 실험대에 닿은 곳에만 깐다)
@@ -631,7 +643,7 @@ function viewer(stage, o = {}) {
   injectCss();
   const B = K.BENCH, CX = K.W / 2, still = !!o.still;
   const cv = document.createElement('canvas'); cv.className = 'v3-cv'; cv.tabIndex = still ? -1 : 0;
-  cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', `${o.title || '실험 장면'} 입체 그림. 끌어서 돌려 볼 수 있어요`);
+  cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', `${o.title || '실험 장면'} 입체 그림. 끌어서 돌려 볼 수 있어요${o.onPick ? '. 부품을 누르면 정보 카드가 열려요' : ''}`);
   const opts = { antialias: true, alpha: true, premultipliedAlpha: true, preserveDrawingBuffer: still };
   const gl = cv.getContext('webgl2', opts) || cv.getContext('webgl', opts) || cv.getContext('experimental-webgl', opts);
   if (!gl) { const e = new Error('WebGL을 쓸 수 없어요'); e.code = 'nogl'; throw e; }
@@ -738,6 +750,17 @@ function viewer(stage, o = {}) {
     const wellOf = d => { for (const k of [d.overE, d.inE]) { const w = k != null && E[k]; if (w && w.t === '_well' && w.g && w.g.rc) { const pb = objByE.get(w.parentE); if (pb && pb.wellShift) return pb.wellShift(...w.g.rc); } } return null; };
     cards.forEach(c => { const sh = c.d && wellOf(c.d); if (sh) { c.py -= sh.dy; c.pz += sh.dz; c.foot = false; } });
     const allCards = cards.concat(objs.map(ob => ob.decal).filter(Boolean));
+    // 부품 눌러 알아보기 (v1.29): 카드마다 그 안에 그린 부품의 상자, 입체 부품은 그 부품의 이름(pk)과 앞뒤 반 깊이 (누른 곳 찾기·고른 부품 틀)
+    const PB = S.pkBoxes || [];
+    allCards.forEach(c => { c.pks = PB.filter(b => c.e != null ? b.e === c.e : b.u === String(c.u)); });
+    const boxOf = ob => { // 빚은 꼭짓점(불투명한 부분·유리)을 둘러싼 상자. 꼭짓점이 없으면 자리·크기로 어림
+      const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+      const add = (v, a, n) => { for (let i = a; i < a + n; i++) for (let q = 0; q < 3; q++) { const x = v[i * 9 + q]; if (x < lo[q]) lo[q] = x; if (x > hi[q]) hi[q] = x; } };
+      if (ob.op && ob.op[1]) add(opV, ob.op[0], ob.op[1]); ob.glass.forEach(gp => add(gp.v, 0, gp.v.length / 9));
+      if (lo[0] <= hi[0]) return { lo, hi };
+      const hd = halfDepth(ob.d) || Math.max(10, ob.hw * .6); return { lo: [ob.cx - ob.hw, ob.y0, ob.az - hd], hi: [ob.cx + ob.hw, ob.y1, ob.az + hd] };
+    };
+    objs.forEach(ob => { ob.pk = ob.d.pk || null; ob.box = boxOf(ob); });
     // 움직임 (v1.25): 떼어 낸 조각 카드와 흔드는 그릇. o.motion은 그림 엔진의 움직임 상태 (움직임 끄기·동작 줄이기)
     const fxAll = allCards.flatMap(c => c.fx || []);
     objs.forEach(ob => { const g = ob.d.g || {}; if (ob.d.p && ob.d.p.shake && g.hold) ob.shake = [g.hold.x - CX, B - g.hold.y, ob.az]; });
@@ -832,7 +855,7 @@ function viewer(stage, o = {}) {
   const toLoad = allCards.concat(fxAll, TR ? AS0.allCards : []);
   const ready = Promise.all(toLoad.map(c => raster(c).then(img => {
     if (!alive) return;
-    try { c.tex = texture(gl, img, gl2); } catch (e) { failed++; warn('그림 카드를 올리지 못했어요 (' + c.types.join(',') + '): ' + e.message); }
+    try { c.tex = texture(gl, img, gl2); if (o.onPick && !still) c.cvs = img; } catch (e) { failed++; warn('그림 카드를 올리지 못했어요 (' + c.types.join(',') + '): ' + e.message); }
     done++; load.textContent = `실험대를 꾸미는 중… ${done}/${toLoad.length}`; invalidate();
   }, e => { failed++; done++; warn(e.message); invalidate(); }))).then(() => { load.hidden = true; if (TR) TR.t0 = performance.now(); invalidate(); return { units: cards.length, meshes: objs.length, failed }; }); // 시연은 그림이 다 올라온 뒤 시작
   if (!allCards.length) load.hidden = true;
@@ -994,7 +1017,7 @@ function viewer(stage, o = {}) {
     gl.depthMask(true);
     if (TR) { lines.style.visibility = tagBox.style.visibility = 'hidden'; return invalidate(); } // 시연 중에는 선·이름표를 감춘다
     // 선·이름표는 시점·크기·카드가 바뀔 때만 다시 놓는다 (움직임만 있는 장면은 그대로)
-    const sig = [cam.az, cam.el, cam.zoom, cam.panX, cam.panY, W, H, done].join();
+    const sig = [cam.az, cam.el, cam.zoom, cam.panX, cam.panY, W, H, done, selK].join();
     if (!moving || sig !== lastSig) { lines.innerHTML = overlay() + placeTags(); lastSig = sig; }
     if (moving && !tick) tick = setTimeout(() => { tick = 0; invalidate(); }, 30); // 움직임만 있으면 1초에 30장쯤
   }
@@ -1070,6 +1093,7 @@ function viewer(stage, o = {}) {
     for (let i = 1; i < n; i++) { L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); acc.push(L); }
     const W3 = raw.map((r, i) => { const t = L ? acc[i] / L : i / (n - 1); return [r[0] + c0[0] + (c1[0] - c0[0]) * t, r[1] + c0[1] + (c1[1] - c0[1]) * t, r[2] + c0[2] + (c1[2] - c0[2]) * t]; });
     const S2 = W3.map(scr); if (S2.some(v => !v)) return '';
+    if (d.pk) pipeHits.push({ k: d.pk, pts: S2, r: Math.max(7, 4 * pxPer(W3[Math.floor(n / 2)])) });
     const k = pxPer(W3[Math.floor(n / 2)]), p = d.p || {}, path = catmull(S2), st = (c, w) => `<path d="${path}" fill="none" stroke="${c}" stroke-width="${f1(w * k)}" stroke-linecap="round" stroke-linejoin="round"/>`;
     if (p.glass) return st(INK, 6.5) + st('#eaf5fc', 3.6);
     const wc = d.t === 'wire' && p.color == null ? '#3b4253' : p.color != null ? K.col(p.color) || p.color : null;
@@ -1077,7 +1101,8 @@ function viewer(stage, o = {}) {
     return st('#c4834a', 7.5) + st('#eab37c', 3.8);
   }
   function overlay() {
-    let defs = '', o = pipes.map(pipe).join('');
+    pipeHits = []; const pp = pipes.map(pipe).join(''); // 관·전선의 화면 점 (누른 곳 찾기)
+    let defs = '', o = selRect() + pp;
     arrows.forEach((d, i) => {
       const g = d.g, p = d.p || {}, wa = worldAt(g.a.x, g.a.y, d.fromE), wb = worldAt(g.b.x, g.b.y, d.toE), a = scr(wa), b = scr(wb); if (!a || !b) return;
       const k = pxPer(wa), c = K.col(p.color, '#b14de0') || '#b14de0', id = `lk3m${i}`, q = p.curve && g.ctrl ? scr(worldAt(g.ctrl.x, g.ctrl.y, null)) : null;
@@ -1103,8 +1128,90 @@ function viewer(stage, o = {}) {
     return (defs ? `<defs>${defs}</defs>` : '') + o;
   }
 
-  /* 조작: 끌어서 돌리기, 오른쪽 버튼·Shift로 옮기기, 휠·두 손가락으로 확대 */
-  const ptrs = new Map(); let pinch = null;
+  /* 부품 눌러 알아보기 (v1.29): 누른 곳의 부품을 찾아 o.onPick(k)로 알리고, 고른 부품(pick)은 보라색 틀로 둘러 보인다 */
+  let selK = null;
+  const sub3 = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const det3 = (p, q, r) => p[0] * (q[1] * r[2] - q[2] * r[1]) - p[1] * (q[0] * r[2] - q[2] * r[0]) + p[2] * (q[0] * r[1] - q[1] * r[0]);
+  function rayAt(mx, my) { // 화면의 점 → 카메라에서 나가는 반직선
+    const IPV = inv(PV), nx = mx / W * 2 - 1, ny = 1 - my / H * 2, a = apply(IPV, nx, ny, -1), b = apply(IPV, nx, ny, 1);
+    const p0 = [a[0] / a[3], a[1] / a[3], a[2] / a[3]], d = sub3([b[0] / b[3], b[1] / b[3], b[2] / b[3]], p0), L = Math.hypot(...d) || 1;
+    return { o: p0, d: d.map(v => v / L) };
+  }
+  function onCard(c, ray) { // 반직선이 카드에 닿는 곳: 카드 칸 (a: −.5~.5, b: 0~1), 장면 좌표 (sx, sy), 거리 t
+    if (!c.m || !c.tex) return null;
+    const O = apply(c.m, 0, 0, 0), A = sub3(apply(c.m, 1, 0, 0), O), Bv = sub3(apply(c.m, 0, 1, 0), O), nD = ray.d.map(v => -v), R = sub3(ray.o, O), dt = det3(A, Bv, nD);
+    if (Math.abs(dt) < 1e-9) return null;
+    const a = det3(R, Bv, nD) / dt, b = det3(A, R, nD) / dt, t = det3(A, Bv, R) / dt;
+    return t > 0 && a >= -.5 && a <= .5 && b >= 0 && b <= 1 ? { a, b, t, sx: c.x + (a + .5) * c.w, sy: c.y + c.h - b * c.h } : null;
+  }
+  const solidAt = (c, h) => { // 누른 곳 둘레(장면 좌표 3쯤)에 칠한 것이 있나
+    if (!c.cvs) return true;
+    const r = Math.max(2, Math.round(3 * c.cw / c.w)), x0 = clamp(Math.round((h.a + .5) * c.cw) - r, 0, c.cw - 1), y0 = clamp(Math.round((1 - h.b) * c.ch) - r, 0, c.ch - 1);
+    try { const d = c.cvs.getContext('2d').getImageData(x0, y0, Math.min(2 * r + 1, c.cw - x0), Math.min(2 * r + 1, c.ch - y0)).data; for (let i = 3; i < d.length; i += 4) if (d[i] > 50) return true; return false; } catch (e) { return true; }
+  };
+  const pkIn = (c, x, y) => { // 카드 안 (x, y)의 부품과 그 상자 넓이: 그 점을 품은 가장 작은 상자 (꽂힌 시험관·그릇 안의 온도계가 먼저), 없으면 6 안의 가까운 상자
+    let best = null, ba = Infinity, bd = 6;
+    c.pks.forEach(b => { if (x >= b.x - 2 && x <= b.x2 + 2 && y >= b.y - 2 && y <= b.y2 + 2) { const ar = (b.x2 - b.x) * (b.y2 - b.y); if (ar < ba) { ba = ar; best = b; } } });
+    if (!best) c.pks.forEach(b => { const d = Math.hypot(Math.max(b.x - x, 0, x - b.x2), Math.max(b.y - y, 0, y - b.y2)); if (d < bd) { bd = d; best = b; } });
+    return best ? { k: best.k, area: (best.x2 - best.x) * (best.y2 - best.y) } : c.e != null && E[c.e] && E[c.e].pk ? { k: E[c.e].pk, area: c.w * c.h } : null;
+  };
+  const onObj = (ob, ray) => { // 입체 부품을 둘러싼 상자에 들어가고(t0) 나오는(t1) 거리
+    const { lo, hi } = ob.box; let t0 = 0, t1 = Infinity;
+    for (let q = 0; q < 3; q++) {
+      if (Math.abs(ray.d[q]) < 1e-9) { if (ray.o[q] < lo[q] || ray.o[q] > hi[q]) return null; continue; }
+      let a = (lo[q] - ray.o[q]) / ray.d[q], b = (hi[q] - ray.o[q]) / ray.d[q]; if (a > b) [a, b] = [b, a];
+      t0 = Math.max(t0, a); t1 = Math.min(t1, b); if (t0 > t1) return null;
+    }
+    return { t0, t1 };
+  };
+  // 화면 (mx, my)의 부품 → { k, t }. 관·전선(선으로 그린 것)이 맨 위, 그다음 카드는 칠한 곳에 닿은 거리, 입체 부품은 상자 앞면까지의 거리로 가장 앞의 것.
+  // 가장 앞의 것이 입체 부품이면 그 상자 안(뒷면까지)에서 닿은 더 작은 것을 고른다 (그릇 안에 든 것, 스탠드에 물린 시험관, 꽂이의 시험관)
+  let pipeHits = [];
+  const segD = (x, y, a, b) => { const dx = b.x - a.x, dy = b.y - a.y, L = dx * dx + dy * dy, t = L ? clamp(((x - a.x) * dx + (y - a.y) * dy) / L, 0, 1) : 0; return Math.hypot(a.x + dx * t - x, a.y + dy * t - y); };
+  function hitAt(mx, my) {
+    if (!PV || TR || !W || !H) return null;
+    for (const p of pipeHits) for (let i = 1; i < p.pts.length; i++) if (segD(mx, my, p.pts[i - 1], p.pts[i]) <= p.r) return { k: p.k, t: 0 };
+    const ray = rayAt(mx, my), hs = [];
+    allCards.forEach(c => { if (!c.pks || (!c.pks.length && c.e == null)) return; const h = onCard(c, ray), p = h && solidAt(c, h) && pkIn(c, h.sx, h.sy); if (p) hs.push({ k: p.k, t: h.t, t1: h.t, area: p.area }); });
+    objs.forEach(ob => { if (!ob.pk) return; const h = onObj(ob, ray); if (h) hs.push({ k: ob.pk, t: h.t0, t1: h.t1, area: (ob.box.hi[0] - ob.box.lo[0]) * (ob.box.hi[1] - ob.box.lo[1]) }); });
+    if (!hs.length) return null;
+    let best = hs.reduce((a, b) => b.t < a.t ? b : a);
+    for (;;) { const inner = hs.filter(h => h.area < best.area && h.t <= best.t1); if (!inner.length) break; best = inner.reduce((a, b) => b.area < a.area ? b : a); }
+    return { k: best.k, t: best.t };
+  }
+  // 고른 부품이 화면에서 차지하는 사각형: 입체 부품은 둘러싼 상자, 카드는 그 부품의 상자를 카드 위에 비춘 것
+  function rectOf(k) {
+    if (!k || !PV) return null;
+    const pts = [];
+    objs.forEach(ob => { if (ob.pk === k) { const { lo, hi } = ob.box; [lo[0], hi[0]].forEach(x => [lo[1], hi[1]].forEach(y => [lo[2], hi[2]].forEach(z => pts.push(scr([x, y, z]))))); } });
+    pipeHits.forEach(p => { if (p.k === k) pts.push(...p.pts); });
+    allCards.forEach(c => {
+      if (!c.m || !c.tex || !c.pks) return;
+      const bs = c.pks.filter(b => b.k === k); if (!bs.length && !c.pks.length && c.e != null && E[c.e] && E[c.e].pk === k) bs.push({ x: c.x, y: c.y, x2: c.x + c.w, y2: c.y + c.h });
+      bs.forEach(b => [[b.x, b.y], [b.x2, b.y], [b.x, b.y2], [b.x2, b.y2]].forEach(([x, y]) => pts.push(scr(apply(c.m, (x - c.x) / c.w - .5, (c.y + c.h - y) / c.h, 0)))));
+    });
+    const P = pts.filter(Boolean); if (!P.length) return null;
+    return { x: Math.min(...P.map(p => p.x)), y: Math.min(...P.map(p => p.y)), x2: Math.max(...P.map(p => p.x)), y2: Math.max(...P.map(p => p.y)) };
+  }
+  function selRect() {
+    const r = rectOf(selK); if (!r) return '';
+    const x = Math.max(2, r.x - 6), y = Math.max(2, r.y - 6), x2 = Math.min(W - 2, r.x2 + 6), y2 = Math.min(H - 2, r.y2 + 6);
+    return x2 > x && y2 > y ? `<rect class="v3-pk" x="${f1(x)}" y="${f1(y)}" width="${f1(x2 - x)}" height="${f1(y2 - y)}" rx="10" fill="rgba(177,77,224,.07)" stroke="#b14de0" stroke-width="2.4"/>` : '';
+  }
+  function pick(k) { selK = k || null; cv.dataset.pick = selK || ''; lastSig = ''; invalidate(); }
+  // 점검용: 그 부품을 누를 수 있는 화면의 점 (사각형 안을 고르게 훑는다)
+  cv._spot = k => { const r = rectOf(k); if (!r) return null; for (const p of pipeHits) if (p.k === k) for (let i = 1; i < p.pts.length; i++) { const x = (p.pts[i - 1].x + p.pts[i].x) / 2, y = (p.pts[i - 1].y + p.pts[i].y) / 2, h = hitAt(x, y); if (h && h.k === k) return { x, y }; } for (let j = 1; j < 10; j++) for (let i = 1; i < 10; i++) { const x = r.x + (r.x2 - r.x) * i / 10, y = r.y + (r.y2 - r.y) * j / 10, h = hitAt(x, y); if (h && h.k === k) return { x, y }; } return null; };
+  cv._hit = (x, y) => { const h = hitAt(x, y); return h && h.k; };
+  let lastTap = 0;
+  function tap(ev) { // 짧게 누름: 두 번 누름(처음 시점으로)의 두 번째는 넘긴다
+    const now = performance.now(), dbl = now - lastTap < 350; lastTap = dbl ? 0 : now; if (dbl) return;
+    const r = cv.getBoundingClientRect(); if (!r.width || !r.height) return;
+    const h = hitAt((ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * H / r.height);
+    if (h) o.onPick(h.k);
+  }
+
+  /* 조작: 끌어서 돌리기, 오른쪽 버튼·Shift로 옮기기, 휠·두 손가락으로 확대. 거의 움직이지 않고 떼면 누름 (부품 눌러 알아보기) */
+  const ptrs = new Map(); let pinch = null, multi = false;
   const rotate = (dx, dy) => { cam.az -= dx * .35; cam.el = clamp(cam.el + dy * .3, 0, 75); };
   const zoomBy = f => { cam.zoom = clamp(cam.zoom * f, .3, 2.6); };
   const pan = (dx, dy) => { const s = eyeOf(W / H).d * 2 * Math.tan(FOV / 2) / H, a = cam.az * DEG; cam.panX = clamp(cam.panX - dx * s * Math.cos(a), -spanX, spanX); cam.panY = clamp(cam.panY + dy * s, -spanY, spanY); };
@@ -1112,15 +1219,20 @@ function viewer(stage, o = {}) {
   const offs = [];
   const listen = (t, ev, f, op) => { t.addEventListener(ev, f, op); offs.push(() => t.removeEventListener(ev, f, op)); };
   if (!still) {
-    listen(cv, 'pointerdown', ev => { cv.setPointerCapture(ev.pointerId); ptrs.set(ev.pointerId, { x: ev.clientX, y: ev.clientY, pan: ev.button === 2 || ev.shiftKey || ev.ctrlKey }); cv.classList.add('drag'); if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; } });
+    listen(cv, 'pointerdown', ev => { try { cv.setPointerCapture(ev.pointerId); } catch (e) { } ptrs.set(ev.pointerId, { x: ev.clientX, y: ev.clientY, pan: ev.button === 2 || ev.shiftKey || ev.ctrlKey, mv: 0 }); cv.classList.add('drag'); if (ptrs.size === 2) { multi = true; const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; } });
     listen(cv, 'pointermove', ev => {
       const p = ptrs.get(ev.pointerId); if (!p) return;
-      const dx = ev.clientX - p.x, dy = ev.clientY - p.y; p.x = ev.clientX; p.y = ev.clientY;
+      const dx = ev.clientX - p.x, dy = ev.clientY - p.y; p.x = ev.clientX; p.y = ev.clientY; p.mv += Math.abs(dx) + Math.abs(dy);
       if (ptrs.size >= 2 && pinch) { const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y) || 1, mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2; zoomBy(pinch.d / d); pan(mx - pinch.mx, my - pinch.my); pinch = { d, mx, my }; }
+      else if (o.onPick && p.mv < 5) return; // 누르려다 조금 움직인 것은 돌리지 않는다
       else if (p.pan) pan(dx, dy); else rotate(dx, dy);
       touched();
     });
-    const up = ev => { ptrs.delete(ev.pointerId); if (ptrs.size < 2) pinch = null; if (!ptrs.size) cv.classList.remove('drag'); };
+    const up = ev => {
+      const p = ptrs.get(ev.pointerId); ptrs.delete(ev.pointerId); if (ptrs.size < 2) pinch = null; if (!ptrs.size) cv.classList.remove('drag');
+      if (ev.type === 'pointerup' && p && !p.pan && p.mv < 5 && !multi && !ptrs.size && o.onPick) tap(ev);
+      if (!ptrs.size) multi = false;
+    };
     listen(cv, 'pointerup', up); listen(cv, 'pointercancel', up);
     listen(cv, 'wheel', ev => { ev.preventDefault(); zoomBy(Math.exp(ev.deltaY * .0015)); touched(); }, { passive: false });
     listen(cv, 'contextmenu', ev => ev.preventDefault());
@@ -1142,9 +1254,10 @@ function viewer(stage, o = {}) {
     try { allCards.concat(fxAll, AS0 ? AS0.allCards : []).forEach(c => c.tex && gl.deleteTexture(c.tex)); gl.deleteTexture(shTex); [quad, flat, opB, opB0, ...bufs].forEach(b => b && gl.deleteBuffer(b)); [P_TEX, P_COL, P_GLASS, P_LIQ, P_CAP].forEach(p => gl.deleteProgram(p.p)); const lc = gl.getExtension('WEBGL_lose_context'); if (lc) lc.loseContext(); } catch (e) { }
     S.host.remove(); if (AS0) AS0.S.host.remove(); stage.innerHTML = '';
   }
+  if (o.pick) pick(o.pick);
   invalidate();
   if (!still && !o.inline) setTimeout(() => cv.focus({ preventScroll: true }), 0);
-  return { ready, dispose, key, draw: () => draw(), canvas: cv, cards: allCards, objs, view: goView, eyeOf };
+  return { ready, dispose, key, pick, draw: () => draw(), canvas: cv, cards: allCards, objs, view: goView, eyeOf };
 }
 
 /* ---------- 바깥에서 쓰는 함수 ---------- */

@@ -4,7 +4,7 @@
 - 저장소: https://github.com/sci-eum/experiment-visualizer (public, 계정 sci-eum)
 - 공개 주소: GitHub Pages https://sci-eum.github.io/experiment-visualizer/
 - 링크용 SKILL: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1/SKILL.md (진입 링크만 `@1`. 지시서 안의 문서·도구·엔진은 엔진 VERSION과 같은 정확한 버전으로 고정. 대체 주소도 같은 태그를 사용한다)
-- 엔진 CDN: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.28.0/assets/labkit.min.js (태그 v1.x.y 기준)
+- 엔진 CDN: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.29.0/assets/labkit.min.js (태그 v1.x.y 기준)
 - 입체(3D) 엔진 CDN: https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@<그림 엔진과 같은 버전>/assets/labkit3d.min.js (예: @1.19.0, 3D 버튼을 누를 때 불러옴)
 - Supabase·Vercel: 사용하지 않음 (데이터 저장이 필요 없는 정적 자료)
 
