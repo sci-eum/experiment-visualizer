@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit3D v1.30.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit3D v1.31.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 장면을 입체(WebGL)로 보여 준다. 외부 라이브러리 없이 WebGL만 쓴다 (인터넷 없이 여는 한 파일 버전에도 넣을 수 있게).
    - 그릇 13종(비커·플라스크·시험관 …)은 그림 엔진의 윤곽선을 돌려 빚은 유리와, 높이·색·층이 맞는 액체로 (v1.20)
    - 자주 쓰는 기구(삼발이·알코올램프·스탠드·가열판·시험관대·저울 …)는 상자·원기둥으로 빚는다 (v1.20)
@@ -8,7 +8,7 @@
    그림 엔진이 '3D' 버튼을 누를 때 불러와 LabKit3D.open(창, { items, title, bench })을 부른다. */
 (function () {
 'use strict';
-const VERSION = '1.30.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
+const VERSION = '1.31.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
 const FONT = '"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif';
 const SVGNS = 'http://www.w3.org/2000/svg';
 const DEG = Math.PI / 180;
@@ -16,7 +16,7 @@ const FOV = 30 * DEG; // 세로 시야각
 // 시점: az(좌우로 돈 각도), el(내려다보는 각도). front는 2D 그림과 거의 같은 모습
 const VIEWS = { front: { az: 0, el: 5 }, angle: { az: -30, el: 18 }, top: { az: 0, el: 42 } };
 // 설명 부품(말풍선·화살표·글자 등)은 기구 바로 앞에 두고 늘 기구 위에 그린다 (2D처럼 가리지 않게)
-const OVERLAY = new Set(['note', 'text', 'view', 'zoom', 'label', 'mark', 'eye', 'arrow']);
+const OVERLAY = new Set(['note', 'text', 'view', 'zoom', 'label', 'mark', 'eye', 'arrow', 'heat', 'current']);
 // 입체 장면에서 카메라를 따라 돌지 않고 앞을 보는 카드: 두 기구를 잇는 것(광선·냉각기), 붓는 장면 (돌리면 끝이 어긋나지 않게)
 const FIXED = new Set(['hose', 'wire', 'tubing', 'pour', 'condenser', 'ray']);
 const MAX_TEX = 2048;
@@ -551,9 +551,9 @@ function container(d, b, S) {
 
 /* ---------- 장면 → 카드·입체 부품 ---------- */
 // LabKit.scene3이 그린 SVG를 화면 밖에 잠깐 붙여, 카드로 세울 것은 상자를 재어 SVG로 떼어 내고, 입체로 빚을 것은 자리·크기를 읽는다
-function cutScene(K, items) {
+function cutScene(K, items, hide) { // hide: 보이지 않는 것(unseen)을 뺀다 (v1.31)
   const SH = K.shapes3 ? K.shapes3() : {}, types = Object.keys(SH).concat(Object.keys(BUILD));
-  const { svg, labels, els = [] } = K.scene3(items || [], { mesh3: types });
+  const { svg, labels, els = [] } = K.scene3(items || [], { mesh3: types, hideUnseen: !!hide });
   const host = document.createElement('div');
   host.style.cssText = 'position:fixed;left:-20000px;top:0;width:480px;height:300px;opacity:0;pointer-events:none;font-family:' + FONT;
   host.innerHTML = svg; document.body.appendChild(host);
@@ -777,10 +777,12 @@ function viewer(stage, o = {}) {
     objs.forEach(ob => { const g = ob.d.g || {}; if (ob.d.p && ob.d.p.shake && g.hold) ob.shake = [g.hold.x - CX, B - g.hold.y, ob.az]; });
     return { S, E, cards, parts, unitZ, zAt, opV, objs, objByE, top, cardOfE, allCards, fxAll };
   }
-  const S = cutScene(K, o.items), { labels } = S, AS = assemble(S);
+  const S = cutScene(K, o.items, !o.unseen), { labels } = S, AS = assemble(S);
   const { E, cards, unitZ, zAt, opV, objs, objByE, top, cardOfE, allCards, fxAll } = AS;
   const arrows = E.filter(d => d && d.t === 'arrow' && d.g && d.g.a && d.g.b);
   const pipes = E.filter(d => d && (d.t === 'hose' || d.t === 'tubing' || d.t === 'wire') && !d.d3 && d.g && Array.isArray(d.g.pts) && d.g.pts.length > 1);
+  const heats = E.filter(d => d && d.t === 'heat' && d.g), currents = E.filter(d => d && d.t === 'current' && d.g), pipeScr = new Map(); // 보이지 않는 것 (v1.31)
+  const anim3 = !still && (o.motion ?? !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches));
 
   let xmin = Infinity, xmax = -Infinity, ymin = Infinity, ymax = -Infinity;
   allCards.forEach(c => { xmin = Math.min(xmin, c.px + c.ox - c.w / 2); xmax = Math.max(xmax, c.px + c.ox + c.w / 2); ymin = Math.min(ymin, c.py); ymax = Math.max(ymax, c.py + c.h); });
@@ -856,7 +858,7 @@ function viewer(stage, o = {}) {
   // 시연 (v1.26): 시작 장면(o.from)도 세워 두고 같은 부품끼리 짝짓는다. 움직임 끄기·동작 줄이기·점검 촬영이면 하지 않는다
   let AS0 = null, opB0 = null, TR = null, FADE = 1; // FADE: 지금 그리는 부품의 흐림 (시연 중)
   if (!still && (o.motion ?? !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) && Array.isArray(o.from) && o.from.length) {
-    try { AS0 = assemble(cutScene(K, o.from)); upload(AS0.objs); opB0 = AS0.opV.length ? buffer(gl, new Float32Array(AS0.opV)) : null; TR = matchScenes(AS, AS0); }
+    try { AS0 = assemble(cutScene(K, o.from, !o.unseen)); upload(AS0.objs); opB0 = AS0.opV.length ? buffer(gl, new Float32Array(AS0.opV)) : null; TR = matchScenes(AS, AS0); }
     catch (e) { warn('시연의 시작 장면을 세우지 못했어요: ' + e.message); TR = null; }
     if (TR) cv.dataset.tw = 'run';
   }
@@ -1115,6 +1117,12 @@ function viewer(stage, o = {}) {
   // 화살표·말풍선 지시선·눈 시선·확대 원의 선: 두 끝을 각 부품의 입체 자리에 이어 긋는다 (돌려도 가리키는 곳에 붙어 있게)
   const mkMarker = (id, c) => `<marker id="${id}" viewBox="0 0 10 10" refX="6.5" refY="5" markerWidth="5.2" markerHeight="5.2" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="${c}"/></marker>`;
   const f1 = v => v.toFixed(1);
+  const HEAT3 = '#f0662f', COOL3 = '#4b86e0';
+  const wave2 = (a, b, off, amp, lam) => { // 화면에서 a → b 물결 선 (옆으로 off), 끝은 곧게
+    const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, n = Math.max(2, Math.ceil(L / 3)); let d = '';
+    for (let i = 0; i <= n; i++) { const t = L * i / n, w = off + amp * Math.sin(t / lam * 6.283) * Math.min(1, (L - t) / (3 * lam / 4)); d += `${i ? ' L' : 'M'}${f1(a.x + ux * t - uy * w)},${f1(a.y + uy * t + ux * w)}`; }
+    return d;
+  };
   const exitPt = (from, to, quad) => { // from(사각형 안) → to 선이 사각형을 빠져나가는 점
     let best = 0;
     for (let i = 0; i < 4; i++) { const a = quad[i], b = quad[(i + 1) % 4], dx = to.x - from.x, dy = to.y - from.y, ex = b.x - a.x, ey = b.y - a.y, den = dx * ey - dy * ex; if (Math.abs(den) < 1e-6) continue; const t = ((a.x - from.x) * ey - (a.y - from.y) * ex) / den, u = ((a.x - from.x) * dy - (a.y - from.y) * dx) / den; if (t > 0 && t <= 1 && u >= 0 && u <= 1) best = best ? Math.min(best, t) : t; }
@@ -1129,6 +1137,7 @@ function viewer(stage, o = {}) {
     for (let i = 1; i < n; i++) { L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); acc.push(L); }
     const W3 = raw.map((r, i) => { const t = L ? acc[i] / L : i / (n - 1); return [r[0] + c0[0] + (c1[0] - c0[0]) * t, r[1] + c0[1] + (c1[1] - c0[1]) * t, r[2] + c0[2] + (c1[2] - c0[2]) * t]; });
     const S2 = W3.map(scr); if (S2.some(v => !v)) return '';
+    pipeScr.set(d.e, S2); // 전류의 흐름이 이 화면 점을 따라간다
     if (d.pk) pipeHits.push({ k: d.pk, pts: S2, r: Math.max(7, 4 * pxPer(W3[Math.floor(n / 2)])) });
     const k = pxPer(W3[Math.floor(n / 2)]), p = d.p || {}, path = catmull(S2), st = (c, w) => `<path d="${path}" fill="none" stroke="${c}" stroke-width="${f1(w * k)}" stroke-linecap="round" stroke-linejoin="round"/>`;
     if (p.glass) return st(INK, 6.5) + st('#eaf5fc', 3.6);
@@ -1137,8 +1146,31 @@ function viewer(stage, o = {}) {
     return st('#c4834a', 7.5) + st('#eab37c', 3.8);
   }
   function overlay() {
-    pipeHits = []; const pp = pipes.map(pipe).join(''); // 관·전선의 화면 점 (누른 곳 찾기)
+    pipeHits = []; pipeScr.clear(); const pp = pipes.map(pipe).join(''); // 관·전선의 화면 점 (누른 곳 찾기·전류의 흐름)
     let defs = '', o = selRect() + pp;
+    // 보이지 않는 것 (v1.31): 열의 이동은 두 끝(그릇 안의 흐름은 점마다)을 입체 자리에 이어 물결 화살표로, 전류의 흐름은 그 전선 위에 움직이는 점으로
+    const flowA = (len, dur = 1) => anim3 ? `<animate attributeName="stroke-dashoffset" from="${f1(len)}" to="0" dur="${dur}s" repeatCount="indefinite"/>` : '';
+    heats.forEach((d, i) => {
+      const g = d.g, ref = d.fromE ?? d.inE ?? d.toE, k = pxPer(worldAt(g.x, g.y, ref)), id = `lk3h${i}`;
+      defs += mkMarker(id, HEAT3) + mkMarker(id + 'c', COOL3);
+      const line = (dd, hot) => `<path d="${dd}" fill="none" stroke="#fff" stroke-width="${f1(5.6 * k)}" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/><path d="${dd}" fill="none" stroke="${hot ? HEAT3 : COOL3}" stroke-width="${f1(2.6 * k)}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${f1(11 * k)} ${f1(4 * k)}" marker-end="url(#${hot ? id : id + 'c'})">${flowA(30 * k)}</path>`;
+      if (g.loops3) g.loops3.forEach(L => { const P = []; for (let q = 0; q + 1 < L.f.length; q += 2) P.push(scr(worldAt(L.f[q], L.f[q + 1], d.inE))); if (P.length > 1 && P.every(Boolean)) o += line(catmull(P), L.hot); });
+      else if (g.rays) g.rays.forEach(([ax, ay, bx, by]) => { const a = scr(worldAt(ax, ay, d.fromE)), b = scr(worldAt(bx, by, d.fromE)); if (a && b) o += line(wave2(a, b, 0, 2.6 * k, 10 * k), true); });
+      else if (g.a && g.b) { const a = scr(worldAt(g.a.x, g.a.y, d.fromE)), b = scr(worldAt(g.b.x, g.b.y, d.toE)); if (a && b) [-9, 0, 9].forEach(off => { o += line(wave2(a, b, off * k, 3 * k, 13 * k), true); }); }
+    });
+    currents.forEach(d => {
+      const g = d.g, p = d.p || {}, el = !!p.electrons, back = !!p.reverse !== el, c = K.col(p.color) || (el ? '#3f73d6' : '#f2b21b'), dk = K.shade ? K.shade(c, -.35) : c;
+      (d.alongE || []).forEach((ae, j) => {
+        let P = pipeScr.get(ae);
+        if (P) P = back ? P.slice().reverse() : P;
+        else { const q = g.paths && g.paths[j]; if (!q) return; P = q.map(([x, y]) => scr(worldAt(x, y, ae))); if (P.some(v => !v)) return; } // 회로 카드: 2D 둘레(방향은 이미 맞춤)를 카드 위로
+        const k = pxPer(worldAt(g.x, g.y, ae)), gap = (el ? 11 : 15) * k, dd = P.length > 2 && !(P.length === 5 && Math.hypot(P[0].x - P[4].x, P[0].y - P[4].y) < 1) ? catmull(P) : 'M' + P.map(v => `${f1(v.x)},${f1(v.y)}`).join(' L');
+        const dots = (w, cc) => `<path d="${dd}" fill="none" stroke="${cc}" stroke-width="${f1(w * k)}" stroke-linecap="round" stroke-dasharray="0.1 ${f1(gap)}">${flowA(2 * gap + .2, el ? .8 : 1.1)}</path>`;
+        o += dots(el ? 6 : 7, dk) + dots(el ? 4.2 : 4.8, c);
+        let L = 0; for (let q = 1; q < P.length; q++) L += Math.hypot(P[q].x - P[q - 1].x, P[q].y - P[q - 1].y);
+        for (let q = 1, acc = 0; q < P.length; q++) { const l = Math.hypot(P[q].x - P[q - 1].x, P[q].y - P[q - 1].y); if (acc + l >= L / 2) { const t = (L / 2 - acc) / (l || 1), x = P[q - 1].x + (P[q].x - P[q - 1].x) * t, y = P[q - 1].y + (P[q].y - P[q - 1].y) * t, an = Math.atan2(P[q].y - P[q - 1].y, P[q].x - P[q - 1].x) * 180 / Math.PI; o += `<path d="M${f1(-6 * k)},${f1(-6 * k)} L${f1(5 * k)},0 L${f1(-6 * k)},${f1(6 * k)}" transform="translate(${f1(x)},${f1(y)}) rotate(${f1(an)})" fill="none" stroke="${dk}" stroke-width="${f1(2.6 * k)}" stroke-linecap="round" stroke-linejoin="round"/>`; break; } acc += l; }
+      });
+    });
     arrows.forEach((d, i) => {
       const g = d.g, p = d.p || {}, wa = worldAt(g.a.x, g.a.y, d.fromE), wb = worldAt(g.b.x, g.b.y, d.toE), a = scr(wa), b = scr(wb); if (!a || !b) return;
       const k = pxPer(wa), c = K.col(p.color, '#b14de0') || '#b14de0', id = `lk3m${i}`, q = p.curve && g.ctrl ? scr(worldAt(g.ctrl.x, g.ctrl.y, null)) : null;

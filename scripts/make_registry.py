@@ -17,7 +17,7 @@ ENGINE = ROOT / "assets" / "labkit.js"
 OUT = ROOT / "references" / "parts.json"
 
 # 어느 부품에나 쓸 수 있는 속성 (배치·이름표·이어받기 관계)
-COMMON = ["t", "id", "x", "y", "s", "tilt", "label", "labelSide", "on", "in", "over", "into", "at", "dx", "dy", "stand", "reach", "z", "info"]  # info: 부품 눌러 알아보기의 원문 설명 (v1.27)
+COMMON = ["t", "id", "x", "y", "s", "tilt", "label", "labelSide", "on", "in", "over", "into", "at", "dx", "dy", "stand", "reach", "z", "info", "unseen"]  # info: 부품 눌러 알아보기의 원문 설명 (v1.27), unseen: 보이지 않는 것 (v1.31)
 # 그릇(SHAPES) 부품이 함께 쓰는 함수들
 CONTAINER_FUNCS = ["cplace", "cgeo", "fillOf", "liquid", "solids", "drawC", "veil", "volMarks", "volText", "bubbles"]
 # 엔진 코드에서 el.이름으로 읽지 않지만 쓰는 속성
@@ -40,7 +40,8 @@ VALUES = {
     "gasburner": {"flame": ["yellow", "blue"]},
     "mark": {"kind": ["ok", "no", "x"]},
     "note": {"icon": ["eye", "how", "tip", "time", "ok", "no", "warn", "idea", "result"]},
-    "view": {"show": ["plantcells", "animalcells", "solid", "liquid", "gas", "crystals", "bubbles"]},
+    "view": {"show": ["plantcells", "animalcells", "solid", "liquid", "gas", "dissolve", "crystals", "bubbles"], "speed": ["fast", "slow"]},
+    "heat": {"kind": ["conduct", "convect", "radiate"], "side": ["center", "left", "right"]},
     "dish": {"items": ["seeds", "colony", "beans", "cells"]},
     "screen": {"image": ["inverted", "upright"]},
     "lightbox": {"dir": ["left", "right"]},

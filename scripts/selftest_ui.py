@@ -24,7 +24,7 @@ DATA = {
          "sketch": {"id": "view", "shape": "box"},
          "scene": [{"t": "beaker", "id": "b", "x": 240, "fill": .4, "label": "가", "info": "가상 원문 설명"}],
          "reveal": {"text": "관찰을 마쳤어요.", "change": {"b": {"color": "blue"}}}},
-        {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4, "info": False}, {"t": "lamp", "x": 380}]},
+        {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4, "info": False}, {"t": "lamp", "id": "lp", "x": 380}, {"t": "heat", "kind": "radiate", "from": "lp"}]},
         {"id": "guess", "title": "고르는 예상", "scene": [{"t": "beaker", "id": "g", "x": 240, "fill": .4}],
          "predict": [{"text": "가상 물음 1?", "choices": ["가", "나"], "answer": "가", "why": "가상 까닭"},
                      {"text": "가상 물음 2?", "choices": ["다", "라", "마"], "answer": ["라"]}],
@@ -57,6 +57,10 @@ window.addEventListener('load', async () => {
   try {
     check('실제 CSS 화면 너비',window.innerWidth===__VIEW_WIDTH__);
     localStorage.removeItem('lk:selftest-interactions');
+    const pu=$('#app [data-us]'), ug=()=>$('#app [data-unseen]');
+    check('보이지 않는 것: 처음엔 숨김',!!pu && !!ug() && getComputedStyle(ug()).visibility==='hidden' && $('#app [data-us]')===$('#app [data-rvs="1"] [data-us]'));
+    pu.click();check('보이지 않는 것: 페이지에서 켜기',document.documentElement.classList.contains('lk-unseen') && await until(()=>getComputedStyle(ug()).visibility==='visible') && pu.getAttribute('aria-pressed')==='true' && $('#deck').hidden);
+    pu.click();check('보이지 않는 것: 페이지에서 끄기',!document.documentElement.classList.contains('lk-unseen') && pu.getAttribute('aria-pressed')==='false');
     $('[data-step="0"]').click();
     const first=count();
     const pk=()=>$('#deck .pk-card'), clickSvg=n=>n.dispatchEvent(new MouseEvent('click',{bubbles:true})), pkText=()=>pk().textContent.replace(/\s+/g,' ');
@@ -136,6 +140,10 @@ window.addEventListener('load', async () => {
     {const c2=$('#deck .v3-cv');const ok=await tap3('#1',c2);cutB().click();
     check('3D 단면 안쪽 이름표',ok && c2.dataset.cut==='#1' && await until(()=>document.querySelectorAll('#deck .v3-tag.sec').length===3) && /심지/.test($('#deck .v3-tags').textContent));
     cutB().click();check('단면 끄면 안쪽 이름표 없음',await until(()=>!document.querySelector('#deck .v3-tag.sec')));$('#deck [data-pkx]').click();}
+    {const usB=()=>$('#deck [data-us]'), heat3=()=>$('#deck .v3-lines [marker-end^="url(#lk3h"]');
+    check('보이지 않는 것 단추 (수업 모드)',!!usB() && usB().getAttribute('aria-pressed')==='false' && !heat3());
+    usB().click();check('보이지 않는 것 켜면 입체에도',document.documentElement.classList.contains('lk-unseen') && await until(()=>!!heat3(),150));
+    usB().click();check('보이지 않는 것 끄면 입체에서 빠짐',!document.documentElement.classList.contains('lk-unseen') && await until(()=>$('#deck .v3-cv') && !heat3(),150));}
     $('#deck [data-v3deck]').click();check('2D 복귀',!$('#deck .v3-cv')&&!$('#deck .scene-box').classList.contains('v3-on'));
     const nativeOpen=LabKit3D.open;LabKit3D.open=()=>{throw new Error('test WebGL unavailable');};
     $('#deck [data-v3deck]').click();await until(()=>$('#deck .v3-fallback'));

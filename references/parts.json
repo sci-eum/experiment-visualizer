@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.30.0",
+ "engine": "1.31.0",
  "common": [
   "t",
   "id",
@@ -20,7 +20,8 @@
   "stand",
   "reach",
   "z",
-  "info"
+  "info",
+  "unseen"
  ],
  "vol": [
   "beaker",
@@ -309,6 +310,12 @@
    "vol",
    "volText"
   ],
+  "current": [
+   "along",
+   "color",
+   "electrons",
+   "reverse"
+  ],
   "cylinder": [
    "adapter",
    "amount",
@@ -497,6 +504,13 @@
    "color"
   ],
   "goggles": [],
+  "heat": [
+   "from",
+   "kind",
+   "length",
+   "side",
+   "to"
+  ],
   "hose": [
    "bubbles",
    "clip",
@@ -1039,11 +1053,13 @@
   "view": [
    "bg",
    "color",
+   "color2",
    "from",
    "markup",
    "nucleus",
    "r",
    "show",
+   "speed",
    "text"
   ],
   "voltmeter": [
@@ -1324,6 +1340,18 @@
     "right"
    ]
   },
+  "heat": {
+   "kind": [
+    "conduct",
+    "convect",
+    "radiate"
+   ],
+   "side": [
+    "center",
+    "left",
+    "right"
+   ]
+  },
   "hose": {
    "clip": [
     "from",
@@ -1592,8 +1620,13 @@
     "solid",
     "liquid",
     "gas",
+    "dissolve",
     "crystals",
     "bubbles"
+   ],
+   "speed": [
+    "fast",
+    "slow"
    ]
   },
   "volumetric": {

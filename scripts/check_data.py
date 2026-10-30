@@ -24,7 +24,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 # 부품 목록: 그림 엔진과 같은 고정 배포판을 먼저, 막히면 같은 태그의 저장소 원본
-VERSION = "1.30.0"
+VERSION = "1.31.0"
 RAW = [f"https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@{VERSION}/references/parts.json",
        f"https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v{VERSION}/references/parts.json"]
 W, H = 480, 300
@@ -32,7 +32,7 @@ TOP = {"title", "subject", "unit", "duration", "group", "goal", "materials", "sa
        "source", "notes", "id", "_demo"}
 STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin", "sketch", "motion"}
 ORIGIN = {"where", "quote", "check", "unsure", "added"}
-ADDED = {"tip", "warn", "point", "predict", "answer", "observe", "reveal", "scene", "text", "time", "info"}
+ADDED = {"tip", "warn", "point", "predict", "answer", "observe", "reveal", "scene", "text", "time", "info", "unseen"}
 PREDICT = {"text", "choices", "answer", "why", "write"}  # 고르는 예상 (보기 2~6개, 정답, 까닭, 까닭 적는 칸)
 RESULTS = {"expect", "conclusion", "table", "tables", "questions", "sketches"}
 SKETCH = {"id", "title", "shape", "n", "labels", "write", "note", "range"}  # 그림 칸 (range: 스펙트럼 띠의 파장 범위)
@@ -43,8 +43,9 @@ MOVERS = {"ball", "cart", "block", "dropper", "pipette", "spatula", "spoon", "sp
           "glasspipette", "micropipette", "syringe", "magnet", "meter"}
 INHERIT = {"from", "remove", "change", "add"}
 REVEAL = {"text", "scene", "remove", "change", "add"}
-FRESH = {"note", "text", "arrow", "mark", "eye", "label", "view", "zoom", "pour"}  # 이어받지 않는 설명·동작 부품
-REFS = ["on", "in", "over", "into", "hold", "link", "to", "from"]
+FRESH = {"note", "text", "arrow", "mark", "eye", "label", "view", "zoom", "pour", "heat", "current"}  # 이어받지 않는 설명·동작 부품
+REFS = ["on", "in", "over", "into", "hold", "link", "to", "from", "along"]
+ALONG = {"wire", "hose", "tubing", "circuit"}  # 전류의 흐름(current)이 따라갈 수 있는 부품 (v1.31)
 RACKS = {"rack": "tube", "tuberack": "microtube"}  # tubes를 꽂는 부품과 t를 생략한 튜브의 종류
 PORTS = {"power", "geltank", "electrophoresis", "meter", "coil", "battery", "bulb", "switch", "ammeter", "voltmeter", "resistor", "motor", "led"}  # 'id:+'·'id:-' 단자가 있는 부품
 METER_PORTS = {"multi", "galvano", "ammeter", "voltmeter"}  # 단자가 있는 meter kind
@@ -274,6 +275,18 @@ def check_part(el, where, reg, rep):
                 rep.err(f"{where} ({name_of(el)})", f"'{t}'의 {k} '{v}'는 정해진 값이 아니에요 ({', '.join(opts)}){suggest(v, opts)}{more}")
         if "info" in el and not (el["info"] is False or is_text(el["info"])):
             rep.err(f"{where} ({name_of(el)})", "info(부품 설명)는 글자 또는 글자 배열이나 false(기구 기본 설명 끄기)여야 해요")
+        if "unseen" in el and not isinstance(el["unseen"], bool):  # 보이지 않는 것 (v1.31)
+            rep.err(f"{where} ({name_of(el)})", "unseen(보이지 않는 것)은 true 또는 false여야 해요")
+        if real == "heat":
+            k = el.get("kind", "conduct")
+            if k == "convect" and not el.get("in"):
+                rep.err(f"{where} ({name_of(el)})", "heat kind 'convect'(그릇 안의 흐름)에는 in(그릇 id)이 있어야 해요")
+            elif k == "radiate" and not el.get("from"):
+                rep.err(f"{where} ({name_of(el)})", "heat kind 'radiate'(퍼지는 열)에는 from(열을 내는 부품 id 또는 [x, y])이 있어야 해요")
+            elif k == "conduct" and not (el.get("from") and el.get("to")):
+                rep.err(f"{where} ({name_of(el)})", "heat(열의 이동)에는 from과 to가 있어야 해요 (그릇 안의 흐름은 kind 'convect'와 in)")
+        if real == "current" and not el.get("along"):
+            rep.err(f"{where} ({name_of(el)})", "current(전류의 흐름)에는 along(전선·관·회로의 id 또는 목록)이 있어야 해요")
         if real == "svg" and el.get("y") is None and not where.endswith(".icon") and not any(el.get(k) for k in ("on", "in", "over")):  # 준비물 아이콘은 위치와 상관없다
             rep.warn(f"{where} ({name_of(el)})", "svg에 y가 없어요. 실험대 위에 세우려면 y: 268 (markup은 0,0에서 위쪽(음수 y)으로 그린다)")
         if el.get("vol") is not None and real not in reg["vol"] and real in types and "vol" in types[real]:
@@ -469,6 +482,12 @@ def check_refs(items, ids, where, rep):
     for el in items:
         if not isinstance(el, dict):
             continue
+        if el.get("t") == "current":  # 전류의 흐름은 전선·관·회로를 따라간다 (v1.31)
+            for r in (el.get("along") if isinstance(el.get("along"), list) else [el.get("along")]):
+                if isinstance(r, str) and r in ids and ids[r].get("t") not in ALONG:
+                    rep.err(f"{where} ({name_of(el)})", f"along: '{r}' → {name_of(ids[r])}은(는) 전선·관·회로가 아니에요 (wire·hose·tubing·circuit)")
+                elif isinstance(r, str) and r in ids and ids[r].get("t") != "circuit" and not (ids[r].get("from") or ids[r].get("to") or ids[r].get("points")):
+                    rep.err(f"{where} ({name_of(el)})", f"along: '{r}' → 이어진 전선이 아니에요 (from·to·points가 있는 전선)")
         for k in REFS:
             if k == "from" and el.get("t") == "pour":
                 continue

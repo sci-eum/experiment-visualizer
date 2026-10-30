@@ -605,3 +605,43 @@ tweezers의 piece는 집은 조각, 그릇 속 조각은 solid:'potato'·'liver'
  {"t": "piece", "kind": "liver", "on": "d", "x": 345},
  {"t": "piece", "kind": "potato", "on": "d", "x": 380}]
 ```
+
+### 54. 가열판 위 비커에서 물이 도는 모습 (보이지 않는 것)
+
+heat는 처음에 숨어 있다가 '보이지 않는 것'을 누르면 보인다. from→to는 가열판에서 비커로 가는 열, kind:'convect'와 in은 그릇 안에서 데워진 물이 오르고 식은 물이 내려오는 흐름.
+
+```json
+[{"t": "hotplate", "id": "hp", "x": 200},
+ {"t": "beaker", "id": "b", "on": "hp", "s": 1.3, "fill": 0.7, "color": "clear"},
+ {"t": "heat", "from": "hp", "to": "b"},
+ {"t": "heat", "kind": "convect", "in": "b"},
+ {"t": "note", "x": 385, "y": 80, "text": "물이 어떻게 움직이는지 관찰해요", "icon": "eye", "w": 150}]
+```
+
+### 55. 회로에 흐르는 전류 (보이지 않는 것)
+
+current의 along에 회로(circuit) id를 주면 둘레를 건전지 (+)극에서 나오는 방향으로 점이 움직인다. 전선이면 그 전선의 from → to 방향.
+
+```json
+[{"t": "circuit", "id": "c", "x": 220, "y": 140, "w": 280, "h": 160, "parts": [{"p": "battery", "label": "건전지"}, {"p": "bulb", "label": "전구"}, {"p": "switch", "label": "스위치"}]},
+ {"t": "current", "along": "c", "label": "전류"}]
+```
+
+### 56. 물에 녹는 가루를 입자로 보기 (unseen 확대 원)
+
+view의 show:'dissolve'는 물 입자 사이에 녹은 입자(color2)가 섞인 모습. unseen:true면 '보이지 않는 것'을 켤 때만 보인다.
+
+```json
+[{"t": "beaker", "id": "b", "x": 160, "s": 1.2, "fill": 0.6, "color": "clear", "solid": "powder"},
+ {"t": "rod", "in": "b", "stir": true},
+ {"t": "view", "x": 360, "y": 110, "r": 56, "show": "dissolve", "color2": "pink", "from": "b", "unseen": true, "label": "입자 모형"}]
+```
+
+### 57. 초의 열이 사방으로 퍼지기 (radiate)
+
+heat kind:'radiate'는 from에서 사방으로(to를 주면 그쪽으로) 퍼지는 물결. length로 길이.
+
+```json
+[{"t": "candle", "id": "cd", "x": 240},
+ {"t": "heat", "kind": "radiate", "from": "cd", "length": 40}]
+```

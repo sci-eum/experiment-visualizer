@@ -8,14 +8,14 @@ description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·
 > **이 문서를 링크로 받았다면** 이 문서가 작업 지시서다. 처음부터 끝까지 읽고 따른다.
 > 저장소: https://github.com/sci-eum/experiment-visualizer
 
-이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.30.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
+이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.31.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
 
 | 문서 | 언제 연다 | 주소 |
 |---|---|---|
-| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.30.0/references/parts.md |
-| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.30.0/references/data.md |
-| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.30.0/references/scenes.md |
-| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.30.0/references/build.md |
+| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.31.0/references/parts.md |
+| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.31.0/references/data.md |
+| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.31.0/references/scenes.md |
+| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.31.0/references/build.md |
 
 ## 무엇을 만드나
 
@@ -88,6 +88,7 @@ description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·
 - **단계마다 원문 대응 기록 `origin`을 남긴다**: 원문 위치 `where`, 근거 문장 `quote`(원문 그대로), 판독 상태 `check`("ok" / "unsure"), 원문에 없이 더한 항목 `added`(예: 사용자가 준 `tip`). 교사가 "이 50 mL는 어디서 나왔지?"를 바로 확인할 수 있게 한다.
 - 원문에 있는 주의·팁(※, "주의한다")은 그 단계의 `warn`·`tip`으로 그대로 넣는다. **원문에 없는 팁·주의·강조·예상 물음은 지어 넣지 않는다.** 필요해 보이면 3장에서 **제안**으로만 보이고 사용자가 고른 것만 넣는다 (넣으면 `origin.added`에 적는다). 원문에 기구·물질 설명(사용법 상자 등)이 있으면 그 부품의 `info`로 넣는다 (수업 모드에서 부품을 누르면 보인다). 엔진의 기구 기본 설명이 원문 안내와 어긋나면 그 부품에 `"info": false`.
 - **결과를 미리 보여 주지 않는다.** 원문이 단계 안에서 결과를 알려 주지 않으면 과정 그림·표지에 결과(색이 변한 뒤 등)를 그리지 않고 "무슨 색으로 변하는지 관찰해요" 같은 `observe`로 둔다. 원문이 결과를 알려 주면 그 단계의 `reveal`(결과 보기)에 넣는다. 예상 결과·결론(`results.expect`·`results.conclusion`)도 '결과 보기'를 눌러야 보인다.
+- 열의 이동·전류의 흐름·입자 모형 같은 **보이지 않는 것**(`heat`·`current`·`unseen`)은 원문이 그 개념을 다룰 때만 넣고, 관찰해서 알아낼 답이면 `reveal`에 넣는다 (data.md '보이지 않는 것 보기'). 원문에 없으면 3장에서 제안만.
 - 원문에 "예상해 보자"·가설 물음이 있으면 그 단계의 `predict`(예상 칸)로 넣는다. 원문이 보기(①·②, '같다/다르다', ○×)를 주면 **고르는 예상** `{ text, choices, answer, why }`로 넣고 결과(`reveal`)가 나오는 단계에 둔다 (고르기 전에는 결과 보기가 잠기고, 맞히면 도장). **보기·정답·까닭은 원문(교사용 답 포함)이나 사용자가 준 것만** 쓰고, 정답을 모르면 `answer`를 뺀다. 보기가 없는 물음에 보기를 지어내지 않는다.
 - 준비물 목록에 없는데 과정에 나오는 기구(예: 전자 저울)는 준비물에 넣되 `qty`에 `"과정에 사용"`이라 쓰고 알린다.
 - 학생 이름·번호 같은 개인정보는 넣지 않는다.
@@ -172,7 +173,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 - 남은 기구: `spectroscope`(분광기) `discharge`(기체 방전관) `knife`(칼) `lighter`(점화기) `piece`(재료 조각) · 적외선 온도계는 `meter`의 `kind:'ir'`, 현미경 폰 거치대는 `microscope`의 `phone`
 - 작은 기구: `splint`(향 불씨) `swab`(면봉) `capillary`(모세관) `glasspipette`(눈금·홀 피펫) `filler` `agar`(위에서 본 배지) `tlc` `appliance`(항온기·전자레인지·전기 포트) (그릇의 넘치는 거품은 속성 foam)
 - 분자생물학: `micropipette` `microtube` `pcrtube` `tuberack` `spincolumn` `centrifuge` `thermocycler` `geltank` `uvlamp` `freezer` (전선 `wire`는 `from:'ps:+'`처럼 단자에 잇는다)
-- 표시: `arrow` `note` `label` `text` `mark` `eye` `view` `svg`
+- 표시: `arrow` `note` `label` `text` `mark` `eye` `view` `svg` · 보이지 않는 것: `heat`(열의 이동) `current`(전류의 흐름), 그 밖의 부품은 속성 unseen: true
 
 ## 5. 데이터 쓰기
 

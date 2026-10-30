@@ -484,7 +484,18 @@
     ] },
   { "title": "수업 기능: 움직이는 시연 (scene from · change · add)", "text": "이어받은 장면은 수업 모드에서 넘길 때 바뀌는 모습이 움직여요. 결과 보기의 change도 결과로 바뀌는 모습을 보여 줘요. ▶ 시연으로 다시 보고, motion:false면 끕니다.",
     "scene": { "from": "prev", "change": { "a": { "fill": 0.6 }, "ta": { "reading": "50 ℃" } },
-               "add": [ {"t":"pour","into":"a","color":"water"} ] } }
+               "add": [ {"t":"pour","into":"a","color":"water"} ] } },
+  { "title": "수업 기능: 보이지 않는 것 보기 (heat · current · view)", "text": "열의 이동(heat)·전류의 흐름(current)은 처음에 숨어 있다가 장면의 '보이지 않는 것' 단추를 누르면 나타나요. 입자 모형 확대 원(view)은 unseen:true를 주면 함께 숨어요.",
+    "scene": [
+      {"t":"tripod","id":"tr","x":80}, {"t":"lamp","id":"lp","x":80}, {"t":"beaker","id":"bk","on":"tr","fill":0.6},
+      {"t":"heat","from":"lp","to":"bk"}, {"t":"heat","kind":"convect","in":"bk"},
+      {"t":"view","x":190,"y":70,"r":34,"show":"liquid","speed":"fast","color":"skyblue","from":"bk","unseen":true,"label":"물 입자"},
+      {"t":"battery","id":"bt","x":300,"y":225}, {"t":"bulb","id":"lb","x":400,"y":120},
+      {"t":"wire","id":"w1","from":"bt:+","to":"lb:+","points":[[440,225]]}, {"t":"wire","id":"w2","from":"lb:-","to":"bt:-","points":[[260,120]]},
+      {"t":"current","along":["w1","w2"],"label":"전류"},
+      {"t":"text","x":90,"y":288,"text":"heat (conduct · convect)","size":11,"weight":700},
+      {"t":"text","x":350,"y":288,"text":"current · view","size":11,"weight":700}
+    ] }
   ],
   "results": {
     "sketches": [

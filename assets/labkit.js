@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit v1.30.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.31.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -202,16 +202,22 @@ button.mat{font:inherit;color:inherit;border:0;cursor:pointer;width:100%;display
 .scene-box.v3-on>.sc-main,.scene-box.v3-on>.sc-rv{visibility:hidden}
 .scene-box>.v3-inline{position:absolute;inset:0;margin:0;border-radius:inherit;box-shadow:none}
 .v3-on>.v3-btn{display:none}
+.us-btn{position:absolute;right:10px;bottom:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:0;border-radius:999px;background:rgba(255,255,255,.94);color:var(--primary-ink);font:inherit;font-size:13px;font-weight:800;line-height:1.2;box-shadow:var(--sh-sm);cursor:pointer;transition:all .2s ease}
+.us-btn svg{width:16px;height:16px}.us-btn:hover{background:var(--primary-50);transform:translateY(-1px);box-shadow:var(--sh-md)}.us-btn:focus-visible{outline:3px solid #e6b8fd;outline-offset:2px}.us-btn[aria-pressed=true]{background:var(--primary);color:#fff}
+.v3-btn~.us-btn{right:74px}.v3-on>.us-btn{right:10px}
+[data-unseen]{transition:opacity .35s ease,visibility .35s}
+html:not(.lk-unseen) [data-unseen]{opacity:0;visibility:hidden}
+@media(max-width:520px){.us-btn{padding:7px}.us-btn span{display:none}}
 .deck-top .btn[aria-pressed=true]{background:var(--primary);color:#fff}
 @media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;grid-auto-rows:max-content;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.dr-row{grid-template-columns:1fr}}
 @media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
-@media print{body{background:#fff}.dr-tools{display:none!important}.pk,.pk-card,.toolbar,.zoom-hint,.v3-btn,.play-btn,.v3,.deck,.demo,.rv-btn,.save-note,.tm,.rv-lock,.pc-fb,.pc-sum{display:none!important}.pc-o{opacity:1!important}[data-print=teacher] .pc-key{display:block!important;margin-top:8px;font-size:13.5px;font-weight:700;color:#0e4d33}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.pcw:empty::before{content:attr(data-ph);color:#7f8698}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl th,.tbl td{border:1px solid #cfd4dd}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
+@media print{body{background:#fff}.dr-tools{display:none!important}.pk,.pk-card,.toolbar,.zoom-hint,.v3-btn,.us-btn,.play-btn,.v3,.deck,.demo,.rv-btn,.save-note,.tm,.rv-lock,.pc-fb,.pc-sum{display:none!important}.pc-o{opacity:1!important}[data-print=teacher] .pc-key{display:block!important;margin-top:8px;font-size:13.5px;font-weight:700;color:#0e4d33}.write{border:0;border-radius:0;padding:4px 2px;min-height:60px;background:repeating-linear-gradient(transparent 0 27px,#cdd2dc 27px 28px)}.write:empty::before{content:''}.write.pcw:empty::before{content:attr(data-ph);color:#7f8698}.write.skw{min-height:30px;background:none;border-bottom:1.5px solid #cdd2dc}.write.skw:empty::before{content:attr(data-ph);color:#7f8698}.dr-group{break-inside:avoid}.tbl td.in{height:40px;background:#fff!important}.tbl th,.tbl td{border:1px solid #cfd4dd}.tbl-wrap{overflow:visible}.tbl{min-width:0}.tbl th{white-space:normal}.sec-head{break-after:avoid}.hero-card{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important}.res-grid{grid-template-columns:1fr}[data-print=student] .pname{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 12px;font-size:14px;font-weight:700;color:var(--ink-2)}.pname i{display:inline-block;width:72px;border-bottom:1.5px solid #8c95a8;margin-left:6px}[data-print=student] .sc-rv,[data-print=student] .rv-text,[data-print=student] .res-expect,[data-print=student] .res-conc,[data-print=student] .notes{display:none!important}[data-print=student] .sc-main{display:block!important}[data-print=student] .rv-on .scene-box::after{content:none}[data-print=teacher] .sc-main,[data-print=teacher] .sc-rv,[data-print=teacher] .rv-text{display:block!important}[data-print=teacher] .sc-rv{border-top:2px dashed #cbb3e3}[data-print=teacher] .rv-body{display:block!important}[data-print=teacher] .origin{display:block!important}[data-print=student] .origin,[data-print=student] .unsure-chip{display:none!important}.o-btn{display:none!important}[data-print=teacher] .rv-hide{display:none!important}[data-print=teacher] .rv-on .scene-box::after{content:none}.hero-card,.step,.card,.mat,.safe{box-shadow:none!important;break-inside:avoid}.step,.card,.mat{outline:1px solid #e7e9ef}.step{grid-template-columns:1.2fr 1fr}section{margin:22px 0}.hero{padding-top:8px}}`;
 if (!document.getElementById('lk-css')) { const st = document.createElement('style'); st.id = 'lk-css'; st.textContent = CSS; document.head.appendChild(st); }
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.30.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.31.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -580,11 +586,22 @@ function catmull(pts) {
 function marker(cx, color) { const id = uid('m'); cx.defs.push(`<marker id="${id}" viewBox="0 0 10 10" refX="6.5" refY="5" markerWidth="5.2" markerHeight="5.2" orient="auto-start-reverse"><path d="M0,0.6 L10,5 L0,9.4 Z" fill="${color}"/></marker>`); return id; }
 function pt(v, R) { if (Array.isArray(v)) return { x: +v[0], y: +v[1] }; if (typeof v === 'string') { const p = portOf(v, R); if (p) return p; const g = R(v); if (g) return g.anchor || { x: g.x, y: g.top ?? g.y }; } if (v && typeof v === 'object' && v.x != null) return v; return null; }
 function leafPath(c) { const st = shade(c, -.3); return `<path d="M0,-34 C22,-24 24,14 0,34 C-24,14 -22,-24 0,-34Z" fill="${c}" stroke="${st}" stroke-width="1.6"/><path d="M0,-30 L0,40 M0,-12 L12,-20 M0,-12 L-12,-20 M0,4 L13,-4 M0,4 L-13,-4 M0,18 L10,12 M0,18 L-10,12" stroke="${st}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`; }
-function particles(state, c, r, seed) {
-  const R = rng(seed), st = shade(c, -.3); let o = '';
-  if (state === 'solid') { for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) { const x = i * 14, y = j * 14; if (x * x + y * y < (r - 6) * (r - 6)) o += `<circle cx="${x}" cy="${y}" r="6" fill="${c}" stroke="${st}" stroke-width="1"/>`; } }
-  else if (state === 'gas') { const cells = [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1], [-1.6, 0], [1.6, 0], [0, -1.7], [0, 1.7]]; for (let i = 0; i < cells.length; i++) { const sp = (r - 14) * 0.55, x = r2(cells[i][0] * sp + (R() - .5) * 10), y = r2(cells[i][1] * sp + (R() - .5) * 10), b = R() * 6.28; o += `<path d="M${x},${y} l${r2(-Math.cos(b) * 12)},${r2(-Math.sin(b) * 12)}" stroke="${st}" stroke-width="1.4" stroke-dasharray="2 3" opacity=".7"/><circle cx="${x}" cy="${y}" r="5.5" fill="${c}" stroke="${st}" stroke-width="1"/>`; } }
-  else { for (let i = 0; i < 26; i++) { const a = R() * 6.28, d = Math.sqrt(R()) * (r - 9), x = r2(Math.cos(a) * d), y = r2(Math.sin(a) * d + 6); o += `<circle cx="${x}" cy="${y}" r="5.8" fill="${c}" stroke="${st}" stroke-width="1"/>`; } }
+// 입자 모형 (확대 원). 움직임이 켜져 있으면 고체는 제자리에서 떨고, 액체는 조금씩 옮겨 가고, 기체는 꼬리 방향으로 날아다닌다 (v1.31).
+// speed: 'fast'(뜨거울 때)·'slow'(차가울 때). dissolve: 물 입자 사이에 녹은 입자(c2)가 섞여 있다
+function particles(state, c, r, seed, o2 = {}) {
+  const R = rng(seed), st = shade(c, -.3), k = o2.speed === 'fast' ? .55 : o2.speed === 'slow' ? 1.8 : 1; let o = '';
+  const mv = (x, y, body, amp, dur, dir) => { // 입자 하나: 움직임이 꺼져 있으면 그대로
+    if (!ANIM) return `<g transform="translate(${x},${y})">${body}</g>`;
+    const a = dir ?? R() * 6.28, dx = r2(Math.cos(a) * amp), dy = r2(Math.sin(a) * amp), d = r2(dur * k * (.8 + R() * .4)), b = r2(-R() * d);
+    return `<g transform="translate(${x},${y})"><g>${body}<animateTransform attributeName="transform" type="translate" values="0,0;${dx},${dy};0,0;${-dy},${dx};0,0" dur="${d}s" begin="${b}s" repeatCount="indefinite"/></g></g>`;
+  };
+  const dot = (rr, fc, sc) => `<circle r="${rr}" fill="${fc}" stroke="${sc}" stroke-width="1"/>`;
+  if (state === 'solid') { for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) { const x = i * 14, y = j * 14; if (x * x + y * y < (r - 6) * (r - 6)) o += mv(x, y, dot(6, c, st), 1.3, .35); } }
+  else if (state === 'gas') { const cells = [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1], [-1.6, 0], [1.6, 0], [0, -1.7], [0, 1.7]]; for (let i = 0; i < cells.length; i++) { const sp = (r - 14) * 0.55, x = r2(cells[i][0] * sp + (R() - .5) * 10), y = r2(cells[i][1] * sp + (R() - .5) * 10), b = R() * 6.28; o += mv(x, y, `<path d="M0,0 l${r2(-Math.cos(b) * 12)},${r2(-Math.sin(b) * 12)}" stroke="${st}" stroke-width="1.4" stroke-dasharray="2 3" opacity=".7"/>${dot(5.5, c, st)}`, 9, 1.1, b); } }
+  else {
+    const c2 = state === 'dissolve' ? col(o2.c2, '#e0607e') : null, st2 = c2 ? shade(c2, -.3) : null;
+    for (let i = 0; i < 26; i++) { const a = R() * 6.28, d = Math.sqrt(R()) * (r - 9), x = r2(Math.cos(a) * d), y = r2(Math.sin(a) * d + 6), sol = c2 && i % 4 === 1; o += mv(x, y, sol ? dot(4.6, c2, st2) : dot(5.8, c, st), 4, 1.6); }
+  }
   return o;
 }
 
@@ -909,7 +926,11 @@ T.compass = {
   draw(el, g) { const a = el.angle ?? 0; return `<g transform="translate(${r2(g.x)},${r2(g.y)}) scale(${g.s})"><circle r="24" fill="#fff" stroke="${DARK}" stroke-width="2.6"/><text y="-13" font-size="8" font-weight="800" text-anchor="middle" fill="${INK}">N</text><g transform="rotate(${a})"><path d="M0,-18 L4.5,0 L-4.5,0 Z" fill="#e5484d"/><path d="M0,18 L4.5,0 L-4.5,0 Z" fill="#cdd2db"/></g><circle r="2.4" fill="${DARK}"/></g>`; }
 };
 T.circuit = {
-  geo(el) { const s = el.s ?? 1, x = el.x ?? 240, y = el.y ?? 135, w = el.w ?? 260, h = el.h ?? 150; return { x, y, s, w, h, top: y - h / 2, anchor: { x: x + w / 2, y } }; },
+  geo(el) {
+    const s = el.s ?? 1, x = el.x ?? 240, y = el.y ?? 135, w = el.w ?? 260, h = el.h ?? 150, order = ['bottom', 'top', 'right', 'left'];
+    let mi = 0, bat = null; (el.parts || ['battery', 'switch', 'bulb']).forEach(p => { const q = typeof p === 'string' ? { p } : p || {}; if (q.across != null) return; const e = q.edge || order[mi % 4]; mi++; if (q.p === 'battery' && !bat) bat = e; });
+    return { x, y, s, w, h, top: y - h / 2, anchor: { x: x + w / 2, y }, cur: bat === 'bottom' || bat === 'left' ? 'ccw' : 'cw' }; // cur: 건전지의 (+)극(오른쪽, 세로 변은 아래)에서 나오는 전류의 도는 방향 (화면에서)
+  },
   draw(el, g, cx) {
     const x0 = g.x - g.w / 2, y0 = g.y - g.h / 2, x1 = g.x + g.w / 2, y1 = g.y + g.h / 2, closed = el.closed !== false;
     const parts = (el.parts || ['battery', 'switch', 'bulb']).map(p => typeof p === 'string' ? { p } : { ...p });
@@ -1256,7 +1277,7 @@ T.view = {
     switch (el.show) {
       case 'plantcells': { const st = shade(c, -.45); for (let j = -4; j <= 4; j++) for (let i = -4; i <= 4; i++) { const x = i * 28 + (j % 2 ? 14 : 0), y = j * 17; inner += `<rect x="${x - 13}" y="${y - 7.5}" width="26" height="15" rx="2" fill="${c}" stroke="${st}" stroke-width="1.4"/><circle cx="${x + (R() * 8 - 4)}" cy="${y}" r="2.6" fill="${col(el.nucleus, el.color ? shade(c, -.5) : '#9a7fc4')}"/>`; } inner = `<g transform="rotate(-8)">${inner}</g>`; break; }
       case 'animalcells': { const st = shade(c, -.4); for (let i = 0; i < 9; i++) { const a = R() * 6.28, d = Math.sqrt(R()) * (r - 18), x = Math.cos(a) * d, y = Math.sin(a) * d, rr = 11 + R() * 5; inner += `<ellipse cx="${r2(x)}" cy="${r2(y)}" rx="${r2(rr)}" ry="${r2(rr * .82)}" fill="${c}" stroke="${st}" stroke-width="1.3" transform="rotate(${r2(R() * 90)} ${r2(x)} ${r2(y)})"/><circle cx="${r2(x + 2)}" cy="${r2(y)}" r="3.2" fill="${col(el.nucleus, '#a85c86')}"/>`; } break; }
-      case 'solid': case 'liquid': case 'gas': inner = particles(el.show, c, r, g.x + g.y); break;
+      case 'solid': case 'liquid': case 'gas': case 'dissolve': inner = particles(el.show, el.show === 'dissolve' && !el.color ? '#8fc3ea' : c, r, g.x + g.y, { speed: el.speed, c2: el.color2 }); break;
       case 'crystals': { for (let i = 0; i < 9; i++) { const x = r2(-r * .6 + R() * r * 1.2), y = r2(-r * .6 + R() * r * 1.2), z = r2(9 + R() * 9); inner += `<rect x="${x}" y="${y}" width="${z}" height="${z}" fill="${col(el.color, '#f6f6f2')}" stroke="${INK2}" stroke-width="1.2" transform="rotate(${r2(R() * 50)} ${x} ${y})"/>`; } break; }
       case 'bubbles': { for (let i = 0; i < 12; i++) inner += `<circle cx="${r2(-r * .7 + R() * r * 1.4)}" cy="${r2(-r * .7 + R() * r * 1.4)}" r="${r2(3 + R() * 6)}" fill="#fff" fill-opacity=".7" stroke="#7aaed0" stroke-width="1.2"/>`; break; }
       default: inner = safeMarkup(el.markup) || (el.text ? `<text y="5" font-size="13" font-weight="700" text-anchor="middle" fill="#2b3040">${esc(el.text)}</text>` : '');
@@ -1271,6 +1292,89 @@ T.view = {
   }
 };
 T.zoom = T.view;
+
+/* ---------- 보이지 않는 것 (v1.31): 열의 이동·전류의 흐름. 처음에는 숨겨 두었다가 '보이지 않는 것' 단추로 보인다 (unseen) ---------- */
+const boxOf = g => g.box ? { x0: g.box.x, x1: g.box.x + g.box.w, y0: g.box.y, y1: g.box.y + g.box.h } : { x0: g.x - (g.w || 40) / 2, x1: g.x + (g.w || 40) / 2, y0: g.top ?? g.y - (g.h || 40), y1: g.top != null && g.h != null && g.top + g.h > g.y ? g.top + g.h : g.y };
+const segBox = (a, b, B) => { // a→b 선이 상자 B에 들어가는·나오는 비율 [t0, t1]
+  let t0 = -Infinity, t1 = Infinity; const d = [b.x - a.x, b.y - a.y], o = [a.x, a.y], lo = [B.x0, B.y0], hi = [B.x1, B.y1];
+  for (let q = 0; q < 2; q++) { if (Math.abs(d[q]) < 1e-9) { if (o[q] < lo[q] || o[q] > hi[q]) return null; continue; } let u = (lo[q] - o[q]) / d[q], v = (hi[q] - o[q]) / d[q]; if (u > v) [u, v] = [v, u]; t0 = Math.max(t0, u); t1 = Math.min(t1, v); }
+  return t0 <= t1 ? [t0, t1] : null;
+};
+// 물결 선 (a → b, 옆으로 off만큼). 끝에서는 곧게 펴서 화살촉이 방향을 가리키게
+const wavePath = (a, b, off, amp = 3, lam = 13) => {
+  const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, n = Math.max(2, Math.ceil(L / 3)); let d = '';
+  for (let i = 0; i <= n; i++) { const t = L * i / n, w = off + amp * Math.sin(t / lam * 6.283) * Math.min(1, (L - t) / 9); d += `${i ? ' L' : 'M'}${r2(a.x + ux * t - uy * w)},${r2(a.y + uy * t + ux * w)}`; }
+  return d;
+};
+const HEAT = '#f0662f', COOL = '#4b86e0';
+// 열의 이동. kind: 'conduct'(기본, from → to로 물결 화살표 세 줄), 'convect'(in 그릇 안에서 데워진 쪽이 오르고 식은 쪽이 내려오는 흐름, side: 'center'·'left'·'right' = 데우는 쪽), 'radiate'(from에서 사방 또는 to 쪽으로 퍼지는 물결)
+T.heat = {
+  selfLabel: true,
+  geo(el, R) {
+    const s = el.s ?? 1, kind = el.kind || 'conduct', ga = typeof el.from === 'string' ? R(el.from) : null, gb = typeof el.to === 'string' ? R(el.to) : null;
+    const A = ga ? boxOf(ga) : null, Bx = gb ? boxOf(gb) : null, mid = B => ({ x: (B.x0 + B.x1) / 2, y: (B.y0 + B.y1) / 2 });
+    const a = Array.isArray(el.from) ? { x: +el.from[0], y: +el.from[1] } : A ? mid(A) : null, b = Array.isArray(el.to) ? { x: +el.to[0], y: +el.to[1] } : Bx ? mid(Bx) : null;
+    if (kind === 'convect') {
+      const t = typeof el.in === 'string' ? R(el.in) : null; if (!t) return { x: el.x ?? 240, y: el.y ?? 150, s, loops: [] };
+      const X0 = t.xmin != null ? t.x + t.s * t.xmin + 6 * s : t.x - (t.w || 60) * .36, X1 = t.xmax != null ? t.x + t.s * t.xmax - 6 * s : t.x + (t.w || 60) * .36, YB = (t.bottomY ?? t.y) - 7 * s, YT = (t.fill > 0 ? t.surfaceY : t.top + (t.h || 60) * .2) + 8 * s, C = (X0 + X1) / 2;
+      const side = el.side || 'center', loop = (up, dn) => { const rx = Math.min(10, Math.abs(dn - up) * .3), d = dn > up ? 1 : -1; return [{ hot: true, pts: [[up, YB + 2], [up, YT + rx], [up + d * rx, YT], [dn - d * rx, YT]] }, { hot: false, pts: [[dn, YT + 2], [dn, YB - rx], [dn - d * rx, YB], [up + d * rx, YB]] }]; };
+      const loops = side === 'left' ? loop(X0 + 4, X1 - 4) : side === 'right' ? loop(X1 - 4, X0 + 4) : [...loop(C - 6 * s, X0 + 4), ...loop(C + 6 * s, X1 - 4)];
+      return { x: C, y: (YB + YT) / 2, s, loops, box: { x: X0, y: YT, w: X1 - X0, h: YB - YT } };
+    }
+    if (kind === 'radiate') {
+      const c = a || { x: el.x ?? 240, y: el.y ?? 150 }, r0 = A ? Math.max(A.x1 - A.x0, A.y1 - A.y0) / 2 + 6 : 10, len = (el.length ?? 44) * s;
+      const dirs = b ? [-.38, 0, .38].map(q => Math.atan2(b.y - c.y, b.x - c.x) + q) : [0, 1, 2, 3, 4, 5, 6, 7].map(i => i * Math.PI / 4 - Math.PI / 2);
+      return { x: c.x, y: c.y, s, rays: dirs.map(t => [c.x + Math.cos(t) * r0, c.y + Math.sin(t) * r0, c.x + Math.cos(t) * (r0 + len), c.y + Math.sin(t) * (r0 + len)]) };
+    }
+    if (!a || !b) return { x: el.x ?? 240, y: el.y ?? 150, s };
+    const L = Math.hypot(b.x - a.x, b.y - a.y) || 1; let t0 = 0, t1 = 1;
+    if (A) { const h = segBox(a, b, A); if (h) t0 = Math.max(0, h[1]) + 4 / L; }
+    if (Bx) { const h = segBox(a, b, Bx); if (h) t1 = Math.min(1, h[0]) - 2 / L; }
+    if ((t1 - t0) * L < 22) t1 = Math.min(1, t0 + 24 / L); // 틈이 좁으면 받는 쪽 바닥까지 조금 더 (불꽃 → 그릇 바닥)
+    const at = t => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }), p = at(t0), q = at(t1);
+    return { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2, s, a: p, b: q, anchor: { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 } };
+  },
+  draw(el, g, cx) {
+    const s = g.s, flow = (len = 30) => A(`<animate attributeName="stroke-dashoffset" from="${len}" to="0" dur="1s" repeatCount="indefinite"/>`), mk = c => marker(cx, c);
+    const line = (d, c) => `<path d="${d}" fill="none" stroke="#fff" stroke-width="${r2(5.6 * s)}" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${r2(2.6 * s)}" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="11 4" marker-end="url(#${mk(c)})">${flow()}</path>`;
+    let o = '';
+    if (g.loops) g.loops.forEach(L => { o += line(catmull(L.pts), L.hot ? HEAT : COOL); });
+    else if (g.rays) g.rays.forEach(([ax, ay, bx, by]) => { o += line(wavePath({ x: ax, y: ay }, { x: bx, y: by }, 0, 2.6 * s, 10 * s), HEAT); });
+    else if (g.a && g.b) [-9, 0, 9].forEach(off => { o += line(wavePath(g.a, g.b, off * s, 3 * s, 13 * s), HEAT); });
+    if (el.label) { const L = g.a && g.b ? g.b : { x: g.x, y: g.y }; cx.labels.push({ fixed: true, x: L.x + 46, y: L.y - 4, text: el.label, tone: 'hot' }); }
+    if (cx.u3) { if (g.loops) g.loops3 = g.loops.map(L => ({ hot: L.hot, f: L.pts.flat() })); return ''; } // 입체 보기: labkit3d.js가 두 끝(또는 그릇 안의 흐름)을 입체 자리에 이어 긋는다
+    return o;
+  }
+};
+// 전류의 흐름: along(전선·관·회로의 id, 또는 목록)을 따라 움직이는 점. 전선은 그린 순서(from → to) 방향, reverse면 거꾸로.
+// electrons: true면 전자(파란 점, 전류와 반대 방향). 움직임이 꺼져 있어도 가운데 화살촉으로 방향을 보인다
+T.current = {
+  selfLabel: true,
+  geo(el, R) {
+    const paths = [];
+    [].concat(el.along ?? []).forEach(id => {
+      const t = typeof id === 'string' ? R(id.replace(/:[+\-−]$/, '')) : null; if (!t) return;
+      if (t.pts && t.pts.length > 1) paths.push(t.pts.map(p => [p[0], p[1]]));
+      else if (t.w && t.h) { const x0 = t.x - t.w / 2, x1 = t.x + t.w / 2, y0 = (t.top ?? t.y - t.h / 2), y1 = y0 + t.h, cw = [[x0, y1], [x0, y0], [x1, y0], [x1, y1], [x0, y1]]; paths.push(t.cur === 'ccw' ? cw.reverse() : cw); } // 회로: 둘레를 건전지의 (+)극에서 나오는 방향으로
+    });
+    const back = !!el.reverse !== !!el.electrons, P = back ? paths.map(q => q.slice().reverse()) : paths, f = P[0] || [[240, 150], [260, 150]];
+    return { x: f[0][0], y: f[0][1], s: 1, paths: P, anchor: { x: f[Math.floor(f.length / 2)][0], y: f[Math.floor(f.length / 2)][1] } };
+  },
+  draw(el, g, cx) {
+    const e = !!el.electrons, c = col(el.color, e ? '#3f73d6' : '#f2b21b'), dk = shade(c, -.35);
+    let o = '';
+    g.paths.forEach(P => {
+      const curve = P.length > 2 && !(P.length === 5 && P[0][0] === P[4][0] && P[0][1] === P[4][1]), d = curve ? catmull(P) : 'M' + P.map(p => `${r2(p[0])},${r2(p[1])}`).join(' L');
+      const dots = (w, cc) => `<path d="${d}" fill="none" stroke="${cc}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="0.1 ${e ? 11 : 15}">${A(`<animate attributeName="stroke-dashoffset" from="${e ? 22.2 : 30.2}" to="0" dur="${e ? .8 : 1.1}s" repeatCount="indefinite"/>`)}</path>`;
+      o += dots(e ? 6 : 7, dk) + dots(e ? 4.2 : 4.8, c);
+      let L = 0; const seg = []; for (let i = 1; i < P.length; i++) { const l = Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); seg.push(l); L += l; }
+      let acc = 0; for (let i = 1; i < P.length; i++) { if (acc + seg[i - 1] >= L / 2) { const t = (L / 2 - acc) / (seg[i - 1] || 1), x = P[i - 1][0] + (P[i][0] - P[i - 1][0]) * t, y = P[i - 1][1] + (P[i][1] - P[i - 1][1]) * t, an = Math.atan2(P[i][1] - P[i - 1][1], P[i][0] - P[i - 1][0]) * 180 / Math.PI; o += `<path d="M-6,-6 L5,0 L-6,6" transform="translate(${r2(x)},${r2(y)}) rotate(${r2(an)})" fill="none" stroke="${dk}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`; break; } acc += seg[i - 1]; }
+    });
+    if (el.label) cx.labels.push({ fixed: true, x: g.anchor.x, y: g.anchor.y - 18, text: el.label, tone: e ? '' : 'hot' });
+    if (cx.u3) return ''; // 입체 보기: labkit3d.js가 그 전선(또는 회로 카드) 위에 긋는다
+    return o;
+  }
+};
 /* ---------- 센서 실험 ---------- */
 // [머리 색, 몸통 글자, 탐침 길이]. co2·o2(기체: 짧고 굵은 탐침), light(조도: 아래 창), force(힘: 아래 고리) — v1.11
 const SENSOR = { temp: ['#f29b45', '온도'], pressure: ['#4a7fe0', '압력', 12], ph: ['#44b27e', 'pH'], co2: ['#6b7a90', 'CO₂', 42], o2: ['#3fa7c4', 'O₂', 42],
@@ -1998,7 +2102,8 @@ function layoutLabels(list, sh) {
   const tone = t => t === 'hot' ? { bg: '#ffedef', fg: '#c7323f' } : t === 'arrow' ? { bg: '#fbf4ff', fg: '#7d2ba6' } : { bg: '#fff', fg: '#2b3040' };
   // 이름표도 겹침 점검에 넣는다 (말풍선처럼 어떤 기구도 가리면 안 된다)
   const tagL = (b, text, svg, pk) => `<g data-lk="o" data-lk-c="0" data-lk-t="label" data-lk-n="${esc(`label("${String(text).slice(0, 10)}")`)}" data-lk-box="${[b.x, b.y, b.w, b.h].map(r2).join(',')}"${pk ? ` data-lk-k="${pk}"` : ''}>${svg}</g>`;
-  list.filter(l => l.fixed).forEach(l => { const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11; const b = { x: Math.max(3, Math.min(W - w - 3, l.x - w / 2)), y: Math.max(3, Math.min(H - h - 3, l.y - h / 2)), w, h }; boxes.push(b); const tn = tone(l.tone); out.push(tagL(b, l.text, pillSvg(b.x + w / 2, b.y + h / 2, l.text, { bg: tn.bg, fg: l.fg || tn.fg, sh }).svg, l.pk)); });
+  const US = (l, x) => l.us ? `<g data-unseen="1">${x}</g>` : x; // 보이지 않는 것의 이름표
+  list.filter(l => l.fixed).forEach(l => { const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11; const b = { x: Math.max(3, Math.min(W - w - 3, l.x - w / 2)), y: Math.max(3, Math.min(H - h - 3, l.y - h / 2)), w, h }; boxes.push(b); const tn = tone(l.tone); out.push(US(l, tagL(b, l.text, pillSvg(b.x + w / 2, b.y + h / 2, l.text, { bg: tn.bg, fg: l.fg || tn.fg, sh }).svg, l.pk))); });
   list.filter(l => !l.fixed && l.a && l.text).forEach(l => {
     const fs = 12.5, w = tw(l.text, fs) + 18, h = fs + 11, a = l.a;
     let side = l.side || (a.x > W - 150 ? 'left' : 'right'); let b;
@@ -2012,7 +2117,7 @@ function layoutLabels(list, sh) {
     }
     boxes.push(b);
     const ex = b.x + w / 2 < a.x ? b.x + w : b.x, ey = b.y + h / 2, tn = tone(l.tone);
-    out.push(`<path d="M${r2(a.x)},${r2(a.y)} L${r2(ex)},${r2(ey)}" stroke="#9aa2b4" stroke-width="1.3"/><circle cx="${r2(a.x)}" cy="${r2(a.y)}" r="2.8" fill="#fff" stroke="#7f889c" stroke-width="1.4"/>` + tagL(b, l.text, pillSvg(b.x + w / 2, ey, l.text, { bg: tn.bg, fg: tn.fg, sh }).svg, l.pk));
+    out.push(US(l, `<path d="M${r2(a.x)},${r2(a.y)} L${r2(ex)},${r2(ey)}" stroke="#9aa2b4" stroke-width="1.3"/><circle cx="${r2(a.x)}" cy="${r2(a.y)}" r="2.8" fill="#fff" stroke="#7f889c" stroke-width="1.4"/>` + tagL(b, l.text, pillSvg(b.x + w / 2, ey, l.text, { bg: tn.bg, fg: tn.fg, sh }).svg, l.pk)));
   });
   return out.join('');
 }
@@ -2126,10 +2231,12 @@ function nameOf(el) {
   if (t === 'hose' && el.glass) return '유리관';
   return k || KO[t] || null;
 }
-const PK_SKIP = new Set(['note', 'text', 'arrow', 'mark', 'eye', 'label', 'view', 'zoom', 'svg', 'ray', 'generic']); // 누를 수 없는 설명 부품
+const PK_SKIP = new Set(['note', 'text', 'arrow', 'mark', 'eye', 'label', 'view', 'zoom', 'svg', 'ray', 'generic', 'heat', 'current']); // 누를 수 없는 설명 부품
+// 보이지 않는 것 (v1.31): unseen: true인 부품, 그리고 열의 이동·전류의 흐름(unseen: false가 아니면). '보이지 않는 것' 단추를 켜야 보인다
+const UNSEEN_T = new Set(['heat', 'current']), isUnseen = el => !!el && typeof el === 'object' && (el.unseen === true || (UNSEEN_T.has(el.t) && el.unseen !== false));
 // 그림 속 부품의 자리 이름: 장면 목록에서 몇 번째인지 ('#2', 꽂힌 시험관·홈은 '#2/1'). 누른 부품을 장면 데이터에서 찾는다
 const pkOf = el => PK_SKIP.has(el.t) ? null : el._i != null ? '#' + el._i : el._parent && el._parent._i != null && (el._slot ?? el._wi) != null ? `#${el._parent._i}/${el._slot ?? el._wi}` : null;
-const OV_SKIP = new Set(['arrow', 'ray', 'hose', 'tubing', 'label', 'mark', 'eye', 'svg', 'stand', 'generic', 'wire']); // 원래 다른 부품 위를 지나가는 것
+const OV_SKIP = new Set(['arrow', 'ray', 'hose', 'tubing', 'label', 'mark', 'eye', 'svg', 'stand', 'generic', 'wire', 'heat', 'current']); // 원래 다른 부품 위를 지나가는 것
 const OV_TOP = new Set(['note', 'view', 'zoom', 'text']); // 설명 부품: 어떤 기구도 가리면 안 된다
 const HEATERS = new Set(['lamp', 'burner', 'candle', 'gasburner', 'bunsen']);
 // 올려놓기·넣기·위에서·붓기로 이어진 부품, 시험관대와 시험관, 삼발이 아래 가열 기구는 한 장치로 보고 서로 겹쳐도 된다
@@ -2266,7 +2373,7 @@ function layout(items) { const els = JSON.parse(JSON.stringify(Array.isArray(ite
 
 /* ---------- scene ---------- */
 function build(items, o = {}) {
-  const els = JSON.parse(JSON.stringify(Array.isArray(items) ? items : [])).map((e, i) => { if (e && typeof e === 'object') e._i = i; return e; }).filter(e => e && typeof e === 'object'); // _i: 장면 목록의 자리 (부품 눌러 알아보기)
+  const els = JSON.parse(JSON.stringify(Array.isArray(items) ? items : [])).map((e, i) => { if (e && typeof e === 'object') e._i = i; return e; }).filter(e => e && typeof e === 'object' && !(o.hideUnseen && isUnseen(e))); // _i: 장면 목록의 자리 (부품 눌러 알아보기). hideUnseen: 입체 보기에서 보이지 않는 것을 뺀다
   const pre = [];
   els.forEach(el => { if (el.stand === true && el.t !== 'stand') { el.id = el.id || uid('auto'); pre.push({ t: 'stand', hold: [el.id], reach: el.reach }); } });
   const all = [...pre, ...els], byId = {};
@@ -2308,6 +2415,7 @@ function build(items, o = {}) {
   const drawOne = el => { const Tp = T[el.t] || T._unknown, g = R(el) || { x: 240, y: BENCH, s: 1 }, f0 = cx.front.length, l0 = cx.labels.length; g._sh = cx.sh; let s = ''; try { s = (el._3d ? Tp.decal3 && Tp.decal3(el, g, cx) : Tp.draw(el, g, cx)) || ''; } catch (e) { console.warn('[LabKit] 그리기 오류', el, e); s = T._unknown.draw(el, g); } if (el.label && !Tp.selfLabel) cx.labels.push({ a: g.anchor || { x: g.x + (g.w || 50) / 2, y: g.top != null ? (g.top + g.y) / 2 : g.y }, left: g.w != null ? g.x - g.w / 2 : null, text: el.label, side: el.labelSide }); el._done = true;
     const pk = pkOf(el); // 부품 눌러 알아보기: 누른 곳에서 부품을 찾는 표시 (그 부품의 이름표에도)
     if (pk) { s = `<g data-lk-k="${pk}">${s}</g>`; for (let q = l0; q < cx.labels.length; q++) cx.labels[q].pk ??= pk; }
+    if (isUnseen(el)) { const us = x => `<g data-unseen="1">${x}</g>`; s = us(s); for (let k = f0; k < cx.front.length; k++) cx.front[k] = us(cx.front[k]); for (let q = l0; q < cx.labels.length; q++) cx.labels[q].us = true; } // 보이지 않는 것: '보이지 않는 것' 단추를 켜야 보인다
     if (el._fade != null || el._lift) { const fx = x => `<g${el._fade != null ? ` opacity="${r2(el._fade)}"` : ''}${el._lift ? ` transform="translate(0,${r2(el._lift)})"` : ''}>${x}</g>`; s = fx(s); for (let k = f0; k < cx.front.length; k++) cx.front[k] = fx(cx.front[k]); } // 움직이는 시연: 나타나고 사라지는 부품
     if (U3) { for (let k = f0; k < cx.front.length; k++) cx.front[k] = wrap3(el, cx.front[k]); for (let k = l0; k < cx.labels.length; k++) { cx.labels[k].u ??= U3(el); cx.labels[k].e ??= el._e3; } } // 앞 층·이름표도 그 부품의 카드로
     return wrap3(el, tag(el, g, s)); };
@@ -2390,7 +2498,7 @@ function scene3(items, o = {}) {
     all.forEach(el => { list.push(el); (RACKS[el.t] ? el.tubes || [] : el.t === 'wellplate' ? el.wells || [] : []).forEach((k, j) => { if (k && typeof k === 'object') { if (el._k != null) k._kk = `${el._k}/${j}`; list.push(k); } }); });
     list.forEach(el => { if (el.id) byId[el.id] = el; });
     const ref = v => typeof v === 'string' ? idx(byId[v.replace(/:[+\-−]$/, '')]) : null;
-    list.forEach(el => { if (el._e3 == null) return; const g = el._g || {}; els[el._e3] = { e: el._e3, u: String(U3(el)), t: el.t, id: el.id ?? null, k: el._k != null ? String(el._k) : el._kk ?? null, pk: pkOf(el), d3: !!el._3d, inE: ref(el.in), overE: ref(el.over), onE: ref(el.on), toE: ref(el.to), fromE: ref(el.from), parentE: idx(el._parent), shape: g.S ? Object.keys(SHAPES).find(k => SHAPES[k] === g.S) || null : null, g: plain3(g), p: plain3(el) }; });
+    list.forEach(el => { if (el._e3 == null) return; const g = el._g || {}; els[el._e3] = { e: el._e3, u: String(U3(el)), t: el.t, id: el.id ?? null, k: el._k != null ? String(el._k) : el._kk ?? null, pk: pkOf(el), d3: !!el._3d, inE: ref(el.in), overE: ref(el.over), onE: ref(el.on), toE: ref(el.to), fromE: ref(el.from), alongE: el.along != null ? [].concat(el.along).map(ref) : null, parentE: idx(el._parent), shape: g.S ? Object.keys(SHAPES).find(k => SHAPES[k] === g.S) || null : null, g: plain3(g), p: plain3(el) }; });
     return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}"><defs><filter id="${cx.sh}" x="-20%" y="-40%" width="140%" height="180%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.5" flood-color="#1d2130" flood-opacity=".16"/></filter>${cx.defs.join('')}</defs>${body}${cx.front.join('')}</svg>`, labels, els };
   } finally { ANIM = prev; }
 }
@@ -2462,7 +2570,7 @@ function icon(spec, name) {
   return out;
 }
 function fit(root) { (root || document).querySelectorAll('svg[data-fit]').forEach(svg => { const g = svg.querySelector('.fit'); try { const b = g.getBBox(); if (b.width && b.height) { const p = Math.max(b.width, b.height) * .08 + 2; svg.setAttribute('viewBox', `${r2(b.x - p)} ${r2(b.y - p)} ${r2(b.width + 2 * p)} ${r2(b.height + 2 * p)}`); svg.removeAttribute('data-fit'); } } catch (e) { } }); }
-return { version: VERSION, scene, scene3, shapes3, load3d, view3d, mount3d, icon, fit, overlaps, layout, esc, col, shade, warn, nameOf, baseType, infoOf, guessType: n => guess(n).t, KO, PK_SKIP, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
+return { version: VERSION, scene, scene3, shapes3, load3d, view3d, mount3d, icon, fit, overlaps, layout, esc, col, shade, warn, nameOf, baseType, infoOf, isUnseen, guessType: n => guess(n).t, KO, PK_SKIP, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
 })();
 window.LabKit = LabKit;
 function lkStart() {
@@ -2473,6 +2581,9 @@ const ANIM0 = !Q.has('check'), STILL_KEY = 'lk-pref:still';
 let still = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 try { const v = localStorage.getItem(STILL_KEY); if (v === '1' || v === '0') still = v === '1'; } catch (err) { }
 LabKit.setAnim(ANIM0 && !still);
+// 보이지 않는 것 보기 (v1.31): 열의 이동·전류의 흐름·입자 모형처럼 unseen인 부품을 켜고 끈다. 페이지와 수업 모드가 함께 쓴다
+let unseenOn = Q.has('check') || Q.has('shot') || Q.has('shot3d'); // 점검·촬영 화면에서는 늘 보인다
+document.documentElement.classList.toggle('lk-unseen', unseenOn);
 const IC = {
   play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
   print: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>',
@@ -2488,6 +2599,7 @@ const IC = {
   left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
   right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
   star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>',
+  unseen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" stroke-dasharray="3.2 3"/><circle cx="12" cy="12" r="3"/><path d="M12 2.5v1.6M4.6 4.6l1.1 1.1M19.4 4.6l-1.1 1.1"/></svg>',
   eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
   full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
   still: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6v12M15 6v12"/></svg>',
@@ -2503,7 +2615,7 @@ document.title = (D.title ? D.title + ' · ' : '') + '실험 과정 그림 안�
 if (D._demo) LabKit.warn('템플릿 예시 데이터(_demo: true)가 남아 있어요. 실제 실험 데이터로 바꾸세요.');
 // 장면 이어받기: "scene": { "from": 2 또는 "prev", "remove": [id 또는 부품 이름], "change": { id: { 바꿀 속성 } }, "add": [ 새 부품 ] }
 // 앞 장면의 기구를 (자동 배치한 위치까지) 그대로 가져온다. 설명·동작 부품은 단계마다 새로 쓰므로 가져오지 않는다.
-const FRESH = new Set(['note', 'text', 'arrow', 'mark', 'eye', 'label', 'view', 'zoom', 'pour']);
+const FRESH = new Set(['note', 'text', 'arrow', 'mark', 'eye', 'label', 'view', 'zoom', 'pour', 'heat', 'current']);
 const resolved = new Map();
 function sceneItems(i, chain = []) {
   if (resolved.has(i)) return resolved.get(i);
@@ -2700,12 +2812,13 @@ function revealScene(st, i) {
 function open3d(i) {
   const st = steps[i]; if (!st) return;
   let rv = null; try { rv = rvOn.has(i) ? revealItems(st, i) : null; } catch (err) { console.error(err); }
-  LabKit.view3d({ items: rv || sceneItems(i), bench: st.bench, title: `${i + 1}단계: ${st.title || ''}${rv ? ' — 결과' : ''}` });
+  LabKit.view3d({ items: rv || sceneItems(i), unseen: unseenOn, bench: st.bench, title: `${i + 1}단계: ${st.title || ''}${rv ? ' — 결과' : ''}` });
 }
 const rvOn = new Set(), rvKey = k => /^\d+$/.test(k) ? +k : k;
 const revealUi = (st, i) => { const r = revealOf(st); return r ? `<button class="btn sm rv-btn" type="button" data-rv="${i}" aria-pressed="${rvOn.has(i)}">${IC.eye}<span class="rv-l">${rvLabel(i)}</span></button>${pcList(st, i).length ? '<span class="rv-lock">예상을 고르면 열려요</span>' : ''}${r.text ? `<div class="rv-text">${box('res', '결과', r.text)}</div>` : ''}` : ''; };
 const has3d = i => { try { return sceneItems(i).length > 0; } catch (err) { return false; } };
-const sceneBlock = (st, i) => { const rs = revealScene(st, i), pk = twKinds(i); return `<div class="scene-box${rs ? ' has-rv' : ''}"><div class="sc-main">${sceneOf(st, i)}</div>${rs ? `<div class="sc-rv" data-rvi="${i}">${rs}</div>` : ''}${pk ? `<button class="play-btn" type="button" data-play="${i}" data-pk="${pk}" aria-label="${i + 1}단계 시연 보기" title="바뀌는 모습 다시 보기">${IC.play}<span>시연</span></button>` : ''}${has3d(i) ? `<button class="v3-btn" type="button" data-v3="${i}" aria-label="${i + 1}단계 그림을 입체(3D)로 보기" title="입체(3D)로 보기">${IC.cube}3D</button>` : ''}</div>`; };
+const sceneBlock = (st, i) => { const rs = revealScene(st, i), pk = twKinds(i); return `<div class="scene-box${rs ? ' has-rv' : ''}"><div class="sc-main">${sceneOf(st, i)}</div>${rs ? `<div class="sc-rv" data-rvi="${i}">${rs}</div>` : ''}${pk ? `<button class="play-btn" type="button" data-play="${i}" data-pk="${pk}" aria-label="${i + 1}단계 시연 보기" title="바뀌는 모습 다시 보기">${IC.play}<span>시연</span></button>` : ''}${has3d(i) ? `<button class="v3-btn" type="button" data-v3="${i}" aria-label="${i + 1}단계 그림을 입체(3D)로 보기" title="입체(3D)로 보기">${IC.cube}3D</button>` : ''}${hasUnseen(st, i) ? `<button class="us-btn" type="button" data-us aria-pressed="${unseenOn}" aria-label="보이지 않는 것 보기 (열·전류·입자 모형)" title="보이지 않는 것 보기 (열·전류·입자 모형)">${IC.unseen}<span>보이지 않는 것</span></button>` : ''}</div>`; };
+const hasUnseen = (st, i) => { try { return sceneItems(i).some(LabKit.isUnseen) || (revealItems(st, i) || []).some(LabKit.isUnseen); } catch (err) { return false; } };
 /* ----- 움직이는 시연 (v1.24) ----- */
 // 이어받은 장면(scene.from)은 앞 장면에서, 결과 보기는 과정 장면에서 바뀌는 모습을 짧게 보여 준다 (데이터를 따로 쓰지 않는다).
 // 같은 부품의 위치·기울기·액체 높이·넣은 양·색·숫자 표시가 서서히 바뀌고, 새 부품은 나타나며(동작 부품은 위에서 내려온다) 빠진 부품은 흐려진다.
@@ -2785,6 +2898,11 @@ function playTween(host, P, opt) {
   frame(0); raf = requestAnimationFrame(tick);
 }
 const stillBtn = (cls, icon) => ANIM0 ? `<button class="${cls}" type="button" data-still aria-pressed="${still}" aria-label="움직임 끄기" title="움직임 끄기 (방울·기포·김과 시연을 멈춰요)">${IC.still}${icon ? '' : '움직임 끄기'}</button>` : '';
+function setUnseen(v) {
+  unseenOn = !!v; document.documentElement.classList.toggle('lk-unseen', unseenOn);
+  document.querySelectorAll('[data-us]').forEach(b => b.setAttribute('aria-pressed', unseenOn));
+  if (!deck.hidden && deck3d) mountInline(); // 입체로 보는 중이면 다시 세운다
+}
 function setStill(v) {
   still = !!v; try { localStorage.setItem(STILL_KEY, still ? '1' : '0'); } catch (err) { }
   LabKit.setAnim(ANIM0 && !still); document.documentElement.classList.toggle('lk-still', still || !ANIM0);
@@ -3042,7 +3160,7 @@ function mountInline(from) { // from: 시연의 시작 장면 (입체 보기가 
   const i = slides[cur].step; let rv = null; try { rv = rvOn.has(i) ? revealItems(st, i) : null; } catch (err) { console.error(err); }
   const host = document.createElement('div'); host.className = 'v3-stage v3-inline'; box.appendChild(host);
   const rk = pkRv(i), same = k => !!pkOn && pkOn.i === i && pkOn.rv === rk && (k == null || pkOn.k === k); // 부품 눌러 알아보기: 입체에서 누른 부품도 같은 카드 (같은 부품을 다시 누르면 닫기)
-  const h = LabKit.mount3d(host, { items: rv || sceneItems(i), from: from ? LabKit.layout(from) : null, bench: st.bench, title: `${i + 1}단계: ${st.title || ''}${rv ? ' — 결과' : ''}`, pick: same() ? pkOn.k : null, onPick: k => same(k) ? pkClose() : pkShow(i, k, rk), onError(text) {
+  const h = LabKit.mount3d(host, { items: rv || sceneItems(i), from: from ? LabKit.layout(from) : null, unseen: unseenOn, bench: st.bench, title: `${i + 1}단계: ${st.title || ''}${rv ? ' — 결과' : ''}`, pick: same() ? pkOn.k : null, onPick: k => same(k) ? pkClose() : pkShow(i, k, rk), onError(text) {
     deck3d = false; if (inl) { inl.dispose(); inl = null; }
     deck.querySelector('[data-v3deck]').setAttribute('aria-pressed', 'false');
     const n = document.createElement('p'); n.className = 'v3-fallback'; n.setAttribute('role', 'status'); n.textContent = text; box.appendChild(n);
@@ -3074,7 +3192,7 @@ function closeDeck() { if (inl) { inl.dispose(); inl = null; } deckLive = false;
 deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) { const n = ev.target.closest && ev.target.closest('.scene-box svg [data-lk-k]'); if (n) pkClick(n); return; } if (b.dataset.play != null) return playBtn(b);
   if (b.hasAttribute('data-pklist')) return pkToggleList(b); if (b.hasAttribute('data-pkm')) return pkMat(b);
   if (b.dataset.pkk) { const i = +b.closest('.pk').dataset.pk; return pkOn && pkOn.i === i && pkOn.k === b.dataset.pkk ? pkClose() : pkShow(i, b.dataset.pkk, pkRv(i)); }
-  if (b.hasAttribute('data-pkx')) { const c = b.closest('[data-pkmat]'); return c ? pkMatClose(c) : pkClose(); } if (b.hasAttribute('data-still')) return setStill(!still); if (b.dataset.v3 != null) return open3d(+b.dataset.v3); if (b.hasAttribute('data-v3deck')) { deck3d = !deck3d; b.setAttribute('aria-pressed', deck3d); return mountInline(); } if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
+  if (b.hasAttribute('data-pkx')) { const c = b.closest('[data-pkmat]'); return c ? pkMatClose(c) : pkClose(); } if (b.hasAttribute('data-still')) return setStill(!still); if (b.hasAttribute('data-us')) return setUnseen(!unseenOn); if (b.dataset.v3 != null) return open3d(+b.dataset.v3); if (b.hasAttribute('data-v3deck')) { deck3d = !deck3d; b.setAttribute('aria-pressed', deck3d); return mountInline(); } if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
 document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if ((ev.key === ' ' || ev.key === 'Enter') && ev.target.closest && ev.target.closest('[data-pc],.pk,[data-pkm],[data-pkmat],.v3-ctl')) return;
   if (ev.key === 'Escape' && !deck.hidden) { const mc = deck.querySelector('.pk-card[data-pkmat]:not([hidden])'); if (pkOn || mc) { ev.preventDefault(); if (mc) pkMatClose(mc); pkClose(); return; } } if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (!deck.hidden && inl && ev.target.closest && ev.target.closest('.v3-inline')) { inl.key(ev); if (ev.defaultPrevented) return; } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].res && (res.expect || res.conclusion)) toggleReveal('res'); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
 let tx = null;
@@ -3097,7 +3215,7 @@ function afterFonts(f) {
 if (Q.has('shot3d')) {
   const v = Q.get('shot3d'), all = v === 'all';
   const list = all ? steps.flatMap((st, i) => { let r = null; try { r = revealItems(st, i); } catch (err) { } return r ? [i, `${i}r`] : [i]; }) : [/r$/.test(v) ? `${(parseInt(v) || 1) - 1}r` : (+v || 1) - 1];
-  const scenes = list.map(k => { const r = typeof k === 'string', i = parseInt(k), st = steps[i] || {}; let items = []; try { items = (r ? revealItems(st, i) : sceneItems(i)) || []; } catch (err) { console.error(err); } return { title: `${i + 1}. ${st.title || ''}${r ? ' — 결과' : ''}`, items, bench: st.bench }; });
+  const scenes = list.map(k => { const r = typeof k === 'string', i = parseInt(k), st = steps[i] || {}; let items = []; try { items = (r ? revealItems(st, i) : sceneItems(i)) || []; } catch (err) { console.error(err); } return { title: `${i + 1}. ${st.title || ''}${r ? ' — 결과' : ''}`, items, bench: st.bench, unseen: unseenOn }; });
   app.removeAttribute('aria-busy'); app.innerHTML = '';
   LabKit.load3d().then(K => K.shot(app, scenes, { view: Q.get('view') || 'angle', size: all ? [480, 300] : [960, 600] }))
     .catch(err => { console.error('[LabKit] 입체 점검 실패: ' + (err && err.message)); document.documentElement.dataset.lk3d = JSON.stringify({ fail: String(err && err.message) }); });
@@ -3161,6 +3279,7 @@ app.addEventListener('click', ev => {
   const pm = t.closest('[data-pmode]'); if (pm) { setMenu(false); return printAs(pm.dataset.pmode); }
   const rv = t.closest('[data-rv]'); if (rv) return toggleReveal(rvKey(rv.dataset.rv));
   const v3 = t.closest('[data-v3]'); if (v3) return open3d(+v3.dataset.v3);
+  if (t.closest('[data-us]')) return setUnseen(!unseenOn);
   const pl = t.closest('[data-play]'); if (pl) return playBtn(pl);
   const pkm = t.closest('[data-pkm]'); if (pkm) return pkMat(pkm);
   const px = t.closest('[data-pkx]'); if (px) { const c = px.closest('[data-pkmat]'); if (c) pkMatClose(c); return; }
