@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit v1.31.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.32.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -217,7 +217,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.31.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.32.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -1346,8 +1346,59 @@ T.heat = {
     return o;
   }
 };
-// 전류의 흐름: along(전선·관·회로의 id, 또는 목록)을 따라 움직이는 점. 전선은 그린 순서(from → to) 방향, reverse면 거꾸로.
-// electrons: true면 전자(파란 점, 전류와 반대 방향). 움직임이 꺼져 있어도 가운데 화살촉으로 방향을 보인다
+// 전류의 흐름 그림 (2D와 입체 화면이 같이 쓴다, v1.32): 전류는 주황 화살촉(>)이 전류 방향으로 흐르고, 전자는 '−'가 든 파란 알갱이가 반대 방향으로 움직인다.
+// paths: 전류 방향 순서의 점 목록들 ([x, y]). o: { mode: 'current'·'electrons'·'both', k(화면 배율), anim, color } → { svg, lab: { cur, ele }(이름표 자리) }
+const dirGlyph = a => ['→', '↘', '↓', '↙', '←', '↖', '↑', '↗'][Math.round((((a % 360) + 360) % 360) / 45) % 8]; // 화면 각도(도) → 화살표 글자
+const lenOf = S => { let L = 0; for (let i = 1; i < S.length; i++) L += Math.hypot(S[i][0] - S[i - 1][0], S[i][1] - S[i - 1][1]); return L; };
+function smoothPts(P, smooth) { // catmull과 같은 곡선을 촘촘한 점으로 (곧은 선이면 그대로 잘게)
+  const out = [];
+  for (let i = 0; i < P.length - 1; i++) {
+    const p0 = P[i - 1] || P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] || p2;
+    const c1 = smooth ? [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6] : p1, c2 = smooth ? [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6] : p2;
+    for (let q = 0; q < 12; q++) { const t = q / 12, u = 1 - t; out.push([0, 1].map(d => u * u * u * p1[d] + 3 * u * u * t * c1[d] + 3 * u * t * t * c2[d] + t * t * t * p2[d])); }
+  }
+  out.push([P[P.length - 1][0], P[P.length - 1][1]]); return out;
+}
+const offsetPts = (S, off) => S.map((p, i) => { const a = S[Math.max(0, i - 1)], b = S[Math.min(S.length - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1; return [p[0] - dy / l * off, p[1] + dx / l * off]; });
+function pointAt(S, f) { // 길이의 f(0~1) 자리와 방향(도)
+  const L = lenOf(S); let s = L * f, i = 1;
+  for (; i < S.length - 1; i++) { const l = Math.hypot(S[i][0] - S[i - 1][0], S[i][1] - S[i - 1][1]); if (s <= l) break; s -= l; }
+  const l = Math.hypot(S[i][0] - S[i - 1][0], S[i][1] - S[i - 1][1]) || 1, t = Math.min(1, s / l);
+  return [S[i - 1][0] + (S[i][0] - S[i - 1][0]) * t, S[i - 1][1] + (S[i][1] - S[i - 1][1]) * t, Math.atan2(S[i][1] - S[i - 1][1], S[i][0] - S[i - 1][0]) * 180 / Math.PI];
+}
+function currentMarks(paths, o = {}) {
+  const k = o.k || 1, mode = o.mode || 'current', anim = o.anim ?? ANIM, cc = o.color || '#f08a12', ec = '#3f73d6', ed = '#22448f';
+  const pd = Q => 'M' + Q.map(p => `${r2(p[0])},${r2(p[1])}`).join(' L');
+  const flow = (Q, body, gap, speed, turn) => { // Q를 따라 gap마다 body를 놓고, 움직임이 켜져 있으면 그 길을 따라 흐르게
+    const L = lenOf(Q), n = Math.max(2, Math.round(L / gap)); let s = '';
+    if (anim) { const id = uid('cf'), dur = r2(Math.max(1.2, L / speed)); s += `<path id="${id}" d="${pd(Q)}" fill="none" stroke="none"/>`; for (let q = 0; q < n; q++) s += `<g>${body}<animateMotion dur="${dur}s" begin="${r2(-q * dur / n)}s" repeatCount="indefinite"${turn ? ' rotate="auto"' : ''}><mpath href="#${id}"/></animateMotion></g>`; }
+    else for (let q = 0; q < n; q++) { const [x, y, a] = pointAt(Q, (q + .5) / n); s += `<g transform="translate(${r2(x)},${r2(y)})${turn ? ` rotate(${r2(a)})` : ''}">${body}</g>`; }
+    return s;
+  };
+  const ch = `d="M${r2(-4 * k)},${r2(-5.5 * k)} L${r2(3.5 * k)},0 L${r2(-4 * k)},${r2(5.5 * k)}" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
+  const arrow = `<path ${ch} stroke="#fff" stroke-width="${r2(5.6 * k)}" opacity=".9"/><path ${ch} stroke="${cc}" stroke-width="${r2(2.8 * k)}"/>`;
+  const elec = `<circle r="${r2(4.6 * k)}" fill="${ec}" stroke="${ed}" stroke-width="${r2(k)}"/><path d="M${r2(-2.3 * k)},0 H${r2(2.3 * k)}" stroke="#fff" stroke-width="${r2(1.6 * k)}" stroke-linecap="round"/>`;
+  let svg = '', lab = null, best = -1;
+  paths.forEach(P => {
+    if (!P || P.length < 2) return;
+    const rect = P.length === 5 && Math.hypot(P[0][0] - P[4][0], P[0][1] - P[4][1]) < 1, S = smoothPts(P, P.length > 2 && !rect);
+    let area = 0; for (let i = 1; i < P.length; i++) area += P[i - 1][0] * P[i][1] - P[i][0] * P[i - 1][1];
+    const out = rect && area > 0 ? -1 : 1; // 회로 둘레는 바깥쪽 (화면에서 시계 방향이면 왼쪽), 전선은 가는 방향의 오른쪽
+    const SC = mode === 'both' ? offsetPts(S, out * 11 * k) : S, SE = S.slice().reverse(); // 둘 다면 화살촉은 전선 옆, 전자는 전선 안
+    if (mode !== 'electrons') svg += flow(SC, arrow, 30 * k, 36 * k, true);
+    if (mode !== 'current') svg += flow(SE, elec, 22 * k, 24 * k, false);
+    const L = lenOf(S); if (L > best) { // 이름표 자리와 가는 방향 화살표 (움직임을 꺼도 방향이 보이게). 회로는 둘 다 바깥에, 전선은 전류는 화살촉 쪽·전자는 반대쪽
+      best = L;
+      if (rect) { // 회로: 부품은 변 가운데에 있으니 비어 있는 모서리 바깥에 (들어오는 변의 방향)
+        const mx = (P[0][0] + P[2][0]) / 2, my = (P[0][1] + P[2][1]) / 2, at = i => [P[i][0] + (Math.sign(P[i][0] - mx) || 1) * 36 * k, P[i][1] + (Math.sign(P[i][1] - my) || 1) * 20 * k, Math.atan2(P[i][1] - P[i - 1][1], P[i][0] - P[i - 1][0]) * 180 / Math.PI];
+        const c = at(1), e = at(3); lab = { cur: [c[0], c[1], dirGlyph(c[2])], ele: [e[0], e[1], dirGlyph(e[2] + 180)] };
+      } else { const c = pointAt(offsetPts(S, (mode === 'both' ? 32 : 18) * k), .28), e = pointAt(offsetPts(S, -20 * k), .66); lab = { cur: [c[0], c[1], dirGlyph(c[2])], ele: [e[0], e[1], dirGlyph(e[2] + 180)] }; }
+    }
+  });
+  return { svg, lab };
+}
+// 전류의 흐름: along(전선·관·회로의 id, 또는 목록)을 따라 흐른다. 전선은 그린 순서(from → to)가 전류 방향, reverse면 거꾸로.
+// show: 'current'(기본, 전류 방향 화살촉) · 'electrons'(전자만, 반대 방향) · 'both'(둘 다, 이름표 '전류'·'전자'). electrons: true는 'electrons'와 같다
 T.current = {
   selfLabel: true,
   geo(el, R) {
@@ -1357,22 +1408,18 @@ T.current = {
       if (t.pts && t.pts.length > 1) paths.push(t.pts.map(p => [p[0], p[1]]));
       else if (t.w && t.h) { const x0 = t.x - t.w / 2, x1 = t.x + t.w / 2, y0 = (t.top ?? t.y - t.h / 2), y1 = y0 + t.h, cw = [[x0, y1], [x0, y0], [x1, y0], [x1, y1], [x0, y1]]; paths.push(t.cur === 'ccw' ? cw.reverse() : cw); } // 회로: 둘레를 건전지의 (+)극에서 나오는 방향으로
     });
-    const back = !!el.reverse !== !!el.electrons, P = back ? paths.map(q => q.slice().reverse()) : paths, f = P[0] || [[240, 150], [260, 150]];
+    const P = el.reverse ? paths.map(q => q.slice().reverse()) : paths, f = P[0] || [[240, 150], [260, 150]];
     return { x: f[0][0], y: f[0][1], s: 1, paths: P, anchor: { x: f[Math.floor(f.length / 2)][0], y: f[Math.floor(f.length / 2)][1] } };
   },
   draw(el, g, cx) {
-    const e = !!el.electrons, c = col(el.color, e ? '#3f73d6' : '#f2b21b'), dk = shade(c, -.35);
-    let o = '';
-    g.paths.forEach(P => {
-      const curve = P.length > 2 && !(P.length === 5 && P[0][0] === P[4][0] && P[0][1] === P[4][1]), d = curve ? catmull(P) : 'M' + P.map(p => `${r2(p[0])},${r2(p[1])}`).join(' L');
-      const dots = (w, cc) => `<path d="${d}" fill="none" stroke="${cc}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="0.1 ${e ? 11 : 15}">${A(`<animate attributeName="stroke-dashoffset" from="${e ? 22.2 : 30.2}" to="0" dur="${e ? .8 : 1.1}s" repeatCount="indefinite"/>`)}</path>`;
-      o += dots(e ? 6 : 7, dk) + dots(e ? 4.2 : 4.8, c);
-      let L = 0; const seg = []; for (let i = 1; i < P.length; i++) { const l = Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]); seg.push(l); L += l; }
-      let acc = 0; for (let i = 1; i < P.length; i++) { if (acc + seg[i - 1] >= L / 2) { const t = (L / 2 - acc) / (seg[i - 1] || 1), x = P[i - 1][0] + (P[i][0] - P[i - 1][0]) * t, y = P[i - 1][1] + (P[i][1] - P[i - 1][1]) * t, an = Math.atan2(P[i][1] - P[i - 1][1], P[i][0] - P[i - 1][0]) * 180 / Math.PI; o += `<path d="M-6,-6 L5,0 L-6,6" transform="translate(${r2(x)},${r2(y)}) rotate(${r2(an)})" fill="none" stroke="${dk}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`; break; } acc += seg[i - 1]; }
-    });
-    if (el.label) cx.labels.push({ fixed: true, x: g.anchor.x, y: g.anchor.y - 18, text: el.label, tone: e ? '' : 'hot' });
-    if (cx.u3) return ''; // 입체 보기: labkit3d.js가 그 전선(또는 회로 카드) 위에 긋는다
-    return o;
+    const mode = el.show || (el.electrons ? 'electrons' : 'current'), m = currentMarks(g.paths, { mode, color: el.color != null ? col(el.color) : null });
+    if (m.lab) {
+      if (mode !== 'electrons' && (el.label || mode === 'both')) cx.labels.push({ fixed: true, x: m.lab.cur[0], y: m.lab.cur[1], text: `${el.label || '전류'} ${m.lab.cur[2]}`, tone: 'hot' });
+      const et = el.elabel || (mode === 'electrons' ? el.label : null) || (mode === 'both' ? '전자' : null);
+      if (mode !== 'current' && et) cx.labels.push({ fixed: true, x: m.lab.ele[0], y: m.lab.ele[1], text: `${et} ${m.lab.ele[2]}`, fg: '#2f5fb8' });
+    }
+    if (cx.u3) return ''; // 입체 보기: labkit3d.js가 그 전선(또는 회로 카드) 위에 같은 그림(currentMarks)을 긋는다
+    return m.svg;
   }
 };
 /* ---------- 센서 실험 ---------- */
@@ -2570,7 +2617,7 @@ function icon(spec, name) {
   return out;
 }
 function fit(root) { (root || document).querySelectorAll('svg[data-fit]').forEach(svg => { const g = svg.querySelector('.fit'); try { const b = g.getBBox(); if (b.width && b.height) { const p = Math.max(b.width, b.height) * .08 + 2; svg.setAttribute('viewBox', `${r2(b.x - p)} ${r2(b.y - p)} ${r2(b.width + 2 * p)} ${r2(b.height + 2 * p)}`); svg.removeAttribute('data-fit'); } } catch (e) { } }); }
-return { version: VERSION, scene, scene3, shapes3, load3d, view3d, mount3d, icon, fit, overlaps, layout, esc, col, shade, warn, nameOf, baseType, infoOf, isUnseen, guessType: n => guess(n).t, KO, PK_SKIP, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
+return { version: VERSION, scene, scene3, shapes3, load3d, view3d, mount3d, icon, fit, overlaps, layout, esc, col, shade, warn, nameOf, baseType, infoOf, isUnseen, currentMarks, guessType: n => guess(n).t, KO, PK_SKIP, setAnim: v => { ANIM = !!v; }, types: () => Object.keys(T).filter(k => k[0] !== '_'), W, H, BENCH };
 })();
 window.LabKit = LabKit;
 function lkStart() {

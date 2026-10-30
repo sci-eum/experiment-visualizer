@@ -42,6 +42,7 @@ VALUES = {
     "note": {"icon": ["eye", "how", "tip", "time", "ok", "no", "warn", "idea", "result"]},
     "view": {"show": ["plantcells", "animalcells", "solid", "liquid", "gas", "dissolve", "crystals", "bubbles"], "speed": ["fast", "slow"]},
     "heat": {"kind": ["conduct", "convect", "radiate"], "side": ["center", "left", "right"]},
+    "current": {"show": ["current", "electrons", "both"]},
     "dish": {"items": ["seeds", "colony", "beans", "cells"]},
     "screen": {"image": ["inverted", "upright"]},
     "lightbox": {"dir": ["left", "right"]},

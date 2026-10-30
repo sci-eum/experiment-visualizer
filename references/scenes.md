@@ -620,7 +620,7 @@ heat는 처음에 숨어 있다가 '보이지 않는 것'을 누르면 보인다
 
 ### 55. 회로에 흐르는 전류 (보이지 않는 것)
 
-current의 along에 회로(circuit) id를 주면 둘레를 건전지 (+)극에서 나오는 방향으로 점이 움직인다. 전선이면 그 전선의 from → to 방향.
+current의 along에 회로(circuit) id를 주면 둘레를 건전지 (+)극에서 나오는 방향으로 화살촉이 흐른다. 전선이면 그 전선의 from → to 방향. 전자의 이동을 함께 보이려면 show:'both'.
 
 ```json
 [{"t": "circuit", "id": "c", "x": 220, "y": 140, "w": 280, "h": 160, "parts": [{"p": "battery", "label": "건전지"}, {"p": "bulb", "label": "전구"}, {"p": "switch", "label": "스위치"}]},

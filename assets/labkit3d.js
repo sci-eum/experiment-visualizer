@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit3D v1.31.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit3D v1.32.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 장면을 입체(WebGL)로 보여 준다. 외부 라이브러리 없이 WebGL만 쓴다 (인터넷 없이 여는 한 파일 버전에도 넣을 수 있게).
    - 그릇 13종(비커·플라스크·시험관 …)은 그림 엔진의 윤곽선을 돌려 빚은 유리와, 높이·색·층이 맞는 액체로 (v1.20)
    - 자주 쓰는 기구(삼발이·알코올램프·스탠드·가열판·시험관대·저울 …)는 상자·원기둥으로 빚는다 (v1.20)
@@ -8,7 +8,7 @@
    그림 엔진이 '3D' 버튼을 누를 때 불러와 LabKit3D.open(창, { items, title, bench })을 부른다. */
 (function () {
 'use strict';
-const VERSION = '1.31.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
+const VERSION = '1.32.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
 const FONT = '"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif';
 const SVGNS = 'http://www.w3.org/2000/svg';
 const DEG = Math.PI / 180;
@@ -1158,18 +1158,16 @@ function viewer(stage, o = {}) {
       else if (g.rays) g.rays.forEach(([ax, ay, bx, by]) => { const a = scr(worldAt(ax, ay, d.fromE)), b = scr(worldAt(bx, by, d.fromE)); if (a && b) o += line(wave2(a, b, 0, 2.6 * k, 10 * k), true); });
       else if (g.a && g.b) { const a = scr(worldAt(g.a.x, g.a.y, d.fromE)), b = scr(worldAt(g.b.x, g.b.y, d.toE)); if (a && b) [-9, 0, 9].forEach(off => { o += line(wave2(a, b, off * k, 3 * k, 13 * k), true); }); }
     });
-    currents.forEach(d => {
-      const g = d.g, p = d.p || {}, el = !!p.electrons, back = !!p.reverse !== el, c = K.col(p.color) || (el ? '#3f73d6' : '#f2b21b'), dk = K.shade ? K.shade(c, -.35) : c;
+    currents.forEach(d => { // 2D와 같은 그림(LabKit.currentMarks)을 그 전선의 화면 점 위에
+      const g = d.g, p = d.p || {}, mode = p.show || (p.electrons ? 'electrons' : 'current'), paths = [];
+      let k = 1;
       (d.alongE || []).forEach((ae, j) => {
         let P = pipeScr.get(ae);
-        if (P) P = back ? P.slice().reverse() : P;
-        else { const q = g.paths && g.paths[j]; if (!q) return; P = q.map(([x, y]) => scr(worldAt(x, y, ae))); if (P.some(v => !v)) return; } // 회로 카드: 2D 둘레(방향은 이미 맞춤)를 카드 위로
-        const k = pxPer(worldAt(g.x, g.y, ae)), gap = (el ? 11 : 15) * k, dd = P.length > 2 && !(P.length === 5 && Math.hypot(P[0].x - P[4].x, P[0].y - P[4].y) < 1) ? catmull(P) : 'M' + P.map(v => `${f1(v.x)},${f1(v.y)}`).join(' L');
-        const dots = (w, cc) => `<path d="${dd}" fill="none" stroke="${cc}" stroke-width="${f1(w * k)}" stroke-linecap="round" stroke-dasharray="0.1 ${f1(gap)}">${flowA(2 * gap + .2, el ? .8 : 1.1)}</path>`;
-        o += dots(el ? 6 : 7, dk) + dots(el ? 4.2 : 4.8, c);
-        let L = 0; for (let q = 1; q < P.length; q++) L += Math.hypot(P[q].x - P[q - 1].x, P[q].y - P[q - 1].y);
-        for (let q = 1, acc = 0; q < P.length; q++) { const l = Math.hypot(P[q].x - P[q - 1].x, P[q].y - P[q - 1].y); if (acc + l >= L / 2) { const t = (L / 2 - acc) / (l || 1), x = P[q - 1].x + (P[q].x - P[q - 1].x) * t, y = P[q - 1].y + (P[q].y - P[q - 1].y) * t, an = Math.atan2(P[q].y - P[q - 1].y, P[q].x - P[q - 1].x) * 180 / Math.PI; o += `<path d="M${f1(-6 * k)},${f1(-6 * k)} L${f1(5 * k)},0 L${f1(-6 * k)},${f1(6 * k)}" transform="translate(${f1(x)},${f1(y)}) rotate(${f1(an)})" fill="none" stroke="${dk}" stroke-width="${f1(2.6 * k)}" stroke-linecap="round" stroke-linejoin="round"/>`; break; } acc += l; }
+        if (P) { P = P.map(v => [v.x, v.y]); if (p.reverse) P.reverse(); }
+        else { const q = g.paths && g.paths[j]; if (!q) return; const S = q.map(([x, y]) => scr(worldAt(x, y, ae))); if (S.some(v => !v)) return; P = S.map(v => [v.x, v.y]); } // 회로 카드: 2D 둘레(방향은 이미 맞춤)를 카드 위로
+        k = pxPer(worldAt(g.x, g.y, ae)); paths.push(P);
       });
+      if (paths.length && K.currentMarks) o += K.currentMarks(paths, { mode, k, anim: anim3, color: p.color != null ? K.col(p.color) : null }).svg;
     });
     arrows.forEach((d, i) => {
       const g = d.g, p = d.p || {}, wa = worldAt(g.a.x, g.a.y, d.fromE), wb = worldAt(g.b.x, g.b.y, d.toE), a = scr(wa), b = scr(wb); if (!a || !b) return;

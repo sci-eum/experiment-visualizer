@@ -68,7 +68,8 @@ BAD = {
         {"title": "시연 끄기", "motion": "off", "scene": [{"t": "beaker"}]},
         {"title": "부품 설명", "scene": [{"t": "beaker", "info": 3}]},
         {"title": "보이지 않는 것", "scene": [{"t": "beaker", "id": "vb", "unseen": "yes"}, {"t": "lamp", "id": "vl"}, {"t": "heat", "from": "vl"}, {"t": "heat", "kind": "convect"},
-                                         {"t": "heat", "kind": "glow", "from": "vl", "to": "vb"}, {"t": "current"}, {"t": "current", "along": ["vb", "nowire"]}, {"t": "wire", "id": "vw"}, {"t": "current", "along": "vw"}]},
+                                         {"t": "heat", "kind": "glow", "from": "vl", "to": "vb"}, {"t": "current"}, {"t": "current", "along": ["vb", "nowire"]}, {"t": "wire", "id": "vw"}, {"t": "current", "along": "vw"},
+                                         {"t": "current", "along": "vw", "show": "protons"}]},
         {"title": "고르는 예상", "scene": [{"t": "beaker"}],
          "predict": [{"text": "어느 쪽?", "choices": ["가"], "answr": "가"}, {"text": "", "choices": ["위", "위"], "answer": "옆"},
                      {"text": "확인할 곳 없음", "choices": ["예", "아니요"]}, {"text": "글만 있는 객체"}, {"text": "정답 자료형", "choices": ["예", "아니요"], "answer": 1}]},
@@ -93,7 +94,7 @@ BAD_EXPECT = ["넣은 양 amount", "없는 속성 'amout'", "z는 숫자여야 �
               "객체(고르는 예상)여야 해요", "보기 글자 하나 또는 그 배열", "motion: false(이 단계의 시연 끄기)",
               "info(부품 설명)는 글자 또는 글자 배열", "준비물 설명 info는 글자",
               "unseen(보이지 않는 것)은 true 또는 false", "heat(열의 이동)에는 from과 to", "kind 'convect'(그릇 안의 흐름)에는 in", "kind 'glow'",
-              "current(전류의 흐름)에는 along", "along: 'vb' → beaker#vb은(는) 전선·관·회로가 아니에요", "along: 'nowire' → 이 장면에 그런 id가 없어요", "along: 'vw' → 이어진 전선이 아니에요"]
+              "current(전류의 흐름)에는 along", "along: 'vb' → beaker#vb은(는) 전선·관·회로가 아니에요", "along: 'nowire' → 이 장면에 그런 id가 없어요", "along: 'vw' → 이어진 전선이 아니에요", "show 'protons'"]
 BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문장에는 5 mL)", "그림의 '7 mL'",
             "'피펫'의 아이콘이 이름 짐작으로 스포이트", "'레이저 온도계'의 아이콘이 이름 짐작으로 유리 막대 온도계",
             "'시험관 집게'의 아이콘이 이름 짐작으로 '시험관'", "materials[4].icon: 글자가 없으면", "24시간짜리 타이머", "'설탕 녹인 물'의 아이콘이 이름 짐작으로 가루 더미", "svg에 y가 없어요",
@@ -154,7 +155,8 @@ QUIET["steps"].append({"title": "보이지 않는 것", "scene": [  # 열의 이
     {"t": "view", "show": "dissolve", "speed": "slow", "color2": "pink", "from": "b", "unseen": True},
     {"t": "battery", "id": "bt", "x": 300}, {"t": "bulb", "id": "lb", "x": 400, "y": 120},
     {"t": "wire", "id": "w1", "from": "bt:+", "to": "lb:+"}, {"t": "wire", "id": "w2", "from": "lb:-", "to": "bt:-"},
-    {"t": "current", "along": ["w1", "w2"], "electrons": True}, {"t": "circuit", "id": "c", "x": 240, "y": 60, "w": 120, "h": 60}, {"t": "current", "along": "c", "reverse": True}],
+    {"t": "current", "along": ["w1", "w2"], "electrons": True}, {"t": "circuit", "id": "c", "x": 240, "y": 60, "w": 120, "h": 60}, {"t": "current", "along": "c", "reverse": True},
+    {"t": "current", "along": ["w1", "w2"], "show": "both", "label": "전류", "elabel": "전자"}],
     "reveal": {"add": [{"t": "heat", "kind": "convect", "in": "b"}]},
     "origin": {"where": "1쪽", "quote": "가상 문장", "check": "ok", "added": ["unseen"]}})
 BAD["materials"].append({"name": "가상 준비물", "info": 2})

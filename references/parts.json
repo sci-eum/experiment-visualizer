@@ -1,6 +1,6 @@
 {
  "_": "자동 생성 파일 (scripts/make_registry.py). 손으로 고치지 않는다.",
- "engine": "1.31.0",
+ "engine": "1.32.0",
  "common": [
   "t",
   "id",
@@ -313,8 +313,10 @@
   "current": [
    "along",
    "color",
+   "elabel",
    "electrons",
-   "reverse"
+   "reverse",
+   "show"
   ],
   "cylinder": [
    "adapter",
@@ -1234,6 +1236,13 @@
     "liver",
     "ice",
     "icebath"
+   ]
+  },
+  "current": {
+   "show": [
+    "current",
+    "electrons",
+    "both"
    ]
   },
   "cylinder": {

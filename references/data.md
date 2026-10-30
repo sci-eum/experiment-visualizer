@@ -306,19 +306,19 @@ SKILL.md 5장에서 연다. 데이터는 JSON으로 쓰고 `python scripts/check
 | 부품 | 보이는 것 |
 |---|---|
 | `heat` | 열의 이동: 물결 화살표(`from`→`to`), 그릇 안의 흐름(`kind:'convect'`, `in`), 퍼지는 열(`kind:'radiate'`) |
-| `current` | 전류의 흐름: 전선(`along`)을 따라 움직이는 점, `electrons:true`면 전자 |
+| `current` | 전류의 흐름: 전선(`along`)을 따라 흐르는 화살촉(전류의 방향). `show:'both'`면 반대 방향으로 움직이는 전자('−' 알갱이)도 함께, `'electrons'`면 전자만 |
 | `unseen: true`를 준 부품 | 무엇이든 (입자 모형 확대 원 `view`의 `show:'solid'/'liquid'/'gas'/'dissolve'`, 설명 `arrow`·`label` 등) |
 
 ```json
 [ { "t": "heat", "from": "lamp1", "to": "b" },
   { "t": "heat", "kind": "convect", "in": "b" },
   { "t": "view", "x": 190, "y": 70, "r": 34, "show": "liquid", "speed": "fast", "from": "b", "unseen": true, "label": "물 입자" },
-  { "t": "current", "along": ["w1", "w2"], "label": "전류" } ]
+  { "t": "current", "along": ["w1", "w2"], "show": "both" } ]
 ```
 
 - **원문 근거가 있을 때만** 넣는다: 원문의 탐구 목표·설명·정리가 그 개념(열의 이동 방향, 대류, 전류의 방향, 입자의 운동·배열)을 다루거나 사용자가 요청한 것. 원문에 없는 모형은 3장에서 **제안**으로만 보인다. 넣으면 그 단계 `origin.added`에 `"unseen"`.
 - **결과를 드러내면 결과 보기에 넣는다.** 관찰해서 알아낼 것(어느 쪽으로 열이 이동했는지, 입자 배열이 어떻게 바뀌었는지)이 답이면 `reveal`의 `add`(또는 `change`)에 넣어 결과를 연 뒤에만 보이게 한다. 과정 설명(불꽃의 열이 비커로 간다)은 장면에 둔다.
-- 전류는 (+)극에서 나와 (−)극으로 들어가게 전선의 `from`·`to`를 잇고 그 순서로 `along`에 넣는다. 전자의 이동은 원문이 다룰 때만 `electrons:true`.
+- 전류는 (+)극에서 나와 (−)극으로 들어가게 전선의 `from`·`to`를 잇고 그 순서로 `along`에 넣는다. 원문이 전자의 이동을 다루면 `show:'both'`로 전류의 방향과 **반대로 움직이는 전자**를 함께 보인다 (실제로 움직이는 입자는 전자). 전자만 다루면 `'electrons'`.
 - `heat`·`current`는 이어받기(`scene.from`)로 넘어가지 않는다 (설명 부품처럼 `add`에 다시 쓴다).
 
 ## 부품 눌러 알아보기

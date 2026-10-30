@@ -24,7 +24,8 @@ DATA = {
          "sketch": {"id": "view", "shape": "box"},
          "scene": [{"t": "beaker", "id": "b", "x": 240, "fill": .4, "label": "가", "info": "가상 원문 설명"}],
          "reveal": {"text": "관찰을 마쳤어요.", "change": {"b": {"color": "blue"}}}},
-        {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4, "info": False}, {"t": "lamp", "id": "lp", "x": 380}, {"t": "heat", "kind": "radiate", "from": "lp"}]},
+        {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4, "info": False}, {"t": "lamp", "id": "lp", "x": 380}, {"t": "heat", "kind": "radiate", "from": "lp"},
+                                                {"t": "circuit", "id": "cc", "x": 90, "y": 110, "w": 120, "h": 90}, {"t": "current", "along": "cc", "show": "both"}]},
         {"id": "guess", "title": "고르는 예상", "scene": [{"t": "beaker", "id": "g", "x": 240, "fill": .4}],
          "predict": [{"text": "가상 물음 1?", "choices": ["가", "나"], "answer": "가", "why": "가상 까닭"},
                      {"text": "가상 물음 2?", "choices": ["다", "라", "마"], "answer": ["라"]}],
@@ -60,6 +61,7 @@ window.addEventListener('load', async () => {
     const pu=$('#app [data-us]'), ug=()=>$('#app [data-unseen]');
     check('보이지 않는 것: 처음엔 숨김',!!pu && !!ug() && getComputedStyle(ug()).visibility==='hidden' && $('#app [data-us]')===$('#app [data-rvs="1"] [data-us]'));
     pu.click();check('보이지 않는 것: 페이지에서 켜기',document.documentElement.classList.contains('lk-unseen') && await until(()=>getComputedStyle(ug()).visibility==='visible') && pu.getAttribute('aria-pressed')==='true' && $('#deck').hidden);
+    check('전류와 반대로 움직이는 전자',!!$('#app [data-rvs="1"] [data-unseen] circle') && /전류 .*\|.*전자|전자 .*\|.*전류/.test([...document.querySelectorAll('#app [data-rvs="1"] [data-unseen] [data-lk-t=label]')].map(n=>n.textContent).join('|')));
     pu.click();check('보이지 않는 것: 페이지에서 끄기',!document.documentElement.classList.contains('lk-unseen') && pu.getAttribute('aria-pressed')==='false');
     $('[data-step="0"]').click();
     const first=count();
