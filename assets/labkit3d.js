@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit3D v1.29.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit3D v1.30.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 장면을 입체(WebGL)로 보여 준다. 외부 라이브러리 없이 WebGL만 쓴다 (인터넷 없이 여는 한 파일 버전에도 넣을 수 있게).
    - 그릇 13종(비커·플라스크·시험관 …)은 그림 엔진의 윤곽선을 돌려 빚은 유리와, 높이·색·층이 맞는 액체로 (v1.20)
    - 자주 쓰는 기구(삼발이·알코올램프·스탠드·가열판·시험관대·저울 …)는 상자·원기둥으로 빚는다 (v1.20)
@@ -8,7 +8,7 @@
    그림 엔진이 '3D' 버튼을 누를 때 불러와 LabKit3D.open(창, { items, title, bench })을 부른다. */
 (function () {
 'use strict';
-const VERSION = '1.29.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
+const VERSION = '1.30.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
 const FONT = '"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif';
 const SVGNS = 'http://www.w3.org/2000/svg';
 const DEG = Math.PI / 180;
@@ -30,6 +30,7 @@ const CSS = `.v3-cv{position:absolute;inset:0;width:100%;height:100%;display:blo
 .v3-tag{position:absolute;left:0;top:0;white-space:nowrap;padding:4px 10px;border-radius:999px;background:#fff;color:#2b3040;font-size:13px;font-weight:700;line-height:1.3;box-shadow:0 1px 2px rgba(29,33,48,.08),0 4px 10px -4px rgba(29,33,48,.2)}
 .v3-tag.hot{background:#ffedef;color:#c7323f}.v3-tag.arrow{background:#fbf4ff;color:#7d2ba6}
 .v3-pk{filter:drop-shadow(0 0 5px rgba(177,77,224,.55))}
+.v3-tag.sec{background:#f6edff;color:#6b2a99;font-size:12.5px;padding:3px 9px;box-shadow:0 0 0 1.5px #d9b3f3}
 .v3-ctl{position:absolute;left:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:calc(100% - 24px)}
 .v3-ctl button{appearance:none;border:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;line-height:1.2;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.95);color:#1d2130;box-shadow:0 1px 2px rgba(29,33,48,.06),0 2px 8px rgba(29,33,48,.1)}
 .v3-ctl button[aria-pressed=true]{background:#d070fb;color:#fff}
@@ -228,20 +229,22 @@ function radiusTable(P, n = 32) {
 /* ---------- WebGL 준비 ---------- */
 const VS_TEX = 'attribute vec3 p;attribute vec2 q;uniform mat4 m;varying vec2 v;void main(){v=q;gl_Position=m*vec4(p,1.);}';
 const FS_TEX = 'precision mediump float;uniform sampler2D t;uniform float a;varying vec2 v;void main(){gl_FragColor=texture2D(t,v)*a;}';
-const VS_COL = 'attribute vec3 p;attribute vec3 n;attribute vec3 c;uniform mat4 m;varying vec3 vn;varying vec3 vc;void main(){vn=n;vc=c;gl_Position=m*vec4(p,1.);}';
-const FS_COL = 'precision mediump float;uniform vec3 L;varying vec3 vn;varying vec3 vc;void main(){vec3 N=normalize(vn);if(!gl_FrontFacing)N=-N;gl_FragColor=vec4(vc*(.72+.3*max(dot(N,L),0.)),1.);}';
+const VS_COL = 'attribute vec3 p;attribute vec3 n;attribute vec3 c;uniform mat4 m;varying vec3 vn;varying vec3 vc;varying vec3 vw;void main(){vn=n;vc=c;vw=p;gl_Position=m*vec4(p,1.);}';
+// 단면 보기 (v1.30): X(자르는 면, 실험대 좌표) 앞쪽은 버리고, S가 켜지면 잘린 속(뒷면이 보이는 곳)을 빗금으로 칠한다
+const FS_COL = 'precision mediump float;uniform vec3 L;uniform vec4 X;uniform float S;varying vec3 vn;varying vec3 vc;varying vec3 vw;void main(){if(dot(X.xyz,vw)+X.w>0.)discard;vec3 N=normalize(vn);'
+  + 'if(!gl_FrontFacing){if(S>.5){float h=mod(gl_FragCoord.x+gl_FragCoord.y,7.)<1.8?.7:1.;gl_FragColor=vec4(mix(vc,vec3(1.),.32)*h,1.);return;}N=-N;}gl_FragColor=vec4(vc*(.72+.3*max(dot(N,L),0.)),1.);}';
 // 유리: 가장자리(비스듬히 보이는 곳)는 2D 그림처럼 진한 선, 가운데는 거의 투명, 빛 반사 한 줄
 const VS_SURF = 'attribute vec3 p;attribute vec3 n;uniform mat4 m;varying vec3 vp;varying vec3 vn;void main(){vp=p;vn=n;gl_Position=m*vec4(p,1.);}';
-const FS_GLASS = 'precision mediump float;uniform vec3 E;uniform vec3 T;uniform float A;uniform float K;uniform vec3 L;varying vec3 vp;varying vec3 vn;'
-  + 'void main(){vec3 N=normalize(vn);if(!gl_FrontFacing)N=-N;vec3 V=normalize(E-vp);float f=1.-abs(dot(N,V));float e=smoothstep(.6,.96,f)*K;'
+const FS_GLASS = 'precision mediump float;uniform vec3 E;uniform vec3 T;uniform float A;uniform float K;uniform vec3 L;uniform vec4 X;varying vec3 vp;varying vec3 vn;'
+  + 'void main(){float cd=dot(X.xyz,vp)+X.w;if(cd>0.)discard;if(cd>-1.6){gl_FragColor=vec4(vec3(.337,.38,.478)*.95,.95);return;}vec3 N=normalize(vn);if(!gl_FrontFacing)N=-N;vec3 V=normalize(E-vp);float f=1.-abs(dot(N,V));float e=smoothstep(.6,.96,f)*K;'
   + 'float s=pow(max(dot(N,normalize(L+V)),0.),36.);vec3 c=mix(T,vec3(.337,.38,.478),e*.85)+s*.55;float a=clamp(mix(A,.92,e)+s*.45,0.,1.);gl_FragColor=vec4(c*a,a);}';
 // 액체: 높이 lo~hi 사이만 칠한다 (기울인 그릇도 수면은 수평)
-const FS_LIQ = 'precision mediump float;uniform vec3 C;uniform float A;uniform float lo;uniform float hi;uniform vec3 L;varying vec3 vp;varying vec3 vn;'
-  + 'void main(){if(vp.y>hi||vp.y<lo)discard;vec3 N=normalize(vn);if(!gl_FrontFacing)N=-N;gl_FragColor=vec4(C*(.8+.24*max(dot(N,L),0.))*A,A);}';
+const FS_LIQ = 'precision mediump float;uniform vec3 C;uniform float A;uniform float lo;uniform float hi;uniform vec3 L;uniform vec4 X;uniform float S;varying vec3 vp;varying vec3 vn;'
+  + 'void main(){if(vp.y>hi||vp.y<lo||dot(X.xyz,vp)+X.w>0.)discard;if(S>.5&&!gl_FrontFacing){float a=min(A+.3,1.);gl_FragColor=vec4(C*.95*a,a);return;}vec3 N=normalize(vn);if(!gl_FrontFacing)N=-N;gl_FragColor=vec4(C*(.8+.24*max(dot(N,L),0.))*A,A);}';
 // 수면: 높이 hi의 수평면에서 그릇 안쪽(돌린 윤곽의 반지름 표, 또는 상자)만 남긴다
 const VS_CAP = 'attribute vec3 p;uniform mat4 m;uniform float dy;varying vec3 vp;void main(){vec3 w=p+vec3(0.,dy,0.);vp=w;gl_Position=m*vec4(w,1.);}'; // dy: 시연 중 수면 높이
-const FS_CAP = 'precision mediump float;uniform mat4 IM;uniform float R[32];uniform float h0;uniform float h1;uniform float bx;uniform vec2 hb;uniform vec3 C;uniform float A;varying vec3 vp;'
-  + 'void main(){vec4 q=IM*vec4(vp,1.);if(q.y<h0||q.y>h1)discard;'
+const FS_CAP = 'precision mediump float;uniform mat4 IM;uniform float R[32];uniform float h0;uniform float h1;uniform float bx;uniform vec2 hb;uniform vec3 C;uniform float A;uniform vec4 X;varying vec3 vp;'
+  + 'void main(){if(dot(X.xyz,vp)+X.w>0.)discard;vec4 q=IM*vec4(vp,1.);if(q.y<h0||q.y>h1)discard;'
   + 'if(bx>.5){if(abs(q.x)>hb.x||abs(q.z)>hb.y)discard;}else{float t=(q.y-h0)/(h1-h0)*31.;float r=R[31];'
   + 'for(int i=0;i<31;i++){float a=float(i);if(t>=a&&t<a+1.)r=mix(R[i],R[i+1],t-a);}if(length(q.xz)>r)discard;}'
   + 'vec3 c=min(C*1.08+.05,1.);gl_FragColor=vec4(c*A,A);}';
@@ -302,14 +305,22 @@ const BUILD = {
   lamp(d, b) {
     const body = [[0, 0], [26, 0], [29.5, 1], [30, 4], [30.4, 14], [28.5, 23], [23, 30.5], [15, 35], [0, 35]];
     b.glass(o => lathe(o, b.M, body), GLASS, .16);
-    b.liquid(body, [{ hi: 17, color: b.col(d.p.color, '#f3e4a2'), alpha: .85 }]);
-    tube(b.op, b.M, [0, 34, 0], [0, 44, 0], 9, 9, METAL, 20); tube(b.op, b.M, [0, 43, 0], [0, 52, 0], 3, 3, '#f4efe2', 12);
+    b.liquid(body.map(([r, h]) => [Math.max(0, r - .6), Math.max(h, .6)]), [{ hi: 17, color: b.col(d.p.color, '#f3e4a2'), alpha: .85 }]); // 바닥을 실험대 면에서 조금 띄운다 (단면에서 겹쳐 깜빡이지 않게)
+    tube(b.op, b.M, [0, 34, 0], [0, 44, 0], 9, 9, METAL, 20); tube(b.op, b.M, [0, 27, 0], [0, 35, 0], 4.6, 4.6, METAL, 16); tube(b.op, b.M, [0, 43, 0], [0, 52, 0], 3, 3, '#f4efe2', 12);
+    tube(b.op, b.M, [0, 2.5, 0], [0, 44, 0], 2.3, 2.3, '#ece3cc', 12); // 몸통 속의 심지 (알코올에 잠겨 빨아올린다)
     if (d.p.lit === false) b.glass(o => lathe(o, b.M, [[12, 40], [12, 58], [10, 63.5], [6, 65.5], [0, 66]]), GLASS, .2);
+    b.sec.push({ t: '심지', y: 22, r: -2 }, { t: '심지 꽂이', y: 39, r: 9 }, { t: '알코올', y: 8, r: 17 });
+    if (d.p.lit === false) b.sec.push({ t: '뚜껑', y: 62, r: -10 });
   },
   gasburner(d, b) {
     const { op, M } = b;
-    box(op, M, -30, 30, 0, 9, -24, 24, DARK); tube(op, M, [0, 8, 0], [0, 64, 0], 6, 6, METAL, 18); tube(op, M, [0, 19, 0], [0, 30, 0], 8.5, 8.5, '#c9ced8', 18);
+    box(op, M, -30, 30, 0, 9, -24, 24, DARK);
+    ring(op, M, 4.2, 6, 9, 21, METAL, 24); ring(op, M, 4.2, 6, 28, 64, METAL, 24); // 속이 빈 관: 아래와 위 사이(고리 안)로 공기가 들어온다
+    ring(op, M, 6.3, 8.5, 19, 30, '#c9ced8', 24);                                    // 공기를 조절하는 고리
+    [0, 90, 180, 270].forEach(a => { const c = Math.cos(a * DEG), n = Math.sin(a * DEG); tube(op, M, [8.2 * n, 24.5, 8.2 * c], [8.8 * n, 24.5, 8.8 * c], 2.4, 2.4, DARK, 10); }); // 공기 구멍
+    tube(op, M, [0, 9, 0], [0, 23, 0], 2.4, 1.1, '#c8a24a', 12); tube(op, M, [0, 15, 0], [6, 15, 0], 1.5, 1.5, '#c8a24a', 8); // 가스가 나오는 곳과 가스 길
     box(op, M, 6, 32, 12, 18, -3, 3, METAL); tube(op, M, [30, 15, 0], [46, 15, 0], 3, 3, '#e39a52', 10);
+    b.sec.push({ t: d.t === 'bunsen' ? '공기 조절 고리' : '공기 조절 나사', y: 27, r: 8.5 }, { t: '공기가 들어오는 곳', y: 24.5, r: -5 }, { t: '가스가 나오는 곳', y: 20, r: 0 }, { t: '가스와 공기가 섞여 오르는 관', y: 48, r: -5 }, { t: '가스가 들어오는 곳', at: [44, 15, 0] });
   },
   stand(d, b) { // 막대와 받침은 잡은 기구보다 뒤(RZ)에 두고, 팔이 비스듬히 앞으로 나와 기구를 잡는다. 받침 자리에 수조처럼 큰 것이 있으면 그 뒤로
     const { op, M } = b, g = d.g, gx = g.x, gy = g.y, RZ = -Math.max(26, b.deepAt(gx - 46, gx + 58) + 30);
@@ -656,7 +667,7 @@ function viewer(stage, o = {}) {
   if (o.inline) stage.classList.add('v3-inline');
   if (!still) {
     ctl = document.createElement('div'); ctl.className = 'v3-ctl'; ctl.setAttribute('role', 'toolbar'); ctl.setAttribute('aria-label', '시점 바꾸기');
-    ctl.innerHTML = '<button type="button" data-view="front">앞에서</button><button type="button" data-view="angle">비스듬히</button><button type="button" data-view="top">위에서</button><span class="v3-sep"></span><button type="button" data-zoom="1" aria-label="가까이 보기">+</button><button type="button" data-zoom="-1" aria-label="멀리 보기">−</button>';
+    ctl.innerHTML = '<button type="button" data-view="front">앞에서</button><button type="button" data-view="angle">비스듬히</button><button type="button" data-view="top">위에서</button><span class="v3-sep"></span><button type="button" data-zoom="1" aria-label="가까이 보기">+</button><button type="button" data-zoom="-1" aria-label="멀리 보기">−</button><span class="v3-sep"></span><button type="button" data-cut aria-pressed="false" aria-label="고른 부품의 단면 보기" hidden>단면</button>';
     stage.appendChild(ctl);
     const hint = document.createElement('p'); hint.className = 'v3-hint'; if (o.inline) hint.hidden = true;
     hint.textContent = '끌어서 돌리기 · 휠이나 두 손가락으로 확대 · 오른쪽 버튼(Shift+끌기)으로 옮기기. 그릇·자주 쓰는 기구는 입체로, 나머지는 2D 그림 카드로 보여 줘요.';
@@ -700,7 +711,7 @@ function viewer(stage, o = {}) {
       const g = d.g || {}, z = zAt(d.u, d.e), s = g.s || 1, tilt = (g.tilt || 0) * DEG, shape = d.shape && S.SH[d.shape];
       const ob = { kind: 'obj', e: d.e, u: d.u, d, z, glass: [], liquids: [], caps: [], kids: [], decal: d.decal, gx: g.x ?? 240, ax: (g.x ?? 240) - CX, az: z };
       const base = mT((g.x ?? 240) - CX, B - (g.y ?? B), z);
-      const bld = { op: opV, B, host: S.root, col: (c, def) => K.col(c, def) || def, front: 0, noScale: false, deepAt, els: S.els };
+      const bld = { op: opV, B, host: S.root, col: (c, def) => K.col(c, def) || def, front: 0, noScale: false, deepAt, els: S.els, sec: [] }; // sec: 단면 보기의 안쪽 이름표 { t, y, r(자르는 면 위 옆 거리) | at }
       bld.M = shape ? chain(base, mT(0, shape.h * s / 2, 0), mRz(-tilt), mT(0, -shape.h * s / 2, 0), mS(s)) : null;
       if (!shape) bld.M = d.t === 'rack' || d.t === 'tuberack' || d.t === 'stand' ? chain(base, mRz(-tilt)) : chain(base, mRz(-tilt), mS(s));
       bld.glass = (fn, tint, alpha, edge = 1) => { const v = []; fn(v); if (v.length) ob.glass.push({ v: new Float32Array(v), tint: hex(tint), alpha, edge }); };
@@ -724,7 +735,7 @@ function viewer(stage, o = {}) {
       try { if (shape) container(d, bld, shape); else BUILD[d.t](d, bld); }
       catch (e) { warn(`${d.t}을(를) 입체로 빚지 못했어요: ${e.message}`); }
       ob.op = [op0 / 9, (opV.length - op0) / 9]; // 이 부품의 불투명한 부분 (시연에서 따로 그린다)
-      ob.top = bld.top || null; ob.well = bld.well || null; ob.wellShift = bld.wellShift || null;
+      ob.top = bld.top || null; ob.well = bld.well || null; ob.wellShift = bld.wellShift || null; ob.sec = bld.sec; ob.M = bld.M; ob.boxy = d.shape === 'trough';
       // 크기·자리 (화면 맞추기·그림자·순서)
       const w = (shape ? shape.w * s : g.w) || 60, top = g.top ?? (g.y - (g.h || 60)), bottom = g.y ?? B;
       ob.cx = ob.ax; ob.cy = B - (top + bottom) / 2; ob.hw = w / 2; ob.y0 = B - bottom; ob.y1 = B - top;
@@ -862,7 +873,7 @@ function viewer(stage, o = {}) {
 
   /* 카메라 */
   const v0 = VIEWS[o.view] || VIEWS.angle;
-  const cam = { az: v0.az, el: v0.el, zoom: 1, panX: 0, panY: 0, faz: v0.az, fel: v0.el }; // faz·fel: 거리를 맞춘 시점 (끌어 돌릴 때는 그대로 둔다)
+  const cam = { az: v0.az, el: v0.el, zoom: 1, panX: 0, panY: 0, panZ: 0, faz: v0.az, fel: v0.el }; // faz·fel: 거리를 맞춘 시점 (끌어 돌릴 때는 그대로 둔다)
   let anim = null, view = VIEWS[o.view] ? o.view : 'angle';
   const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const moving = !still && (o.motion ?? !reduce) && (fxAll.length > 0 || objs.some(ob => ob.shake));
@@ -872,14 +883,14 @@ function viewer(stage, o = {}) {
   setPressed();
   function goView(name) {
     const v = VIEWS[name]; if (!v) return; view = name; setPressed();
-    const from = { ...cam }, to = { az: v.az, el: v.el, zoom: 1, panX: 0, panY: 0, faz: v.az, fel: v.el };
+    const from = { ...cam }, to = { az: v.az, el: v.el, zoom: 1, panX: 0, panY: 0, panZ: 0, faz: v.az, fel: v.el };
     while (from.az - to.az > 180) from.az -= 360; while (to.az - from.az > 180) from.az += 360;
     if (reduce || still) { Object.assign(cam, to); anim = null; return invalidate(); }
     anim = { from, to, t0: performance.now(), dur: 450 }; invalidate();
   }
   const eyeOf = asp => {
     const d = fitDist(cam.faz, cam.fel, asp) * cam.zoom, a = cam.az * DEG, e = cam.el * DEG;
-    const tgt = [tx0 + cam.panX, ty0 + cam.panY, 0];
+    const tgt = [tx0 + cam.panX, ty0 + cam.panY, cam.panZ];
     return { d, tgt, eye: [tgt[0] + d * Math.cos(e) * Math.sin(a), tgt[1] + d * Math.sin(e), tgt[2] + d * Math.cos(e) * Math.cos(a)] };
   };
 
@@ -923,9 +934,11 @@ function viewer(stage, o = {}) {
     });
     offAttr(P_TEX);
   }
+  // 단면 보기 (v1.30): 고른 부품을 축을 지나 카메라를 보는 세로 면으로 잘라 앞쪽 반을 걷어 낸다 (CUT: { ob, X })
+  const NOX = new Float32Array([0, 0, 0, -1e5]), clipOf = ob => CUT && CUT.ob === ob ? CUT.X : NOX;
   function drawGlass(ob, face) {
     if (!ob.glass.length) return;
-    gl.useProgram(P_GLASS.p); gl.enable(gl.CULL_FACE); gl.cullFace(face);
+    gl.useProgram(P_GLASS.p); gl.enable(gl.CULL_FACE); gl.cullFace(face); gl.uniform4fv(P_GLASS.un.X, clipOf(ob));
     gl.uniformMatrix4fv(P_GLASS.un.m, false, MOD ? mul(PV, MOD) : PV); gl.uniform3fv(P_GLASS.un.E, EYE); gl.uniform3fv(P_GLASS.un.L, LIGHT);
     ob.glass.forEach(gp => { gl.uniform3fv(P_GLASS.un.T, gp.tint); gl.uniform1f(P_GLASS.un.A, gp.alpha * FADE); gl.uniform1f(P_GLASS.un.K, gp.edge * FADE); surfAttr(P_GLASS, gp.b); gl.drawArrays(gl.TRIANGLES, 0, gp.n); });
     offAttr(P_GLASS); gl.disable(gl.CULL_FACE);
@@ -940,14 +953,14 @@ function viewer(stage, o = {}) {
     const gone = from ? from.liquids.slice(ob.liquids.length).map((b0, q) => ({ lq: b0, j: ob.liquids.length + q, hi: b0.hi >= 1e8 ? b0.hi : b0.hi + (b0.floor - b0.hi) * kc, color: b0.color })) : [];
     const bands = ob.liquids.map((lq, j) => ({ lq, hi: now[j].hi, color: now[j].color })).concat(gone);
     if (bands.length) {
-      gl.useProgram(P_LIQ.p); gl.enable(gl.CULL_FACE); gl.uniformMatrix4fv(P_LIQ.un.m, false, MOD ? mul(PV, MOD) : PV); gl.uniform3fv(P_LIQ.un.L, LIGHT);
+      gl.useProgram(P_LIQ.p); gl.enable(gl.CULL_FACE); gl.uniformMatrix4fv(P_LIQ.un.m, false, MOD ? mul(PV, MOD) : PV); gl.uniform3fv(P_LIQ.un.L, LIGHT); gl.uniform4fv(P_LIQ.un.X, clipOf(ob)); gl.uniform1f(P_LIQ.un.S, CUT && CUT.ob === ob ? 1 : 0);
       [gl.FRONT, gl.BACK].forEach(face => { gl.cullFace(face); bands.forEach(b => { gl.uniform3fv(P_LIQ.un.C, b.color); gl.uniform1f(P_LIQ.un.A, b.lq.alpha * FADE); gl.uniform1f(P_LIQ.un.lo, b.lq.lo); gl.uniform1f(P_LIQ.un.hi, b.hi); surfAttr(P_LIQ, b.lq.b); gl.drawArrays(gl.TRIANGLES, 0, b.lq.n); }); });
       offAttr(P_LIQ); gl.disable(gl.CULL_FACE);
     }
     const caps = ob.caps.map(cp => ({ cp, hi: now[cp.j] ? now[cp.j].hi : cp.y, color: now[cp.j] ? now[cp.j].color : cp.color }))
       .concat(from ? from.caps.filter(cp => cp.j >= ob.liquids.length).map(cp => { const g = gone.find(x => x.j === cp.j); return { cp, hi: g ? g.hi : cp.y, color: cp.color }; }) : []);
     if (caps.length) {
-      gl.useProgram(P_CAP.p); gl.uniformMatrix4fv(P_CAP.un.m, false, MOD ? mul(PV, MOD) : PV);
+      gl.useProgram(P_CAP.p); gl.uniformMatrix4fv(P_CAP.un.m, false, MOD ? mul(PV, MOD) : PV); gl.uniform4fv(P_CAP.un.X, clipOf(ob));
       caps.forEach(({ cp, hi, color }) => {
         gl.uniformMatrix4fv(P_CAP.un.IM, false, cp.IM); gl.uniform1fv(P_CAP.un.R, cp.R); gl.uniform1f(P_CAP.un.h0, cp.h0); gl.uniform1f(P_CAP.un.h1, cp.h1); gl.uniform1f(P_CAP.un.dy, hi - cp.y);
         gl.uniform1f(P_CAP.un.bx, cp.bx); gl.uniform2fv(P_CAP.un.hb, cp.hb || [0, 0]); gl.uniform3fv(P_CAP.un.C, color); gl.uniform1f(P_CAP.un.A, cp.alpha * FADE);
@@ -992,9 +1005,18 @@ function viewer(stage, o = {}) {
     const opaque = (b, f) => { // 실험대와 불투명한 부품
       gl.disable(gl.BLEND); gl.depthMask(true); gl.useProgram(P_COL.p); gl.bindBuffer(gl.ARRAY_BUFFER, b);
       const a = P_COL.at; gl.enableVertexAttribArray(a.p); gl.vertexAttribPointer(a.p, 3, gl.FLOAT, false, 36, 0); gl.enableVertexAttribArray(a.n); gl.vertexAttribPointer(a.n, 3, gl.FLOAT, false, 36, 12); gl.enableVertexAttribArray(a.c); gl.vertexAttribPointer(a.c, 3, gl.FLOAT, false, 36, 24);
-      gl.uniformMatrix4fv(P_COL.un.m, false, PV); gl.uniform3fv(P_COL.un.L, LIGHT); f(); offAttr(P_COL);
+      gl.uniformMatrix4fv(P_COL.un.m, false, PV); gl.uniform3fv(P_COL.un.L, LIGHT); gl.uniform4fv(P_COL.un.X, NOX); gl.uniform1f(P_COL.un.S, 0); f(); offAttr(P_COL);
     };
+    // 단면: 고른 부품을 축을 지나 카메라 쪽을 보는 세로 면으로 자른다 (시연 중에는 하지 않는다. 수조처럼 네모난 그릇은 모서리를 따라)
+    const cob = !TR && cutOn ? selOb() : null;
+    if (cob) { let nx = EYE[0] - cob.ax, nz = EYE[2] - cob.az; if (cob.boxy) { if (Math.abs(nx) > Math.abs(nz)) nz = 0; else nx = 0; } const l = Math.hypot(nx, nz) || 1; CUT = { ob: cob, X: new Float32Array([nx / l, 0, nz / l, -(nx * cob.ax + nz * cob.az) / l]), n: [nx / l, nz / l] }; } else CUT = null;
     if (opB) opaque(opB, () => {
+      if (CUT && CUT.ob.op && CUT.ob.op[1]) { // 자른 부품만 따로 (앞쪽은 버리고 잘린 속은 빗금)
+        const [a, n] = CUT.ob.op; gl.drawArrays(gl.TRIANGLES, 0, roomN + a);
+        gl.uniform4fv(P_COL.un.X, CUT.X); gl.uniform1f(P_COL.un.S, 1); gl.drawArrays(gl.TRIANGLES, roomN + a, n);
+        gl.uniform4fv(P_COL.un.X, NOX); gl.uniform1f(P_COL.un.S, 0); if (opN > roomN + a + n) gl.drawArrays(gl.TRIANGLES, roomN + a + n, opN - roomN - a - n);
+        return;
+      }
       if (!TR) return gl.drawArrays(gl.TRIANGLES, 0, opN);
       if (roomN) gl.drawArrays(gl.TRIANGLES, 0, roomN); // 시연 중: 부품마다 (새 부품은 반쯤 나타난 뒤에, 옮기는 부품은 옮긴 자리에)
       objs.forEach(ob => { if (!ob.op || !ob.op[1]) return; const st = trState(ob); if (st && st.fade < .5) return; gl.uniformMatrix4fv(P_COL.un.m, false, st && st.off ? mul(PV, mT(...st.off)) : PV); gl.drawArrays(gl.TRIANGLES, roomN + ob.op[0], ob.op[1]); });
@@ -1017,7 +1039,8 @@ function viewer(stage, o = {}) {
     gl.depthMask(true);
     if (TR) { lines.style.visibility = tagBox.style.visibility = 'hidden'; return invalidate(); } // 시연 중에는 선·이름표를 감춘다
     // 선·이름표는 시점·크기·카드가 바뀔 때만 다시 놓는다 (움직임만 있는 장면은 그대로)
-    const sig = [cam.az, cam.el, cam.zoom, cam.panX, cam.panY, W, H, done, selK].join();
+    const sig = [cam.az, cam.el, cam.zoom, cam.panX, cam.panY, W, H, done, selK, CUT ? 1 : 0].join();
+    syncSec();
     if (!moving || sig !== lastSig) { lines.innerHTML = overlay() + placeTags(); lastSig = sig; }
     if (moving && !tick) tick = setTimeout(() => { tick = 0; invalidate(); }, 30); // 움직임만 있으면 1초에 30장쯤
   }
@@ -1049,17 +1072,30 @@ function viewer(stage, o = {}) {
   }).filter(Boolean);
   function screenOf(t) {
     const { l, c, ob } = t; let p;
-    if (l.well && ob && ob.well) { const w = ob.well(...l.well); p = apply(PV, w[0], w[1], w[2]); }
+    if (t.w3) { const w = t.w3(); if (!w) return null; p = apply(PV, w[0], w[1], w[2]); }
+    else if (l.well && ob && ob.well) { const w = ob.well(...l.well); p = apply(PV, w[0], w[1], w[2]); }
     else if (c) { if (!c.m || !c.tex) return null; p = apply(mul(PV, c.m), (l.x - c.x) / c.w - .5, (c.y + c.h - l.y) / c.h, 0); }
     else if (!ob) p = apply(PV, l.x - CX, B - l.y, t.wz);
     else { const th = Math.atan2(EYE[0] - ob.ax, EYE[2] - ob.az), dx = l.x - ob.gx; p = apply(PV, ob.ax + dx * Math.cos(th), B - l.y, ob.az - dx * Math.sin(th)); }
     return p[3] > 0 ? { x: (p[0] / p[3] * .5 + .5) * W, y: (.5 - p[1] / p[3] * .5) * H } : null;
   }
+  // 단면 보기의 안쪽 이름표: 자른 부품이 바뀔 때 만든다. 자리는 축 위 높이 y에서 자르는 면을 따라 옆으로 r (또는 부품 좌표 at)
+  let secTags = [], secOf = null;
+  function syncSec() {
+    const ob = CUT ? CUT.ob : null; if (ob === secOf) return;
+    secTags.forEach(t => t.n.remove()); secTags = []; secOf = ob; if (!ob) return;
+    const k = Math.hypot(ob.M[0], ob.M[1], ob.M[2]) || 1;
+    secTags = (ob.sec || []).map(sc => {
+      const n = document.createElement('span'); n.className = 'v3-tag sec'; n.textContent = sc.t; tagBox.appendChild(n);
+      const w3 = () => { if (!CUT) return null; if (sc.at) return apply(ob.M, ...sc.at); const a = apply(ob.M, 0, sc.y, 0); let u = [-CUT.n[1], 0, CUT.n[0]]; if (u[0] * RIGHT[0] + u[2] * RIGHT[2] < 0) u = u.map(v => -v); return [a[0] + u[0] * sc.r * k, a[1], a[2] + u[2] * sc.r * k]; };
+      return { l: { pin: true, text: sc.t }, n, w: 0, h: 0, w3 };
+    });
+  }
   function placeTags() {
-    if (!tags.length) return '';
+    const all = tags.concat(secTags); if (!all.length) return '';
     const boxes = [], hit = b => boxes.some(q => b.x < q.x + q.w + 4 && b.x + b.w + 4 > q.x && b.y < q.y + q.h + 3 && b.y + b.h + 3 > q.y);
     let svg = '';
-    tags.forEach(t => {
+    all.forEach(t => {
       const s = screenOf(t); if (!s) { t.n.style.display = 'none'; return; }
       t.n.style.display = ''; if (!t.w) { t.w = t.n.offsetWidth; t.h = t.n.offsetHeight; }
       const w = t.w, h = t.h;
@@ -1194,11 +1230,33 @@ function viewer(stage, o = {}) {
     return { x: Math.min(...P.map(p => p.x)), y: Math.min(...P.map(p => p.y)), x2: Math.max(...P.map(p => p.x)), y2: Math.max(...P.map(p => p.y)) };
   }
   function selRect() {
-    const r = rectOf(selK); if (!r) return '';
+    const r = CUT ? null : rectOf(selK); if (!r) return ''; // 단면으로 보는 동안은 틀 없이
     const x = Math.max(2, r.x - 6), y = Math.max(2, r.y - 6), x2 = Math.min(W - 2, r.x2 + 6), y2 = Math.min(H - 2, r.y2 + 6);
     return x2 > x && y2 > y ? `<rect class="v3-pk" x="${f1(x)}" y="${f1(y)}" width="${f1(x2 - x)}" height="${f1(y2 - y)}" rx="10" fill="rgba(177,77,224,.07)" stroke="#b14de0" stroke-width="2.4"/>` : '';
   }
-  function pick(k) { selK = k || null; cv.dataset.pick = selK || ''; lastSig = ''; invalidate(); }
+  let cutOn = false, CUT = null;
+  const canCut = ob => !!ob && (ob.glass.length > 0 || ob.liquids.length > 0 || ob.sec.length > 0); // 그릇·버너처럼 속이 있는 입체 부품
+  const selOb = () => selK ? objs.find(ob => ob.pk === selK && canCut(ob)) || null : null;
+  const cutBtn = ctl && ctl.querySelector('[data-cut]');
+  // 단면을 켜면 자른 부품을 가운데로 당겨 크게 보고, 끄면 그 전 거리·자리로 돌아간다
+  let camKeep = null, focusFor = null;
+  function focusOn(ob) {
+    let to;
+    if (ob) {
+      if (!camKeep) camKeep = { zoom: cam.zoom, panX: cam.panX, panY: cam.panY, panZ: cam.panZ };
+      const { lo, hi } = ob.box, size = Math.max(hi[1] - lo[1], (hi[0] - lo[0]) * .75, 36), d0 = fitDist(cam.faz, cam.fel, (W || 960) / (H || 600));
+      to = { zoom: clamp(size / .55 / (2 * Math.tan(FOV / 2)) / d0, .15, 2.6), panX: (lo[0] + hi[0]) / 2 - tx0, panY: (lo[1] + hi[1]) / 2 - ty0, panZ: (lo[2] + hi[2]) / 2 };
+    } else { if (!camKeep) return; to = camKeep; camKeep = null; }
+    if (reduce) { Object.assign(cam, to); anim = null; } else anim = { from: { ...cam }, to, t0: performance.now(), dur: 450 };
+    invalidate();
+  }
+  function syncCut() { // 단면 단추는 자를 수 있는 부품을 골랐을 때만
+    const ob = selOb(); if (!ob) cutOn = false;
+    const tgtOb = cutOn ? ob : null; if (tgtOb !== focusFor) { focusFor = tgtOb; focusOn(tgtOb); }
+    if (cutBtn) { cutBtn.hidden = !ob; cutBtn.setAttribute('aria-pressed', String(cutOn)); }
+    cv.dataset.cut = cutOn && ob ? selK : ''; lastSig = ''; invalidate();
+  }
+  function pick(k) { selK = k || null; cv.dataset.pick = selK || ''; syncCut(); }
   // 점검용: 그 부품을 누를 수 있는 화면의 점 (사각형 안을 고르게 훑는다)
   cv._spot = k => { const r = rectOf(k); if (!r) return null; for (const p of pipeHits) if (p.k === k) for (let i = 1; i < p.pts.length; i++) { const x = (p.pts[i - 1].x + p.pts[i].x) / 2, y = (p.pts[i - 1].y + p.pts[i].y) / 2, h = hitAt(x, y); if (h && h.k === k) return { x, y }; } for (let j = 1; j < 10; j++) for (let i = 1; i < 10; i++) { const x = r.x + (r.x2 - r.x) * i / 10, y = r.y + (r.y2 - r.y) * j / 10, h = hitAt(x, y); if (h && h.k === k) return { x, y }; } return null; };
   cv._hit = (x, y) => { const h = hitAt(x, y); return h && h.k; };
@@ -1213,9 +1271,9 @@ function viewer(stage, o = {}) {
   /* 조작: 끌어서 돌리기, 오른쪽 버튼·Shift로 옮기기, 휠·두 손가락으로 확대. 거의 움직이지 않고 떼면 누름 (부품 눌러 알아보기) */
   const ptrs = new Map(); let pinch = null, multi = false;
   const rotate = (dx, dy) => { cam.az -= dx * .35; cam.el = clamp(cam.el + dy * .3, 0, 75); };
-  const zoomBy = f => { cam.zoom = clamp(cam.zoom * f, .3, 2.6); };
+  const zoomBy = f => { cam.zoom = clamp(cam.zoom * f, .15, 2.6); };
   const pan = (dx, dy) => { const s = eyeOf(W / H).d * 2 * Math.tan(FOV / 2) / H, a = cam.az * DEG; cam.panX = clamp(cam.panX - dx * s * Math.cos(a), -spanX, spanX); cam.panY = clamp(cam.panY + dy * s, -spanY, spanY); };
-  const touched = () => { anim = null; if (view) { view = null; setPressed(); } invalidate(); };
+  const touched = () => { if (anim) { Object.assign(cam, anim.to); anim = null; } if (view) { view = null; setPressed(); } invalidate(); }; // 움직이던 시점은 끝 자리에서 이어 조작
   const offs = [];
   const listen = (t, ev, f, op) => { t.addEventListener(ev, f, op); offs.push(() => t.removeEventListener(ev, f, op)); };
   if (!still) {
@@ -1237,7 +1295,7 @@ function viewer(stage, o = {}) {
     listen(cv, 'wheel', ev => { ev.preventDefault(); zoomBy(Math.exp(ev.deltaY * .0015)); touched(); }, { passive: false });
     listen(cv, 'contextmenu', ev => ev.preventDefault());
     listen(cv, 'dblclick', () => goView('angle'));
-    listen(ctl, 'click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.dataset.view) goView(b.dataset.view); else if (b.dataset.zoom) { zoomBy(b.dataset.zoom > 0 ? 1 / 1.25 : 1.25); touched(); } });
+    listen(ctl, 'click', ev => { const b = ev.target.closest('button'); if (!b) return; if (b.hasAttribute('data-cut')) { cutOn = !cutOn; return syncCut(); } if (b.dataset.view) goView(b.dataset.view); else if (b.dataset.zoom) { zoomBy(b.dataset.zoom > 0 ? 1 / 1.25 : 1.25); touched(); } });
     listen(window, 'resize', invalidate);
     if (window.ResizeObserver) { const ro = new ResizeObserver(() => invalidate()); ro.observe(stage); offs.push(() => ro.disconnect()); }
   }

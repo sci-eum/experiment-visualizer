@@ -24,7 +24,7 @@ DATA = {
          "sketch": {"id": "view", "shape": "box"},
          "scene": [{"t": "beaker", "id": "b", "x": 240, "fill": .4, "label": "가", "info": "가상 원문 설명"}],
          "reveal": {"text": "관찰을 마쳤어요.", "change": {"b": {"color": "blue"}}}},
-        {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4, "info": False}]},
+        {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4, "info": False}, {"t": "lamp", "x": 380}]},
         {"id": "guess", "title": "고르는 예상", "scene": [{"t": "beaker", "id": "g", "x": 240, "fill": .4}],
          "predict": [{"text": "가상 물음 1?", "choices": ["가", "나"], "answer": "가", "why": "가상 까닭"},
                      {"text": "가상 물음 2?", "choices": ["다", "라", "마"], "answer": ["라"]}],
@@ -119,16 +119,23 @@ window.addEventListener('load', async () => {
     swipe(cv);check('3D 조작 중 단계 유지',count()===first);
     cv.focus(); const key=new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true});cv.dispatchEvent(key);
     check('3D 방향키 분리',key.defaultPrevented && count()===first);
-    const tap3=async k=>{let s=null;for(let n=0;n<100&&!s;n++){s=cv._spot&&cv._spot(k);if(!s)await sleep(20);}if(!s)return false;
-      const r=cv.getBoundingClientRect(),o={bubbles:true,pointerId:9,button:0,isPrimary:true,pointerType:'mouse',clientX:r.left+s.x,clientY:r.top+s.y};
-      cv.dispatchEvent(new PointerEvent('pointerdown',o));cv.dispatchEvent(new PointerEvent('pointerup',o));return true;};
+    const tap3=async(k,c=cv)=>{let s=null;for(let n=0;n<100&&!s;n++){s=c._spot&&c._spot(k);if(!s)await sleep(20);}if(!s)return false;
+      const r=c.getBoundingClientRect(),o={bubbles:true,pointerId:9,button:0,isPrimary:true,pointerType:'mouse',clientX:r.left+s.x,clientY:r.top+s.y};
+      c.dispatchEvent(new PointerEvent('pointerdown',o));c.dispatchEvent(new PointerEvent('pointerup',o));return true;};
     check('3D 부품 누르면 카드',await tap3('#0') && !pk().hidden && $('#deck .pk-h b').textContent==='가' && cv.dataset.pick==='#0');
     check('3D 고른 부품 틀',await until(()=>!!$('#deck .v3-lines .v3-pk')));
+    const cutB=()=>$('#deck .v3-ctl [data-cut]');check('3D 단면 단추',!!cutB() && !cutB().hidden);
+    cutB().click();check('3D 단면 켜기',cv.dataset.cut==='#0' && cutB().getAttribute('aria-pressed')==='true');
+    cutB().click();check('3D 단면 끄기',cv.dataset.cut==='' && cutB().getAttribute('aria-pressed')==='false');cutB().click();
     await sleep(400);await tap3('#0');check('3D 다시 누르면 닫기',pk().hidden && cv.dataset.pick==='');
+    check('카드 닫으면 단면 끔',cutB().hidden && cv.dataset.cut==='');
     $('#deck [data-pklist]').click();$('#deck .pk-list [data-pkk]').click();check('목록에서 고르면 3D 틀',cv.dataset.pick==='#0' && await until(()=>!!$('#deck .v3-lines .v3-pk')));
     $('#deck [data-pkx]').click();$('#deck [data-pklist]').click();check('카드 닫으면 3D 틀 없음',cv.dataset.pick==='' && await until(()=>!$('#deck .v3-lines .v3-pk')));
     $('#deck [data-rv]').click();check('3D 결과 보기',await until(()=>$('#deck .v3-cv')) && $('#deck .slide').classList.contains('rv-on'));
     $('#deck [data-next]').click();check('다음 단계 3D 유지',await until(()=>$('#deck .v3-cv')) && count()!==first);
+    {const c2=$('#deck .v3-cv');const ok=await tap3('#1',c2);cutB().click();
+    check('3D 단면 안쪽 이름표',ok && c2.dataset.cut==='#1' && await until(()=>document.querySelectorAll('#deck .v3-tag.sec').length===3) && /심지/.test($('#deck .v3-tags').textContent));
+    cutB().click();check('단면 끄면 안쪽 이름표 없음',await until(()=>!document.querySelector('#deck .v3-tag.sec')));$('#deck [data-pkx]').click();}
     $('#deck [data-v3deck]').click();check('2D 복귀',!$('#deck .v3-cv')&&!$('#deck .scene-box').classList.contains('v3-on'));
     const nativeOpen=LabKit3D.open;LabKit3D.open=()=>{throw new Error('test WebGL unavailable');};
     $('#deck [data-v3deck]').click();await until(()=>$('#deck .v3-fallback'));
