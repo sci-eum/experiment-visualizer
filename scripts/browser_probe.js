@@ -1,11 +1,11 @@
-/* 실제 CSS 화면 너비를 지정해 조작 시험 HTML을 연다. Node.js 22+, 외부 패키지 없음. */
+/* 실제 CSS 화면 너비를 지정해 조작 시험 HTML을 연다 (media가 'print'면 인쇄 화면으로). Node.js 22+, 외부 패키지 없음. */
 'use strict';
 const cp = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-async function run(exe, url, width) {
+async function run(exe, url, width, media) {
   if (typeof WebSocket !== 'function') throw new Error('조작 시험에는 Node.js 22 이상이 필요합니다.');
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'ev-ui-'));
   const args = ['--headless=new', '--no-first-run', '--no-default-browser-check', '--remote-debugging-port=0',
@@ -54,6 +54,7 @@ async function run(exe, url, width) {
       pending.clear();
     });
     await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 700 });
+    if (media) await send('Emulation.setEmulatedMedia', { media });
     await send('Page.navigate', { url });
     let result;
     for (let i = 0; i < 600; i++) {
@@ -78,7 +79,7 @@ async function run(exe, url, width) {
   }
 }
 
-run(process.argv[2], process.argv[3], Number(process.argv[4])).then(
+run(process.argv[2], process.argv[3], Number(process.argv[4]), process.argv[5]).then(
   result => process.stdout.write(JSON.stringify(result)),
   err => { process.stderr.write(String(err.stack || err)); process.exitCode = 1; }
 );

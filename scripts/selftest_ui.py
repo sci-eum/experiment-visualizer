@@ -3,6 +3,8 @@
 
 python scripts/selftest_ui.py [--require-browser]
 가상 활동지 하나를 넓은 화면과 휴대폰 너비로 열며, 사용자 실험지는 쓰지 않는다.
+열린 회로는 결과 보기·다음 단계에서 닫힐 때만 전류가 보이는지(2D·3D), id를 주기 전에 내보낸 답안을 가져오는지도 본다.
+인쇄 화면으로도 열어 학생용 인쇄에 결과(결과 그림·예상 결과)가 없고 표지가 결과 전 장면인지 본다 (가상 활동지와 양배추 예시).
 """
 import argparse
 import json
@@ -31,7 +33,37 @@ DATA = {
                      {"text": "가상 물음 2?", "choices": ["다", "라", "마"], "answer": ["라"]}],
          "reveal": {"text": "가상 결과", "change": {"g": {"color": "blue"}}}},
         {"id": "fill", "title": "이어받아 채우기", "scene": {"from": "prev", "change": {"g": {"fill": .8}}, "add": [{"t": "dropper", "over": "g"}]}},
+        {"id": "open", "title": "열린 회로", "scene": [{"t": "circuit", "id": "oc", "x": 240, "y": 140, "w": 240, "h": 140, "closed": False, "parts": ["battery", "switch", "bulb"]},
+                                                      {"t": "current", "along": "oc", "show": "both"}],
+         "reveal": {"text": "가상 결과", "change": {"oc": {"closed": True}}, "add": [{"t": "current", "along": "oc", "show": "both"}]}},
+        {"id": "close", "title": "스위치 닫기", "scene": {"from": "prev", "change": {"oc": {"closed": True}}, "add": [{"t": "current", "along": "oc", "show": "both"}]}},
     ], "results": {"questions": [{"id": "q", "text": "관찰한 점은?"}]},
+}
+
+
+def hash_str(s):
+    """엔진 hashStr과 같은 값: id가 없을 때 제목·물음 글로 정하는 저장 이름 조각"""
+    h = 5381
+    for ch in s:
+        h = (h * 33 + ord(ch)) & 0xFFFFFFFF
+    out = ''
+    while True:
+        h, r = divmod(h, 36)
+        out = '0123456789abcdefghijklmnopqrstuvwxyz'[r] + out
+        if not h:
+            return out
+
+
+# id를 주기 전(제목·물음 글 이름)에 내보낸 답안
+LEGACY = {"experiment": "lk:" + hash_str(DATA["title"]), "p": "p:" + hash_str("어떤 모습일까?"), "q": "q:" + hash_str("관찰한 점은?")}
+# 인쇄 시험: 결과 보기가 있는 단계 뒤에 결과 색(#123456)을 이어받은 단계가 있어도 표지·학생용 인쇄에는 결과가 없어야 한다
+PRINT_DATA = {
+    "id": "selftest-print", "title": "가상 인쇄 시험", "steps": [
+        {"id": "set", "title": "장치 꾸미기", "scene": [{"t": "tripod", "id": "tr", "x": 200}, {"t": "lamp", "x": 200},
+                                                    {"t": "beaker", "id": "b", "on": "tr", "fill": .5, "color": "clear"}, {"t": "thermometer", "in": "b"}]},
+        {"id": "obs", "title": "관찰", "observe": "가상 관찰", "scene": {"from": "prev"}, "reveal": {"text": "가상 결과 글", "change": {"b": {"color": "#123456"}}}},
+        {"id": "after", "title": "정리", "scene": {"from": "prev", "change": {"b": {"color": "#123456"}}, "add": [{"t": "stand", "x": 400}, {"t": "flask", "x": 330}]}},
+    ], "results": {"expect": "가상 예상 결과", "conclusion": "가상 정리"},
 }
 
 TEST_JS = r"""
@@ -186,6 +218,19 @@ window.addEventListener('load', async () => {
     still().click();check('3D 움직임 끄기',await until(()=>cv3() && cv3().dataset.motion==='off',250));
     await sleep(200);f0=fr();await sleep(400);check('3D 멈춘 그림',fr()-f0<=1);
     still().click();$('#deck [data-v3deck]').click();
+    {const el=s=>document.querySelectorAll(s+' circle[fill="#3f73d6"]').length, slide=()=>$('#deck .slide'), e3=()=>el('#deck .v3-lines');
+    check('열린 회로: 페이지 장면에 전류 없음',el('#app [data-rvs="4"] .sc-main')===0 && el('#app [data-rvs="4"] .sc-rv')>0 && el('#app [data-rvs="5"] .sc-main')>0);
+    $('#deck .dot[aria-label="5단계"]').click();check('열린 회로: 수업 모드에 전류 없음',el('#deck .slide .sc-main')===0 && !slide().classList.contains('rv-on'));
+    $('#deck [data-rv]').click();check('결과 보기로 닫으면 전류와 전자',slide().classList.contains('rv-on') && await until(()=>!tw() && el('#deck .slide .sc-rv')>0,200));
+    $('#deck [data-rv]').click();check('결과를 닫으면 다시 없음',!slide().classList.contains('rv-on') && el('#deck .slide .sc-main')===0);
+    $('#deck [data-next]').click();check('다음 단계에서 닫으면 전류',await until(()=>!tw() && el('#deck .slide .sc-main')>0,200));
+    $('#deck [data-prev]').click();
+    const us=$('#deck [data-us]');us.click();$('#deck [data-v3deck]').click();
+    check('3D 열린 회로: 전류 없음',await until(()=>cv3(),150) && (await sleep(600),e3()===0));
+    let c0=cv3();$('#deck [data-rv]').click();check('3D 결과 보기로 닫으면 전류',await until(()=>cv3() && cv3()!==c0 && !cv3().dataset.tw && e3()>0,250));
+    c0=cv3();$('#deck [data-rv]').click();check('3D 결과를 닫으면 다시 없음',await until(()=>cv3() && cv3()!==c0,250) && (await sleep(600),e3()===0));
+    $('#deck [data-next]').click();check('3D 다음 단계에서 닫으면 전류',await until(()=>cv3() && !cv3().dataset.tw && e3()>0,250));
+    $('#deck [data-v3deck]').click();us.click();}
     $('#deck [data-close]').click();check('닫은 뒤 답안 유지',$('#app [data-w]').textContent==='복원한 가상 답안');
     $('#app [data-pkm="0"]').click();const mc=$('#app .pk-card[data-pkmat]');
     check('준비물 누르면 카드',!mc.hidden && /가상 비커/.test(mc.textContent) && /가상 비커는 조심/.test(mc.textContent) && /액체를 담거나/.test(mc.textContent));
@@ -193,21 +238,51 @@ window.addEventListener('load', async () => {
     check('닫은 뒤 고른 예상 유지',!!$('#app [data-pc="p:guess:0"][aria-pressed="true"]') && $('#app [data-pcg="p:guess:0"]').classList.contains('pc-done'));
     window.confirm=()=>true;$('#app [data-clear]').click();window.confirm=nativeConfirm;
     check('지우면 예상 잠금 다시',$('#app [data-rvs="2"]').classList.contains('pc-wait') && !$('#app [data-rvs="2"]').classList.contains('rv-on') && !$('#app [data-pcg="p:guess:0"]').classList.contains('pc-done'));
+    window.confirm=()=>true;
+    await importFile({format:'experiment-visualizer-answers',version:1,experiment:'__LEGACY_EXP__',title:'가상 관찰 활동',answers:{'__LEGACY_P__':'예전 판 예상','__LEGACY_Q__':'예전 판 답'}});
+    check('id를 주기 전에 내보낸 답안 가져오기',$('#app [data-import-status]').dataset.state==='ok' && store()['p:look:0']==='예전 판 예상' && store()['q:q']==='예전 판 답' && store()['__LEGACY_P__']===undefined && $('#app [data-w="q:q"]').textContent==='예전 판 답');
+    window.confirm=nativeConfirm;
   } catch(err) { errors.push(String(err.stack||err)); }
   const out=document.createElement('pre');out.id='lk-ui-test';out.textContent=JSON.stringify({count:results.length,errors});document.body.appendChild(out);
 });
 """
 
 
-def run(exe, width):
-    page = build((ROOT / 'assets/template.html').read_text(encoding='utf-8'), 'window.EXPERIMENT = ' + json.dumps(DATA) + ';')
-    page = add3d(page, (ROOT / 'assets/labkit3d.js').read_text(encoding='utf-8'))
+# 인쇄 화면: 학생용은 결과 그림·결과 글이 없고, 표지는 결과 전 장면(그 단계 과정 그림에 있는 색만)이다. 교사용은 결과 그림이 있다
+PRINT_JS = r"""
+window.addEventListener('load', async () => {
+  const results = [], errors = [], $ = s => document.querySelector(s), want = __WANT__;
+  const check = (name, ok) => { results.push(name); if (!ok) errors.push(name); };
+  const shown = n => { for (let x = n; x && x.nodeType === 1; x = x.parentElement) { const cs = getComputedStyle(x); if (cs.display === 'none' || cs.visibility === 'hidden') return false; } return true; };
+  const fills = root => new Set([...root.querySelectorAll('[fill]')].map(n => n.getAttribute('fill').toLowerCase()).filter(c => /^#[0-9a-f]{3,6}$/.test(c)));
+  const visHas = (sel, c) => [...document.querySelectorAll(sel)].filter(shown).some(n => n.innerHTML.toLowerCase().includes(c));
+  try {
+    check('인쇄 화면으로 열림', matchMedia('print').matches);
+    document.documentElement.dataset.print = 'student';
+    const art = $('.hero-art'), types = art ? [...art.querySelectorAll('[data-lk-t]')].map(n => n.dataset.lkT) : [];
+    check('학생용 인쇄: 표지가 보임', !!art && shown(art) && art.dataset.cover === want.cover);
+    check('학생용 인쇄: 표지는 그 실험의 장치', want.types.every(t => types.includes(t)) && !want.not.some(t => types.includes(t)));
+    const src = $(`[data-rvs="${+want.cover - 1}"] .sc-main svg`), sf = src ? fills(src) : new Set();
+    check('학생용 인쇄: 표지에는 결과 전 과정 그림의 색만', !!src && [...fills(art)].every(c => sf.has(c)));
+    check('학생용 인쇄: 결과 그림·결과 글 없음', ![...document.querySelectorAll('.sc-rv, .rv-text, .res-expect, .res-conc')].some(shown) && !(want.result && (visHas('.hero-art', want.result) || visHas('.sc-rv', want.result))));
+    if (want.result) { document.documentElement.dataset.print = 'teacher'; check('교사용 인쇄: 결과 그림 있음', visHas('.sc-rv', want.result)); }
+  } catch (err) { errors.push(String(err.stack || err)); }
+  const out = document.createElement('pre'); out.id = 'lk-ui-test'; out.textContent = JSON.stringify({ count: results.length, errors }); document.body.appendChild(out);
+});
+"""
+
+
+def run(exe, width, page=None, js=None, media=None):
+    if page is None:
+        page = build((ROOT / 'assets/template.html').read_text(encoding='utf-8'), 'window.EXPERIMENT = ' + json.dumps(DATA) + ';')
+        page = add3d(page, (ROOT / 'assets/labkit3d.js').read_text(encoding='utf-8'))
+        js = TEST_JS.replace('__VIEW_WIDTH__', str(width)).replace('__LEGACY_EXP__', LEGACY['experiment']).replace('__LEGACY_P__', LEGACY['p']).replace('__LEGACY_Q__', LEGACY['q'])
     page = re.sub(r'<link[^>]*https:[^>]*>', '', page)
-    page = page.replace('</body>', '<script>' + TEST_JS.replace('__VIEW_WIDTH__', str(width)) + '</script></body>')
+    page = page.replace('</body>', '<script>' + js + '</script></body>')
     with tempfile.TemporaryDirectory() as tmp:
         f = Path(tmp) / 'interactions.html'
         f.write_text(page, encoding='utf-8')
-        result = subprocess.run([shutil.which('node'), str(ROOT / 'scripts/browser_probe.js'), exe, f.resolve().as_uri(), str(width)],
+        result = subprocess.run([shutil.which('node'), str(ROOT / 'scripts/browser_probe.js'), exe, f.resolve().as_uri(), str(width), *([media] if media else [])],
                                 capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=90)
     if result.returncode:
         return {"count": 0, "errors": [result.stderr or "시험 결과를 읽지 못했습니다"]}
@@ -235,6 +310,18 @@ def main():
         print(f'조작 시험 시작: {width}', flush=True)
         result = run(exe, width)
         print(f"{'FAIL' if result['errors'] else 'OK'} 조작 시험 너비 {width}: {result['count']}개")
+        for error in result['errors']:
+            print('  -', error)
+        bad += bool(result['errors'])
+    # 인쇄 화면: 가상 활동지(결과 색 #123456)와 양배추 예시 (붉은 양배추 지시약의 처음 색만, 바뀐 색 없음)
+    tpl = (ROOT / 'assets/template.html').read_text(encoding='utf-8')
+    cases = [('가상 활동지', build(tpl, 'window.EXPERIMENT = ' + json.dumps(PRINT_DATA) + ';'),
+              {"cover": "2", "types": ["tripod", "lamp", "beaker", "thermometer"], "not": ["stand", "flask"], "result": "#123456"}),
+             ('양배추 예시', (ROOT / 'examples/red-cabbage/red-cabbage.html').read_text(encoding='utf-8'),
+              {"cover": "3", "types": ["rack", "dropper", "cup"], "not": ["flask", "beaker"], "result": ""})]
+    for name, page, want in cases:
+        result = run(exe, 1100, page, PRINT_JS.replace('__WANT__', json.dumps(want)), 'print')
+        print(f"{'FAIL' if result['errors'] else 'OK'} 인쇄 시험 {name}: {result['count']}개")
         for error in result['errors']:
             print('  -', error)
         bad += bool(result['errors'])

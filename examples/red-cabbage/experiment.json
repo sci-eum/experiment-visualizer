@@ -1,4 +1,5 @@
 {
+  "id": "red-cabbage-indicator",
   "title": "붉은 양배추 지시약으로 용액 분류하기",
   "subject": "5학년 2학기 과학",
   "unit": "4. 산과 염기",
@@ -26,6 +27,7 @@
   ],
   "steps": [
     {
+      "id": "label-tubes",
       "title": "시험관에 이름표 붙이기",
       "origin": {"where": "탐구 과정 1", "quote": "시험관 6개에 ㉠~㉥ 이름표를 붙이고 시험관대에 꽂는다.", "check": "ok"},
       "text": "시험관 6개에 ㉠~㉥ 이름표를 붙이고 시험관대에 꽂는다.",
@@ -37,6 +39,7 @@
       ]
     },
     {
+      "id": "add-solutions",
       "title": "용액을 5 mL씩 넣기",
       "origin": {"where": "탐구 과정 2", "quote": "눈금실린더로 식초, 레몬즙, 묽은 염산, 유리 세정제, 비눗물, 묽은 수산화 나트륨 용액을 각각 5 mL씩 재어 시험관 ㉠~㉥에 차례로 넣는다.", "check": "ok", "added": ["tip"]},
       "text": "눈금실린더로 식초, 레몬즙, 묽은 염산, 유리 세정제, 비눗물, 묽은 수산화 나트륨 용액을 각각 **5 mL**씩 재어 시험관 ㉠~㉥에 차례로 넣는다.",
@@ -51,6 +54,7 @@
       ]
     },
     {
+      "id": "add-indicator",
       "title": "지시약 떨어뜨리기",
       "origin": {"where": "탐구 과정 3", "quote": "스포이트로 붉은 양배추 지시약을 각 시험관에 5방울씩 떨어뜨린다.", "check": "ok"},
       "text": "스포이트로 붉은 양배추 지시약을 각 시험관에 **5방울씩** 떨어뜨린다.",
@@ -66,6 +70,7 @@
       ]
     },
     {
+      "id": "mix-observe",
       "title": "흔들어 섞고 색깔 관찰하기",
       "origin": {"where": "탐구 과정 4", "quote": "시험관을 가볍게 흔들어 섞은 뒤, 용액의 색깔 변화를 관찰한다.", "check": "ok"},
       "text": "시험관을 가볍게 흔들어 섞은 뒤, 용액의 색깔 변화를 관찰한다.",
@@ -76,31 +81,31 @@
       ]
     },
     {
+      "id": "record-sort",
       "title": "결과 기록하고 두 무리로 분류하기",
       "origin": {"where": "탐구 과정 5", "quote": "관찰한 결과를 표에 기록하고, 색깔 변화에 따라 용액을 두 무리로 분류한다.", "check": "ok"},
       "text": "관찰한 결과를 표에 기록하고, 색깔 변화에 따라 용액을 **두 무리**로 분류한다.",
       "scene": [
-        { "t": "rack", "x": 125, "s": 0.85, "tubes": [
-          { "tag": "㉠", "fill": 0.35, "color": "clear" }, { "tag": "㉡", "fill": 0.35, "color": "clear" }, { "tag": "㉢", "fill": 0.35, "color": "clear" },
-          { "tag": "㉣", "fill": 0.35, "color": "clear" }, { "tag": "㉤", "fill": 0.35, "color": "clear" }, { "tag": "㉥", "fill": 0.35, "color": "clear" } ] },
+        { "t": "svg", "x": 125, "y": 150, "w": 184, "h": 96, "markup": "<text y='-46' text-anchor='middle' font-size='12' font-weight='800' fill='#56617a'>탐구 결과</text><rect x='-90' y='-34' width='180' height='68' rx='8' fill='#fff' stroke='#56617a' stroke-width='2'/><path d='M-90,-6 H90 M-60,-34 V34 M-30,-34 V34 M0,-34 V34 M30,-34 V34 M60,-34 V34' stroke='#b9bfcc' stroke-width='1.5'/><g text-anchor='middle' font-size='14' font-weight='800' fill='#2b3040'><text x='-75' y='-15'>㉠</text><text x='-45' y='-15'>㉡</text><text x='-15' y='-15'>㉢</text><text x='15' y='-15'>㉣</text><text x='45' y='-15'>㉤</text><text x='75' y='-15'>㉥</text></g><path d='M-82,22 h14 M-52,22 h14 M-22,22 h14 M8,22 h14 M38,22 h14 M68,22 h14' stroke='#c99be6' stroke-width='2' stroke-linecap='round'/>" },
         { "t": "svg", "x": 370, "y": 100, "markup": "<rect x='-72' y='-48' width='144' height='88' rx='16' fill='#fbf4ff' stroke='#c99be6' stroke-width='2' stroke-dasharray='7 6'/><text y='2' text-anchor='middle' font-size='15' font-weight='800' fill='#7d2ba6'>무리 1</text>" },
         { "t": "svg", "x": 370, "y": 222, "markup": "<rect x='-72' y='-48' width='144' height='88' rx='16' fill='#fbf4ff' stroke='#c99be6' stroke-width='2' stroke-dasharray='7 6'/><text y='2' text-anchor='middle' font-size='15' font-weight='800' fill='#7d2ba6'>무리 2</text>" },
-        { "t": "arrow", "from": [228, 150], "to": [290, 82], "curve": -14 },
-        { "t": "arrow", "from": [228, 180], "to": [290, 200], "curve": 10 },
-        { "t": "text", "x": 125, "y": 288, "text": "색깔 변화가 비슷한 것끼리", "size": 11, "weight": 700 }
+        { "t": "arrow", "from": [222, 140], "to": [290, 88], "curve": -14 },
+        { "t": "arrow", "from": [222, 168], "to": [290, 210], "curve": 10 },
+        { "t": "text", "x": 125, "y": 240, "text": "색깔 변화가 비슷한 것끼리", "size": 11, "weight": 700 }
       ]
     }
   ],
   "results": {
     "table": {
+      "id": "color-change",
       "title": "탐구 결과",
       "head": ["시험관", "㉠ 식초", "㉡ 레몬즙", "㉢ 묽은 염산", "㉣ 유리 세정제", "㉤ 비눗물", "㉥ 묽은 수산화 나트륨 용액"],
       "rows": [["색깔 변화", "", "", "", "", "", ""]]
     },
     "questions": [
-      "붉은 양배추 지시약이 붉은색 계열로 변한 용액은 무엇인가요?",
-      "붉은 양배추 지시약이 푸른색이나 노란색 계열로 변한 용액은 무엇인가요?",
-      "두 무리의 용액을 각각 무엇이라고 부를 수 있을까요?"
+      { "id": "q-red", "text": "붉은 양배추 지시약이 붉은색 계열로 변한 용액은 무엇인가요?" },
+      { "id": "q-blue-yellow", "text": "붉은 양배추 지시약이 푸른색이나 노란색 계열로 변한 용액은 무엇인가요?" },
+      { "id": "q-names", "text": "두 무리의 용액을 각각 무엇이라고 부를 수 있을까요?" }
     ]
   },
   "source": "탐구 활동 7 실험지 (examples/red-cabbage/worksheet.pdf)"

@@ -86,7 +86,7 @@ def chunks(js):
 
 
 def props(text):
-    return set(re.findall(r"\bel\.([A-Za-z_]\w*)", text)) - {"_g", "_parent", "_slot", "_done", "_level"}
+    return set(re.findall(r"\bel\.([A-Za-z_]\w*)", text)) - {"_g", "_parent", "_slot", "_done", "_level", "_cut"}
 
 
 def obj_keys(js, name):

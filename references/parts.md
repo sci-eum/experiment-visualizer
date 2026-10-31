@@ -189,7 +189,7 @@
 
 ## 전기
 
-`circuit` ● 회로 한 벌: `x, y`(중심), `w, h`, `closed`(스위치 닫힘, 기본 true), `current:true`(전류 흐름 표시), `parts:[…]`
+`circuit` ● 회로 한 벌: `x, y`(중심), `w, h`, `closed`(스위치 닫힘, 기본 true. `false`면 전구가 꺼지고 전류의 흐름 `current`도 그리지 않는다), `current:true`(전류 흐름 표시), `parts:[…]`
 
 - `parts` 항목: `'battery'` `'bulb'` `'switch'` `'ammeter'` `'voltmeter'` `'resistor'` `'motor'` `'led'` 또는 `{p:'bulb', label:'전구 A', edge:'top', on:false}`
 - 순서대로 아래 → 위 → 오른쪽 → 왼쪽 변에 놓인다. `edge`로 직접 정할 수 있다.
@@ -247,7 +247,7 @@
 | `eye` | 눈 + 시선 | `to:[x,y]` (눈금 읽기 장면) |
 | `view` | 확대 원 (`zoom`) | `r`, `show:'plantcells'/'animalcells'/'solid'/'liquid'/'gas'/'dissolve'/'crystals'/'bubbles'`, `color`, `from:[x,y]` 또는 `'id'`(확대한 곳), `label`, `markup`(직접 그린 SVG, 원 중심이 0,0). 입자 모형(`solid`·`liquid`·`gas`·`dissolve`)은 움직임이 켜져 있으면 고체는 제자리에서 떨고 액체는 조금씩 옮겨 가고 기체는 날아다닌다. `speed:'fast'`(뜨거울 때)·`'slow'`(차가울 때), `dissolve`는 물 입자 사이에 녹은 입자(`color2`, 기본 분홍)가 섞인다. 입자 모형은 보통 `unseen:true` |
 | `heat` | 열의 이동 | `from`→`to`(`'id'` 또는 `[x,y]`): 물결 화살표 세 줄 (`kind:'conduct'`, 기본. 붙어 있는 두 부품이면 받는 쪽 바닥까지). `kind:'convect'`+`in:'그릇 id'`: 그릇 안에서 데워진 물이 오르고(빨강) 식은 물이 내려오는(파랑) 흐름, `side:'center'/'left'/'right'`(데우는 쪽, 기본 가운데). `kind:'radiate'`+`from`: 사방으로(또는 `to` 쪽으로) 퍼지는 물결, `length`. `label`. 기본이 보이지 않는 것(`unseen`)이다 |
-| `current` | 전류의 흐름 | `along:'전선 id'` 또는 `['w1','w2']`(`wire`·`hose`·`tubing`의 그린 순서 = from → to가 전류 방향, `circuit`은 둘레를 건전지 (+)극에서 나오는 방향), `reverse`(거꾸로). `show:'current'`(기본: 주황 화살촉이 전류 방향으로 흐른다) · `'electrons'`(전자만: '−'가 든 파란 알갱이가 반대 방향으로) · `'both'`(둘 다: 화살촉은 전선 옆, 전자는 전선 안, 이름표 '전류'·'전자'). `electrons:true`는 `show:'electrons'`와 같다. `label`(전류 이름표), `elabel`(전자 이름표), `color`(화살촉 색). 기본이 보이지 않는 것(`unseen`)이다 |
+| `current` | 전류의 흐름 | `along:'전선 id'` 또는 `['w1','w2']`(`wire`·`hose`·`tubing`의 그린 순서 = from → to가 전류 방향, `circuit`은 둘레를 건전지 (+)극에서 나오는 방향), `reverse`(거꾸로). `show:'current'`(기본: 주황 화살촉이 전류 방향으로 흐른다) · `'electrons'`(전자만: '−'가 든 파란 알갱이가 반대 방향으로) · `'both'`(둘 다: 화살촉은 전선 옆, 전자는 전선 안, 이름표 '전류'·'전자'). `electrons:true`는 `show:'electrons'`와 같다. `label`(전류 이름표), `elabel`(전자 이름표), `color`(화살촉 색). 기본이 보이지 않는 것(`unseen`)이다. **열린 회로에는 그리지 않는다**: `circuit`의 `closed:false`, 단자로 이은 고리를 끊는 열린 `switch`(`closed:false`·`on:false`)·꺼진 건전지 끼우개(`on:false`) (data.md '보이지 않는 것 보기') |
 | `svg` | 직접 그리기 | `markup`(SVG 조각, 기준점이 0,0 — 실험대에 세울 것은 0,0에서 위쪽(음수 y)으로 그리고 `y:268`), `w`, `h`. `y`를 주지 않으면 y 150이 기준이고, `h`가 150보다 크면 실험대 위에 선다 |
 
 ## 입체(3D) 보기에서 보이는 모습

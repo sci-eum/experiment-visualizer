@@ -9,6 +9,9 @@
 6. 문서의 고정 버전 jsDelivr 주소가 저장소에 있는 파일을 가리키고, 참고 문서가 모두 스킬 zip·캐시 비우기 목록에 있다.
 7. parts.md의 '입체(3D) 보기' 표가 입체 엔진(labkit3d.js)이 빚는 부품·설명 부품과 같다.
    SKILL.md는 raw main 주소를 쓰지 않는다 (지시서와 엔진의 버전이 어긋나지 않게).
+8~9. 엔진의 부품 이름(KO)·기구 기본 설명(INFO) 표가 부품·parts.md와 맞는다.
+10. 예시의 성격: 원문으로 만든 예시(source가 있음)는 엄격 원문 검사(--strict-source)에서도 오류·확인이 없고,
+   원문 없는 기술 예시(갤러리·장면 예시)는 source·origin을 쓰지 않는다 (검사를 통과하려고 원문 근거·판독 상태를 지어내지 않게).
 
 사용법:  python scripts/check_docs.py      (문제가 있으면 종료 코드 1)
 표준 라이브러리만 쓴다.
@@ -25,6 +28,7 @@ import make_registry  # noqa: E402
 
 CIRCUIT_PARTS = {'battery', 'bulb', 'switch', 'ammeter', 'voltmeter', 'resistor', 'motor', 'led', 'wire'}
 MAX_SKILL_LINES = 400
+EXAMPLES = ['examples/recipes.json', 'examples/gallery.json', 'examples/red-cabbage/experiment.json']
 
 
 def engine_types():
@@ -75,7 +79,7 @@ def main():
         problems.append(f"SKILL.md '부품 이름 한눈에'에 엔진에 없는 이름: {t}")
 
     # 3. 문서·예시 데이터에 쓴 t
-    for f in ['examples/recipes.json', 'examples/gallery.json', 'examples/red-cabbage/experiment.json']:
+    for f in EXAMPLES:
         used += [(f, t) for t in re.findall(r'"t":\s*"([a-zA-Z_]+)"', (ROOT / f).read_text(encoding='utf-8'))]
     for where, t in sorted(set(used)):
         if t not in known:
@@ -160,6 +164,16 @@ def main():
             problems.append(f"labkit.js INFO(기구 기본 설명)에 엔진에 없는 부품: {k}")
     if lines > MAX_SKILL_LINES:
         problems.append(f'SKILL.md가 {lines}줄입니다 ({MAX_SKILL_LINES}줄 이하로 줄이고 자세한 내용은 references로).')
+    # 10. 예시의 성격: 원문 예시는 엄격 원문 검사도 깨끗하게, 기술 예시는 원문 근거를 쓰지 않는다
+    reg = check_data.load_registry()
+    for f in EXAMPLES:
+        d = json.loads((ROOT / f).read_text(encoding='utf-8'))
+        if d.get('source'):
+            r = check_data.main_check(d, reg, strict_source=True)
+            if r.errors or r.warns:
+                problems.append(f'{f}: 원문으로 만든 예시는 --strict-source에서도 오류·확인이 없어야 합니다 ({(r.errors + r.warns)[0]})')
+        elif any(isinstance(st, dict) and 'origin' in st for st in d.get('steps') or []):
+            problems.append(f'{f}: 원문(source)이 없는 기술 예시에 origin이 있습니다. 원문 근거·판독 상태를 지어내지 마세요')
 
     print(f'부품 {len(types)}종(별칭 {len(aliases)}), SKILL.md {lines}줄, ' + ', '.join(f'{n.split("/")[-1]} {len(t.splitlines())}줄' for n, t in docs.items() if n != 'SKILL.md'))
     for p in problems:

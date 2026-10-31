@@ -8,7 +8,8 @@
     같은 장면의 id 중복, 가리키는 id가 없음, 부피를 읽지 못함, 넣은 양이 용량보다 많음, 잘못된 장면 이어받기, 남은 _demo
 확인 (볼 것): 좌표가 장면 밖, 준비물에 용량이 적혔는데 장면·아이콘에 vol/fromVol이 없음,
     설명·그림의 수치(양·온도·시간·농도 …)가 원문 근거 문장(origin.quote)에 없음,
-    준비물 아이콘이 이름 짐작으로 다른 기구 그림이 됨('피펫' → 스포이트), 몇 시간짜리 타이머가 생김 등
+    준비물 아이콘이 이름 짐작으로 다른 기구 그림이 됨('피펫' → 스포이트), 몇 시간짜리 타이머가 생김,
+    결과 보기의 모습이 과정 그림·표지에 미리 있음, 학생 답 저장에 쓰는 고정 id가 없음 등
 오류가 있으면 종료 코드 1.
 
 부품 목록은 스크립트 옆의 ../references/parts.json을 쓰고, 없으면 저장소에서 내려받는다.
@@ -24,7 +25,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 # 부품 목록: 그림 엔진과 같은 고정 배포판을 먼저, 막히면 같은 태그의 저장소 원본
-VERSION = "1.32.0"
+VERSION = "1.32.1"
 RAW = [f"https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@{VERSION}/references/parts.json",
        f"https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v{VERSION}/references/parts.json"]
 W, H = 480, 300
@@ -51,6 +52,8 @@ PORTS = {"power", "geltank", "electrophoresis", "meter", "coil", "battery", "bul
 METER_PORTS = {"multi", "galvano", "ammeter", "voltmeter"}  # 단자가 있는 meter kind
 KIDS = {"rack": "tubes", "tuberack": "tubes", "wellplate": "wells"}  # 안에 든 것(시험관·튜브·홈)에도 id를 주어 가리킨다
 TEXT_FIELDS = ["text", "point", "observe", "tip", "warn"]
+# 결과 보기의 change에서 결과(모습)로 치지 않는 배치·이름 속성
+PLACE = {"t", "id", "x", "y", "dx", "dy", "at", "tilt", "s", "z", "label", "labelSide", "info", "on", "in", "over", "into", "hold", "stand", "reach"}
 # 준비물 이름 → 부품 (용량 확인용)
 NAME_T = [("눈금실린더", "cylinder"), ("눈금 실린더", "cylinder"), ("메스실린더", "cylinder"), ("부피 플라스크", "volumetric"),
           ("부피플라스크", "volumetric"), ("둥근바닥", "roundflask"), ("삼각 플라스크", "flask"), ("삼각플라스크", "flask"),
@@ -568,6 +571,7 @@ def main_check(data, reg, strict_source=False):
     # 단계와 장면 (이어받기는 엔진과 같은 규칙으로 풀어서 검사)
     resolved = {}
     sk_keys = []
+    result_looks = []  # (단계, id, 결과 보기에서 바뀌는 모습) — 표지 검사
 
     def resolve(i, sc, where, chain):
         if sc is None:
@@ -700,6 +704,16 @@ def main_check(data, reg, strict_source=False):
                         rep.err(f"{where}.reveal", f"알 수 없는 항목 '{k}'{suggest(k, REVEAL)}")
                 if "text" in rv and not is_text(rv["text"]):
                     rep.err(f"{where}.reveal.text", "글자여야 해요")
+                # 결과 보기에서 바뀌는 모습: 과정 그림에 이미 그 모습이면 결과를 미리 보인 것이다. 표지 검사에도 쓴다
+                proc = {e["id"]: e for x in items if isinstance(x, dict) for e in [x] + kids(x) if e.get("id")}
+                for id_, ch in (rv.get("change") or {}).items() if isinstance(rv.get("change"), dict) else []:
+                    e, look = proc.get(id_), {k: v for k, v in (ch or {}).items() if k not in PLACE and v is not None}
+                    if not isinstance(e, dict) or not look:
+                        continue
+                    if all(e.get(k) == v for k, v in look.items()):
+                        rep.warn(f"{where}.reveal", f"결과 보기에서 바꾸는 '{id_}'의 {', '.join(f'{k}: {json.dumps(v, ensure_ascii=False)}' for k, v in look.items())}가 과정 그림에 이미 있어요 — 결과가 미리 보이지 않게 과정 그림은 결과 전 모습으로 두세요")
+                    else:
+                        result_looks.append((i, id_, {k: v for k, v in look.items() if e.get(k) != v}))
                 if any(k in rv for k in ("scene", "remove", "change", "add")):
                     sc = rv.get("scene") if "scene" in rv else {"from": "self", **{k: rv[k] for k in ("remove", "change", "add") if k in rv}}
                     ritems = resolve(i, sc, f"{where}.reveal", [])
@@ -742,12 +756,17 @@ def main_check(data, reg, strict_source=False):
     for d in sorted({i for i in sids if sids.count(i) > 1}):
         rep.err("steps", f"단계 id '{d}'가 여러 번 나와요 (예상 칸의 학생 답이 엇갈려요)")
 
-    # 표지
+    # 표지 (없으면 엔진이 결과를 열기 전의 대표 장치 장면을 고른다). 결과 보기의 모습이 표지에 있으면 알린다
     if "cover" in data:
         items = resolve(-1, data["cover"], "cover", [])
         for j, el in enumerate(items):
             check_part(el, f"cover[{j}]", reg, rep)
         check_refs(items, scene_ids(items, "cover", rep), "cover", rep)
+        cov = {e["id"]: e for x in items if isinstance(x, dict) for e in [x] + kids(x) if e.get("id")}
+        for i, id_, look in result_looks:
+            shown = {k: v for k, v in look.items() if isinstance(cov.get(id_), dict) and cov[id_].get(k) == v}
+            if shown:
+                rep.warn("cover", f"표지에 {i + 1}단계 결과 보기의 모습('{id_}'의 {', '.join(f'{k}: {json.dumps(v, ensure_ascii=False)}' for k, v in shown.items())})이 있어요 — 결과를 열기 전 장면을 표지로 쓰세요")
 
     # 결과
     res = data.get("results")
@@ -779,6 +798,20 @@ def main_check(data, reg, strict_source=False):
                 check_table(tb, f"results.table[{ti}]", rep)
     for d in sorted({k for k in sk_keys if k and sk_keys.count(k) > 1}):
         rep.err("그림 칸", f"id·제목 '{d}'가 여러 번 나와요 (그린 그림이 엇갈려요. id를 따로 주세요)")
+    # 학생 답 저장에 쓰는 고정 id (SKILL 5장). 없으면 제목·물음 글이 저장 이름이라 글을 고치면 예전 답이 안 보인다
+    res = res if isinstance(res, dict) else {}
+    sks = [sk for v in [res.get("sketches")] + [st.get("sketch") for st in steps if isinstance(st, dict)] for sk in (v if isinstance(v, list) else [v]) if isinstance(sk, dict)]
+    tbls = [tb for tb in (res.get("tables") or ([res["table"]] if "table" in res else [])) if isinstance(tb, dict)]
+    need = [f"{i + 1}단계" for i, st in enumerate(steps) if isinstance(st, dict) and st.get("predict") and st.get("id") in (None, "")]
+    need += [f"질문 {k + 1}" for k, q in enumerate(res.get("questions") or []) if not (isinstance(q, dict) and q.get("id"))]
+    need += [f"표 '{tb.get('title') or k + 1}'" for k, tb in enumerate(tbls) if not tb.get("id") and any(c == "" or c is None for r in tb.get("rows") or [] if isinstance(r, list) for c in r)]
+    need += [f"그림 칸 '{sk.get('title') or k + 1}'" for k, sk in enumerate(sks) if sk.get("id") is None]
+    writes = any(isinstance(st, dict) and st.get("predict") for st in steps) or res.get("questions") or sks or any(c == "" or c is None for tb in tbls for r in tb.get("rows") or [] if isinstance(r, list) for c in r)
+    if writes and data.get("id") in (None, ""):
+        need.insert(0, "실험")
+    if need:
+        rep.warn("id", f"학생 답 저장에 쓰는 고정 id가 없어요: {', '.join(need)}. 새 자료는 처음부터 주세요 "
+                       "(쓰던 자료에 더할 때는 그 판에서 제목·물음 글을 그대로 두면 예전 답이 이어져요)")
     return rep
 
 

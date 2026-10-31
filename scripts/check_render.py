@@ -120,7 +120,7 @@ def shots(path, exe, steps, reveals, out_dir, grid):
     for old in list(out.glob('step-*.png')) + list(out.glob('overview.png')):  # step-NN-result.png 포함
         old.unlink()  # 지난번 결과(단계 수가 달랐을 수 있음)를 지운다
     base = pathlib.Path(path).resolve().as_uri() + '?' + ('grid&' if grid else '') + 'shot='
-    rows = math.ceil((steps + len(reveals) + 1) / 2)  # 표지가 있을 수 있어 한 칸 더
+    rows = math.ceil((steps + len(reveals) + 1) / 2)  # 표지 한 칸 더 (cover가 없으면 엔진이 고른 기본 표지)
     jobs = [(out / 'overview.png', base + 'all', (1008, 32 + rows * 330 + (rows - 1) * 16))]
     jobs += [(out / f'step-{i:02d}.png', base + str(i), ONE) for i in range(1, steps + 1)]
     jobs += [(out / f'step-{i + 1:02d}-result.png', base + f'{i + 1}r', ONE) for i in reveals]

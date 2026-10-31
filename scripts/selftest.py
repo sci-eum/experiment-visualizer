@@ -7,7 +7,12 @@
    (근거가 표라서 단위가 머리에만 있을 때 포함), 정해진 값(kind·solid …)·준비물 아이콘 짐작·긴 타이머를 알리는지,
    홈판의 홈(속성·자리)과 멀티미터 단자를 검사하는지, 괜찮은 것(마이크로피펫, 시험관대, 홈 id 가리키기, timer false …)은 알리지 않는지
 4. 학생 답 저장 이름 (헤드리스 Chrome/Edge가 있으면): v1.8까지의 순번 이름에서 옮기는지,
-   단계·질문·표 줄을 끼워 넣거나 id 있는 물음 글을 고쳐도 답이 제 칸을 따라가는지
+   단계·질문·표 줄을 끼워 넣거나 id 있는 물음 글을 고쳐도 답이 제 칸을 따라가는지,
+   id가 없던 자료에 id를 더해도(실험·단계·질문·표·그림 칸) 예전 답이 보이고, 그 뒤 제목·물음 글·단계 순서를 바꿔도 이어지는지
+5. 회로와 전류 (v1.32.1): 열린 회로(closed:false)·열린 스위치·꺼진 건전지 끼우개에는 2D·3D 모두 전류·전자가 없고,
+   닫힌 회로에는 둘 다 있으며 전류 방향(건전지 (+)극에서 나옴)이 그대로인지
+6. 기본 표지 (v1.32.1): cover가 없으면 결과 전 대표 장치 장면(그 실험의 기구, 결과 색 없음, 보이지 않는 것 없음),
+   실험대 장면이 없으면 중립 표지, cover {from}은 결과 보기가 아닌 과정 장면인지
 사용법:  python scripts/selftest.py      (실패가 있으면 종료 코드 1)
 """
 import contextlib
@@ -26,6 +31,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from check_data import main_check, load_registry, parse_volume, quantities, missing_quantities  # noqa: E402
 from extract_text import eq_to_text  # noqa: E402
+from selftest_ui import hash_str  # noqa: E402
 
 EQ = {
     'rm CaCl _{2}': 'CaCl₂', 'TRIANGLE  T': 'ΔT', 'H _{2} O': 'H₂O', '10 ^{-3}': '10⁻³', '2 TIMES 10 ^{5}': '2×10⁵',
@@ -103,7 +109,7 @@ BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문�
 # 알리지 않아야 하는 것: 맞게 짐작되는 준비물, 정해진 값, 그래프 숫자 배열, 꺼 둔 긴 타이머, 수업 안의 시간
 MERGE_TABLE = {"id": "m", "title": "합친 표", "head": [{"text": "구분", "span": 2}, "1회", "2회"],
                 "rows": [[{"text": "A 모둠", "rowspan": 2}, "길이", "5", ""], ["무게", {"off": True}, ""], [{"text": "B 모둠", "rowspan": 1}, "길이", "5", ""]]}
-QUIET = {"title": "조용한 시험", "materials": [
+QUIET = {"id": "selftest-quiet", "title": "조용한 시험", "materials": [
     {"name": "마이크로피펫"}, {"name": "시험관대"}, {"name": "스탠드와 집게"}, {"name": "온도계"}, {"name": "pH 미터", "icon": {"t": "generic", "text": "pH"}},
     {"name": "디지털 온도계"}, {"name": "12홈판"}, {"name": "20 % 설탕물"}, {"name": "소금물"}, {"name": "설탕 용액"}, {"name": "스마트폰"}, {"name": "분광기"}, {"name": "적외선 온도계"}, {"name": "칼"}, {"name": "점화기"}, {"name": "감자 조각"}, {"name": "저마찰 트랙"}, {"name": "도르래"}, {"name": "추걸이"}, {"name": "용수철"}, {"name": "삼각대"}, {"name": "코일"}, {"name": "검류계"}, {"name": "건전지 끼우개"}, {"name": "9 V 건전지"}, {"name": "탄소 막대"}, {"name": "향"}, {"name": "면봉"}, {"name": "홀 피펫"}, {"name": "피펫 필러"}, {"name": "한천 배지"}, {"name": "TLC 판"}, {"name": "항온기"}, {"name": "눈금 피펫 (10 mL)", "icon": {"t": "glasspipette", "vol": "10 mL"}}, {"name": "주사기 (50 mL)", "icon": {"t": "syringe", "vol": "50 mL"}}],
     "steps": [
@@ -128,7 +134,7 @@ QUIET = {"title": "조용한 시험", "materials": [
         {"title": "화면·svg", "scene": [{"t": "device", "display": "camera", "title": "촬영"}, {"t": "device", "display": "blank", "value": "0.0 s"}, {"t": "svg", "x": 100, "y": 268, "w": 40, "h": 40},
                                     {"t": "wellplate", "wells": [{"id": "lw", "label": "물질 가", "labelSide": "right"}]}]},
         {"title": "그림 칸", "sketch": [{"id": "s1", "title": "보이는 모습", "labels": ["가", "나"], "write": "배율"}], "scene": [{"t": "microscope"}]}],
-    "results": {"sketches": [{"title": "궤적", "shape": "polar", "n": 2}, {"id": "s2", "title": "흐름", "shape": "box", "note": "화살표로"}],
+    "results": {"sketches": [{"id": "s0", "title": "궤적", "shape": "polar", "n": 2}, {"id": "s2", "title": "흐름", "shape": "box", "note": "화살표로"}],
                 "tables": [MERGE_TABLE]}}
 QUIET["steps"] += [
     {"title": "남은 기구", "sketch": {"id": "sp1", "title": "스펙트럼", "shape": "spectrum", "range": [300, 800], "labels": ["가", "나"]},
@@ -138,11 +144,11 @@ QUIET["steps"] += [
     {"title": "공 놓기", "scene": [{"t": "table", "id": "tb"}, {"t": "ball", "id": "b1", "on": "tb", "at": 0.2}]},
     {"title": "공 옮기기", "scene": {"from": "prev", "change": {"b1": {"at": 0.6}}}},
     {"title": "새 공", "scene": {"from": "prev", "remove": ["b1"], "add": [{"t": "ball", "on": "tb", "at": 0.9}]}},
-    {"title": "고르는 예상", "scene": [{"t": "beaker"}], "reveal": "결과 글",
+    {"id": "p1", "title": "고르는 예상", "scene": [{"t": "beaker"}], "reveal": "결과 글",
      "predict": [{"text": "어느 쪽이 먼저 식을까?", "choices": ["가", "나", "같다"], "answer": "가", "why": "까닭 글", "write": "그렇게 생각한 까닭"}, "글로 적는 예상?"],
      "origin": {"where": "1쪽", "quote": "어느 쪽이 먼저 식을까?", "check": "ok", "added": ["answer"]}},
-    {"title": "정답만", "scene": [{"t": "beaker"}], "predict": {"text": "뜰까?", "choices": ["뜬다", "가라앉는다"], "answer": ["뜬다"]}},
-    {"title": "결과 보기로 확인", "scene": [{"t": "beaker"}], "reveal": {"text": "결과"}, "predict": {"text": "변할까?", "choices": ["예", "아니요"]}},
+    {"id": "p2", "title": "정답만", "scene": [{"t": "beaker"}], "predict": {"text": "뜰까?", "choices": ["뜬다", "가라앉는다"], "answer": ["뜬다"]}},
+    {"id": "p3", "title": "결과 보기로 확인", "scene": [{"t": "beaker"}], "reveal": {"text": "결과"}, "predict": {"text": "변할까?", "choices": ["예", "아니요"]}},
     {"title": "시연 없이", "motion": False, "scene": {"from": "prev", "change": {}}},
     {"title": "부품 설명", "scene": [{"t": "beaker", "info": "가상 설명", "label": "가"}, {"t": "rack", "tubes": [{"info": ["한 줄", "두 줄"]}]}],
      "origin": {"where": "1쪽", "quote": "가상 문장", "check": "ok", "added": ["info"]}}]
@@ -160,6 +166,16 @@ QUIET["steps"].append({"title": "보이지 않는 것", "scene": [  # 열의 이
     "reveal": {"add": [{"t": "heat", "kind": "convect", "in": "b"}]},
     "origin": {"where": "1쪽", "quote": "가상 문장", "check": "ok", "added": ["unseen"]}})
 BAD["materials"].append({"name": "가상 준비물", "info": 2})
+QUIET["steps"].append({"id": "rv", "title": "결과로 바뀜", "scene": [{"t": "beaker", "id": "qb", "color": "clear"}], "reveal": {"change": {"qb": {"color": "blue"}}}})
+QUIET["cover"] = {"from": len(QUIET["steps"])}
+# 결과를 미리 보임 (v1.32.1): 결과 보기에서 바꾸는 모습이 과정 그림에 이미 있음, 표지가 결과 뒤 장면
+BAD["steps"] += [
+    {"title": "결과 미리", "scene": [{"t": "beaker", "id": "rb", "color": "pink", "fill": 0.4}], "reveal": {"change": {"rb": {"color": "pink"}}}},
+    {"title": "결과 보기", "scene": [{"t": "beaker", "id": "cb", "color": "clear", "fill": 0.4}], "reveal": {"change": {"cb": {"color": "#123456"}}}},
+    {"title": "결과 이어", "scene": {"from": "prev", "change": {"cb": {"color": "#123456"}}}}]
+BAD["cover"] = {"from": len(BAD["steps"])}
+BAD_WARN += ["결과 보기에서 바꾸는 'rb'의 color: \"pink\"가 과정 그림에 이미 있어요", "표지에 " + str(len(BAD["steps"]) - 1) + "단계 결과 보기의 모습('cb'의 color",
+             "학생 답 저장에 쓰는 고정 id가 없어요: 실험,"]
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다
 TABLE_TEXT = '80°C 120초 → (60°C 30초 · 40°C 50초) 10회 → 25°C 90초'
 TABLE_QUOTE = '[표] 단계 / 온도 (°C) / 시간(sec) / 반복: 데우기 80 / 120 / 1, 식히기 60 / 30 / 10, 기다리기 40 / 50 / 10, 마무리 25 / 90 / 1'
@@ -204,6 +220,41 @@ KEYS_MERGE_SEED = {"t:m:A 모둠 길이:2회": "가", "t:m:A 모둠 무게:2회"
 KEYS_MERGE_SHOWN = ["가", "나", "다"]
 
 
+# id를 처음 준 자료 (v1.32.1): id 없이 글로 정한 이름에 적힌 답(V0) → id를 더한 판(V1)에서도 보이고 → 제목·물음 글·순서를 고친 판(V2)에서도 이어진다
+ID_V0 = {"title": "가상 id 시험", "steps": [
+    {"title": "가상 관찰 1", "predict": "물의 색은?", "scene": [{"t": "beaker"}]},
+    {"title": "가상 관찰 2", "predict": ["거품이 생길까?"], "sketch": {"title": "보이는 모습", "shape": "box", "write": "배율"}, "scene": [{"t": "beaker"}]}],
+    "results": {"table": {"title": "가상 기록표", "head": ["용액", "모습"], "rows": [["가", ""], ["나", ""]]}, "questions": ["무엇을 알았나요?", "더 알고 싶은 것은?"]}}
+ID_SEED = {"p:" + hash_str("물의 색은?"): "예상1", "p:" + hash_str("거품이 생길까?"): "예상2", "s:" + hash_str("보이는 모습") + ":0:w": "배율 답",
+           "t:" + hash_str("가상 기록표") + ":가:모습": "가-모습", "t:" + hash_str("가상 기록표") + ":나:모습": "나-모습",
+           "q:" + hash_str("무엇을 알았나요?"): "답1", "q:" + hash_str("더 알고 싶은 것은?"): "답2", "p:" + hash_str("거품이 생길까?") + ":done": "1"}
+ID_SHOWN = ["예상1", "예상2", "배율 답", "가-모습", "나-모습", "답1", "답2"]
+ID_SHOWN_V2 = ["", "예상2", "배율 답", "예상1", "가-모습", "나-모습", "답2", "", "답1"]
+
+
+def ids_v1():
+    d = copy.deepcopy(ID_V0)
+    d["id"] = "selftest-ids"
+    for st, sid in zip(d["steps"], ["s-a", "s-b"]):
+        st["id"] = sid
+    d["steps"][1]["sketch"]["id"] = "sk"
+    d["results"]["table"]["id"] = "tb"
+    d["results"]["questions"] = [{"id": "q-a", "text": "무엇을 알았나요?"}, {"id": "q-b", "text": "더 알고 싶은 것은?"}]
+    return d
+
+
+def ids_v2():
+    d = ids_v1()
+    d["title"] = "가상 id 시험 (제목을 고침)"
+    a, b = d["steps"]
+    a["predict"], b["predict"], b["sketch"]["title"] = "물의 색은 어떨까요? (고침)", ["거품이 생길까요? (고침)"], "보이는 모습 (고침)"
+    d["steps"] = [{"id": "s-new", "title": "새 단계", "predict": "새로 넣은 예상?", "scene": [{"t": "beaker"}]}, b, a]
+    d["results"]["table"]["title"] = "가상 기록표 (고침)"
+    q = d["results"]["questions"]
+    d["results"]["questions"] = [{"id": "q-b", "text": "더 알고 싶은 것은? (고침)"}, "새 질문?", {"id": "q-a", "text": "무엇을 알았나요? (고침)"}]
+    return d
+
+
 def keys_v2():
     d = copy.deepcopy(KEYS_V1)
     d["steps"].insert(0, {"title": "새 단계", "predict": "새로 넣은 예상?", "scene": [{"t": "beaker"}]})
@@ -213,17 +264,20 @@ def keys_v2():
     return d
 
 
-def open_with_answers(exe, data, seed):
-    """data로 만든 HTML을 seed(저장된 답)와 함께 헤드리스로 열어 → {shown: [[칸 이름, 글]…], stored: {…}}"""
+def open_with_answers(exe, data, seed, bucket=None, read=None):
+    """data로 만든 HTML을 seed(저장된 답)와 함께 헤드리스로 열어 → {shown: [[칸 이름, 글]…], stored: {…}}
+    bucket: seed를 넣을 저장 이름(기본 'lk:' + id) 또는 {저장 이름: seed}, read: 읽어 올 저장 이름(기본 'lk:' + id)"""
     import check_render
     from build_html import build
     tpl = (HERE.parent / "assets" / "template.html").read_text(encoding="utf-8")
     page = build(tpl, "window.EXPERIMENT = " + json.dumps(data, ensure_ascii=False) + ";")
-    pre = f"<script>localStorage.setItem('lk:{data['id']}', {json.dumps(json.dumps(seed))})</script>"
+    seeds = bucket if isinstance(bucket, dict) else {bucket or f"lk:{data['id']}": seed}
+    read = read or f"lk:{data['id']}"
+    pre = "<script>localStorage.clear();" + "".join(f"localStorage.setItem({json.dumps(k)}, {json.dumps(json.dumps(v))});" for k, v in seeds.items()) + "</script>"
     post = ("<script>(function w(){if(!document.querySelector('[data-w]'))return setTimeout(w,50);"
             "var o=document.createElement('pre');o.id='lk-test';o.textContent=JSON.stringify({shown:[].map.call("
             "document.querySelectorAll('[data-w]'),function(x){return [x.dataset.w,x.textContent]}),"
-            f"stored:JSON.parse(localStorage.getItem('lk:{data['id']}')||'{{}}')}});document.body.appendChild(o)}})()</script>")
+            f"stored:JSON.parse(localStorage.getItem({json.dumps(read)})||'{{}}')}});document.body.appendChild(o)}})()</script>")
     page = page.replace("<body>", "<body>" + pre, 1)
     i = page.rindex("</body>")
     page = page[:i] + post + page[i:]
@@ -256,7 +310,22 @@ def answer_key_test():
     r3 = open_with_answers(exe, KEYS_MERGE, KEYS_MERGE_SEED)
     if not r3 or [t for _, t in r3["shown"]] != KEYS_MERGE_SHOWN:
         fails.append(f"합친 칸 표의 답 이름: 보인 답 {r3 and r3['shown']} (기대 {KEYS_MERGE_SHOWN})")
-    return fails, 3
+    # id를 처음 준 자료: 제목으로 정했던 저장(KEY0)의 글 이름 답을 가져온다
+    k0, k1 = "lk:" + hash_str(ID_V0["title"]), "lk:selftest-ids"
+    r = open_with_answers(exe, ID_V0, ID_SEED, k0, k0)
+    if not r or [t for _, t in r["shown"]] != ID_SHOWN:
+        fails.append(f"id 없는 자료의 답: 보인 답 {r and [t for _, t in r['shown']]} (기대 {ID_SHOWN})")
+    r = open_with_answers(exe, ids_v1(), ID_SEED, k0, k1)
+    want = {"p:s-a:0": "예상1", "p:s-b:0": "예상2", "p:s-b:0:done": "1", "s:sk:0:w": "배율 답", "t:tb:가:모습": "가-모습", "t:tb:나:모습": "나-모습", "q:q-a": "답1", "q:q-b": "답2"}
+    if not r or [t for _, t in r["shown"]] != ID_SHOWN or r["stored"] != want:
+        fails.append(f"id를 더한 판에서 예전 답: 보인 답 {r and [t for _, t in r['shown']]} (기대 {ID_SHOWN}), 저장 {r and r['stored']}")
+    r2 = open_with_answers(exe, ids_v2(), (r or {}).get("stored", {}), k1, k1)
+    if not r2 or [t for _, t in r2["shown"]] != ID_SHOWN_V2:
+        fails.append(f"id를 준 뒤 제목·글·순서를 고친 판: 보인 답 {r2 and [t for _, t in r2['shown']]} (기대 {ID_SHOWN_V2})")
+    r = open_with_answers(exe, ids_v1(), None, {k0: ID_SEED, k1: {"q:q-a": "새 답"}}, k1)
+    if not r or [t for _, t in r["shown"]] != ["", "", "", "", "", "새 답", ""]:
+        fails.append(f"새 저장이 이미 있으면 예전 저장을 다시 가져오지 않아야: 보인 답 {r and [t for _, t in r['shown']]}")
+    return fails, 7
 
 
 # 입체 보기(v1.19): 한 장치는 한 장의 그림 카드로 묶인다 (스탠드가 잡은 것, 관으로 이은 것까지). 설명 부품은 따로
@@ -361,6 +430,118 @@ def units3d_test():
     return fails + zf, 4 + zn
 
 
+# 회로와 전류 (v1.32.1): 2D(LabKit.scene)와 3D(LabKit3D.open의 덧그림)에서 전자(파란 알갱이)·전류(주황 화살촉)를 센다
+WIRED = lambda sw, extra=(): [{"t": "battery", "id": "bt", "x": 120, "y": 220}, sw, {"t": "bulb", "id": "lb", "x": 240, "y": 90},
+                              {"t": "wire", "id": "w1", "from": "bt:+", "to": "sw:-"}, {"t": "wire", "id": "w2", "from": "sw:+", "to": "lb:+", "points": [[420, 90]]},
+                              {"t": "wire", "id": "w3", "from": "lb:-", "to": "bt:-", "points": [[60, 90], [60, 220]]}, *extra,
+                              {"t": "current", "along": ["w1", "w2", "w3"], "show": "both"}]
+HOLDER = lambda on: [{"t": "battery", "id": "bh", "kind": "holder", "n": 2, "switch": True, "on": on, "x": 150}, {"t": "bulb", "id": "lb", "x": 320, "y": 120},
+                     {"t": "wire", "id": "w1", "from": "bh:+", "to": "lb:+", "points": [[380, 120]]}, {"t": "wire", "id": "w2", "from": "lb:-", "to": "bh:-", "points": [[60, 120]]},
+                     {"t": "current", "along": ["w1", "w2"], "show": "both"}]
+CARD = lambda **k: [{"t": "circuit", "id": "c", "x": 240, "y": 140, "w": 280, "h": 160, "parts": ["battery", "switch", "bulb"], **k}, {"t": "current", "along": "c", "show": "both"}]
+CIRCUITS = {  # 이름: (장면, 전류가 흐르는가)
+    "회로 카드 닫힘": (CARD(), True), "회로 카드 열림": (CARD(closed=False), False),
+    "낱개 스위치 닫힘": (WIRED({"t": "switch", "id": "sw", "x": 360, "y": 220}), True),
+    "낱개 스위치 열림(closed:false)": (WIRED({"t": "switch", "id": "sw", "x": 360, "y": 220, "closed": False}), False),
+    "낱개 스위치 열림(on:false)": (WIRED({"t": "switch", "id": "sw", "x": 360, "y": 220, "on": False}), False),
+    "스위치를 건너뛴 전선": (WIRED({"t": "switch", "id": "sw", "x": 360, "y": 220, "closed": False}, [{"t": "wire", "id": "w4", "from": "sw:-", "to": "sw:+", "points": [[360, 260]]}]), True),
+    "건전지 끼우개 켬": (HOLDER(True), True), "건전지 끼우개 끔": (HOLDER(False), False),
+    "스위치 없는 전선": ([{"t": "battery", "id": "bt", "x": 300, "y": 225}, {"t": "bulb", "id": "lb", "x": 400, "y": 120},
+                     {"t": "wire", "id": "w1", "from": "bt:+", "to": "lb:+", "points": [[440, 225]]}, {"t": "wire", "id": "w2", "from": "lb:-", "to": "bt:-", "points": [[260, 120]]},
+                     {"t": "current", "along": ["w1", "w2"], "show": "both"}], True),
+}
+
+
+def circuit_test(exe):
+    """→ (실패 목록, 시험 수)"""
+    import check_render
+    from build_html import build, add3d
+    tpl = (HERE.parent / "assets" / "template.html").read_text(encoding="utf-8")
+    page = add3d(build(tpl, 'window.EXPERIMENT = {"title": "회로 시험", "steps": []};'), (HERE.parent / "assets" / "labkit3d.js").read_text(encoding="utf-8"))
+    cases = {k: v[0] for k, v in CIRCUITS.items()}
+    post = ("<script>(async function(){var C=" + json.dumps(cases, ensure_ascii=False) + ",out={};"
+            "var n=function(r,s){return r.querySelectorAll(s).length},E='circle[fill=\"#3f73d6\"]',A='path[stroke=\"#f08a12\"]';"
+            "for(var k in C){var d=document.createElement('div');d.innerHTML=LabKit.scene(C[k]);var t=d.textContent;"
+            "LabKit.setAnim(false);var q=document.createElement('div');q.innerHTML=LabKit.scene(C[k]);LabKit.setAnim(true);"  # 움직임 없이: 화살촉의 자리·방향
+            r"var dirs=[].map.call(q.querySelectorAll('g[transform*=rotate]'),function(g){if(!g.querySelector(A))return null;var m=/translate\(([-\d.]+),([-\d.]+)\) rotate\(([-\d.]+)\)/.exec(g.getAttribute('transform'));return m?[+m[1],+m[2],+m[3]]:null}).filter(Boolean);"
+            "var s=document.createElement('div');s.style.cssText='position:fixed;left:0;top:0;width:600px;height:400px';document.body.appendChild(s);"
+            "var v=LabKit3D.open(s,{items:C[k],still:true,unseen:true});await v.ready;v.draw();"
+            "out[k]={e2:n(d,E),a2:n(d,A),lab:/전류/.test(t)&&/전자/.test(t),e3:n(s,'.v3-lines '+E),a3:n(s,'.v3-lines '+A),dirs:dirs};v.dispose();s.remove()}"
+            "var o=document.createElement('pre');o.id='lk-test';o.textContent=JSON.stringify(out);document.body.appendChild(o)})()</script>")
+    i = page.rindex("</body>")
+    page = page[:i] + post + page[i:]
+    with tempfile.TemporaryDirectory() as d:
+        f = Path(d) / "circuit.html"
+        f.write_text(page, encoding="utf-8")
+        r = check_render.headless(exe, *check_render.GL_ARGS, "--dump-dom", f.resolve().as_uri(), text=True, encoding="utf-8", errors="replace")
+    m = re.search(r'<pre id="lk-test">(.*?)</pre>', r.stdout or "", re.S)
+    if not m:
+        return ["회로 시험: 화면을 읽지 못했어요 (WebGL)"], len(CIRCUITS) + 1
+    got, fails = json.loads(html.unescape(m.group(1))), []
+    for k, (_, flows) in CIRCUITS.items():
+        g = got.get(k) or {}
+        marks = [g.get(x, 0) for x in ("e2", "a2", "e3", "a3")]
+        if flows and not (all(marks) and g.get("lab")):
+            fails.append(f"회로 '{k}': 닫힌 회로인데 전류·전자가 모두 보이지 않아요 (2D 전자 {marks[0]}·화살촉 {marks[1]}, 3D 전자 {marks[2]}·화살촉 {marks[3]}, 이름표 {g.get('lab')})")
+        if not flows and (any(marks) or g.get("lab")):
+            fails.append(f"회로 '{k}': 열린 회로인데 전류·전자가 보여요 (2D 전자 {marks[0]}·화살촉 {marks[1]}, 3D 전자 {marks[2]}·화살촉 {marks[3]}, 이름표 {g.get('lab')})")
+    # 전류 방향: 회로 카드는 건전지(아래 변)의 (+)극(오른쪽)에서 나오므로 아래 변의 화살촉은 오른쪽(0°), 위 변은 왼쪽(180°)
+    dirs = (got.get("회로 카드 닫힘") or {}).get("dirs") or []
+    low, high = [a for x, y, a in dirs if y > 226 and 130 < x < 350], [a for x, y, a in dirs if y < 54 and 130 < x < 350]  # 변 가운데 (모서리 근처는 세로 변일 수 있다)
+    if not low or not high or any(abs(((a + 180) % 360) - 180) > 20 for a in low) or any(abs(abs(((a + 180) % 360) - 180) - 180) > 20 for a in high):
+        fails.append(f"회로 카드의 전류 방향이 바뀌었어요 (아래 변 {low[:4]}, 위 변 {high[:4]})")
+    return fails, len(CIRCUITS) + 1
+
+
+# 기본 표지 (v1.32.1): 결과 색 #123456은 표지에 없어야 한다
+COVERS = {
+    "가열 실험 (결과 보기 뒤 단계는 고르지 않음)": ({"title": "가상 가열", "steps": [
+        {"title": "준비물", "scene": [{"t": "beaker"}, {"t": "lamp"}, {"t": "tripod"}]},
+        {"title": "장치", "scene": [{"t": "tripod", "id": "tr", "x": 200}, {"t": "lamp", "x": 200}, {"t": "beaker", "id": "b", "on": "tr", "fill": 0.5, "color": "clear"}, {"t": "thermometer", "in": "b"},
+                                   {"t": "note", "x": 380, "y": 60, "text": "가상 안내"}]},
+        {"title": "관찰", "observe": "가상 관찰", "scene": {"from": "prev"}, "reveal": {"change": {"b": {"color": "#123456"}}}},
+        {"title": "정리", "scene": {"from": "prev", "change": {"b": {"color": "#123456"}}, "add": [{"t": "stand", "x": 420}, {"t": "flask", "x": 330}, {"t": "cylinder", "x": 60}]}}]},
+        "3", ["tripod", "lamp", "beaker", "thermometer"], ["note", "stand", "flask", "cylinder", "rack"]),
+    "전기 실험 (회로, 보이지 않는 것은 빼고)": ({"title": "가상 회로", "steps": [
+        {"title": "회로 꾸미기", "scene": [{"t": "circuit", "id": "c", "x": 240, "y": 140, "closed": False}, {"t": "current", "along": "c"}],
+         "reveal": {"change": {"c": {"closed": True}}, "add": [{"t": "current", "along": "c"}]}}]},
+        "1", ["circuit"], ["current", "beaker", "flask", "rack"]),
+    "실험대 장면이 없는 자료 (중립 표지)": ({"title": "가상 그래프", "steps": [
+        {"title": "그래프 보기", "bench": False, "scene": [{"t": "device", "x": 240, "y": 150}]}]},
+        "neutral", ["goggles", "gloves"], ["beaker", "flask", "rack", "device"]),
+    "cover from: 결과 보기가 아닌 과정 장면": ({"title": "가상 표지", "cover": {"from": 1}, "steps": [
+        {"title": "관찰", "scene": [{"t": "beaker", "id": "b", "fill": 0.5, "color": "clear"}], "reveal": {"change": {"b": {"color": "#123456"}}}}]},
+        "cover", ["beaker"], ["rack", "flask"]),
+}
+
+
+def cover_test(exe):
+    """→ (실패 목록, 시험 수)"""
+    import check_render
+    from build_html import build
+    tpl = (HERE.parent / "assets" / "template.html").read_text(encoding="utf-8")
+    post = ("<script>(function w(){var a=document.querySelector('.hero-art');if(!a)return setTimeout(w,50);var o=document.createElement('pre');o.id='lk-test';"
+            "o.textContent=JSON.stringify(a?{src:a.dataset.cover,types:[].map.call(a.querySelectorAll('[data-lk-t]'),function(n){return n.dataset.lkT}),"
+            "result:a.innerHTML.toLowerCase().indexOf('#123456')>=0,electrons:a.querySelectorAll('circle[fill=\"#3f73d6\"]').length}:null);document.body.appendChild(o)})()</script>")
+    fails = []
+    with tempfile.TemporaryDirectory() as d:
+        for name, (data, src, has, hasnt) in COVERS.items():
+            page = build(tpl, "window.EXPERIMENT = " + json.dumps(data, ensure_ascii=False) + ";")
+            i = page.rindex("</body>")
+            f = Path(d) / "cover.html"
+            f.write_text(page[:i] + post + page[i:], encoding="utf-8")
+            r = check_render.headless(exe, "--dump-dom", f.resolve().as_uri(), text=True, encoding="utf-8", errors="replace")
+            m = re.search(r'<pre id="lk-test">(.*?)</pre>', r.stdout or "", re.S)
+            got = json.loads(html.unescape(m.group(1))) if m else None
+            if not got:
+                fails.append(f"표지 '{name}': 화면을 읽지 못했어요")
+                continue
+            bad = [t for t in has if t not in got["types"]] + [t for t in hasnt if t in got["types"]]
+            if got.get("src") != src or bad or got["result"] or got["electrons"]:
+                fails.append(f"표지 '{name}': 고른 곳 {got.get('src')} (기대 {src}), 부품 {got['types']}, 결과 색 {got['result']}, 전류 {got['electrons']}")
+    return fails, len(COVERS)
+
+
 def main():
     for s in (sys.stdout, sys.stderr):
         try:
@@ -437,11 +618,18 @@ def main():
         fails += keys[0]
     u3 = units3d_test()
     if u3 is None:
-        print('헤드리스 브라우저가 없어 입체 묶음 시험은 건너뜀')
+        print('헤드리스 브라우저가 없어 입체 묶음·회로·표지 시험은 건너뜀')
+        more = 0
     else:
         fails += u3[0]
+        import check_render
+        with contextlib.redirect_stdout(io.StringIO()):
+            exe = check_render.browser()
+        (cf, cn), (vf, vn) = circuit_test(exe), cover_test(exe)
+        fails += cf + vf
+        more = cn + vn
     total = (len(EQ) + len(VOL) * (2 if node else 1) + len(BAD_EXPECT) + len(BAD_WARN) + len(QTY) + len(MISS) + 2
-             + len(strict_cases) + (keys[1] if keys else 0) + (u3[1] if u3 else 0))
+             + len(strict_cases) + (keys[1] if keys else 0) + (u3[1] if u3 else 0) + more)
     for f in fails:
         print('  -', f)
     print(f'{"OK" if not fails else "FAIL"}  자체 시험 {total - len(fails)}/{total}')

@@ -44,13 +44,16 @@ jobs:
       - name: 문서 점검 (JSON 문법, 엔진과 부품 목록, scenes.md·parts.json 최신, SKILL.md 길이)
         run: python scripts/check_docs.py
 
-      - name: 자체 시험 (수식·부피 읽기, 엔진과 검사기의 부피 해석 일치, 검사기가 오류를 찾는지)
+      - name: 자체 시험 (수식·부피 읽기, 검사기, 답 저장 이름·id 더하기, 열린 회로 전류 2D·3D, 기본 표지)
         run: python scripts/selftest.py
 
       - name: 예시 데이터 검사 (check_data.py)
         run: python scripts/check_data.py examples/gallery.json examples/recipes.json examples/red-cabbage/experiment.json
 
-      - name: 수업 조작·답안 백업 검사 (넓은 화면·휴대폰 너비)
+      - name: 원문으로 만든 대표 예시의 엄격 원문 검사 (--strict-source, 갤러리·장면 예시는 원문이 없는 기술 예시라 위의 일반 검사만)
+        run: python scripts/check_data.py examples/red-cabbage/experiment.json --strict-source
+
+      - name: 수업 조작·답안 백업·열린 회로·인쇄 검사 (넓은 화면·휴대폰 너비, 학생용·교사용 인쇄)
         run: python scripts/selftest_ui.py --require-browser
 
       - name: 그림 점검 (헤드리스 Chrome, 오류·겹침, 입체 보기까지, 가벼운 버전도 이 커밋의 엔진으로)

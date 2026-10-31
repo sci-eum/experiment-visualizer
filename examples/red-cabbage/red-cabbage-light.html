@@ -13,6 +13,7 @@
 <script>
 /* ===== EXPERIMENT DATA START — 이 블록만 바꾸세요 ===== */
 window.EXPERIMENT = {
+  "id": "red-cabbage-indicator",
   "title": "붉은 양배추 지시약으로 용액 분류하기",
   "subject": "5학년 2학기 과학",
   "unit": "4. 산과 염기",
@@ -137,6 +138,7 @@ window.EXPERIMENT = {
   ],
   "steps": [
     {
+      "id": "label-tubes",
       "title": "시험관에 이름표 붙이기",
       "origin": {
         "where": "탐구 과정 1",
@@ -189,6 +191,7 @@ window.EXPERIMENT = {
       ]
     },
     {
+      "id": "add-solutions",
       "title": "용액을 5 mL씩 넣기",
       "origin": {
         "where": "탐구 과정 2",
@@ -257,6 +260,7 @@ window.EXPERIMENT = {
       ]
     },
     {
+      "id": "add-indicator",
       "title": "지시약 떨어뜨리기",
       "origin": {
         "where": "탐구 과정 3",
@@ -338,6 +342,7 @@ window.EXPERIMENT = {
       ]
     },
     {
+      "id": "mix-observe",
       "title": "흔들어 섞고 색깔 관찰하기",
       "origin": {
         "where": "탐구 과정 4",
@@ -374,6 +379,7 @@ window.EXPERIMENT = {
       ]
     },
     {
+      "id": "record-sort",
       "title": "결과 기록하고 두 무리로 분류하기",
       "origin": {
         "where": "탐구 과정 5",
@@ -383,41 +389,12 @@ window.EXPERIMENT = {
       "text": "관찰한 결과를 표에 기록하고, 색깔 변화에 따라 용액을 **두 무리**로 분류한다.",
       "scene": [
         {
-          "t": "rack",
+          "t": "svg",
           "x": 125,
-          "s": 0.85,
-          "tubes": [
-            {
-              "tag": "㉠",
-              "fill": 0.35,
-              "color": "clear"
-            },
-            {
-              "tag": "㉡",
-              "fill": 0.35,
-              "color": "clear"
-            },
-            {
-              "tag": "㉢",
-              "fill": 0.35,
-              "color": "clear"
-            },
-            {
-              "tag": "㉣",
-              "fill": 0.35,
-              "color": "clear"
-            },
-            {
-              "tag": "㉤",
-              "fill": 0.35,
-              "color": "clear"
-            },
-            {
-              "tag": "㉥",
-              "fill": 0.35,
-              "color": "clear"
-            }
-          ]
+          "y": 150,
+          "w": 184,
+          "h": 96,
+          "markup": "<text y='-46' text-anchor='middle' font-size='12' font-weight='800' fill='#56617a'>탐구 결과</text><rect x='-90' y='-34' width='180' height='68' rx='8' fill='#fff' stroke='#56617a' stroke-width='2'/><path d='M-90,-6 H90 M-60,-34 V34 M-30,-34 V34 M0,-34 V34 M30,-34 V34 M60,-34 V34' stroke='#b9bfcc' stroke-width='1.5'/><g text-anchor='middle' font-size='14' font-weight='800' fill='#2b3040'><text x='-75' y='-15'>㉠</text><text x='-45' y='-15'>㉡</text><text x='-15' y='-15'>㉢</text><text x='15' y='-15'>㉣</text><text x='45' y='-15'>㉤</text><text x='75' y='-15'>㉥</text></g><path d='M-82,22 h14 M-52,22 h14 M-22,22 h14 M8,22 h14 M38,22 h14 M68,22 h14' stroke='#c99be6' stroke-width='2' stroke-linecap='round'/>"
         },
         {
           "t": "svg",
@@ -434,31 +411,31 @@ window.EXPERIMENT = {
         {
           "t": "arrow",
           "from": [
-            228,
-            150
+            222,
+            140
           ],
           "to": [
             290,
-            82
+            88
           ],
           "curve": -14
         },
         {
           "t": "arrow",
           "from": [
-            228,
-            180
+            222,
+            168
           ],
           "to": [
             290,
-            200
+            210
           ],
           "curve": 10
         },
         {
           "t": "text",
           "x": 125,
-          "y": 288,
+          "y": 240,
           "text": "색깔 변화가 비슷한 것끼리",
           "size": 11,
           "weight": 700
@@ -468,6 +445,7 @@ window.EXPERIMENT = {
   ],
   "results": {
     "table": {
+      "id": "color-change",
       "title": "탐구 결과",
       "head": [
         "시험관",
@@ -491,15 +469,24 @@ window.EXPERIMENT = {
       ]
     },
     "questions": [
-      "붉은 양배추 지시약이 붉은색 계열로 변한 용액은 무엇인가요?",
-      "붉은 양배추 지시약이 푸른색이나 노란색 계열로 변한 용액은 무엇인가요?",
-      "두 무리의 용액을 각각 무엇이라고 부를 수 있을까요?"
+      {
+        "id": "q-red",
+        "text": "붉은 양배추 지시약이 붉은색 계열로 변한 용액은 무엇인가요?"
+      },
+      {
+        "id": "q-blue-yellow",
+        "text": "붉은 양배추 지시약이 푸른색이나 노란색 계열로 변한 용액은 무엇인가요?"
+      },
+      {
+        "id": "q-names",
+        "text": "두 무리의 용액을 각각 무엇이라고 부를 수 있을까요?"
+      }
     ]
   },
   "source": "탐구 활동 7 실험지 (examples/red-cabbage/worksheet.pdf)"
 };
 /* ===== EXPERIMENT DATA END ===== */
 </script>
-<script src="https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.32.0/assets/labkit.min.js" onerror="document.getElementById('app').innerHTML='<p style=&quot;max-width:640px;margin:48px auto;padding:24px;border-radius:16px;background:#fff;line-height:1.7;font-family:sans-serif&quot;>그림 엔진을 불러오지 못했어요. 인터넷에 연결된 상태에서 이 HTML 파일을 크롬·엣지 같은 브라우저로 열어 주세요.</p>'"></script>
+<script src="https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.32.1/assets/labkit.min.js" onerror="document.getElementById('app').innerHTML='<p style=&quot;max-width:640px;margin:48px auto;padding:24px;border-radius:16px;background:#fff;line-height:1.7;font-family:sans-serif&quot;>그림 엔진을 불러오지 못했어요. 인터넷에 연결된 상태에서 이 HTML 파일을 크롬·엣지 같은 브라우저로 열어 주세요.</p>'"></script>
 </body>
 </html>

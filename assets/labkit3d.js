@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit3D v1.32.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit3D v1.32.1 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 장면을 입체(WebGL)로 보여 준다. 외부 라이브러리 없이 WebGL만 쓴다 (인터넷 없이 여는 한 파일 버전에도 넣을 수 있게).
    - 그릇 13종(비커·플라스크·시험관 …)은 그림 엔진의 윤곽선을 돌려 빚은 유리와, 높이·색·층이 맞는 액체로 (v1.20)
    - 자주 쓰는 기구(삼발이·알코올램프·스탠드·가열판·시험관대·저울 …)는 상자·원기둥으로 빚는다 (v1.20)
@@ -8,7 +8,7 @@
    그림 엔진이 '3D' 버튼을 누를 때 불러와 LabKit3D.open(창, { items, title, bench })을 부른다. */
 (function () {
 'use strict';
-const VERSION = '1.32.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
+const VERSION = '1.32.1'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
 const FONT = '"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif';
 const SVGNS = 'http://www.w3.org/2000/svg';
 const DEG = Math.PI / 180;
@@ -1162,6 +1162,7 @@ function viewer(stage, o = {}) {
       const g = d.g, p = d.p || {}, mode = p.show || (p.electrons ? 'electrons' : 'current'), paths = [];
       let k = 1;
       (d.alongE || []).forEach((ae, j) => {
+        if (g.paths && !g.paths[j]) return; // 열린 회로·열린 스위치가 끊은 전선: 2D와 같이 흐르지 않는다 (v1.32.1)
         let P = pipeScr.get(ae);
         if (P) { P = P.map(v => [v.x, v.y]); if (p.reverse) P.reverse(); }
         else { const q = g.paths && g.paths[j]; if (!q) return; const S = q.map(([x, y]) => scr(worldAt(x, y, ae))); if (S.some(v => !v)) return; P = S.map(v => [v.x, v.y]); } // 회로 카드: 2D 둘레(방향은 이미 맞춤)를 카드 위로

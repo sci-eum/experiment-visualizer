@@ -13,10 +13,14 @@
 <script>
 /* ===== EXPERIMENT DATA START — 이 블록만 바꾸세요 ===== */
 window.EXPERIMENT = {
+  "id": "gallery-parts",
   "title": "그림 부품 모음 (부품 카탈로그)",
   "subject": "experiment-visualizer",
   "unit": "모든 부품 한눈에 보기",
   "goal": "SKILL이 쓸 수 있는 실험 기구·표시 부품을 장면별로 모아 보여 준다. 각 그림 아래 글자는 부품 이름(t 값)이다.",
+  "cover": {
+    "from": 1
+  },
   "materials": [
     {
       "name": "비커",
@@ -3117,6 +3121,7 @@ window.EXPERIMENT = {
       ]
     },
     {
+      "id": "pick-predict",
       "title": "수업 기능: 고르는 예상 (predict choices)",
       "text": "보기를 고르기 전에는 결과 보기가 잠기고, 결과를 열면 고른 답이 굳어요. answer와 같으면 도장이 찍혀요.",
       "predict": [
@@ -3400,7 +3405,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.32.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.32.1 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -3619,7 +3624,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.32.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.32.1'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -4331,7 +4336,7 @@ T.circuit = {
   geo(el) {
     const s = el.s ?? 1, x = el.x ?? 240, y = el.y ?? 135, w = el.w ?? 260, h = el.h ?? 150, order = ['bottom', 'top', 'right', 'left'];
     let mi = 0, bat = null; (el.parts || ['battery', 'switch', 'bulb']).forEach(p => { const q = typeof p === 'string' ? { p } : p || {}; if (q.across != null) return; const e = q.edge || order[mi % 4]; mi++; if (q.p === 'battery' && !bat) bat = e; });
-    return { x, y, s, w, h, top: y - h / 2, anchor: { x: x + w / 2, y }, cur: bat === 'bottom' || bat === 'left' ? 'ccw' : 'cw' }; // cur: 건전지의 (+)극(오른쪽, 세로 변은 아래)에서 나오는 전류의 도는 방향 (화면에서)
+    return { x, y, s, w, h, top: y - h / 2, anchor: { x: x + w / 2, y }, cur: bat === 'bottom' || bat === 'left' ? 'ccw' : 'cw', nocur: el.closed === false }; // cur: 건전지의 (+)극(오른쪽, 세로 변은 아래)에서 나오는 전류의 도는 방향 (화면에서). nocur: 스위치가 열려 전류가 흐르지 않는다
   },
   draw(el, g, cx) {
     const x0 = g.x - g.w / 2, y0 = g.y - g.h / 2, x1 = g.x + g.w / 2, y1 = g.y + g.h / 2, closed = el.closed !== false;
@@ -4416,7 +4421,7 @@ T.electrode = {
 };
 // 전선: from·to·points를 주면 두 곳을 잇는 전선(hose와 같이 그림, color 기본 짙은 회색), 없으면 낱개 아이콘
 T.wire = {
-  geo(el, R) { if (el.from || el.to || el.points) return T.hose.geo(el, R); const g = bplace(el, R, 140); g.w = 76 * g.s; g.h = 40 * g.s; g.top = g.y - 20 * g.s; g.anchor = { x: g.x + 34 * g.s, y: g.y }; return g; },
+  geo(el, R) { if (el.from || el.to || el.points) { const g = T.hose.geo(el, R); if (el._cut) g.nocur = true; return g; } const g = bplace(el, R, 140); g.w = 76 * g.s; g.h = 40 * g.s; g.top = g.y - 20 * g.s; g.anchor = { x: g.x + 34 * g.s, y: g.y }; return g; },
   draw(el, g, cx) { if (g.pts) return T.hose.draw({ ...el, color: el.color ?? '#3b4253' }, g, cx); return `<g transform="${tfm(g)}"><path d="M-30,10 C-12,-24 8,32 28,-6" stroke="${col(el.color, '#d9822b')}" stroke-width="3.6" fill="none" stroke-linecap="round"/><rect x="-42" y="6" width="14" height="8" rx="2" fill="#e5484d" transform="rotate(-30 -35 10)"/><rect x="26" y="-12" width="14" height="8" rx="2" fill="#323846" transform="rotate(-40 33 -8)"/></g>`; }
 };
 T.springscale = {
@@ -4801,16 +4806,17 @@ function currentMarks(paths, o = {}) {
 }
 // 전류의 흐름: along(전선·관·회로의 id, 또는 목록)을 따라 흐른다. 전선은 그린 순서(from → to)가 전류 방향, reverse면 거꾸로.
 // show: 'current'(기본, 전류 방향 화살촉) · 'electrons'(전자만, 반대 방향) · 'both'(둘 다, 이름표 '전류'·'전자'). electrons: true는 'electrons'와 같다
+// 열린 회로(closed:false)와 열린 스위치가 끊은 전선(cutWires)에는 흐르지 않는다 (v1.32.1)
 T.current = {
   selfLabel: true,
   geo(el, R) {
-    const paths = [];
-    [].concat(el.along ?? []).forEach(id => {
-      const t = typeof id === 'string' ? R(id.replace(/:[+\-−]$/, '')) : null; if (!t) return;
-      if (t.pts && t.pts.length > 1) paths.push(t.pts.map(p => [p[0], p[1]]));
-      else if (t.w && t.h) { const x0 = t.x - t.w / 2, x1 = t.x + t.w / 2, y0 = (t.top ?? t.y - t.h / 2), y1 = y0 + t.h, cw = [[x0, y1], [x0, y0], [x1, y0], [x1, y1], [x0, y1]]; paths.push(t.cur === 'ccw' ? cw.reverse() : cw); } // 회로: 둘레를 건전지의 (+)극에서 나오는 방향으로
+    const paths = [].concat(el.along ?? []).map(id => { // along과 같은 순서 (입체 보기가 j번째 것을 찾는다), 흐르지 않으면 null
+      const t = typeof id === 'string' ? R(id.replace(/:[+\-−]$/, '')) : null; if (!t || t.nocur) return null;
+      if (t.pts && t.pts.length > 1) return t.pts.map(p => [p[0], p[1]]);
+      if (t.w && t.h) { const x0 = t.x - t.w / 2, x1 = t.x + t.w / 2, y0 = (t.top ?? t.y - t.h / 2), y1 = y0 + t.h, cw = [[x0, y1], [x0, y0], [x1, y0], [x1, y1], [x0, y1]]; return t.cur === 'ccw' ? cw.reverse() : cw; } // 회로: 둘레를 건전지의 (+)극에서 나오는 방향으로
+      return null;
     });
-    const P = el.reverse ? paths.map(q => q.slice().reverse()) : paths, f = P[0] || [[240, 150], [260, 150]];
+    const P = el.reverse ? paths.map(q => q && q.slice().reverse()) : paths, f = P.find(Boolean) || [[240, 150], [260, 150]];
     return { x: f[0][0], y: f[0][1], s: 1, paths: P, anchor: { x: f[Math.floor(f.length / 2)][0], y: f[Math.floor(f.length / 2)][1] } };
   },
   draw(el, g, cx) {
@@ -5819,6 +5825,22 @@ function autoX(all) {
 }
 // 장면 데이터에 자동 배치한 x를 채워 돌려준다 (이어받은 장면의 위치를 고정할 때 쓴다)
 function layout(items) { const els = JSON.parse(JSON.stringify(Array.isArray(items) ? items : [])).filter(e => e && typeof e === 'object'); autoX(els); return els; }
+// 열린 스위치 (v1.32.1): 단자('id:+'·'id:-')로 이은 전선의 고리를 찾아, 스위치가 열려서 고리가 끊긴 전선에 _cut을 붙인다 (그 전선에는 전류가 흐르지 않는다).
+// 고리 = 그 전선을 빼도 두 끝이 다른 전선·부품(두 단자 사이)으로 이어진다. 좌표·전극에 이은 전선처럼 알 수 없는 것은 그대로 둔다
+const switchOpen = el => !!el && ((el.t === 'switch' && (el.on ?? el.closed !== false) === false) || (el.t === 'battery' && el.kind === 'holder' && !!el.switch && el.on === false));
+function cutWires(all, byId) {
+  const ws = all.filter(el => el.t === 'wire' && typeof el.from === 'string' && typeof el.to === 'string'); if (!ws.length) return;
+  const node = s => s.replace(/−/g, '-'), parts = [...new Set(ws.flatMap(w => [w.from, w.to]).filter(s => /:[+\-−]$/.test(s)).map(s => s.slice(0, -2)))].filter(id => byId[id]);
+  const loop = (w, shut) => { // shut: 열린 스위치는 지나지 못한다
+    const adj = new Map(), link = (a, b) => { if (!adj.has(a)) adj.set(a, []); if (!adj.has(b)) adj.set(b, []); adj.get(a).push(b); adj.get(b).push(a); };
+    ws.forEach(v => { if (v !== w) link(node(v.from), node(v.to)); });
+    parts.forEach(id => { if (!(shut && switchOpen(byId[id]))) link(id + ':+', id + ':-'); });
+    const end = node(w.to), seen = new Set([node(w.from)]), q = [node(w.from)];
+    while (q.length) { const a = q.pop(); if (a === end) return true; (adj.get(a) || []).forEach(b => { if (!seen.has(b)) { seen.add(b); q.push(b); } }); }
+    return false;
+  };
+  ws.forEach(w => { if (loop(w, false) && !loop(w, true)) w._cut = true; });
+}
 
 /* ---------- scene ---------- */
 function build(items, o = {}) {
@@ -5834,6 +5856,7 @@ function build(items, o = {}) {
     reg(el);
   });
   if (o.lint) dup.forEach(id => warn(`${o.label ? o.label + ' — ' : ''}id '${id}'가 이 장면에 두 번 이상 있어요. 부품마다 다른 id를 주세요`));
+  cutWires(all, byId);
   const busy = new Set();
   const R = ref => { const el = typeof ref === 'string' ? byId[ref] : ref; if (!el || typeof el !== 'object') return null; if (el._g) return el._g; if (busy.has(el)) return null; busy.add(el); const Tp = T[el.t] || T._unknown; try { el._g = Tp.geo(el, R); } catch (e) { console.warn('[LabKit] 배치 오류', el, e); el._g = { x: el.x ?? 240, y: el.y ?? BENCH, s: 1 }; } busy.delete(el); return el._g; };
   all.forEach(el => R(el));
@@ -6103,9 +6126,15 @@ const box = (cls, tag, v) => arr(v).filter(Boolean).map(x => `<div class="box ${
 const hashStr = s => { let h = 5381; for (const ch of s) h = (h * 33 + ch.codePointAt(0)) >>> 0; return h.toString(36); };
 // 저장 이름은 실험 제목(또는 id)으로 정한다. 단계를 고쳐 다시 만들어도 적은 내용이 이어진다
 const KEY = 'lk:' + (D.id ? String(D.id) : hashStr(D.title || ''));
-let saved = {}, saveState = 'ready';
+// id를 처음 준 자료 (v1.32.1): 제목으로 정했던 저장 이름(KEY0)에 적은 답을 처음 열 때 가져온다 (예전 저장은 지우지 않는다)
+const KEY0 = D.id ? 'lk:' + hashStr(D.title || '') : null;
+let saved = {}, saveState = 'ready', fromKEY0 = false;
 const answerObject = v => v && typeof v === 'object' && !Array.isArray(v) && Object.entries(v).every(([k, x]) => !['__proto__', 'constructor', 'prototype'].includes(k) && typeof x === 'string');
-try { const v = JSON.parse(localStorage.getItem(KEY) || '{}'); if (!answerObject(v)) throw new Error('답안 형식'); saved = v; } catch (err) { saveState = 'failed'; }
+try {
+  let raw = localStorage.getItem(KEY);
+  if (raw == null && KEY0 && KEY0 !== KEY) { raw = localStorage.getItem(KEY0); fromKEY0 = raw != null; }
+  const v = JSON.parse(raw || '{}'); if (!answerObject(v)) throw new Error('답안 형식'); saved = v;
+} catch (err) { saveState = 'failed'; fromKEY0 = false; }
 const saveMessage = () => saveState === 'failed' ? '이 브라우저에 저장하지 못했어요. 닫기 전에 답안을 내보내 주세요.' : saveState === 'saved' ? '이 기기의 브라우저에 저장했어요.' : '적은 내용은 이 기기의 브라우저에만 저장돼요.';
 const updateSaveStatus = () => document.querySelectorAll('[data-save-status]').forEach(n => { n.dataset.state = saveState; n.textContent = saveMessage(); });
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); saveState = 'saved'; } catch (err) { saveState = 'failed'; } updateSaveStatus(); return saveState === 'saved'; };
@@ -6113,10 +6142,12 @@ const wtext = id => e(saved[id] || '').replace(/\n/g, '<br>');
 // 답 저장 이름: 순서가 아니라 내용(또는 id)으로 정한다. 단계·질문을 끼워 넣거나 순서를 바꿔도 적은 답이 따라간다.
 // (예상 칸·질문은 물음 글, 표 칸은 표 제목·줄 이름·머리 칸으로. id를 주면 글을 고쳐도 이어진다)
 // v1.8까지의 순번 이름(p0.0, q0, t0.1.2)에 적힌 답은 처음 열 때 새 이름으로 옮긴다.
-const AK = new Map(), akUsed = new Set(), qText = q => typeof q === 'string' ? q : (q && q.text) || '';
-const akey = (base, old) => { let k = base, n = 2; while (akUsed.has(k)) k = `${base}~${n++}`; akUsed.add(k); AK.set(old, k); };
-steps.forEach((st, i) => arr(st.predict).filter(Boolean).forEach((q, k) => akey(st.id ? `p:${st.id}:${k}` : `p:${hashStr(qText(q))}`, `p${i}.${k}`)));
-arr(res.questions).forEach((q, k) => akey(q && q.id ? `q:${q.id}` : `q:${hashStr(qText(q))}`, `q${k}`));
+// id를 새로 준 단계·질문·표·그림 칸 (v1.32.1): id 없이 글로 정했던 이름(같은 글, 같은 차례의 ~2 번호까지)에 적힌 답도 옮긴다 (LEG: 새 이름 → 예전 이름)
+const AK = new Map(), akUsed = new Set(), LEG = new Map(), legUsed = new Set(), qText = q => typeof q === 'string' ? q : (q && q.text) || '';
+const uniq = (used, base) => { let k = base, n = 2; while (used.has(k)) k = `${base}~${n++}`; used.add(k); return k; };
+const akey = (base, old, leg = base) => { const k = uniq(akUsed, base), l = uniq(legUsed, leg); AK.set(old, k); if (l !== k) LEG.set(k, l); };
+steps.forEach((st, i) => arr(st.predict).filter(Boolean).forEach((q, k) => akey(st.id ? `p:${st.id}:${k}` : `p:${hashStr(qText(q))}`, `p${i}.${k}`, `p:${hashStr(qText(q))}`)));
+arr(res.questions).forEach((q, k) => akey(q && q.id ? `q:${q.id}` : `q:${hashStr(qText(q))}`, `q${k}`, `q:${hashStr(qText(q))}`));
 // 표 칸 (v1.17): 칸은 글자, ""(적는 칸), 또는 { text, span(가로로 합치기), rowspan(세로로 합치기), off:true(쓰지 않는 회색 칸) }. 머리 칸도 { text, span }.
 // 칸마다 화면의 열(vc)과 답 저장 이름에 쓰는 줄 이름·열 이름을 붙인다. 합친 칸이 없는 표는 예전과 같은 이름 (적은 답이 그대로 이어진다)
 const cellText = c => c && typeof c === 'object' ? String(c.text ?? '') : c == null ? '' : String(c);
@@ -6143,15 +6174,21 @@ function tblGrid(tb) {
     return cells;
   });
 }
-arr(res.tables || res.table).forEach((tb, ti) => { if (!tb) return; const tk = tb.id || hashStr(tb.title || `표${ti}`); tblGrid(tb).forEach((row, ri) => row.forEach(x => { if (x.inp) akey(`t:${tk}:${x.row}:${x.col}`, `t${ti}.${ri}.${x.ci}`); })); });
-{ let moved = false; AK.forEach((k, old) => { if (saved[old] != null && saved[k] == null) { saved[k] = saved[old]; delete saved[old]; moved = true; } }); if (moved) persist(); }
+arr(res.tables || res.table).forEach((tb, ti) => { if (!tb) return; const t0 = hashStr(tb.title || `표${ti}`), tk = tb.id || t0; tblGrid(tb).forEach((row, ri) => row.forEach(x => { if (x.inp) akey(`t:${tk}:${x.row}:${x.col}`, `t${ti}.${ri}.${x.ci}`, `t:${t0}:${x.row}:${x.col}`); })); });
+const SKEY = new Map(), skUsed = new Set(), skLeg = new Set(), skList = v => arr(v).filter(x => x && typeof x === 'object'); // 그림 칸: 's:' + id 또는 제목 (칸마다 ':0', ':0:w' …)
+[...skList(res.sketches), ...steps.flatMap(st => skList(st.sketch))].forEach((sk, k) => { const t0 = `s:${hashStr(sk.title || `그림${k}`)}`, key = uniq(skUsed, sk.id != null ? `s:${sk.id}` : t0), l = uniq(skLeg, t0); SKEY.set(sk, key); if (l !== key) LEG.set(key, l); });
+// 예전 이름의 답을 새 이름으로 옮긴다 (새 이름에 이미 답이 있으면 그대로 둔다). 그림 칸·고른 예상은 뒤에 붙은 ':0'·':done'까지
+function adopt(v) {
+  let moved = false; const mv = (a, b) => { if (v[a] != null && v[b] == null) { v[b] = v[a]; delete v[a]; moved = true; } };
+  AK.forEach((k, old) => mv(old, k));
+  LEG.forEach((l, k) => Object.keys(v).forEach(x => { if (x === l || x.startsWith(l + ':')) mv(x, k + x.slice(l.length)); }));
+  return moved;
+}
+if (adopt(saved) || fromKEY0) persist();
 const ak = old => AK.get(old) || old;
 // 그림 칸 (v1.15): results.sketches와 단계의 sketch. { id, title, shape:'circle'(현미경 시야)|'box'(빈 네모)|'polar'(극좌표 원), n, labels, write, note }
-// 그린 그림은 적은 답처럼 이 기기의 브라우저에 PNG로 저장한다 (저장 이름: 's:' + id 또는 제목)
+// 그린 그림은 적은 답처럼 이 기기의 브라우저에 PNG로 저장한다 (저장 이름: SKEY, 위)
 const SK_SHAPES = { circle: [480, 480], box: [480, 360], polar: [480, 480], spectrum: [600, 108] }, SK_COLORS = [['#2b3040', '검정'], ['#e5484d', '빨강'], ['#2c5fb3', '파랑'], ['#178a5c', '초록']];
-const skList = v => arr(v).filter(x => x && typeof x === 'object');
-const SKEY = new Map(), skUsed = new Set();
-[...skList(res.sketches), ...steps.flatMap(st => skList(st.sketch))].forEach((sk, k) => { let b = `s:${sk.id != null ? sk.id : hashStr(sk.title || `그림${k}`)}`, key = b, n = 2; while (skUsed.has(key)) key = `${b}~${n++}`; skUsed.add(key); SKEY.set(sk, key); });
 function skGuide(shape, sk) {
   if (shape === 'spectrum') { // 스펙트럼 띠: 위에 파장 눈금(range, 기본 400~700 nm), 아래 띠
     const rg = Array.isArray(sk && sk.range) && sk.range.length === 2 && +sk.range[1] > +sk.range[0] ? [+sk.range[0], +sk.range[1]] : [400, 700], step = rg[1] - rg[0] >= 300 ? 100 : 50;
@@ -6551,7 +6588,23 @@ function tmAction(act, i) {
   if (!tmTick) tmTick = setInterval(tmRender, 250);
   tmRender();
 }
-const coverItems = D.cover ? resolveScene(D.cover, -1, '표지', []) : [{ t: 'flask', x: 150, fill: .5, color: 'violet', bubbles: 5 }, { t: 'beaker', id: 'cb', x: 262, fill: .4, color: 'water' }, { t: 'rack', x: 382, tubes: [{ fill: .45, color: 'pink' }, { fill: .45, color: 'yellow' }, { fill: .45, color: 'green' }] }, { t: 'dropper', over: 'cb', dy: 18, color: 'violet' }];
+// 표지 (v1.32.1): cover가 없으면 결과를 열기 전의 대표 장치 장면 — 결과 보기·예상·관찰·그림 칸이 처음 나오는 단계까지에서
+// 장치가 가장 큰 단계(같으면 뒤 단계)의 과정 장면. 장치 크기 = 기구 수 + 다른 기구에 올리고·넣고·잇는 관계 수 × 2 (준비물만 늘어놓은 장면보다 꾸민 장치를 고른다).
+// 결과 보기의 장면은 쓰지 않고, 설명·동작 부품과 보이지 않는 것은 뺀다.
+// 실험대 위 기구 장면이 없으면 어느 실험에나 맞는 중립 표지 (보안경·장갑)
+function coverStep() {
+  const last = steps.findIndex(st => st.reveal || arr(st.predict).length || st.observe || st.sketch);
+  let best = -1, most = 0;
+  steps.forEach((st, i) => {
+    if ((last >= 0 && i > last) || st.bench === false) return;
+    let n = 0; try { sceneItems(i).forEach(el => { if (!FRESH.has(el.t) && !LabKit.isUnseen(el)) n += 1 + (['on', 'in', 'over', 'into', 'hold', 'from', 'to'].some(k => typeof el[k] === 'string' || Array.isArray(el[k]) && el.t === 'stand') ? 2 : 0); }); } catch (err) { }
+    if (n && n >= most) { best = i; most = n; }
+  });
+  return best;
+}
+const NEUTRAL_COVER = [{ t: 'goggles', x: 185, y: 254 }, { t: 'gloves', x: 300, y: 234 }]; // 실험대 위에 놓인 보안경·장갑
+const coverK = D.cover ? null : coverStep(), coverSrc = D.cover ? 'cover' : coverK < 0 ? 'neutral' : String(coverK + 1); // 표지가 어디서 왔는지 (점검 화면·시험이 읽는다)
+const coverItems = D.cover ? resolveScene(D.cover, -1, '표지', []) : coverK < 0 ? NEUTRAL_COVER : resolveScene({ from: coverK + 1 }, -1, '표지', []).filter(el => !LabKit.isUnseen(el));
 const chips = () => [D.subject && `<span class="chip primary">${e(D.subject)}</span>`, D.unit && `<span class="chip">${IC.book}${e(D.unit)}</span>`, D.duration && `<span class="chip">${IC.clock}${e(D.duration)}</span>`, D.group && `<span class="chip">${IC.users}${e(D.group)}</span>`].filter(Boolean).join('');
 const matGrid = () => `<div class="mat-grid">${mats.map((m, k) => `<button class="mat" type="button" data-pkm="${k}" aria-pressed="false">${LabKit.icon(m.icon, m.name)}<span class="nm">${e(m.name)}</span>${m.qty ? `<span class="qty">${e(m.qty)}</span>` : ''}</button>`).join('')}</div><div class="pk-card" data-pkmat role="region" aria-label="준비물 정보" aria-live="polite" hidden></div>`;
 const tipList = () => `<div class="safety">${tips.map(s => `<div class="safe tipl"><span class="ic">${IC.star}</span><div>${md(s)}</div></div>`).join('')}</div>`;
@@ -6574,7 +6627,7 @@ const emptyState = `<div class="card empty">${LabKit.scene([{ t: 'beaker', x: 20
 
 function page() {
   const h = [];
-  h.push(`<header class="hero wrap"><div class="hero-card"><div><div class="chips">${chips()}</div><h1>${e(D.title || '실험 과정 안내')}</h1><div class="pname"><span>학년 반<i></i></span><span>번호<i></i></span><span>이름<i></i></span></div>${D.goal ? `<p class="goal">${md(D.goal)}</p>` : ''}<div class="toolbar"><button class="btn primary" data-open="0">${IC.play}수업 모드로 보기</button>${stillBtn('btn')}<div class="pwrap"><button class="btn pbtn" type="button" aria-haspopup="true" aria-expanded="false">${IC.print}인쇄하기</button><div class="pmenu" role="menu" hidden><button type="button" role="menuitem" data-pmode="student"><b>학생용 학습지</b><span>그림·과정·적는 칸 (결과 그림과 예상 결과는 빼요)</span></button><button type="button" role="menuitem" data-pmode="teacher"><b>교사용</b><span>결과 그림·예상 결과·원문 확인 메모까지</span></button></div></div></div>${D._demo ? '<div class="demo">지금 보이는 내용은 템플릿의 예시 데이터예요. 실험지 내용으로 바꿔 주세요.</div>' : ''}</div><div class="hero-art">${LabKit.scene(coverItems, { label: '표지 그림' })}</div></div></header><main class="wrap">`);
+  h.push(`<header class="hero wrap"><div class="hero-card"><div><div class="chips">${chips()}</div><h1>${e(D.title || '실험 과정 안내')}</h1><div class="pname"><span>학년 반<i></i></span><span>번호<i></i></span><span>이름<i></i></span></div>${D.goal ? `<p class="goal">${md(D.goal)}</p>` : ''}<div class="toolbar"><button class="btn primary" data-open="0">${IC.play}수업 모드로 보기</button>${stillBtn('btn')}<div class="pwrap"><button class="btn pbtn" type="button" aria-haspopup="true" aria-expanded="false">${IC.print}인쇄하기</button><div class="pmenu" role="menu" hidden><button type="button" role="menuitem" data-pmode="student"><b>학생용 학습지</b><span>그림·과정·적는 칸 (결과 그림과 예상 결과는 빼요)</span></button><button type="button" role="menuitem" data-pmode="teacher"><b>교사용</b><span>결과 그림·예상 결과·원문 확인 메모까지</span></button></div></div></div>${D._demo ? '<div class="demo">지금 보이는 내용은 템플릿의 예시 데이터예요. 실험지 내용으로 바꿔 주세요.</div>' : ''}</div><div class="hero-art" data-cover="${coverSrc}">${LabKit.scene(coverItems, { label: '표지 그림' })}</div></div></header><main class="wrap">`);
   if (mats.length) h.push(`<section><div class="sec-head"><span class="eyebrow">준비</span><h2>준비물</h2></div>${matGrid()}</section>`);
   if (safety.length) h.push(`<section><div class="sec-head"><span class="eyebrow">안전</span><h2>안전 수칙</h2></div>${safeList()}</section>`);
   if (tips.length) h.push(`<section><div class="sec-head"><span class="eyebrow">팁</span><h2>실험 전에 알아 두기</h2></div>${tipList()}</section>`);
@@ -6674,8 +6727,8 @@ if (Q.has('shot3d')) {
 if (Q.has('shot')) {
   const v = Q.get('shot'), all = v === 'all', cw = all ? 480 : 960;
   LabKit.setAnim(false);
-  const list = all ? [...(D.cover ? [-1] : []), ...steps.flatMap((st, i) => revealScene(st, i) ? [i, `${i}r`] : [i])] : [/r$/.test(v) ? `${(parseInt(v) || 1) - 1}r` : (+v || 1) - 1];
-  const cell = i => typeof i === 'string' ? (steps[parseInt(i)] ? `<div class="shot"><b>${parseInt(i) + 1}. ${e(steps[parseInt(i)].title || '')} — 결과</b>${revealScene(steps[parseInt(i)], parseInt(i))}</div>` : '') : i < 0 ? `<div class="shot"><b>표지</b>${LabKit.scene(coverItems, { label: '표지 그림', grid: GRID })}</div>`
+  const list = all ? [-1, ...steps.flatMap((st, i) => revealScene(st, i) ? [i, `${i}r`] : [i])] : [/r$/.test(v) ? `${(parseInt(v) || 1) - 1}r` : (+v || 1) - 1];
+  const cell = i => typeof i === 'string' ? (steps[parseInt(i)] ? `<div class="shot"><b>${parseInt(i) + 1}. ${e(steps[parseInt(i)].title || '')} — 결과</b>${revealScene(steps[parseInt(i)], parseInt(i))}</div>` : '') : i < 0 ? `<div class="shot"><b>표지${coverSrc === 'cover' ? '' : coverSrc === 'neutral' ? ' (기본: 중립)' : ` (기본: ${coverSrc}단계 과정 장면)`}</b>${LabKit.scene(coverItems, { label: '표지 그림', grid: GRID })}</div>`
     : steps[i] ? `<div class="shot"><b>${i + 1}. ${e(steps[i].title || '')}</b>${sceneOf(steps[i], i)}</div>` : `<div class="shot"><b>${i + 1}단계가 없어요</b></div>`;
   const st = document.createElement('style');
   st.textContent = `body{background:#fff}#app{display:grid;grid-template-columns:repeat(${all ? 2 : 1},${cw}px);gap:16px;padding:16px;width:max-content}.shot b{display:block;height:30px;line-height:30px;font-size:${all ? 15 : 18}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shot .scene{display:block;width:${cw}px;height:${cw * LabKit.H / LabKit.W}px;outline:1px solid #e4d9f1}`;
@@ -6709,9 +6762,9 @@ document.addEventListener('change', async ev => {
     try { data = JSON.parse(await file.text()); }
     catch (err) { throw new Error('답안 파일을 읽지 못했어요. 이 도구에서 내보낸 JSON 파일을 골라 주세요.'); }
     if (!data || data.format !== 'experiment-visualizer-answers' || data.version !== 1 || !answerObject(data.answers)) throw new Error('이 도구에서 내보낸 답안 JSON 파일을 골라 주세요.');
-    if (data.experiment !== KEY) throw new Error('다른 실험의 답안이에요. 해당 실험 자료에서 가져와 주세요.');
+    if (data.experiment !== KEY && data.experiment !== KEY0) throw new Error('다른 실험의 답안이에요. 해당 실험 자료에서 가져와 주세요.'); // KEY0: id를 주기 전에 내보낸 답안
     if (Object.keys(saved).length && !confirm('가져온 답안으로 현재 적은 내용을 바꿀까요? 현재 답안은 먼저 내보내 둘 수 있어요.')) { importStatus('가져오기를 취소했어요.'); return; }
-    saved = data.answers; persist(); syncAnswers(); importStatus('답안을 가져왔어요.');
+    adopt(data.answers); saved = data.answers; persist(); syncAnswers(); importStatus('답안을 가져왔어요.');
   } catch (err) { importStatus(err.message || '답안 파일을 읽지 못했어요.', true); }
   finally { f.value = ''; }
 });
