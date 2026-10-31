@@ -5,6 +5,7 @@ python scripts/selftest_ui.py [--require-browser]
 가상 활동지 하나를 넓은 화면과 휴대폰 너비로 열며, 사용자 실험지는 쓰지 않는다.
 열린 회로는 결과 보기·다음 단계에서 닫힐 때만 전류가 보이는지(2D·3D), id를 주기 전에 내보낸 답안을 가져오는지도 본다.
 인쇄 화면으로도 열어 학생용 인쇄에 결과(결과 그림·예상 결과)가 없고 표지가 결과 전 장면인지 본다 (가상 활동지와 양배추 예시).
+배경 그래픽을 끈 인쇄(브라우저 기본)에서도 단계 번호·적는 줄이 남는지, 카드 테두리·바닥글이 쪽 나눔에 맞는지도 본다.
 """
 import argparse
 import json
@@ -266,6 +267,11 @@ window.addEventListener('load', async () => {
     check('학생용 인쇄: 표지에는 결과 전 과정 그림의 색만', !!src && [...fills(art)].every(c => sf.has(c)));
     check('학생용 인쇄: 결과 그림·결과 글 없음', ![...document.querySelectorAll('.sc-rv, .rv-text, .res-expect, .res-conc')].some(shown) && !(want.result && (visHas('.hero-art', want.result) || visHas('.sc-rv', want.result))));
     if (want.result) { document.documentElement.dataset.print = 'teacher'; check('교사용 인쇄: 결과 그림 있음', visHas('.sc-rv', want.result)); }
+    // 브라우저 기본(배경 그래픽 끔)으로 인쇄해도 단계 번호·적는 줄이 보이고, 다음 쪽으로 넘어간 카드의 윗선이 앞쪽에 남지 않게(outline 대신 border), 바닥글은 한 문단
+    const cs = s => { const n = $(s); return n ? getComputedStyle(n) : null; }, exact = c => !!c && (c.printColorAdjust || c.webkitPrintColorAdjust) === 'exact';
+    check('인쇄: 단계 번호·적는 줄은 배경 그래픽을 꺼도', exact(cs('.num')) && (!$('.write') || exact(cs('.write'))));
+    check('인쇄: 카드 테두리는 border (outline 없음)', ['.step', '.mat', '.card'].every(q => { const c = cs(q); return !c || (c.outlineStyle === 'none' && parseFloat(c.borderTopWidth) >= 1); }));
+    check('인쇄: 바닥글 한 문단', [...document.querySelectorAll('.foot .fl')].every(n => getComputedStyle(n).display === 'inline'));
   } catch (err) { errors.push(String(err.stack || err)); }
   const out = document.createElement('pre'); out.id = 'lk-ui-test'; out.textContent = JSON.stringify({ count: results.length, errors }); document.body.appendChild(out);
 });
