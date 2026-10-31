@@ -8,14 +8,14 @@ description: 실험 과정이 적힌 문서(hwp, hwpx, pdf, docx, pptx, 사진·
 > **이 문서를 링크로 받았다면** 이 문서가 작업 지시서다. 처음부터 끝까지 읽고 따른다.
 > 저장소: https://github.com/sci-eum/experiment-visualizer
 
-이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.32.2`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
+이 문서는 **판단 규칙**이다. 자세한 형식과 환경별 방법은 참고 문서에 있다. 스킬 폴더가 있으면 그 안의 파일을, 링크로 받았다면 아래 주소를 연다. 주소는 모두 같은 고정 배포판(`@1.33.0`)이라 이 문서·참고 문서·그림 엔진의 버전이 맞는다.
 
 | 문서 | 언제 연다 | 주소 |
 |---|---|---|
-| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.32.2/references/parts.md |
-| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.32.2/references/data.md |
-| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.32.2/references/scenes.md |
-| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.32.2/references/build.md |
+| `references/parts.md` 부품 목록 | **4장에서 장면을 쓰기 전에 반드시** | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.33.0/references/parts.md |
+| `references/data.md` 데이터 형식 | 5장에서 데이터를 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.33.0/references/data.md |
+| `references/scenes.md` 장면 예시 | 비슷한 장면을 가져와 고쳐 쓸 때 | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.33.0/references/scenes.md |
+| `references/build.md` 만들기·점검 도구 | 6·7·9장 (스킬 폴더가 없을 때 특히) | https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.33.0/references/build.md |
 
 ## 무엇을 만드나
 
@@ -182,7 +182,7 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 
 - `title`과 `steps`는 필수. 나머지는 원문에 있을 때만.
 - 단계마다 `origin`. 사용자가 더한 팁·예상 등은 `origin.added`에 적는다.
-- 새 자료에는 실험·단계·질문·표·그림 칸의 고정 `id`를 처음부터 준다. 수정할 때 그대로 유지한다. 질문은 `{"id": "q-acid", "text": "…"}`처럼 쓴다. 예상 칸은 단계 `id`로 저장된다. 학생 답 칸에 `id`가 없으면 검사기가 알린다.
+- 새 자료에는 실험·단계·질문·표·그림 칸의 고정 `id`를 처음부터 준다. 수정할 때 그대로 유지한다. 질문은 `{"id": "q-acid", "text": "…"}`처럼 쓴다. 예상 칸은 단계 `id`로 저장된다. 표는 적는 칸이 있는 줄의 이름 칸과 머리 칸에도 `{"text": "…", "id": "…"}` (data.md '표 칸'). 학생 답 칸에 `id`가 없으면 검사기가 알린다.
 - `"_demo": true` 같은 템플릿 예시 값은 남기지 않는다.
 
 ## 6. 만들기
@@ -219,4 +219,4 @@ HTML을 만들기 전에 아래 형식으로 계획을 보여 주고 **팁·주�
 2. 데이터를 꺼낸다: `python scripts/extract_data.py 결과.html experiment.json` (방법과 내려받기는 build.md).
 3. **요청한 곳만** 고친다. 다른 단계·문장·좌표·색과 `id`는 그대로 둔다 (학생 답이 이어진다). 바꾼 내용이 원문에 없으면 `origin.added`에 적는다.
 4. 6장대로 검사하고 다시 만든다 (엔진도 최신이 된다). 7장 검사를 다시 하고, 원래 파일 이름으로 건넨다. 답변에는 고친 곳만 알린다.
-- 학생이 적은 답은 각 기기 브라우저에 실험 `id`(없으면 제목)별로, 질문·예상 칸은 `id`(없으면 물음 글)별로 저장되어 있다. `id`가 없는 자료면 `id`를 더한다 (예전 답이 이어진다). 같은 판에서 제목·물음 글도 바꾸면 그 칸의 예전 답은 이어지지 않으니 답변에 알린다.
+- 학생이 적은 답은 각 기기 브라우저에 실험 `id`(없으면 제목)별로, 질문·예상 칸은 `id`(없으면 물음 글)별로 저장되어 있다. `id`가 없는 자료면 `id`를 더한다 (예전 답이 이어진다). 같은 판에서 제목·물음 글·표의 줄 이름과 머리 칸 글도 바꾸면 그 칸의 예전 답은 이어지지 않으니 답변에 알린다.

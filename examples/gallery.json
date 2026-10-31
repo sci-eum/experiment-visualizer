@@ -508,11 +508,11 @@
     ],
     "tables": [
       { "id": "g-merge", "title": "표 칸: 합친 칸(span·rowspan)과 쓰지 않는 칸(off)",
-        "head": [{ "text": "구분", "span": 2 }, "칸 1", "칸 2", "칸 3"],
+        "head": [{ "text": "구분", "span": 2 }, { "text": "칸 1", "id": "c1" }, { "text": "칸 2", "id": "c2" }, { "text": "칸 3", "id": "c3" }],
         "rows": [
-          [{ "text": "묶음 가", "rowspan": 2 }, "줄 1", "", "", ""],
-          ["줄 2", { "off": true }, "", { "off": true }],
-          [{ "text": "묶음 나", "rowspan": 1 }, "줄 1", { "text": "합친 칸", "span": 2 }, ""]
+          [{ "text": "묶음 가", "rowspan": 2, "id": "ga" }, { "text": "줄 1", "id": "r1" }, "", "", ""],
+          [{ "text": "줄 2", "id": "r2" }, { "off": true }, "", { "off": true }],
+          [{ "text": "묶음 나", "rowspan": 1, "id": "na" }, { "text": "줄 1", "id": "r1" }, { "text": "합친 칸", "span": 2 }, ""]
         ] }
     ]
   }

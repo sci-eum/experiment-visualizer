@@ -22,12 +22,12 @@ python scripts/extract_data.py 결과.html experiment.json      # 이미 만든 
 
 ## 방법 B — 도구 내려받기
 
-스킬과 같은 고정 배포판(`@1.32.2`)에서 도구를 `ev` 폴더로 내려받는다. 그러면 방법 A의 명령을 `ev/`를 붙여 그대로 쓴다 (`python ev/scripts/build_html.py experiment.json 실험제목.html`).
+스킬과 같은 고정 배포판(`@1.33.0`)에서 도구를 `ev` 폴더로 내려받는다. 그러면 방법 A의 명령을 `ev/`를 붙여 그대로 쓴다 (`python ev/scripts/build_html.py experiment.json 실험제목.html`).
 
 ```python
 import pathlib, urllib.request
-BASES = ["https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.32.2/",            # 이 문서와 같은 배포판
-         "https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v1.32.2/"]  # 막히면 저장소 원본
+BASES = ["https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.33.0/",            # 이 문서와 같은 배포판
+         "https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v1.33.0/"]  # 막히면 저장소 원본
 FILES = ["scripts/build_html.py", "scripts/check_data.py", "scripts/extract_text.py", "scripts/extract_data.py",
          "scripts/check_render.py", "assets/template.html", "assets/light.html", "assets/labkit3d.js", "references/parts.json"]
 downloaded = {}
@@ -45,7 +45,7 @@ for f, data in downloaded.items():
     p = pathlib.Path("ev") / f
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_bytes(data)
-print("ev 폴더 준비 완료 (v1.32.2)")
+print("ev 폴더 준비 완료 (v1.33.0)")
 ```
 
 - `build_html.py`가 만든 한 파일 버전은 그림 엔진이 HTML 안에 들어가 **인터넷 없이도** 열린다.
@@ -54,7 +54,7 @@ print("ev 폴더 준비 완료 (v1.32.2)")
 
 ## 방법 C — 가벼운 HTML 틀
 
-코드 실행이 안 되면 아래 틀에서 `window.EXPERIMENT = …;` 부분만 데이터로 바꿔 HTML 파일(또는 HTML 아티팩트)로 낸다. 그림 엔진은 열 때 인터넷(jsDelivr `@1.32.2`)에서 불러온다.
+코드 실행이 안 되면 아래 틀에서 `window.EXPERIMENT = …;` 부분만 데이터로 바꿔 HTML 파일(또는 HTML 아티팩트)로 낸다. 그림 엔진은 열 때 인터넷(jsDelivr `@1.33.0`)에서 불러온다.
 
 ```html
 <!doctype html>
@@ -73,7 +73,7 @@ print("ev 폴더 준비 완료 (v1.32.2)")
 window.EXPERIMENT = { /* 여기에 데이터 */ };
 /* ===== EXPERIMENT DATA END ===== */
 </script>
-<script src="https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.32.2/assets/labkit.min.js" onerror="document.getElementById('app').innerHTML='<p style=&quot;max-width:640px;margin:48px auto;padding:24px;border-radius:16px;background:#fff;line-height:1.7;font-family:sans-serif&quot;>그림 엔진을 불러오지 못했어요. 인터넷에 연결된 상태에서 이 HTML 파일을 크롬·엣지 같은 브라우저로 열어 주세요.</p>'"></script>
+<script src="https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.33.0/assets/labkit.min.js" onerror="document.getElementById('app').innerHTML='<p style=&quot;max-width:640px;margin:48px auto;padding:24px;border-radius:16px;background:#fff;line-height:1.7;font-family:sans-serif&quot;>그림 엔진을 불러오지 못했어요. 인터넷에 연결된 상태에서 이 HTML 파일을 크롬·엣지 같은 브라우저로 열어 주세요.</p>'"></script>
 </body>
 </html>
 ```

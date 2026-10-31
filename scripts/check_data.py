@@ -25,7 +25,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 # 부품 목록: 그림 엔진과 같은 고정 배포판을 먼저, 막히면 같은 태그의 저장소 원본
-VERSION = "1.32.2"
+VERSION = "1.33.0"
 RAW = [f"https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@{VERSION}/references/parts.json",
        f"https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v{VERSION}/references/parts.json"]
 W, H = 480, 300
@@ -38,7 +38,8 @@ PREDICT = {"text", "choices", "answer", "why", "write"}  # 고르는 예상 (보
 RESULTS = {"expect", "conclusion", "table", "tables", "questions", "sketches"}
 SKETCH = {"id", "title", "shape", "n", "labels", "write", "note", "range"}  # 그림 칸 (range: 스펙트럼 띠의 파장 범위)
 SKETCH_SHAPES = ("circle", "box", "polar", "spectrum")
-CELL = {"text", "span", "rowspan", "off"}  # 표 칸 객체 (합친 칸·쓰지 않는 칸)
+CELL = {"text", "span", "rowspan", "off", "id"}  # 표 칸 객체 (합친 칸·쓰지 않는 칸, 줄 이름 칸의 고정 id)
+HEAD = ("text", "span", "id")  # 머리 칸 객체 (열의 고정 id)
 # 이어받기에서 앞 단계 것이 그대로 남기 쉬운 동작 부품. add로 같은 부품을 또 놓으면 둘이 된다
 MOVERS = {"ball", "cart", "block", "dropper", "pipette", "spatula", "spoon", "splint", "swab", "capillary", "tweezers", "rod",
           "glasspipette", "micropipette", "syringe", "magnet", "meter"}
@@ -351,7 +352,8 @@ def kids(el):
 
 
 def check_table(tb, where, rep):
-    """결과 표: 칸 객체 { text, span, rowspan, off }, 머리 칸 { text, span }. 합친 칸까지 세어 줄마다 칸 수가 머리 줄과 같은지 본다."""
+    """결과 표: 칸 객체 { text, span, rowspan, off, id }, 머리 칸 { text, span, id }. 합친 칸까지 세어 줄마다 칸 수가 머리 줄과 같은지 본다.
+    줄 이름 칸·머리 칸의 id는 학생 답 저장 이름이 되므로 한 표 안에서 겹치면 안 된다."""
     def span_of(c, k, w):
         if not isinstance(c, dict) or k not in c:
             return 1
@@ -364,24 +366,34 @@ def check_table(tb, where, rep):
     for hi, h in enumerate(tb["head"]):
         if isinstance(h, dict):
             for k in h:
-                if k not in ("text", "span"):
-                    rep.err(f"{where}.head[{hi}]", f"머리 칸에 없는 항목 '{k}'{suggest(k, ('text', 'span'))}")
+                if k not in HEAD:
+                    rep.err(f"{where}.head[{hi}]", f"머리 칸에 없는 항목 '{k}'{suggest(k, HEAD)}")
         width += span_of(h, "span", f"{where}.head[{hi}]")
-    down = {}
+    down, down_key, row_keys = {}, {}, []
+    key = lambda c: str(c["id"]) if isinstance(c, dict) and c.get("id") not in (None, "") else str(c.get("text", "") if isinstance(c, dict) else "" if c is None else c)
     for ri, row in enumerate(tb.get("rows") or []):
         w = f"{where}.rows[{ri}]"
         if not isinstance(row, list):
             rep.err(w, "줄은 배열이어야 해요")
             continue
-        vc = 0
+        vc, lead, is_open, has_id = 0, [], True, False  # 줄 이름 (엔진 tblGrid와 같이): 앞의 묶음 이름(rowspan) + 첫 이름 칸, id가 있으면 id
 
         def skip():
             nonlocal vc
             while down.get(vc, 0) > 0:
                 down[vc] -= 1
+                if is_open and vc in down_key:
+                    lead.append(down_key[vc])
                 vc += 1
         for ci, c in enumerate(row):
             skip()
+            if is_open:
+                if c == "" or c is None or (isinstance(c, dict) and c.get("off")):
+                    is_open = False
+                else:
+                    lead.append(key(c))
+                    has_id = has_id or (isinstance(c, dict) and c.get("id") not in (None, ""))
+                    is_open = isinstance(c, dict) and "rowspan" in c
             if isinstance(c, dict):
                 for k in c:
                     if k not in CELL:
@@ -392,12 +404,21 @@ def check_table(tb, where, rep):
             for k in range(span):
                 if rs > 1:
                     down[vc + k] = rs - 1
+                    down_key[vc + k] = key(c)
+                elif vc + k in down_key and not down.get(vc + k):
+                    del down_key[vc + k]
             vc += span
         skip()
+        if has_id and any(c == "" or c is None for c in row):
+            row_keys.append(" ".join(k for k in lead if k))
         if vc != width:
             rep.warn(w, f"칸 수({vc}, 합친 칸 포함)가 머리 줄({width})과 달라요")
     if any(v > 0 for v in down.values()):
         rep.warn(where, "세로로 합친 칸(rowspan)이 표의 줄 수보다 길어요")
+    for what, ids in (("열 id", [h.get("id") for h in tb["head"] if isinstance(h, dict) and h.get("id") not in (None, "")]),
+                      ("줄 이름(묶음 이름 + 줄 이름 칸)", row_keys)):
+        for d in sorted({str(i) for i in ids if ids.count(i) > 1}):
+            rep.err(where, f"{what} '{d}'가 이 표에서 여러 번 나와요 (학생 답이 엇갈려요)")
 
 
 def check_sketches(v, where, rep):
@@ -804,14 +825,25 @@ def main_check(data, reg, strict_source=False):
     tbls = [tb for tb in (res.get("tables") or ([res["table"]] if "table" in res else [])) if isinstance(tb, dict)]
     need = [f"{i + 1}단계" for i, st in enumerate(steps) if isinstance(st, dict) and st.get("predict") and st.get("id") in (None, "")]
     need += [f"질문 {k + 1}" for k, q in enumerate(res.get("questions") or []) if not (isinstance(q, dict) and q.get("id"))]
-    need += [f"표 '{tb.get('title') or k + 1}'" for k, tb in enumerate(tbls) if not tb.get("id") and any(c == "" or c is None for r in tb.get("rows") or [] if isinstance(r, list) for c in r)]
+    for k, tb in enumerate(tbls):  # 표: 표 id와, 적는 칸이 있는 줄의 이름 칸·적는 칸 위 머리 칸의 id (줄·열 이름 글을 고쳐도 답이 이어지게, v1.33)
+        rows = [r for r in tb.get("rows") or [] if isinstance(r, list) and any(c == "" or c is None for c in r)]
+        if not rows:
+            continue
+        name = f"표 '{tb.get('title') or k + 1}'"
+        if not tb.get("id"):
+            need.append(name)
+        lead = lambda r: r[:next(i for i, c in enumerate(r) if c == "" or c is None)]
+        if any(not any(isinstance(c, dict) and c.get("id") not in (None, "") for c in lead(r)) for r in rows):
+            need.append(f"{name}의 줄 이름 칸")
+        if not any(isinstance(h, dict) and h.get("id") not in (None, "") for h in tb.get("head") or []):
+            need.append(f"{name}의 머리 칸")
     need += [f"그림 칸 '{sk.get('title') or k + 1}'" for k, sk in enumerate(sks) if sk.get("id") is None]
     writes = any(isinstance(st, dict) and st.get("predict") for st in steps) or res.get("questions") or sks or any(c == "" or c is None for tb in tbls for r in tb.get("rows") or [] if isinstance(r, list) for c in r)
     if writes and data.get("id") in (None, ""):
         need.insert(0, "실험")
     if need:
         rep.warn("id", f"학생 답 저장에 쓰는 고정 id가 없어요: {', '.join(need)}. 새 자료는 처음부터 주세요 "
-                       "(쓰던 자료에 더할 때는 그 판에서 제목·물음 글을 그대로 두면 예전 답이 이어져요)")
+                       "(쓰던 자료에 더할 때는 그 판에서 제목·물음 글·표의 줄 이름과 머리 칸 글을 그대로 두면 예전 답이 이어져요)")
     return rep
 
 

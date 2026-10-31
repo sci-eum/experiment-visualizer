@@ -8,7 +8,8 @@
    홈판의 홈(속성·자리)과 멀티미터 단자를 검사하는지, 괜찮은 것(마이크로피펫, 시험관대, 홈 id 가리키기, timer false …)은 알리지 않는지
 4. 학생 답 저장 이름 (헤드리스 Chrome/Edge가 있으면): v1.8까지의 순번 이름에서 옮기는지,
    단계·질문·표 줄을 끼워 넣거나 id 있는 물음 글을 고쳐도 답이 제 칸을 따라가는지,
-   id가 없던 자료에 id를 더해도(실험·단계·질문·표·그림 칸) 예전 답이 보이고, 그 뒤 제목·물음 글·단계 순서를 바꿔도 이어지는지
+   id가 없던 자료에 id를 더해도(실험·단계·질문·표·그림 칸) 예전 답이 보이고, 그 뒤 제목·물음 글·단계 순서를 바꿔도 이어지는지,
+   표의 줄 이름 칸·머리 칸에 id를 더해도(표 id만 있던 판, id가 하나도 없던 판, 합친 칸 표) 답이 이어지고 그 뒤 줄 이름·머리 칸 글을 고쳐도 이어지는지
 5. 회로와 전류 (v1.32.1): 열린 회로(closed:false)·열린 스위치·꺼진 건전지 끼우개에는 2D·3D 모두 전류·전자가 없고,
    닫힌 회로에는 둘 다 있으며 전류 방향(건전지 (+)극에서 나옴)이 그대로인지
 6. 기본 표지 (v1.32.1): cover가 없으면 결과 전 대표 장치 장면(그 실험의 기구, 결과 색 없음, 보이지 않는 것 없음),
@@ -109,6 +110,10 @@ BAD_WARN = ["설명의 '10 mL'가 원문 근거 문장에 없어요 (근거 문�
 # 알리지 않아야 하는 것: 맞게 짐작되는 준비물, 정해진 값, 그래프 숫자 배열, 꺼 둔 긴 타이머, 수업 안의 시간
 MERGE_TABLE = {"id": "m", "title": "합친 표", "head": [{"text": "구분", "span": 2}, "1회", "2회"],
                 "rows": [[{"text": "A 모둠", "rowspan": 2}, "길이", "5", ""], ["무게", {"off": True}, ""], [{"text": "B 모둠", "rowspan": 1}, "길이", "5", ""]]}
+# 줄 이름 칸·머리 칸에 id를 준 합친 칸 표 (v1.33): 묶음이 다르면 줄 이름 칸 id(len)는 같아도 된다
+MERGE_TABLE_IDS = {"id": "m", "title": "합친 표", "head": [{"text": "구분", "span": 2}, {"text": "1회", "id": "t1"}, {"text": "2회", "id": "t2"}],
+                   "rows": [[{"text": "A 모둠", "rowspan": 2, "id": "a"}, {"text": "길이", "id": "len"}, "5", ""], [{"text": "무게", "id": "mass"}, {"off": True}, ""],
+                            [{"text": "B 모둠", "rowspan": 1, "id": "b"}, {"text": "길이", "id": "len"}, "5", ""]]}
 QUIET = {"id": "selftest-quiet", "title": "조용한 시험", "materials": [
     {"name": "마이크로피펫"}, {"name": "시험관대"}, {"name": "스탠드와 집게"}, {"name": "온도계"}, {"name": "pH 미터", "icon": {"t": "generic", "text": "pH"}},
     {"name": "디지털 온도계"}, {"name": "12홈판"}, {"name": "20 % 설탕물"}, {"name": "소금물"}, {"name": "설탕 용액"}, {"name": "스마트폰"}, {"name": "분광기"}, {"name": "적외선 온도계"}, {"name": "칼"}, {"name": "점화기"}, {"name": "감자 조각"}, {"name": "저마찰 트랙"}, {"name": "도르래"}, {"name": "추걸이"}, {"name": "용수철"}, {"name": "삼각대"}, {"name": "코일"}, {"name": "검류계"}, {"name": "건전지 끼우개"}, {"name": "9 V 건전지"}, {"name": "탄소 막대"}, {"name": "향"}, {"name": "면봉"}, {"name": "홀 피펫"}, {"name": "피펫 필러"}, {"name": "한천 배지"}, {"name": "TLC 판"}, {"name": "항온기"}, {"name": "눈금 피펫 (10 mL)", "icon": {"t": "glasspipette", "vol": "10 mL"}}, {"name": "주사기 (50 mL)", "icon": {"t": "syringe", "vol": "50 mL"}}],
@@ -135,7 +140,7 @@ QUIET = {"id": "selftest-quiet", "title": "조용한 시험", "materials": [
                                     {"t": "wellplate", "wells": [{"id": "lw", "label": "물질 가", "labelSide": "right"}]}]},
         {"title": "그림 칸", "sketch": [{"id": "s1", "title": "보이는 모습", "labels": ["가", "나"], "write": "배율"}], "scene": [{"t": "microscope"}]}],
     "results": {"sketches": [{"id": "s0", "title": "궤적", "shape": "polar", "n": 2}, {"id": "s2", "title": "흐름", "shape": "box", "note": "화살표로"}],
-                "tables": [MERGE_TABLE]}}
+                "tables": [MERGE_TABLE_IDS]}}
 QUIET["steps"] += [
     {"title": "남은 기구", "sketch": {"id": "sp1", "title": "스펙트럼", "shape": "spectrum", "range": [300, 800], "labels": ["가", "나"]},
      "scene": [{"t": "discharge", "id": "dc", "text": "기체"}, {"t": "spectroscope", "to": "dc"}, {"t": "cup", "id": "cp"}, {"t": "meter", "kind": "ir", "to": "cp", "reading": "20 ℃"},
@@ -174,6 +179,10 @@ BAD["steps"] += [
     {"title": "결과 보기", "scene": [{"t": "beaker", "id": "cb", "color": "clear", "fill": 0.4}], "reveal": {"change": {"cb": {"color": "#123456"}}}},
     {"title": "결과 이어", "scene": {"from": "prev", "change": {"cb": {"color": "#123456"}}}}]
 BAD["cover"] = {"from": len(BAD["steps"])}
+BAD["results"]["tables"].append({"id": "dup", "title": "겹친 id", "head": ["구분", {"text": "1회", "id": "a"}, {"text": "2회", "id": "a"}],
+                                 "rows": [[{"text": "가", "id": "g"}, "", ""], [{"text": "나", "id": "g"}, "", ""]]})
+BAD_EXPECT += ["열 id 'a'가 이 표에서 여러 번", "줄 이름(묶음 이름 + 줄 이름 칸) 'g'가 이 표에서 여러 번"]
+BAD_WARN += ["표 '합친 칸'의 줄 이름 칸", "표 '합친 칸'의 머리 칸"]
 BAD_WARN += ["결과 보기에서 바꾸는 'rb'의 color: \"pink\"가 과정 그림에 이미 있어요", "표지에 " + str(len(BAD["steps"]) - 1) + "단계 결과 보기의 모습('cb'의 color",
              "학생 답 저장에 쓰는 고정 id가 없어요: 실험,"]
 # 표에서 옮긴 단계: 단위가 머리에만 있어도 확인이 없어야 한다
@@ -218,6 +227,8 @@ KEYS_SHOWN_V2 = ["", "예상A", "예상B", "", "식초색", "비눗물색", "답
 KEYS_MERGE = {"id": "selftest-merge", "title": "합친 표 시험", "steps": [{"title": "A", "scene": [{"t": "beaker"}]}], "results": {"table": MERGE_TABLE}}
 KEYS_MERGE_SEED = {"t:m:A 모둠 길이:2회": "가", "t:m:A 모둠 무게:2회": "나", "t:m:B 모둠 길이:2회": "다"}
 KEYS_MERGE_SHOWN = ["가", "나", "다"]
+KEYS_MERGE_IDS = {**KEYS_MERGE, "results": {"table": MERGE_TABLE_IDS}}
+KEYS_MERGE_IDS_STORED = {"t:m:a len:t2": "가", "t:m:a mass:t2": "나", "t:m:b len:t2": "다"}
 
 
 # id를 처음 준 자료 (v1.32.1): id 없이 글로 정한 이름에 적힌 답(V0) → id를 더한 판(V1)에서도 보이고 → 제목·물음 글·순서를 고친 판(V2)에서도 이어진다
@@ -240,6 +251,23 @@ def ids_v1():
     d["steps"][1]["sketch"]["id"] = "sk"
     d["results"]["table"]["id"] = "tb"
     d["results"]["questions"] = [{"id": "q-a", "text": "무엇을 알았나요?"}, {"id": "q-b", "text": "더 알고 싶은 것은?"}]
+    return d
+
+
+def ids_v3():
+    """v1에 표의 줄 이름 칸·머리 칸 id를 더한 판 (v1.33)"""
+    d = ids_v1()
+    d["results"]["table"]["head"] = ["용액", {"text": "모습", "id": "look"}]
+    d["results"]["table"]["rows"] = [[{"text": "가", "id": "ga"}, ""], [{"text": "나", "id": "na"}, ""]]
+    return d
+
+
+def ids_v4():
+    """v3의 줄 이름·머리 칸 글을 고치고 줄을 끼워 넣은 판"""
+    d = ids_v3()
+    d["results"]["table"]["head"][1]["text"] = "모습 (고침)"
+    d["results"]["table"]["rows"][0][0]["text"] = "가 용액"
+    d["results"]["table"]["rows"].insert(0, [{"text": "다", "id": "da"}, ""])
     return d
 
 
@@ -325,7 +353,23 @@ def answer_key_test():
     r = open_with_answers(exe, ids_v1(), None, {k0: ID_SEED, k1: {"q:q-a": "새 답"}}, k1)
     if not r or [t for _, t in r["shown"]] != ["", "", "", "", "", "새 답", ""]:
         fails.append(f"새 저장이 이미 있으면 예전 저장을 다시 가져오지 않아야: 보인 답 {r and [t for _, t in r['shown']]}")
-    return fails, 7
+    # 표의 줄·열 id (v1.33): 표 id만 있던 판(v1)의 답 → 줄·열 id를 더한 판(v3) → 줄 이름·머리 칸 글을 고치고 줄을 끼운 판(v4)
+    v1 = open_with_answers(exe, ids_v1(), ID_SEED, k0, k1)
+    r3 = open_with_answers(exe, ids_v3(), (v1 or {}).get("stored", {}), k1, k1)
+    tb = {k: v for k, v in (r3 or {}).get("stored", {}).items() if k.startswith("t:")}
+    if not r3 or [t for _, t in r3["shown"]] != ID_SHOWN or tb != {"t:tb:ga:look": "가-모습", "t:tb:na:look": "나-모습"}:
+        fails.append(f"표 id만 있던 판에 줄·열 id를 더함: 보인 답 {r3 and [t for _, t in r3['shown']]}, 표 저장 {tb}")
+    r4 = open_with_answers(exe, ids_v4(), (r3 or {}).get("stored", {}), k1, k1)
+    want4 = ["예상1", "예상2", "배율 답", "", "가-모습", "나-모습", "답1", "답2"]
+    if not r4 or [t for _, t in r4["shown"]] != want4:
+        fails.append(f"줄·열 id를 준 뒤 줄 이름·머리 칸 글을 고치고 줄을 끼움: 보인 답 {r4 and [t for _, t in r4['shown']]} (기대 {want4})")
+    r = open_with_answers(exe, ids_v3(), ID_SEED, k0, k1)
+    if not r or [t for _, t in r["shown"]] != ID_SHOWN:
+        fails.append(f"id가 하나도 없던 판에서 표·줄·열 id까지 더함: 보인 답 {r and [t for _, t in r['shown']]}")
+    r = open_with_answers(exe, KEYS_MERGE_IDS, KEYS_MERGE_SEED)
+    if not r or [t for _, t in r["shown"]] != KEYS_MERGE_SHOWN or r["stored"] != KEYS_MERGE_IDS_STORED:
+        fails.append(f"합친 칸 표에 줄·열 id를 더함: 보인 답 {r and r['shown']}, 저장 {r and r['stored']}")
+    return fails, 11
 
 
 # 입체 보기(v1.19): 한 장치는 한 장의 그림 카드로 묶인다 (스탠드가 잡은 것, 관으로 이은 것까지). 설명 부품은 따로

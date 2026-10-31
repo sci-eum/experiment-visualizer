@@ -54,7 +54,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.32.2 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.33.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -274,7 +274,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.32.2'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.33.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -2792,46 +2792,51 @@ const wtext = id => e(saved[id] || '').replace(/\n/g, '<br>');
 // 답 저장 이름: 순서가 아니라 내용(또는 id)으로 정한다. 단계·질문을 끼워 넣거나 순서를 바꿔도 적은 답이 따라간다.
 // (예상 칸·질문은 물음 글, 표 칸은 표 제목·줄 이름·머리 칸으로. id를 주면 글을 고쳐도 이어진다)
 // v1.8까지의 순번 이름(p0.0, q0, t0.1.2)에 적힌 답은 처음 열 때 새 이름으로 옮긴다.
-// id를 새로 준 단계·질문·표·그림 칸 (v1.32.1): id 없이 글로 정했던 이름(같은 글, 같은 차례의 ~2 번호까지)에 적힌 답도 옮긴다 (LEG: 새 이름 → 예전 이름)
+// id를 새로 준 단계·질문·표·그림 칸 (v1.32.1): id 없이 글로 정했던 이름(같은 글, 같은 차례의 ~2 번호까지)에 적힌 답도 옮긴다 (LEG: 새 이름 → 예전 이름들, 앞의 것부터)
+// legs: [[예전 방식의 쓰인 이름 모음, 예전 이름]…]. 예전 방식마다 ~2 번호를 따로 매겨 그때와 같은 이름을 만든다
 const AK = new Map(), akUsed = new Set(), LEG = new Map(), legUsed = new Set(), qText = q => typeof q === 'string' ? q : (q && q.text) || '';
 const uniq = (used, base) => { let k = base, n = 2; while (used.has(k)) k = `${base}~${n++}`; used.add(k); return k; };
-const akey = (base, old, leg = base) => { const k = uniq(akUsed, base), l = uniq(legUsed, leg); AK.set(old, k); if (l !== k) LEG.set(k, l); };
-steps.forEach((st, i) => arr(st.predict).filter(Boolean).forEach((q, k) => akey(st.id ? `p:${st.id}:${k}` : `p:${hashStr(qText(q))}`, `p${i}.${k}`, `p:${hashStr(qText(q))}`)));
-arr(res.questions).forEach((q, k) => akey(q && q.id ? `q:${q.id}` : `q:${hashStr(qText(q))}`, `q${k}`, `q:${hashStr(qText(q))}`));
-// 표 칸 (v1.17): 칸은 글자, ""(적는 칸), 또는 { text, span(가로로 합치기), rowspan(세로로 합치기), off:true(쓰지 않는 회색 칸) }. 머리 칸도 { text, span }.
+const akey = (base, old, legs = []) => { const k = uniq(akUsed, base), ls = []; legs.forEach(([used, b]) => { const l = uniq(used, b); if (l !== k && !ls.includes(l)) ls.push(l); }); AK.set(old, k); if (ls.length) LEG.set(k, ls); };
+steps.forEach((st, i) => arr(st.predict).filter(Boolean).forEach((q, k) => akey(st.id ? `p:${st.id}:${k}` : `p:${hashStr(qText(q))}`, `p${i}.${k}`, [[legUsed, `p:${hashStr(qText(q))}`]])));
+arr(res.questions).forEach((q, k) => akey(q && q.id ? `q:${q.id}` : `q:${hashStr(qText(q))}`, `q${k}`, [[legUsed, `q:${hashStr(qText(q))}`]]));
+// 표 칸 (v1.17): 칸은 글자, ""(적는 칸), 또는 { text, span(가로로 합치기), rowspan(세로로 합치기), off:true(쓰지 않는 회색 칸), id }. 머리 칸도 { text, span, id }.
 // 칸마다 화면의 열(vc)과 답 저장 이름에 쓰는 줄 이름·열 이름을 붙인다. 합친 칸이 없는 표는 예전과 같은 이름 (적은 답이 그대로 이어진다)
+// 줄 이름 칸·머리 칸의 id (v1.33): 저장 이름에 글 대신 id를 쓴다 (rowK·colK). 글로 정한 이름(row·col)은 예전 답을 찾는 데 쓴다
 const cellText = c => c && typeof c === 'object' ? String(c.text ?? '') : c == null ? '' : String(c);
+const cellKey = c => c && typeof c === 'object' && c.id != null && c.id !== '' ? String(c.id) : cellText(c);
 const spanOf = (c, k) => Math.max(1, Math.round(+(c && typeof c === 'object' && c[k]) || 1));
 function tblGrid(tb) {
-  const heads = [], names = [];
-  arr(tb.head).forEach(h => { const n = spanOf(h, 'span'); for (let k = 0; k < n; k++) { heads.push(n > 1 ? `${cellText(h)}#${k + 1}` : cellText(h)); names.push(cellText(h)); } });
+  const heads = [], hkeys = [], names = [];
+  arr(tb.head).forEach(h => { const n = spanOf(h, 'span'); for (let k = 0; k < n; k++) { heads.push(n > 1 ? `${cellText(h)}#${k + 1}` : cellText(h)); hkeys.push(n > 1 ? `${cellKey(h)}#${k + 1}` : cellKey(h)); names.push(cellText(h)); } });
   const fancy = arr(tb.head).some(h => h && typeof h === 'object') || arr(tb.rows).some(r => arr(r).some(c => c && typeof c === 'object'));
-  const dl = [], dt = [], dg = []; // 위 줄에서 내려온 세로 합친 칸: 남은 줄 수, 글자, 줄 이름에 넣을지
+  const dl = [], dt = [], dk = [], dg = []; // 위 줄에서 내려온 세로 합친 칸: 남은 줄 수, 글자, id(없으면 글자), 줄 이름에 넣을지
   return arr(tb.rows).map((r, ri) => {
     const cells = []; let vc = 0;
-    const lead = [], pass = () => { while (dl[vc] > 0) { dl[vc]--; if (lead.open !== false && dg[vc]) lead.push(dt[vc]); vc++; } };
+    const lead = [], leadK = [], pass = () => { while (dl[vc] > 0) { dl[vc]--; if (lead.open !== false && dg[vc]) { lead.push(dt[vc]); leadK.push(dk[vc]); } vc++; } };
     arr(r).forEach((c, ci) => {
       pass();
       const o = c && typeof c === 'object' ? c : null, span = spanOf(c, 'span'), rs = spanOf(c, 'rowspan'), off = !!(o && o.off), inp = c === '' || c == null;
-      if (lead.open !== false) { if (inp || off) lead.open = false; else { lead.push(cellText(c)); if (!(o && o.rowspan != null)) lead.open = false; } } // rowspan을 준 칸(묶음 이름)은 다음 칸과 함께 줄 이름이 된다
+      if (lead.open !== false) { if (inp || off) lead.open = false; else { lead.push(cellText(c)); leadK.push(cellKey(c)); if (!(o && o.rowspan != null)) lead.open = false; } } // rowspan을 준 칸(묶음 이름)은 다음 칸과 함께 줄 이름이 된다
       cells.push({ c, ci, vc, span, rs, off, inp, grp: !!(o && o.rowspan != null) });
-      if (rs > 1) for (let k = 0; k < span; k++) { dl[vc + k] = rs - 1; dt[vc + k] = cellText(c); dg[vc + k] = true; }
+      if (rs > 1) for (let k = 0; k < span; k++) { dl[vc + k] = rs - 1; dt[vc + k] = cellText(c); dk[vc + k] = cellKey(c); dg[vc + k] = true; }
       vc += span;
     });
     pass();
-    const label = fancy ? lead.filter(Boolean).join(' ') : cellText(arr(r)[0]);
-    cells.forEach(x => { x.row = label !== '' ? label : 'r' + ri; x.col = heads[x.vc] ?? 'c' + x.vc; x.colName = names[x.vc] ?? ''; });
+    const label = fancy ? lead.filter(Boolean).join(' ') : cellText(arr(r)[0]), labelK = fancy ? leadK.filter(Boolean).join(' ') : cellKey(arr(r)[0]);
+    cells.forEach(x => { x.row = label !== '' ? label : 'r' + ri; x.col = heads[x.vc] ?? 'c' + x.vc; x.rowK = labelK !== '' ? labelK : 'r' + ri; x.colK = hkeys[x.vc] ?? 'c' + x.vc; x.colName = names[x.vc] ?? ''; });
     return cells;
   });
 }
-arr(res.tables || res.table).forEach((tb, ti) => { if (!tb) return; const t0 = hashStr(tb.title || `표${ti}`), tk = tb.id || t0; tblGrid(tb).forEach((row, ri) => row.forEach(x => { if (x.inp) akey(`t:${tk}:${x.row}:${x.col}`, `t${ti}.${ri}.${x.ci}`, `t:${t0}:${x.row}:${x.col}`); })); });
+// 표 칸 저장 이름: 't:' + 표 id(없으면 제목) + 줄 이름 + 열 이름. 예전 이름은 표 id·줄 id·열 id를 하나씩 빼 본 이름들 (가까운 것부터, v1.33)
+const TLEG = [[1, 0, 1], [1, 1, 0], [1, 0, 0], [0, 1, 1], [0, 0, 1], [0, 1, 0], [0, 0, 0]].map(f => [f, new Set()]);
+arr(res.tables || res.table).forEach((tb, ti) => { if (!tb) return; const t0 = hashStr(tb.title || `표${ti}`), tk = tb.id || t0; tblGrid(tb).forEach((row, ri) => row.forEach(x => { if (x.inp) akey(`t:${tk}:${x.rowK}:${x.colK}`, `t${ti}.${ri}.${x.ci}`, TLEG.map(([[a, b, c], used]) => [used, `t:${a ? tk : t0}:${b ? x.rowK : x.row}:${c ? x.colK : x.col}`])); })); });
 const SKEY = new Map(), skUsed = new Set(), skLeg = new Set(), skList = v => arr(v).filter(x => x && typeof x === 'object'); // 그림 칸: 's:' + id 또는 제목 (칸마다 ':0', ':0:w' …)
-[...skList(res.sketches), ...steps.flatMap(st => skList(st.sketch))].forEach((sk, k) => { const t0 = `s:${hashStr(sk.title || `그림${k}`)}`, key = uniq(skUsed, sk.id != null ? `s:${sk.id}` : t0), l = uniq(skLeg, t0); SKEY.set(sk, key); if (l !== key) LEG.set(key, l); });
+[...skList(res.sketches), ...steps.flatMap(st => skList(st.sketch))].forEach((sk, k) => { const t0 = `s:${hashStr(sk.title || `그림${k}`)}`, key = uniq(skUsed, sk.id != null ? `s:${sk.id}` : t0), l = uniq(skLeg, t0); SKEY.set(sk, key); if (l !== key) LEG.set(key, [l]); });
 // 예전 이름의 답을 새 이름으로 옮긴다 (새 이름에 이미 답이 있으면 그대로 둔다). 그림 칸·고른 예상은 뒤에 붙은 ':0'·':done'까지
 function adopt(v) {
   let moved = false; const mv = (a, b) => { if (v[a] != null && v[b] == null) { v[b] = v[a]; delete v[a]; moved = true; } };
   AK.forEach((k, old) => mv(old, k));
-  LEG.forEach((l, k) => Object.keys(v).forEach(x => { if (x === l || x.startsWith(l + ':')) mv(x, k + x.slice(l.length)); }));
+  LEG.forEach((ls, k) => ls.forEach(l => Object.keys(v).forEach(x => { if (x === l || x.startsWith(l + ':')) mv(x, k + x.slice(l.length)); })));
   return moved;
 }
 if (adopt(saved) || fromKEY0) persist();
