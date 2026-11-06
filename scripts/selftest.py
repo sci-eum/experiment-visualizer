@@ -640,6 +640,23 @@ def main():
     quiet = main_check(QUIET, load_registry())
     if quiet.errors or quiet.warns:
         fails.append(f'알리지 않아야 할 것에 오류·확인이 나옴: {quiet.errors + quiet.warns}')
+    guide = {"id": "guide-check", "title": "가상 대응표", "source": "가상 원문", "steps": [{"id": "put", "title": "넣기",
+             "origin": {"where": "1쪽", "quote": "가에 가상 용액 16 mL를 넣는다.", "check": "ok"},
+             "mapping": [{"target": "가", "material": "가상 용액", "amount": "16 mL"}],
+             "repeat": "가에 넣어요.", "checkpoint": "모두 넣었으면 다음으로 가요.",
+             "scene": [{"t": "beaker", "fill": .4, "hideColor": True}]}]}
+    for field, value, want in [(None, None, False), ("mapping", [{"target": "가", "material": "가상 용액", "amount": "17 mL"}], True),
+                               ("repeat", "17 mL씩 넣어요.", True), ("checkpoint", "17초 뒤에 넘어가요.", True),
+                               ("mapping", [{"target": "가", "material": "물"}, {"target": "가", "material": "물"}], True),
+                               ("mapping", [], True), ("mapping", [{"material": "물", "amount": 16}], True),
+                               ("repeat", 42, True), ("checkpoint", {"text": "완료"}, True),
+                               ("scene", [{"t": "tube", "hideColor": "true"}], True)]:
+        case = copy.deepcopy(guide)
+        if field:
+            case["steps"][0][field] = value
+        result = main_check(case, load_registry(), strict_source=True)
+        if bool(result.errors) != want:
+            fails.append(f'학생 안내 검사 {field}: {result.errors}')
     strict_cases = [
         ({"title": "누락", "steps": [{"title": "관찰", "scene": [{"t": "beaker"}]}]}, True),
         ({"title": "불일치", "source": "가상 활동지", "steps": [{"text": "7 ℃", "origin": {"where": "1쪽", "quote": "-7 ℃", "check": "ok"}}]}, True),
@@ -673,7 +690,7 @@ def main():
         fails += cf + vf
         more = cn + vn
     total = (len(EQ) + len(VOL) * (2 if node else 1) + len(BAD_EXPECT) + len(BAD_WARN) + len(QTY) + len(MISS) + 2
-             + len(strict_cases) + (keys[1] if keys else 0) + (u3[1] if u3 else 0) + more)
+             + 10 + len(strict_cases) + (keys[1] if keys else 0) + (u3[1] if u3 else 0) + more)
     for f in fails:
         print('  -', f)
     print(f'{"OK" if not fails else "FAIL"}  자체 시험 {total - len(fails)}/{total}')

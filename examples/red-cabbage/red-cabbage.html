@@ -146,6 +146,7 @@ window.EXPERIMENT = {
         "check": "ok"
       },
       "text": "시험관 6개에 ㉠~㉥ 이름표를 붙이고 시험관대에 꽂는다.",
+      "checkpoint": "시험관마다 이름표를 붙이고 시험관대에 꽂았으면 다음으로 넘어가요.",
       "scene": [
         {
           "t": "rack",
@@ -201,12 +202,46 @@ window.EXPERIMENT = {
           "tip"
         ]
       },
-      "text": "눈금실린더로 식초, 레몬즙, 묽은 염산, 유리 세정제, 비눗물, 묽은 수산화 나트륨 용액을 각각 **5 mL**씩 재어 시험관 ㉠~㉥에 차례로 넣는다.",
+      "text": "눈금실린더로 각 용액을 **5 mL씩** 재어 대응표에 맞는 시험관에 넣는다.",
+      "mapping": [
+        {
+          "target": "㉠",
+          "material": "식초",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉡",
+          "material": "레몬즙",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉢",
+          "material": "묽은 염산",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉣",
+          "material": "유리 세정제",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉤",
+          "material": "비눗물",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉥",
+          "material": "묽은 수산화 나트륨 용액",
+          "amount": "5 mL"
+        }
+      ],
+      "repeat": "그림은 ㉠의 동작 예시예요. ㉡~㉥에도 대응표의 용액을 넣어요.",
+      "checkpoint": "㉠~㉥ 모두에 해당 용액을 각각 5 mL씩 넣었으면 다음으로 넘어가요.",
       "tip": "용액마다 눈금실린더를 물로 헹구거나 바꿔 써야 섞이지 않아요.",
       "scene": [
         {
           "t": "rack",
-          "x": 270,
+          "x": 240,
           "s": 1.1,
           "tubes": [
             {
@@ -268,10 +303,12 @@ window.EXPERIMENT = {
         "check": "ok"
       },
       "text": "스포이트로 붉은 양배추 지시약을 각 시험관에 **5방울씩** 떨어뜨린다.",
+      "repeat": "그림은 ㉠의 동작 예시예요. ㉠~㉥ 모든 시험관에 반복해요.",
+      "checkpoint": "모든 시험관에 지시약을 5방울씩 넣었으면 다음으로 넘어가요.",
       "scene": [
         {
           "t": "rack",
-          "x": 215,
+          "x": 240,
           "s": 1.1,
           "tubes": [
             {
@@ -327,9 +364,9 @@ window.EXPERIMENT = {
         {
           "t": "text",
           "x": 420,
-          "y": 288,
+          "y": 170,
           "text": "붉은 양배추 지시약",
-          "size": 11,
+          "size": 10,
           "weight": 700
         },
         {
@@ -351,30 +388,34 @@ window.EXPERIMENT = {
       },
       "text": "시험관을 가볍게 흔들어 섞은 뒤, 용액의 색깔 변화를 관찰한다.",
       "observe": "시험관마다 용액이 **무슨 색**으로 변하는지 살펴봐요.",
+      "repeat": "그림은 ㉠ 시험관의 확대 예시예요. ㉠~㉥을 하나씩 가볍게 흔들고 색을 관찰해요.",
+      "checkpoint": "모든 시험관의 색을 관찰했으면 결과를 기록해요.",
       "scene": [
         {
           "t": "tube",
+          "id": "A",
           "x": 200,
           "y": 248,
           "s": 1.5,
-          "layers": [
-            {
-              "h": 0.32,
-              "color": "clear"
-            },
-            {
-              "h": 0.06,
-              "color": "violet"
-            }
-          ],
-          "shake": true
+          "fill": 0.38,
+          "hideColor": true,
+          "shake": true,
+          "label": "㉠ 시험관 (확대)",
+          "labelSide": "left"
         },
         {
           "t": "note",
-          "x": 375,
-          "y": 120,
+          "x": 370,
+          "y": 100,
           "text": "무슨 색으로 변할까요?",
           "icon": "eye"
+        },
+        {
+          "t": "note",
+          "x": 370,
+          "y": 190,
+          "text": "빗금과 ?는 결과 색을 생략한 표시예요",
+          "icon": "how"
         }
       ]
     },
@@ -509,7 +550,7 @@ window.EXPERIMENT = {
 /* ===== EXPERIMENT DATA END ===== */
 </script>
 <script>
-/*! experiment-visualizer LabKit v1.33.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit v1.34.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 데이터(window.EXPERIMENT)를 읽어 단계별 실험 그림 페이지를 그린다. */
 (function () {
 'use strict';
@@ -549,6 +590,14 @@ section{margin:40px 0}
 .sec-head h2{font-size:24px;margin:0;letter-spacing:-.01em}
 .eyebrow{font-size:13px;font-weight:700;color:var(--primary-ink);background:var(--primary-100);padding:4px 12px;border-radius:999px}
 .card{background:var(--card);border-radius:20px;box-shadow:var(--sh-sm);padding:24px}
+.flow{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px}
+.flow li{position:relative;min-width:0}.flow li+li::before{content:'→';position:absolute;left:-16px;top:25px;color:var(--primary-ink)}
+.flow-go{appearance:none;cursor:pointer;font:inherit;color:var(--ink);width:100%;height:100%;background:#fff;border:2px solid #e9dff1;border-radius:16px;padding:14px 12px;text-align:left;display:flex;align-items:center;gap:10px}
+.flow-go:hover,.flow-go[aria-current=step]{border-color:var(--primary);background:var(--primary-50)}.flow-go:focus-visible{outline:3px solid var(--primary);outline-offset:3px}
+.flow-ico{flex:none;width:34px;height:34px;color:var(--primary-ink)}.flow-ico svg{width:100%;height:100%}.flow-go small{display:block;color:var(--ink-3);font-size:12px}.flow-go b{display:block;font-size:15px;line-height:1.45}.flow-help{font-size:14px;color:var(--ink-2);margin:0 0 14px}
+.mapping{margin:12px 0;border:1px solid #dce4ee;border-radius:12px;overflow:hidden}.mapping table{width:100%;border-collapse:collapse;font-size:14px}.mapping caption{text-align:left;padding:8px 12px;font-weight:700;background:var(--obs-bg)}.mapping th,.mapping td{padding:5px 10px;text-align:left;border-top:1px solid #e6ebf2}.mapping th{color:var(--ink-2);font-weight:600}.mapping td:first-child{white-space:nowrap;font-weight:700}.mapping td:last-child{white-space:nowrap}
+.slide .mapping table{font-size:clamp(16px,1.35vw,20px)}
+.box.repeat,.box.checkpoint{background:var(--obs-bg);color:#254c86}.box.repeat .bi,.box.checkpoint .bi{color:var(--obs)}
 .mat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
 .mat{background:#fff;border-radius:18px;box-shadow:var(--sh-sm);padding:24px 14px 20px;text-align:center;transition:all .2s ease}
 .mat:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
@@ -623,6 +672,7 @@ section{margin:40px 0}
 .slide.one{grid-template-columns:1fr;align-content:center;max-width:1100px}
 .slide .mat-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
 .deck-nav{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 20px 20px}
+.deck-nav .btn{flex-shrink:0;white-space:nowrap}.deck-nav .dots{min-width:0}
 .dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:60vw}
 .dot{width:10px;height:10px;border-radius:999px;background:#ddd2ea;border:0;padding:0;cursor:pointer;transition:all .2s ease}
 .dot:hover{background:#c9a6e6}
@@ -721,6 +771,7 @@ button.mat{font:inherit;color:inherit;border:0;cursor:pointer;width:100%;display
 html:not(.lk-unseen) [data-unseen]{opacity:0;visibility:hidden}
 @media(max-width:520px){.us-btn{padding:7px}.us-btn span{display:none}}
 .deck-top .btn[aria-pressed=true]{background:var(--primary);color:#fff}
+@media(max-width:520px){.flow{grid-template-columns:1fr;gap:14px}.flow li+li::before{content:'↓';left:28px;top:-18px;font-size:14px}.flow-go{padding:10px 12px}.flow-go small{display:inline;margin-right:7px}.flow-go b{display:inline}.flow-ico{width:28px;height:28px}.deck-top .flow-back{font-size:12px;padding:9px 7px}.deck-top .deck-title{display:none}.deck-top{gap:6px;padding:12px 16px}.deck-count{white-space:nowrap;font-size:12px}}
 @media(max-width:860px){.hero-card{grid-template-columns:1fr;padding:24px}.step{grid-template-columns:1fr;gap:18px}.slide{grid-template-columns:1fr;grid-auto-rows:max-content;align-content:start;gap:18px;padding-bottom:12px}.slide .scene{max-height:52vh}.dr-row{grid-template-columns:1fr}}
 @media(max-width:520px){.wrap{padding:0 16px}.step,.card{padding:18px}.hero-card{padding:20px;border-radius:22px}.deck-stage{padding:0 16px}.btn{padding:11px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
@@ -729,7 +780,7 @@ if (!document.getElementById('lk-css')) { const st = document.createElement('sty
 if (!document.querySelector('link[href*="pretendard"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'; document.head.appendChild(l); }
 const LabKit = (() => {
 'use strict';
-const VERSION = '1.33.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
+const VERSION = '1.34.0'; // 첫 줄 머리말·태그(v1.x.y)와 같이 고친다
 const W = 480, H = 300, BENCH = 268;
 const INK = '#56617a', INK2 = '#8c95a8', GLASS = '#e2effa', METAL = '#b0b7c4', DARK = '#444b5d';
 const PAL = { water:'#a9d8f5', clear:'#d2e8f7', blue:'#4a7fe0', navy:'#2f4a8a', skyblue:'#7cc4f0', red:'#e5484d', pink:'#ef72b0', purple:'#8f5bd9', violet:'#b06be8', yellow:'#f5cd4f', orange:'#f29b45', green:'#44b27e', lime:'#a6d64b', brown:'#9b6a3f', black:'#34343c', white:'#f6f6f2', milky:'#efeee8', gray:'#a3a8b2', oil:'#f2d26a', iodine:'#2e2f6d', brick:'#b44a30', gold:'#d9a82a', copper:'#c0703a', silver:'#c9ced6',
@@ -927,6 +978,10 @@ function bubbles(g, n, c) {
 function liquid(el, g) {
   const S = g.S; let o = '';
   const X0 = r2(g.fx0), WD = r2(g.fx1 - g.fx0), Y1 = r2(g.fy1);
+  if (el.hideColor && g.fill > 0) {
+    const k = uid('mask'), L = r2(g.L), cy = r2((g.L + g.fy1) / 2);
+    return `<g data-color-mask="true" aria-label="결과 색 생략"><title>결과 색 생략</title><defs><pattern id="${k}" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#f1f3f6"/><path d="M-1,1 L1,-1 M0,6 L6,0 M5,7 L7,5" stroke="#a9b1bf" stroke-width="1"/></pattern></defs><rect x="${X0}" y="${L}" width="${WD}" height="${r2(Y1 - g.L)}" fill="url(#${k})"/><text x="0" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="${Math.min(18, WD * .7)}" font-weight="800" fill="#4b5265" stroke="#fff" stroke-width="2" paint-order="stroke">?</text></g>`;
+  }
   if (Array.isArray(el.layers) && el.layers.length) {
     const span = g.ymax - g.ymin; let acc = 0;
     el.layers.forEach((ly, i) => {
@@ -950,6 +1005,7 @@ function liquid(el, g) {
   return o;
 }
 function liquidBits(el, g) {
+  if (el.hideColor) return liquid(el, g);
   if (Array.isArray(el.layers) && el.layers.length || !(g.fill > 0)) return '';
   const c = col(el.color, 'water'), L = g.L; let o = '';
   if (el.solid === 'ice' || el.ice) { const n = +el.ice || 2; for (let i = 0; i < n; i++) { const ix = r2((i - (n - 1) / 2) * 20), iy = r2(L - 6 + (i % 2) * 3); o += `<rect x="${ix - 8}" y="${iy}" width="16" height="15" rx="3.5" fill="#eef9ff" stroke="#8dbbd8" stroke-width="1.2" transform="rotate(${i % 2 ? 12 : -10} ${ix} ${r2(iy + 7)})"/><path d="M${ix - 4},${r2(iy + 4)} l4,0" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`; } }
@@ -1014,7 +1070,7 @@ function drawC(el, g, cx, d3) {
   o += `<defs><clipPath id="${k}"><path d="${S.clip}"/></clipPath></defs>`;
   if (!d3) o += `<path d="${S.clip}" fill="${el.brown ? '#d6a066' : S.membrane ? '#efe7d2' : GLASS}" opacity="${S.membrane ? .7 : .62}"/>`;
   o += `<g clip-path="url(#${k})">${el.gas && !d3 ? `<path d="${S.clip}" fill="${col(el.gas)}" opacity=".32"/>` : ''}<g transform="rotate(${r2(-g.tilt)},0,${r2(-S.h / 2)})">${d3 ? liquidBits(el, g) : liquid(el, g)}</g>${solids(el, S, g)}${el.stirbar ? stirbarSvg(S.inner.bottom) : ''}</g>`;
-  if (paper) o += `${d3 ? '' : `<path d="${S.clip}" fill="#fdfcf9"/>`}<path d="M-29.4,-70 L29.4,-70 L28,-56 L-28,-56 Z" fill="${col(el.band, '#f1c6e9')}"/>${g.fill > 0 && !g.tilt && !d3 ? `<ellipse cx="0" cy="-84" rx="29" ry="3.5" fill="${col(el.color, 'water')}"/>` : ''}`;
+  if (paper) o += `${d3 ? '' : `<path d="${S.clip}" fill="#fdfcf9"/>`}<path d="M-29.4,-70 L29.4,-70 L28,-56 L-28,-56 Z" fill="${col(el.band, '#f1c6e9')}"/>${g.fill > 0 && !g.tilt && !d3 ? `<ellipse cx="0" cy="-84" rx="29" ry="3.5" fill="${el.hideColor ? '#d5dae2' : col(el.color, 'water')}"/>` : ''}`;
   if (S.membrane && !d3) o += `<path d="${S.clip}" fill="#efe7d2" opacity=".28"/>`;
   if (el.arm && !d3) { const d = el.arm === 'left' ? -1 : 1, y0 = -S.h + 22, ex = d * (S.half + 34), ey = -S.h + 38; o += `<path d="M${d * S.half},${y0} L${ex},${ey}" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M${d * (S.half - 1)},${y0} L${ex},${ey}" stroke="#eef6fc" stroke-width="4" stroke-linecap="round"/>`; }
   if (!d3) o += `<path d="${S.outline}" fill="none" stroke="${S.membrane ? '#9c9178' : INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
@@ -1057,7 +1113,7 @@ function veil(el, g) {
   const S = g.S, k = uid('k'), ice = el.solid === 'icebath', vm = el.vol != null ? volMarks(el, g.s) : null;
   if (!(g.fill > 0) && !ice && !vm) return '';
   const c = col(el.color, 'water');
-  const wet = g.fill > 0 ? `<g transform="rotate(${r2(-g.tilt)},0,${r2(-S.h / 2)})"><rect x="${r2(g.fx0)}" y="${r2(g.L)}" width="${r2(g.fx1 - g.fx0)}" height="${r2(g.fy1 - g.L)}" fill="${c}" opacity=".36"/><rect x="${r2(g.fx0)}" y="${r2(g.L)}" width="${r2(g.fx1 - g.fx0)}" height="2" fill="${shade(c, -.38)}" opacity=".85"/></g>` : '';
+  const wet = g.fill > 0 ? `<g transform="rotate(${r2(-g.tilt)},0,${r2(-S.h / 2)})">${el.hideColor ? liquid(el, g) : `<rect x="${r2(g.fx0)}" y="${r2(g.L)}" width="${r2(g.fx1 - g.fx0)}" height="${r2(g.fy1 - g.L)}" fill="${c}" opacity=".36"/><rect x="${r2(g.fx0)}" y="${r2(g.L)}" width="${r2(g.fx1 - g.fx0)}" height="2" fill="${shade(c, -.38)}" opacity=".85"/>`}</g>` : '';
   return `<g transform="translate(${r2(g.x)},${r2(g.y)}) rotate(${r2(g.tilt)},0,${r2(-S.h * g.s / 2)}) scale(${g.s})"><defs><clipPath id="${k}"><path d="${S.clip}"/></clipPath></defs><g clip-path="url(#${k})">${wet}${ice ? solids(el, S, g, true) : ''}</g>${vm ? vm.svg : ''}</g>`;
 }
 
@@ -3542,7 +3598,8 @@ function pkSafety(words, i) { // 안전 수칙·이 단계의 주의 중 그 이
 }
 function pkRows(el) { // 담긴 것·읽은 값
   const t = LabKit.baseType(el.t), rows = [], has = [];
-  if (Array.isArray(el.layers) && el.layers.length) has.push(`${el.layers.length}층으로 나뉜 액체 (아래부터 ${el.layers.map(l => liquidKo(l && l.color)).join(', ')})`);
+  if (el.hideColor) has.push(`액체${el.amount != null ? ' ' + el.amount : ''} · 결과 색은 그림에서 생략했어요`);
+  else if (Array.isArray(el.layers) && el.layers.length) has.push(`${el.layers.length}층으로 나뉜 액체 (아래부터 ${el.layers.map(l => liquidKo(l && l.color)).join(', ')})`);
   else if (PK_LIQ.has(t) && (el.amount != null || +el.fill > 0 || (el.color != null && el.fill !== 0))) has.push(`${liquidKo(el.color)}${el.amount != null ? ' ' + el.amount : ''}`);
   if (el.solid && KO_SOLID[el.solid]) has.push(KO_SOLID[el.solid]);
   if (el.gas) has.push(`${KO_COLOR[el.gas] ? KO_COLOR[el.gas] + ' ' : ''}기체`);
@@ -3632,7 +3689,7 @@ function playBtn(b) {
   if (rv) playReveal(box.querySelector('.sc-rv'), i); else playStep(box.querySelector('.sc-main'), i);
 }
 // 원문 대응 기록 (교사용): 원문 위치·근거 문장·판독 상태·원문에 없이 더한 것. 화면에서는 '원문 대조 보기'로, 교사용 인쇄에는 늘 보인다
-const ADDED = { tip: '팁', warn: '주의', point: '강조', predict: '예상', answer: '예상의 정답', observe: '관찰', reveal: '결과 보기', scene: '그림', text: '설명', time: '시간' };
+const ADDED = { tip: '팁', warn: '주의', point: '강조', predict: '예상', answer: '예상의 정답', observe: '관찰', reveal: '결과 보기', scene: '그림', text: '설명', time: '시간', mapping: '대상 대응표', repeat: '반복 범위', checkpoint: '다음 단계 조건' };
 const hasOrigin = steps.some(st => st.origin && typeof st.origin === 'object');
 function originBox(st) {
   const o = st.origin; if (!o || typeof o !== 'object') return '';
@@ -3640,7 +3697,8 @@ function originBox(st) {
   const added = arr(o.added).map(k => ADDED[k] || k).join(', ');
   return `${unsure}<div class="origin"><b>원문</b> ${o.where ? e(o.where) : '위치 없음'}${o.quote ? ` · “${md(o.quote)}”` : ''}${o.check === 'ok' ? ' · 확인함' : ''}${added ? ` · 원문에 없이 더한 것: ${e(added)}` : ''}</div>`;
 }
-const stepBoxes = (st, i) => `${originBox(st)}${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${predictBox(st, i)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}${revealUi(st, i)}`;
+const mappingBox = st => Array.isArray(st.mapping) && st.mapping.length ? `<div class="mapping"><table><caption>넣는 대상과 양</caption><thead><tr><th scope="col">대상</th><th scope="col">물질</th><th scope="col">양</th></tr></thead><tbody>${st.mapping.map(m => `<tr><td>${e(m.target)}</td><td>${e(m.material)}</td><td>${e(m.amount || '—')}</td></tr>`).join('')}</tbody></table></div>` : '';
+const stepBoxes = (st, i) => `${originBox(st)}${mappingBox(st)}${box('repeat', '반복', st.repeat)}${st.text ? `<p class="txt">${md(st.text)}</p>` : ''}${box('checkpoint', '다음 단계', st.checkpoint)}${box('pt', '강조', st.point)}${box('obs', '관찰', st.observe)}${predictBox(st, i)}${box('tip', '팁', st.tip)}${box('warn', '주의', st.warn)}${revealUi(st, i)}`;
 function toggleReveal(i) {
   if (i !== 'res' && !rvOn.has(i) && pcWait(i)) { // 예상을 다 고르기 전에는 열지 않고 안내 글을 깜빡인다
     document.querySelectorAll(`[data-rvs="${i}"] .rv-lock`).forEach(n => { n.classList.remove('pulse'); void n.offsetWidth; n.classList.add('pulse'); });
@@ -3735,9 +3793,22 @@ const resHidden = (cls, title, body) => `<div class="card ${cls}${rvOn.has('res'
 const resCards = () => [res.expect && resHidden('res-expect', '예상 결과', res.expect), res.conclusion && resHidden('res-conc', '정리', res.conclusion), arr(res.tables || res.table).map((tb, ti) => tb && arr(tb.head).length ? `<div class="card wide"><h3>${IC.table}${e(tb.title || '결과 기록표')}</h3>${tableHtml(tb, ti)}</div>` : '').join(''), skList(res.sketches).length && `<div class="card wide"><h3>${IC.q}관찰한 모습 그리기</h3>${skList(res.sketches).map(sketchHtml).join('')}</div>`, arr(res.questions).length && `<div class="card${res.table ? '' : ''}"><h3>${IC.q}생각해 보기</h3><ol class="qs">${arr(res.questions).map((q, k) => `<li><div>${md(qText(q))}${writeBox(ak(`q${k}`), '내 생각을 적어요', 'ans')}</div></li>`).join('')}</ol></div>`].filter(Boolean).join('');
 const emptyState = `<div class="card empty">${LabKit.scene([{ t: 'beaker', x: 200, fill: 0 }, { t: 'dropper', x: 200, y: 110, drops: false }, { t: 'note', x: 340, y: 120, text: '실험 단계를 기다리는 중이에요', icon: 'idea' }], { label: '빈 상태' }).replace('class="scene"', 'class="scene ill"')}<b>아직 실험 단계가 없어요</b><span>실험지 내용을 넣으면 이곳에 단계별 그림이 나타나요!</span></div>`;
 
+// 전체 흐름은 결과 상태를 복제하지 않고 동작을 나타내는 중립 아이콘만 쓴다.
+function flowIcon(st, i) {
+  const items = sceneItems(i), has = t => items.some(el => el.t === t);
+  let path;
+  if (/이름표/.test(st.title || '')) path = '<path d="M3 5h14l4 7-4 7H3zM8 9h7M8 14h7"/><circle cx="18" cy="12" r=".7"/>';
+  else if (has('pour')) path = '<path d="M3 4l8-2 2 7-8 2zM14 8l3 4M15 14v7h7v-7"/>';
+  else if (has('dropper') || has('micropipette')) path = '<path d="M10 2h4v4l-1 8h-2l-1-8zM12 17q-4 5 0 5t0-5"/>';
+  else if (items.some(el => el.shake || el.stir)) path = '<path d="M10 2v14a3 3 0 0 0 6 0V2M3 8l-2 3 2 3M21 8l2 3-2 3M7 2h12"/>';
+  else return /기록|정리|분류|기록표/.test(st.title || '') ? IC.table : /관찰/.test(st.title || '') ? IC.eye : IC.flask;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+}
+const flowHtml = (selected = -1) => `<p class="flow-help">순서를 먼저 살펴보고, 단계를 누르면 자세히 볼 수 있어요.</p><ol class="flow">${steps.map((st, i) => `<li><button class="flow-go" type="button" data-flow="${i}"${selected === i ? ' aria-current="step"' : ''}><span class="flow-ico" aria-hidden="true">${flowIcon(st, i)}</span><span><small>${i + 1}단계${selected === i ? ' · 현재 위치' : ''}</small><b>${e(st.title || `${i + 1}단계`)}</b></span></button></li>`).join('')}</ol>`;
 function page() {
   const h = [];
   h.push(`<header class="hero wrap"><div class="hero-card"><div><div class="chips">${chips()}</div><h1>${e(D.title || '실험 과정 안내')}</h1><div class="pname"><span>학년 반<i></i></span><span>번호<i></i></span><span>이름<i></i></span></div>${D.goal ? `<p class="goal">${md(D.goal)}</p>` : ''}<div class="toolbar"><button class="btn primary" data-open="0">${IC.play}수업 모드로 보기</button>${stillBtn('btn')}<div class="pwrap"><button class="btn pbtn" type="button" aria-haspopup="true" aria-expanded="false">${IC.print}인쇄하기</button><div class="pmenu" role="menu" hidden><button type="button" role="menuitem" data-pmode="student"><b>학생용 학습지</b><span>그림·과정·적는 칸 (결과 그림과 예상 결과는 빼요)</span></button><button type="button" role="menuitem" data-pmode="teacher"><b>교사용</b><span>결과 그림·예상 결과·원문 확인 메모까지</span></button></div></div></div>${D._demo ? '<div class="demo">지금 보이는 내용은 템플릿의 예시 데이터예요. 실험지 내용으로 바꿔 주세요.</div>' : ''}</div><div class="hero-art" data-cover="${coverSrc}">${LabKit.scene(coverItems, { label: '표지 그림' })}</div></div></header><main class="wrap">`);
+  if (steps.length) h.push(`<section class="flow-section" aria-label="전체 과정 한눈에 보기"><div class="sec-head"><span class="eyebrow">한눈에</span><h2>전체 과정</h2></div>${flowHtml()}</section>`);
   if (mats.length) h.push(`<section><div class="sec-head"><span class="eyebrow">준비</span><h2>준비물</h2></div>${matGrid()}</section>`);
   if (safety.length) h.push(`<section><div class="sec-head"><span class="eyebrow">안전</span><h2>안전 수칙</h2></div>${safeList()}</section>`);
   if (tips.length) h.push(`<section><div class="sec-head"><span class="eyebrow">팁</span><h2>실험 전에 알아 두기</h2></div>${tipList()}</section>`);
@@ -3752,6 +3823,9 @@ function page() {
 /* ----- 수업 모드 ----- */
 const slides = [];
 slides.push({ name: '표지', html: () => `<div class="slide"><div class="scene-box">${LabKit.scene(coverItems, { label: '표지 그림' })}</div><div><div class="chips">${chips()}</div><h2>${e(D.title || '실험 과정 안내')}</h2>${D.goal ? `<p class="txt">${md(D.goal)}</p>` : ''}</div></div>` });
+let flowCurrent = -1;
+const flowSlide = slides.length;
+if (steps.length) slides.push({ name: '전체 과정', html: () => `<div class="slide one"><div><h2>전체 과정 한눈에 보기</h2>${flowHtml(flowCurrent)}</div></div>` });
 if (mats.length) slides.push({ name: '준비물', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">준비</span><h2 style="margin:0">준비물</h2></div>${matGrid()}</div></div>` });
 if (safety.length) slides.push({ name: '안전 수칙', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">안전</span><h2 style="margin:0">안전 수칙</h2></div>${safeList()}</div></div>` });
 if (tips.length) slides.push({ name: '실험 팁', html: () => `<div class="slide one"><div><div class="sec-head"><span class="eyebrow">팁</span><h2 style="margin:0">실험 전에 알아 두기</h2></div>${tipList()}</div></div>` });
@@ -3783,12 +3857,13 @@ let deckLive = false;
 function showSlide(i) {
   const from = cur, fwd = deckLive && i > cur;
   cur = Math.max(0, Math.min(slides.length - 1, i));
+  if (slides[cur].step != null) flowCurrent = slides[cur].step;
   if (inl) { inl.dispose(); inl = null; }
   pkOn = null; // 새로 그린 화면은 부품 카드가 닫혀 있다
   deck.querySelector('.deck-stage').innerHTML = slides[cur].html();
   const k = slides[cur].step, auto = fwd && cur !== from && k != null && motionOn(steps[k]) && !(rvOn.has(k) && revealItems(steps[k], k));
   mountInline(auto && deck3d && stepPlan(k) ? twFrom(k) : null); // 앞으로 넘기면 그 단계의 시연 (입체로 보는 중이면 입체로)
-  deck.querySelector('.deck-count').textContent = `${cur + 1} / ${slides.length}`;
+  deck.querySelector('.deck-count').textContent = slides[cur].step != null ? `실험 ${slides[cur].step + 1} / ${steps.length}단계` : slides[cur].name;
   deck.querySelectorAll('.dot').forEach((d, k) => { d.classList.toggle('on', k === cur); d.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
   deck.querySelector('[data-prev]').disabled = cur === 0; deck.querySelector('[data-next]').disabled = cur === slides.length - 1;
   LabKit.fit(deck); initSketches(deck); if (Q.has('check')) afterFonts(() => LabKit.overlaps(deck, { mark: true }));
@@ -3797,15 +3872,17 @@ function showSlide(i) {
 }
 function openDeck(i) {
   lastFocus = document.activeElement;
-  deck.innerHTML = `<div class="deck-top"><div class="deck-title">${e(D.title || '실험 과정')}</div><span class="tm-mini" hidden></span><span class="deck-count"></span>${stillBtn('btn icon', true)}<button class="btn icon" type="button" data-v3deck aria-pressed="${deck3d}" aria-label="장면을 입체(3D)로 보기" title="장면을 입체(3D)로 보기">${IC.cube}</button><button class="btn icon" data-full aria-label="전체 화면">${IC.full}</button><button class="btn icon" data-close aria-label="닫기">${IC.x}</button></div><div class="deck-stage"></div><div class="deck-nav"><button class="btn" data-prev>${IC.left}이전</button><div class="dots">${slides.map((s, k) => `<button class="dot" data-go="${k}" aria-label="${e(s.name)}"></button>`).join('')}</div><button class="btn primary" data-next>다음${IC.right}</button></div>`;
+  deck.innerHTML = `<div class="deck-top"><div class="deck-title">${e(D.title || '실험 과정')}</div><span class="tm-mini" hidden></span><span class="deck-count" aria-live="polite"></span>${steps.length ? '<button class="btn flow-back" type="button" data-flow-back aria-label="전체 과정 한눈에 보기">흐름</button>' : ''}${stillBtn('btn icon', true)}<button class="btn icon" type="button" data-v3deck aria-pressed="${deck3d}" aria-label="장면을 입체(3D)로 보기" title="장면을 입체(3D)로 보기">${IC.cube}</button><button class="btn icon" data-full aria-label="전체 화면">${IC.full}</button><button class="btn icon" data-close aria-label="닫기">${IC.x}</button></div><div class="deck-stage"></div><div class="deck-nav"><button class="btn" data-prev>${IC.left}이전</button><div class="dots">${slides.map((s, k) => `<button class="dot" data-go="${k}" aria-label="${e(s.name)}"></button>`).join('')}</div><button class="btn primary" data-next>다음${IC.right}</button></div>`;
   deck.hidden = false; document.body.style.overflow = 'hidden'; deckLive = false; showSlide(i); deckLive = true; deck.querySelector('[data-next]').focus();
 }
 function closeDeck() { if (inl) { inl.dispose(); inl = null; } deckLive = false; deck.hidden = true; document.body.style.overflow = ''; app.querySelectorAll('[data-w]').forEach(w => { w.innerHTML = wtext(w.dataset.w); }); initSketches(app); refreshPc(); if (document.fullscreenElement) document.exitFullscreen().catch(() => { }); if (lastFocus) lastFocus.focus(); }
 deck.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) { const n = ev.target.closest && ev.target.closest('.scene-box svg [data-lk-k]'); if (n) pkClick(n); return; } if (b.dataset.play != null) return playBtn(b);
+  if (b.hasAttribute('data-flow-back')) return showSlide(flowSlide); if (b.hasAttribute('data-flow')) return showSlide(stepStart + +b.dataset.flow);
   if (b.hasAttribute('data-pklist')) return pkToggleList(b); if (b.hasAttribute('data-pkm')) return pkMat(b);
   if (b.dataset.pkk) { const i = +b.closest('.pk').dataset.pk; return pkOn && pkOn.i === i && pkOn.k === b.dataset.pkk ? pkClose() : pkShow(i, b.dataset.pkk, pkRv(i)); }
   if (b.hasAttribute('data-pkx')) { const c = b.closest('[data-pkmat]'); return c ? pkMatClose(c) : pkClose(); } if (b.hasAttribute('data-still')) return setStill(!still); if (b.hasAttribute('data-us')) return setUnseen(!unseenOn); if (b.dataset.v3 != null) return open3d(+b.dataset.v3); if (b.hasAttribute('data-v3deck')) { deck3d = !deck3d; b.setAttribute('aria-pressed', deck3d); return mountInline(); } if (b.dataset.rv != null) return toggleReveal(rvKey(b.dataset.rv)); if (b.dataset.tm) return tmAction(b.dataset.tm, +b.dataset.i); if (b.hasAttribute('data-clear')) return clearWrites(); if (b.hasAttribute('data-close')) closeDeck(); else if (b.hasAttribute('data-prev')) showSlide(cur - 1); else if (b.hasAttribute('data-next')) showSlide(cur + 1); else if (b.dataset.go) showSlide(+b.dataset.go); else if (b.hasAttribute('data-full')) { if (document.fullscreenElement) document.exitFullscreen(); else if (deck.requestFullscreen) deck.requestFullscreen().catch(() => { }); } });
 document.addEventListener('keydown', ev => { if (ev.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName || '')) return; if ((ev.key === ' ' || ev.key === 'Enter') && ev.target.closest && ev.target.closest('[data-pc],.pk,[data-pkm],[data-pkmat],.v3-ctl')) return;
+  if ([' ', 'Enter'].includes(ev.key) && ev.target.closest && ev.target.closest('button')) return;
   if (ev.key === 'Escape' && !deck.hidden) { const mc = deck.querySelector('.pk-card[data-pkmat]:not([hidden])'); if (pkOn || mc) { ev.preventDefault(); if (mc) pkMatClose(mc); pkClose(); return; } } if (ev.key === 'Escape') { const pm = app.querySelector('.pmenu:not([hidden])'); if (pm) { pm.hidden = true; return; } } if (!deck.hidden && inl && ev.target.closest && ev.target.closest('.v3-inline')) { inl.key(ev); if (ev.defaultPrevented) return; } if (deck.hidden) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('step')) { ev.preventDefault(); openDeck(stepStart + +ev.target.dataset.step); } return; } if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); showSlide(cur + 1); } else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); showSlide(cur - 1); } else if (ev.key === 'Escape' && !document.fullscreenElement) closeDeck(); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].step != null && revealOf(steps[slides[cur].step])) toggleReveal(slides[cur].step); else if ((ev.key === 'r' || ev.key === 'R') && slides[cur].res && (res.expect || res.conclusion)) toggleReveal('res'); else if (ev.key === 'Home') showSlide(0); else if (ev.key === 'End') showSlide(slides.length - 1); });
 let tx = null;
 // 입체 그림·답안·그림 칸·단추를 조작할 때는 단계를 넘기지 않는다.
@@ -3900,6 +3977,7 @@ app.addEventListener('click', ev => {
   if (t.closest('[data-clear]')) return clearWrites();
   const ob = t.closest('[data-origin]'); if (ob) { const on = document.documentElement.classList.toggle('lk-origin'); ob.setAttribute('aria-pressed', on); ob.textContent = on ? '원문 대조 감추기' : '원문 대조 보기'; return; }
   if (t.closest('[data-w], [data-skg], [data-pc]')) return; // 적는 칸·그림 칸·예상 보기를 누르면 수업 모드를 열지 않는다
+  const f = t.closest('[data-flow]'); if (f) return openDeck(stepStart + +f.dataset.flow);
   const o = t.closest('[data-open]'); if (o) return openDeck(+o.dataset.open);
   const st = t.closest('.step'); if (st) openDeck(stepStart + +st.dataset.step);
 });

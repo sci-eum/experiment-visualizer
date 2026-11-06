@@ -7,7 +7,7 @@
 오류 (고쳐야 함): 필수 항목·자료형, 없는 부품 이름, 없는 속성(오타), 정해진 값이 아님(kind·solid …),
     같은 장면의 id 중복, 가리키는 id가 없음, 부피를 읽지 못함, 넣은 양이 용량보다 많음, 잘못된 장면 이어받기, 남은 _demo
 확인 (볼 것): 좌표가 장면 밖, 준비물에 용량이 적혔는데 장면·아이콘에 vol/fromVol이 없음,
-    설명·그림의 수치(양·온도·시간·농도 …)가 원문 근거 문장(origin.quote)에 없음,
+    설명·그림·대상 대응표·반복 범위·완료 조건의 수치(양·온도·시간·농도 …)가 원문 근거 문장(origin.quote)에 없음,
     준비물 아이콘이 이름 짐작으로 다른 기구 그림이 됨('피펫' → 스포이트), 몇 시간짜리 타이머가 생김,
     결과 보기의 모습이 과정 그림·표지에 미리 있음, 학생 답 저장에 쓰는 고정 id가 없음 등
 오류가 있으면 종료 코드 1.
@@ -25,15 +25,15 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 # 부품 목록: 그림 엔진과 같은 고정 배포판을 먼저, 막히면 같은 태그의 저장소 원본
-VERSION = "1.33.0"
+VERSION = "1.34.0"
 RAW = [f"https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@{VERSION}/references/parts.json",
        f"https://raw.githubusercontent.com/sci-eum/experiment-visualizer/v{VERSION}/references/parts.json"]
 W, H = 480, 300
 TOP = {"title", "subject", "unit", "duration", "group", "goal", "materials", "safety", "tips", "cover", "steps", "results",
        "source", "notes", "id", "_demo"}
-STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin", "sketch", "motion"}
+STEP = {"title", "text", "time", "timer", "point", "observe", "tip", "warn", "predict", "reveal", "scene", "section", "no", "bench", "id", "origin", "sketch", "motion", "mapping", "repeat", "checkpoint"}
 ORIGIN = {"where", "quote", "check", "unsure", "added"}
-ADDED = {"tip", "warn", "point", "predict", "answer", "observe", "reveal", "scene", "text", "time", "info", "unseen"}
+ADDED = {"tip", "warn", "point", "predict", "answer", "observe", "reveal", "scene", "text", "time", "info", "unseen", "mapping", "repeat", "checkpoint"}
 PREDICT = {"text", "choices", "answer", "why", "write"}  # 고르는 예상 (보기 2~6개, 정답, 까닭, 까닭 적는 칸)
 RESULTS = {"expect", "conclusion", "table", "tables", "questions", "sketches"}
 SKETCH = {"id", "title", "shape", "n", "labels", "write", "note", "range"}  # 그림 칸 (range: 스펙트럼 띠의 파장 범위)
@@ -52,7 +52,7 @@ RACKS = {"rack": "tube", "tuberack": "microtube"}  # tubes를 꽂는 부품과 t
 PORTS = {"power", "geltank", "electrophoresis", "meter", "coil", "battery", "bulb", "switch", "ammeter", "voltmeter", "resistor", "motor", "led"}  # 'id:+'·'id:-' 단자가 있는 부품
 METER_PORTS = {"multi", "galvano", "ammeter", "voltmeter"}  # 단자가 있는 meter kind
 KIDS = {"rack": "tubes", "tuberack": "tubes", "wellplate": "wells"}  # 안에 든 것(시험관·튜브·홈)에도 id를 주어 가리킨다
-TEXT_FIELDS = ["text", "point", "observe", "tip", "warn"]
+TEXT_FIELDS = ["text", "point", "observe", "tip", "warn", "repeat", "checkpoint"]
 # 결과 보기의 change에서 결과(모습)로 치지 않는 배치·이름 속성
 PLACE = {"t", "id", "x", "y", "dx", "dy", "at", "tilt", "s", "z", "label", "labelSide", "info", "on", "in", "over", "into", "hold", "stand", "reach"}
 # 준비물 이름 → 부품 (용량 확인용)
@@ -281,6 +281,8 @@ def check_part(el, where, reg, rep):
             rep.err(f"{where} ({name_of(el)})", "info(부품 설명)는 글자 또는 글자 배열이나 false(기구 기본 설명 끄기)여야 해요")
         if "unseen" in el and not isinstance(el["unseen"], bool):  # 보이지 않는 것 (v1.31)
             rep.err(f"{where} ({name_of(el)})", "unseen(보이지 않는 것)은 true 또는 false여야 해요")
+        if "hideColor" in el and not isinstance(el["hideColor"], bool):
+            rep.err(f"{where} ({name_of(el)})", "hideColor(결과 색 생략)는 true 또는 false여야 해요")
         if real == "heat":
             k = el.get("kind", "conduct")
             if k == "convect" and not el.get("in"):
@@ -668,6 +670,29 @@ def main_check(data, reg, strict_source=False):
         for k in TEXT_FIELDS:
             if k in st and not is_text(st[k]):
                 rep.err(f"{where}.{k}", "글자 또는 글자 배열이어야 해요")
+        if "mapping" in st:
+            if not isinstance(st["mapping"], list) or not st["mapping"]:
+                rep.err(f"{where}.mapping", "{ target, material, amount? }의 비어 있지 않은 배열이어야 해요")
+            else:
+                targets = set()
+                for j, m in enumerate(st["mapping"]):
+                    mw = f"{where}.mapping[{j}]"
+                    if not isinstance(m, dict):
+                        rep.err(mw, "{ target, material, amount? } 객체여야 해요")
+                        continue
+                    for k in m:
+                        if k not in {"target", "material", "amount"}:
+                            rep.err(mw, f"알 수 없는 항목 '{k}'")
+                    for k in ("target", "material"):
+                        if not isinstance(m.get(k), str) or not m[k].strip():
+                            rep.err(mw, f"{k}는 비어 있지 않은 글자여야 해요")
+                    if "amount" in m and (not isinstance(m["amount"], str) or not m["amount"].strip()):
+                        rep.err(mw, "amount는 단위를 포함한 글자여야 해요 (원문에 없으면 생략)")
+                    target = m.get("target")
+                    if isinstance(target, str):
+                        if target in targets:
+                            rep.err(mw, f"대상 '{target}'가 대응표에서 여러 번 나와요")
+                        targets.add(target)
         if "predict" in st:
             check_predict(st["predict"], f"{where}.predict", rep, st.get("reveal") is not None)
         if "sketch" in st:
@@ -756,8 +781,10 @@ def main_check(data, reg, strict_source=False):
         where, added, own = f"steps[{i}] ({i + 1}단계)", og.get("added") or [], quantities(og["quote"], header=True)
         evidence = own if strict_source else own + pool
         if og.get("check") != "unsure":  # 판독 불확실은 이미 알렸다
-            fields = [("title", "제목", st.get("title"))] + [(k, n, st.get(k)) for k, n in (("text", "설명"), ("time", "시간")) if k not in added]
+            fields = [("title", "제목", st.get("title"))] + [(k, n, st.get(k)) for k, n in (("text", "설명"), ("time", "시간"), ("mapping", "대상 대응표"), ("repeat", "반복 범위"), ("checkpoint", "다음 단계 조건")) if k not in added]
             for k, name, v in fields:
+                if k == "mapping" and isinstance(v, list):
+                    v = " ".join(flat_text(list(m.values())) for m in v if isinstance(m, dict))
                 for dim, raw in missing_quantities(flat_text(v), evidence):
                     same = sorted({r for d, _, r in own if d == dim})
                     hint = f" (근거 문장에는 {', '.join(same)})" if same else ""

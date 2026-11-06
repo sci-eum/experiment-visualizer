@@ -73,7 +73,7 @@ jobs:
         run: |
           V="${GITHUB_REF_NAME#v}"
           # 링크로 쓰는 SKILL.md·참고 문서·도구도 엔진과 같은 @1에서 나가므로 함께 비운다
-          for f in assets/labkit.min.js assets/labkit.js assets/labkit3d.min.js assets/labkit3d.js assets/template.html assets/light.html                    SKILL.md references/parts.md references/scenes.md references/data.md references/build.md references/parts.json                    scripts/build_html.py scripts/check_data.py scripts/check_render.py scripts/extract_text.py scripts/extract_data.py; do
+          for f in assets/labkit.min.js assets/labkit.js assets/labkit3d.min.js assets/labkit3d.js assets/template.html assets/light.html                    SKILL.md references/parts.md references/scenes.md references/data.md references/build.md references/learning.md references/parts.json                    scripts/build_html.py scripts/check_data.py scripts/check_render.py scripts/extract_text.py scripts/extract_data.py; do
             curl -fsS "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@1/$f" > /dev/null || echo "::warning::$f 캐시 비우기 요청 실패"
           done
           for i in $(seq 1 12); do

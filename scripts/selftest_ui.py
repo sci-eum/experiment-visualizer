@@ -25,8 +25,10 @@ DATA = {
     "materials": [{"name": "가상 비커", "qty": "1개", "icon": "beaker"}], "safety": ["가상 비커는 조심해서 다룬다."], "steps": [
         {"id": "look", "title": "관찰", "text": "물의 모습을 관찰한다.", "predict": "어떤 모습일까?",
          "sketch": {"id": "view", "shape": "box"},
-         "scene": [{"t": "beaker", "id": "b", "x": 240, "fill": .4, "label": "가", "info": "가상 원문 설명"}],
-         "reveal": {"text": "관찰을 마쳤어요.", "change": {"b": {"color": "blue"}}}},
+         "mapping": [{"target": "가", "material": "가상 용액", "amount": "16 mL"}],
+         "repeat": "가와 나에 반복해요.", "checkpoint": "두 용기에 모두 넣었으면 다음으로 가요.",
+         "scene": [{"t": "beaker", "id": "b", "x": 240, "fill": .4, "color": "#c13579", "hideColor": True, "label": "가", "info": "가상 원문 설명"}],
+         "reveal": {"text": "관찰을 마쳤어요.", "change": {"b": {"color": "blue", "hideColor": False}}}},
         {"id": "record", "title": "기록", "scene": [{"t": "beaker", "x": 240, "fill": .4, "info": False}, {"t": "lamp", "id": "lp", "x": 380}, {"t": "heat", "kind": "radiate", "from": "lp"},
                                                 {"t": "circuit", "id": "cc", "x": 90, "y": 110, "w": 120, "h": 90}, {"t": "current", "along": "cc", "show": "both"}]},
         {"id": "guess", "title": "고르는 예상", "scene": [{"t": "beaker", "id": "g", "x": 240, "fill": .4}],
@@ -90,6 +92,22 @@ window.addEventListener('load', async () => {
   };
   try {
     check('실제 CSS 화면 너비',window.innerWidth===__VIEW_WIDTH__);
+    const flow=$('#app .flow-section');
+    check('전체 흐름이 준비물보다 먼저',!!flow && !!(flow.compareDocumentPosition($('#app .mat-grid')) & Node.DOCUMENT_POSITION_FOLLOWING));
+    check('전체 흐름의 단계 수·순서',flow.querySelectorAll('[data-flow]').length===6 && flow.querySelector('[data-flow="0"] b').textContent==='관찰');
+    check('전체 흐름에 결과 색 없음',!flow.innerHTML.includes('#c13579'));
+    check('대응표·반복·완료 안내',/가상 용액/.test($('#app .mapping').textContent) && /16 mL/.test($('#app .mapping').textContent) && !!$('#app .box.repeat') && !!$('#app .box.checkpoint'));
+    check('결과 색은 빗금으로 생략',!!$('#app [data-rvs="0"] .sc-main [data-color-mask]') && !$('#app [data-rvs="0"] .sc-main').innerHTML.includes('#c13579'));
+    flow.querySelector('[data-flow="0"]').click();
+    check('흐름에서 실제 실험 단계로 이동',count()==='실험 1 / 6단계' && $('#deck .slide h2').textContent==='관찰');
+    check('수업 모드 상단 조작이 화면 안에', [...document.querySelectorAll('#deck .deck-top button')].every(n=>{const r=n.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth;}));
+    $('#deck [data-flow-back]').click();
+    check('전체 흐름에 현재 위치 표시',count()==='전체 과정' && $('#deck [data-flow="0"]').getAttribute('aria-current')==='step');
+    const flowNext=$('#deck [data-flow="1"]');flowNext.focus();
+    flowNext.dispatchEvent(new KeyboardEvent('keydown',{key:' ',bubbles:true,cancelable:true}));
+    check('흐름 버튼의 스페이스가 다음 화면을 넘기지 않음',count()==='전체 과정');
+    flowNext.click();check('흐름에서 다른 단계 선택',count()==='실험 2 / 6단계' && $('#deck .slide h2').textContent==='기록');
+    $('#deck [data-close]').click();
     localStorage.removeItem('lk:selftest-interactions');
     const pu=$('#app [data-us]'), ug=()=>$('#app [data-unseen]');
     check('보이지 않는 것: 처음엔 숨김',!!pu && !!ug() && getComputedStyle(ug()).visibility==='hidden' && $('#app [data-us]')===$('#app [data-rvs="1"] [data-us]'));
@@ -104,6 +122,7 @@ window.addEventListener('load', async () => {
     check('부품 빛남',!!$('#deck .sc-main .pk-on'));
     check('카드: 설명·안전 수칙·준비물',/가상 원문 설명/.test(pkText()) && /가상 비커는 조심/.test(pkText()) && /가상 비커 1개/.test(pkText()));
     check('카드: 기구 기본 설명',!!$('#deck .pk-card .pk-base') && /액체를 담거나 섞고 데울 때/.test(pkText()));
+    check('부품 설명에 감춘 결과 색 없음',/결과 색은 그림에서 생략/.test(pkText()) && !pkText().includes('#c13579'));
     clickSvg($('#deck .sc-main svg [data-lk-k="#0"]'));check('다시 누르면 닫기',pk().hidden && !$('#deck .sc-main .pk-on'));
     clickSvg($('#deck .sc-main svg [data-lk-t="label"][data-lk-k="#0"]'));check('이름표를 눌러도 카드',!pk().hidden);
     document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));check('Esc는 카드부터 닫기',pk().hidden && !$('#deck').hidden);
@@ -266,6 +285,7 @@ window.addEventListener('load', async () => {
     const src = $(`[data-rvs="${+want.cover - 1}"] .sc-main svg`), sf = src ? fills(src) : new Set();
     check('학생용 인쇄: 표지에는 결과 전 과정 그림의 색만', !!src && [...fills(art)].every(c => sf.has(c)));
     check('학생용 인쇄: 결과 그림·결과 글 없음', ![...document.querySelectorAll('.sc-rv, .rv-text, .res-expect, .res-conc')].some(shown) && !(want.result && (visHas('.hero-art', want.result) || visHas('.sc-rv', want.result))));
+    check('인쇄: 전체 흐름이 보이고 결과 색 없음', !!$('.flow') && shown($('.flow')) && !(want.result && visHas('.flow', want.result)));
     if (want.result) { document.documentElement.dataset.print = 'teacher'; check('교사용 인쇄: 결과 그림 있음', visHas('.sc-rv', want.result)); }
     // 브라우저 기본(배경 그래픽 끔)으로 인쇄해도 단계 번호·적는 줄이 보이고, 다음 쪽으로 넘어간 카드의 윗선이 앞쪽에 남지 않게(outline 대신 border), 바닥글은 한 문단
     const cs = s => { const n = $(s); return n ? getComputedStyle(n) : null; }, exact = c => !!c && (c.printColorAdjust || c.webkitPrintColorAdjust) === 'exact';

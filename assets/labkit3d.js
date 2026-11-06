@@ -1,4 +1,4 @@
-/*! experiment-visualizer LabKit3D v1.33.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
+/*! experiment-visualizer LabKit3D v1.34.0 | MIT License | https://github.com/sci-eum/experiment-visualizer */
 /* 실험 장면을 입체(WebGL)로 보여 준다. 외부 라이브러리 없이 WebGL만 쓴다 (인터넷 없이 여는 한 파일 버전에도 넣을 수 있게).
    - 그릇 13종(비커·플라스크·시험관 …)은 그림 엔진의 윤곽선을 돌려 빚은 유리와, 높이·색·층이 맞는 액체로 (v1.20)
    - 자주 쓰는 기구(삼발이·알코올램프·스탠드·가열판·시험관대·저울 …)는 상자·원기둥으로 빚는다 (v1.20)
@@ -8,7 +8,7 @@
    그림 엔진이 '3D' 버튼을 누를 때 불러와 LabKit3D.open(창, { items, title, bench })을 부른다. */
 (function () {
 'use strict';
-const VERSION = '1.33.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
+const VERSION = '1.34.0'; // labkit.js의 VERSION·첫 줄 머리말과 같게 고친다
 const FONT = '"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif';
 const SVGNS = 'http://www.w3.org/2000/svg';
 const DEG = Math.PI / 180;
@@ -537,7 +537,9 @@ function container(d, b, S) {
   if (p.lid && !S.snap) b.glass(o => lathe(o, b.M, [[0, S.h], [S.half + 9, S.h], [S.half + 9, S.h + 4], [0, S.h + 4]]), GLASS, .3);
   if (p.arm) { const dd = p.arm === 'left' ? -1 : 1; b.glass(o => tube(o, b.M, [dd * S.half, S.h - 22, 0], [dd * (S.half + 34), S.h - 38, 0], 3.5, 3.5, [1, 1, 1], 12, false), GLASS, .2); }
   const inner = profileOf(S.clip, host), bands = [];
-  if (Array.isArray(p.layers) && p.layers.length) {
+  if (p.hideColor && g.fill > 0) {
+    bands.push({ lo: -1e9, hi: b.B - g.surfaceY, color: '#d5dae2', alpha: 1, world: true });
+  } else if (Array.isArray(p.layers) && p.layers.length) {
     const span = g.ymax - g.ymin; let acc = 0;
     p.layers.forEach((ly, i) => { const h = +ly.h || +ly.fill || .2, top = g.y + g.s * (g.ymax - (acc + h) * span), bot = g.y + g.s * (g.ymax - acc * span); bands.push({ lo: i ? b.B - bot : -1e9, hi: b.B - top, color: b.col(ly.color, 'water'), alpha: ly.opacity ?? .86, world: true }); acc += h; });
   } else if (g.fill > 0) {

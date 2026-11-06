@@ -47,6 +47,7 @@
 | `holder` | 시험관 집게 (시험관을 손으로 잡고 가열할 때 `tilt`와 함께) |
 | `text` | `bottle` 라벨 글자 (예 `"염산"`), `brown: true`면 갈색병, `cap:false`면 뚜껑 열림 |
 | `paper` | `cup` 전용: 종이컵 |
+| `hideColor` | `true`면 그릇 속 액체 색을 **빗금과 ?**로 가린다 (2D·3D·인쇄). 실제 액체의 색이나 층이 아니라 **결과 색 생략 표시**임을 가까운 `note`·설명에 알린다. `reveal.change`에서 `hideColor:false`로 바꾸고 원문 결과 색을 준다. 처음 시약의 색을 숨기려고 쓰지 않는다. |
 | `opacity`, `meniscus:false` | 액체 투명도, 눈금실린더 메니스커스 끄기 |
 | `vol` | **용량** (예 `"100 mL"`, `"1 L"`, `"1.5 mL"`). 그릇에 용량을 새기고, 비커·눈금실린더에 눈금 숫자를 넣고, 실제 부피 비율대로 크기를 정한다 (beaker·flask·roundflask·volumetric·cylinder·tube·bottle·cup·microtube·pcrtube, 주사기 `syringe`도). `trough`(수조)는 크기를 바꾸지 않고 용량 글자만 새긴다 |
 | `amount` | 넣은 양 (예 `"40 mL"`, `"30~40 mL"`는 가운데 값, `"200 μL"`). `vol`과 함께 주면 액체 높이를 눈금에 맞춘다 |

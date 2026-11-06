@@ -31,6 +31,7 @@
       "title": "시험관에 이름표 붙이기",
       "origin": {"where": "탐구 과정 1", "quote": "시험관 6개에 ㉠~㉥ 이름표를 붙이고 시험관대에 꽂는다.", "check": "ok"},
       "text": "시험관 6개에 ㉠~㉥ 이름표를 붙이고 시험관대에 꽂는다.",
+      "checkpoint": "시험관마다 이름표를 붙이고 시험관대에 꽂았으면 다음으로 넘어가요.",
       "scene": [
         { "t": "rack", "x": 240, "s": 1.1, "tubes": [
           { "id": "A", "tag": "㉠" }, { "id": "B", "tag": "㉡" }, { "id": "C", "tag": "㉢" },
@@ -42,10 +43,20 @@
       "id": "add-solutions",
       "title": "용액을 5 mL씩 넣기",
       "origin": {"where": "탐구 과정 2", "quote": "눈금실린더로 식초, 레몬즙, 묽은 염산, 유리 세정제, 비눗물, 묽은 수산화 나트륨 용액을 각각 5 mL씩 재어 시험관 ㉠~㉥에 차례로 넣는다.", "check": "ok", "added": ["tip"]},
-      "text": "눈금실린더로 식초, 레몬즙, 묽은 염산, 유리 세정제, 비눗물, 묽은 수산화 나트륨 용액을 각각 **5 mL**씩 재어 시험관 ㉠~㉥에 차례로 넣는다.",
+      "text": "눈금실린더로 각 용액을 **5 mL씩** 재어 대응표에 맞는 시험관에 넣는다.",
+      "mapping": [
+        { "target": "㉠", "material": "식초", "amount": "5 mL" },
+        { "target": "㉡", "material": "레몬즙", "amount": "5 mL" },
+        { "target": "㉢", "material": "묽은 염산", "amount": "5 mL" },
+        { "target": "㉣", "material": "유리 세정제", "amount": "5 mL" },
+        { "target": "㉤", "material": "비눗물", "amount": "5 mL" },
+        { "target": "㉥", "material": "묽은 수산화 나트륨 용액", "amount": "5 mL" }
+      ],
+      "repeat": "그림은 ㉠의 동작 예시예요. ㉡~㉥에도 대응표의 용액을 넣어요.",
+      "checkpoint": "㉠~㉥ 모두에 해당 용액을 각각 5 mL씩 넣었으면 다음으로 넘어가요.",
       "tip": "용액마다 눈금실린더를 물로 헹구거나 바꿔 써야 섞이지 않아요.",
       "scene": [
-        { "t": "rack", "x": 270, "s": 1.1, "tubes": [
+        { "t": "rack", "x": 240, "s": 1.1, "tubes": [
           { "id": "A", "tag": "㉠", "fill": 0.3, "color": "clear" }, { "id": "B", "tag": "㉡" }, { "id": "C", "tag": "㉢" },
           { "id": "D", "tag": "㉣" }, { "id": "E", "tag": "㉤" }, { "id": "F", "tag": "㉥" } ] },
         { "t": "pour", "into": "A", "from": "cylinder", "fromVol": "10 mL", "color": "clear" },
@@ -58,14 +69,16 @@
       "title": "지시약 떨어뜨리기",
       "origin": {"where": "탐구 과정 3", "quote": "스포이트로 붉은 양배추 지시약을 각 시험관에 5방울씩 떨어뜨린다.", "check": "ok"},
       "text": "스포이트로 붉은 양배추 지시약을 각 시험관에 **5방울씩** 떨어뜨린다.",
+      "repeat": "그림은 ㉠의 동작 예시예요. ㉠~㉥ 모든 시험관에 반복해요.",
+      "checkpoint": "모든 시험관에 지시약을 5방울씩 넣었으면 다음으로 넘어가요.",
       "scene": [
-        { "t": "rack", "x": 215, "s": 1.1, "tubes": [
+        { "t": "rack", "x": 240, "s": 1.1, "tubes": [
           { "id": "A", "tag": "㉠", "fill": 0.3, "color": "clear" }, { "id": "B", "tag": "㉡", "fill": 0.3, "color": "#f3e6a0" },
           { "id": "C", "tag": "㉢", "fill": 0.3, "color": "clear" }, { "id": "D", "tag": "㉣", "fill": 0.3, "color": "clear" },
           { "id": "E", "tag": "㉤", "fill": 0.3, "color": "milky", "cloudy": true }, { "id": "F", "tag": "㉥", "fill": 0.3, "color": "clear" } ] },
         { "t": "dropper", "over": "A", "color": "violet" },
         { "t": "cup", "x": 420, "fill": 0.55, "color": "violet" },
-        { "t": "text", "x": 420, "y": 288, "text": "붉은 양배추 지시약", "size": 11, "weight": 700 },
+        { "t": "text", "x": 420, "y": 170, "text": "붉은 양배추 지시약", "size": 10, "weight": 700 },
         { "t": "note", "x": 330, "y": 52, "text": "각 시험관에 5방울씩", "icon": "how" }
       ]
     },
@@ -75,9 +88,12 @@
       "origin": {"where": "탐구 과정 4", "quote": "시험관을 가볍게 흔들어 섞은 뒤, 용액의 색깔 변화를 관찰한다.", "check": "ok"},
       "text": "시험관을 가볍게 흔들어 섞은 뒤, 용액의 색깔 변화를 관찰한다.",
       "observe": "시험관마다 용액이 **무슨 색**으로 변하는지 살펴봐요.",
+      "repeat": "그림은 ㉠ 시험관의 확대 예시예요. ㉠~㉥을 하나씩 가볍게 흔들고 색을 관찰해요.",
+      "checkpoint": "모든 시험관의 색을 관찰했으면 결과를 기록해요.",
       "scene": [
-        { "t": "tube", "x": 200, "y": 248, "s": 1.5, "layers": [ { "h": 0.32, "color": "clear" }, { "h": 0.06, "color": "violet" } ], "shake": true },
-        { "t": "note", "x": 375, "y": 120, "text": "무슨 색으로 변할까요?", "icon": "eye" }
+        { "t": "tube", "id": "A", "x": 200, "y": 248, "s": 1.5, "fill": 0.38, "hideColor": true, "shake": true, "label": "㉠ 시험관 (확대)", "labelSide": "left" },
+        { "t": "note", "x": 370, "y": 100, "text": "무슨 색으로 변할까요?", "icon": "eye" },
+        { "t": "note", "x": 370, "y": 190, "text": "빗금과 ?는 결과 색을 생략한 표시예요", "icon": "how" }
       ]
     },
     {

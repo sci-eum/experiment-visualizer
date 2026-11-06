@@ -146,6 +146,7 @@ window.EXPERIMENT = {
         "check": "ok"
       },
       "text": "시험관 6개에 ㉠~㉥ 이름표를 붙이고 시험관대에 꽂는다.",
+      "checkpoint": "시험관마다 이름표를 붙이고 시험관대에 꽂았으면 다음으로 넘어가요.",
       "scene": [
         {
           "t": "rack",
@@ -201,12 +202,46 @@ window.EXPERIMENT = {
           "tip"
         ]
       },
-      "text": "눈금실린더로 식초, 레몬즙, 묽은 염산, 유리 세정제, 비눗물, 묽은 수산화 나트륨 용액을 각각 **5 mL**씩 재어 시험관 ㉠~㉥에 차례로 넣는다.",
+      "text": "눈금실린더로 각 용액을 **5 mL씩** 재어 대응표에 맞는 시험관에 넣는다.",
+      "mapping": [
+        {
+          "target": "㉠",
+          "material": "식초",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉡",
+          "material": "레몬즙",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉢",
+          "material": "묽은 염산",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉣",
+          "material": "유리 세정제",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉤",
+          "material": "비눗물",
+          "amount": "5 mL"
+        },
+        {
+          "target": "㉥",
+          "material": "묽은 수산화 나트륨 용액",
+          "amount": "5 mL"
+        }
+      ],
+      "repeat": "그림은 ㉠의 동작 예시예요. ㉡~㉥에도 대응표의 용액을 넣어요.",
+      "checkpoint": "㉠~㉥ 모두에 해당 용액을 각각 5 mL씩 넣었으면 다음으로 넘어가요.",
       "tip": "용액마다 눈금실린더를 물로 헹구거나 바꿔 써야 섞이지 않아요.",
       "scene": [
         {
           "t": "rack",
-          "x": 270,
+          "x": 240,
           "s": 1.1,
           "tubes": [
             {
@@ -268,10 +303,12 @@ window.EXPERIMENT = {
         "check": "ok"
       },
       "text": "스포이트로 붉은 양배추 지시약을 각 시험관에 **5방울씩** 떨어뜨린다.",
+      "repeat": "그림은 ㉠의 동작 예시예요. ㉠~㉥ 모든 시험관에 반복해요.",
+      "checkpoint": "모든 시험관에 지시약을 5방울씩 넣었으면 다음으로 넘어가요.",
       "scene": [
         {
           "t": "rack",
-          "x": 215,
+          "x": 240,
           "s": 1.1,
           "tubes": [
             {
@@ -327,9 +364,9 @@ window.EXPERIMENT = {
         {
           "t": "text",
           "x": 420,
-          "y": 288,
+          "y": 170,
           "text": "붉은 양배추 지시약",
-          "size": 11,
+          "size": 10,
           "weight": 700
         },
         {
@@ -351,30 +388,34 @@ window.EXPERIMENT = {
       },
       "text": "시험관을 가볍게 흔들어 섞은 뒤, 용액의 색깔 변화를 관찰한다.",
       "observe": "시험관마다 용액이 **무슨 색**으로 변하는지 살펴봐요.",
+      "repeat": "그림은 ㉠ 시험관의 확대 예시예요. ㉠~㉥을 하나씩 가볍게 흔들고 색을 관찰해요.",
+      "checkpoint": "모든 시험관의 색을 관찰했으면 결과를 기록해요.",
       "scene": [
         {
           "t": "tube",
+          "id": "A",
           "x": 200,
           "y": 248,
           "s": 1.5,
-          "layers": [
-            {
-              "h": 0.32,
-              "color": "clear"
-            },
-            {
-              "h": 0.06,
-              "color": "violet"
-            }
-          ],
-          "shake": true
+          "fill": 0.38,
+          "hideColor": true,
+          "shake": true,
+          "label": "㉠ 시험관 (확대)",
+          "labelSide": "left"
         },
         {
           "t": "note",
-          "x": 375,
-          "y": 120,
+          "x": 370,
+          "y": 100,
           "text": "무슨 색으로 변할까요?",
           "icon": "eye"
+        },
+        {
+          "t": "note",
+          "x": 370,
+          "y": 190,
+          "text": "빗금과 ?는 결과 색을 생략한 표시예요",
+          "icon": "how"
         }
       ]
     },
@@ -508,6 +549,6 @@ window.EXPERIMENT = {
 };
 /* ===== EXPERIMENT DATA END ===== */
 </script>
-<script src="https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.33.0/assets/labkit.min.js" onerror="document.getElementById('app').innerHTML='<p style=&quot;max-width:640px;margin:48px auto;padding:24px;border-radius:16px;background:#fff;line-height:1.7;font-family:sans-serif&quot;>그림 엔진을 불러오지 못했어요. 인터넷에 연결된 상태에서 이 HTML 파일을 크롬·엣지 같은 브라우저로 열어 주세요.</p>'"></script>
+<script src="https://cdn.jsdelivr.net/gh/sci-eum/experiment-visualizer@1.34.0/assets/labkit.min.js" onerror="document.getElementById('app').innerHTML='<p style=&quot;max-width:640px;margin:48px auto;padding:24px;border-radius:16px;background:#fff;line-height:1.7;font-family:sans-serif&quot;>그림 엔진을 불러오지 못했어요. 인터넷에 연결된 상태에서 이 HTML 파일을 크롬·엣지 같은 브라우저로 열어 주세요.</p>'"></script>
 </body>
 </html>
